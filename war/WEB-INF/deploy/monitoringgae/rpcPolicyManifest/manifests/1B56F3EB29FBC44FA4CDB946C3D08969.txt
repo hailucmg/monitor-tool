@@ -1,0 +1,2 @@
+serviceClass: cmg.org.monitor.entry.client.GreetingService
+path: C2E9C9012C239C0EA0E9F89A3C427E0F.gwt.rpc
