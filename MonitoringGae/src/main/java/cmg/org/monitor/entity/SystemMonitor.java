@@ -46,6 +46,9 @@ public class SystemMonitor {
 	
 	@Persistent
 	private Boolean isDeleted;
+	
+	@Persistent
+	private String protocol;
 
 	public SystemMonitor() {
 
@@ -122,4 +125,11 @@ public class SystemMonitor {
 		this.isActive = isActive;
 	}
 
+	public String getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
 }
