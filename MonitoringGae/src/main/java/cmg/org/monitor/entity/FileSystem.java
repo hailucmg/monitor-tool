@@ -18,7 +18,7 @@ import com.google.appengine.api.datastore.Key;
 public class FileSystem {
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key key;
+	private Long id;
 	
 	@Persistent
 	private String name;
@@ -59,8 +59,8 @@ public class FileSystem {
 		this.timeStamp = timeStamp;
 	}
 
-	public Key getKey() {
-		return key;
+	public Long getId() {
+		return id;
 	}
 
 	public String getName() {
@@ -102,7 +102,5 @@ public class FileSystem {
 	public void setTimeStamp(Boolean timeStamp) {
 		this.timeStamp = timeStamp;
 	}
-	
-	
 	
 }

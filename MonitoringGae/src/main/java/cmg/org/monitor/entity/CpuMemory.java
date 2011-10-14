@@ -17,7 +17,7 @@ import com.google.appengine.api.datastore.Key;
 public class CpuMemory {
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key key;
+	private Long id;
 
 	@Persistent
 	private double totalMemory;
@@ -56,8 +56,10 @@ public class CpuMemory {
 		this.timeStamp = timeStamp;
 	}
 
-	public Key getKey() {
-		return key;
+	
+
+	public Long getId() {
+		return id;
 	}
 
 	public double getTotalMemory() {
