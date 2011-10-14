@@ -17,7 +17,7 @@ import com.google.appengine.api.datastore.Key;
 public class NetworkMonitor {
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key key;
+	private Long id;
 
 	@Persistent
 	private String name;
@@ -49,8 +49,8 @@ public class NetworkMonitor {
 		this.timeStamp = timeStamp;
 	}
 
-	public Key getKey() {
-		return key;
+	public Long getId() {
+		return id;
 	}
 
 	public String getName() {

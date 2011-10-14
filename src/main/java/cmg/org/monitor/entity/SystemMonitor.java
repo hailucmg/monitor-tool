@@ -14,7 +14,7 @@ import com.google.appengine.api.datastore.Key;
 
 /**
  * @author lamphan
- * 
+ * @version 1.0
  */
 @PersistenceCapable
 public class SystemMonitor {
@@ -24,10 +24,10 @@ public class SystemMonitor {
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key key;
+	private Long id;
 
-//	@Persistent
-//	private List<Key> networks;
+	@Persistent
+	private List<Long> networks;
 
 	@Persistent
 	private String name;
@@ -40,30 +40,38 @@ public class SystemMonitor {
 
 	@Persistent
 	private Boolean isActive;
+	
+	@Persistent
+	private Boolean systemStatus;
+	
+	@Persistent
+	private Boolean isDeleted;
 
 	public SystemMonitor() {
 
 	}
 
 	private SystemMonitor(String name, String address, String ip,
-			Boolean isActive) {
+			Boolean isActive, Boolean systemStatus, Boolean isDeleted) {
 		super();
 		this.name = name;
 		this.address = address;
 		this.ip = ip;
 		this.isActive = isActive;
+		this.systemStatus = systemStatus;
+		this.isDeleted = isDeleted;
+	}
+	
+	public Long getId() {
+		return id;
 	}
 
-//	public List<Key> getNetworks() {
-//		return networks;
-//	}
-//
-//	public void setNetworks(List<Key> networks) {
-//		this.networks = networks;
-//	}
+	public List<Long> getNetworks() {
+		return networks;
+	}
 
-	public Key getKey() {
-		return key;
+	public void setNetworks(List<Long> networks) {
+		this.networks = networks;
 	}
 
 	public String getName() {
@@ -88,6 +96,22 @@ public class SystemMonitor {
 
 	public void setIp(String ip) {
 		this.ip = ip;
+	}
+
+	public Boolean getSystemStatus() {
+		return systemStatus;
+	}
+
+	public void setSystemStatus(Boolean systemStatus) {
+		this.systemStatus = systemStatus;
+	}
+
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
 	}
 
 	public Boolean getIsActive() {

@@ -17,7 +17,7 @@ public class GroupMonitor {
 	
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key key;
+	private Long id;
 
 	@Persistent
 	private String name;
@@ -27,8 +27,8 @@ public class GroupMonitor {
 		this.name = name;
 	}
 
-	public Key getKey() {
-		return key;
+	public Long getId() {
+		return id;
 	}
 
 	public void setName(String name) {
