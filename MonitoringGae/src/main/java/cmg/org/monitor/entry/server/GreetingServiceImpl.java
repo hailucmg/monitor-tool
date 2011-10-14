@@ -1,7 +1,14 @@
 package cmg.org.monitor.entry.server;
 
+import javax.persistence.PersistenceException;
+
+import cmg.org.monitor.entity.SystemMonitor;
 import cmg.org.monitor.entry.client.GreetingService;
 import cmg.org.monitor.entry.shared.FieldVerifier;
+import cmg.org.monitor.exception.BaseException;
+import cmg.org.monitor.exception.MonitorException;
+import cmg.org.monitor.services.SystemService;
+
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -27,6 +34,15 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		input = escapeHtml(input);
 		userAgent = escapeHtml(userAgent);
 
+		try {
+			SystemService aService = new SystemService();
+			aService.addSystemMonitor( new SystemMonitor());
+		}catch(Exception e) {
+			return "System exception occurrence";
+		} 
+		
+		
+		
 		return "Hello, " + input + "!<br><br>I am running " + serverInfo
 				+ ".<br><br>It looks like you are using:<br>" + userAgent;
 	}

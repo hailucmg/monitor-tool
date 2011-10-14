@@ -48,7 +48,7 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 			pm.currentTransaction().begin();
 
 			// We have to look it up first,
-			system = pm.getObjectById(SystemMonitor.class, system.getKey());
+			system = pm.getObjectById(SystemMonitor.class, system.getId());
 			pm.deletePersistent(system);
 
 			pm.currentTransaction().commit();
@@ -71,7 +71,7 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 			pm.currentTransaction().begin();
 			
 			// We have to look it up first,
-			contact = pm.getObjectById(SystemMonitor.class, contact.getKey());
+			contact = pm.getObjectById(SystemMonitor.class, contact.getId());
 			contact.setName(name);
 			contact.setAddress(address);
 			contact.setIp(ip);
