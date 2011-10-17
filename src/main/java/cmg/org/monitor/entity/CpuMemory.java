@@ -2,22 +2,25 @@ package cmg.org.monitor.entity;
 
 import java.util.Date;
 
+import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import com.google.appengine.api.datastore.Key;
-
 /**
- * @author admin
+ * @author lamphan
  * @version 1.0
  */
+
+@SuppressWarnings("serial")
 @PersistenceCapable
-public class CpuMemory {
+public class CpuMemory implements Model {
+	
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Long id;
+	@Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
+	private String encodedKey;
 
 	@Persistent
 	private double totalMemory;
@@ -40,12 +43,15 @@ public class CpuMemory {
 	@Persistent
 	private Date timeStamp;
 
+	/**
+	 * Default constructor.<br> 
+	 */
 	public CpuMemory() {
+		
 	}
 
-	private CpuMemory(double totalMemory, double usedMemory, double cpuUsage,
+	public CpuMemory(double totalMemory, double usedMemory, double cpuUsage,
 			int totalCpu, String vendor, String model, Date timeStamp) {
-		super();
 
 		this.totalMemory = totalMemory;
 		this.usedMemory = usedMemory;
@@ -58,9 +64,10 @@ public class CpuMemory {
 
 	
 
-	public Long getId() {
-		return id;
-	}
+	@Override
+    public String getId() {
+        return encodedKey;
+    }
 
 	public double getTotalMemory() {
 		return totalMemory;

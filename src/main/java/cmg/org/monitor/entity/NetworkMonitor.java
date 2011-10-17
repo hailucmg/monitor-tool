@@ -2,22 +2,27 @@ package cmg.org.monitor.entity;
 
 import java.util.Date;
 
+import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
+import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import com.google.appengine.api.datastore.Key;
-
 /**
- * @author admin
+ * Model/entity representation of a network.
+ * @author lamphan
  * 
  */
-@PersistenceCapable
-public class NetworkMonitor {
+
+@SuppressWarnings("serial")
+@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
+public class NetworkMonitor implements Model {
+	
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Long id;
+	@Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
+	private String encodedKey;
 
 	@Persistent
 	private String name;
@@ -36,8 +41,15 @@ public class NetworkMonitor {
 
 	@Persistent
 	private Date timeStamp;
+	
+	/**
+	 * Default constructor.<br>
+	 */
+	public NetworkMonitor() {
+		
+	}
 
-	private NetworkMonitor(String name, Date systemDate, int ping,
+	public NetworkMonitor(String name, Date systemDate, int ping,
 			Boolean status, String description, Date timeStamp) {
 		super();
 
@@ -49,10 +61,12 @@ public class NetworkMonitor {
 		this.timeStamp = timeStamp;
 	}
 
-	public Long getId() {
-		return id;
-	}
-
+	@Override
+    public String getId() {
+        return encodedKey;
+    }
+	
+	
 	public String getName() {
 		return name;
 	}
