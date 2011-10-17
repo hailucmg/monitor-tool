@@ -3,22 +3,24 @@
  */
 package cmg.org.monitor.entity;
 
+import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import com.google.appengine.api.datastore.Key;
-
 /**
  * @author admin
  *
  */
+
+@SuppressWarnings("serial")
 @PersistenceCapable
-public class FileSystem {
+public class FileSystem implements Model {
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Long id;
+	@Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
+	private String encodedKey;
 	
 	@Persistent
 	private String name;
@@ -59,9 +61,10 @@ public class FileSystem {
 		this.timeStamp = timeStamp;
 	}
 
-	public Long getId() {
-		return id;
-	}
+	@Override
+    public String getId() {
+        return encodedKey;
+    }
 
 	public String getName() {
 		return name;
