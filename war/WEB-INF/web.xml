@@ -16,7 +16,7 @@
 </servlet-mapping>
 <!--end  DashBoard -->
    
-<!--start  SystemDetail 
+<!--start  SystemDetail -->
 <servlet>
     <servlet-name>systemdetail</servlet-name>
     <servlet-class>cmg.org.monitor.entry.systemdetail.server.SystemDetailServiceImpl</servlet-class>
@@ -26,7 +26,7 @@
     <servlet-name>systemdetail</servlet-name>
     <url-pattern>systemdetail/systemdetail</url-pattern>
 </servlet-mapping>
-end  SystemDetail -->
+<!--end  SystemDetail -->
   
 <!--start  AutoGatherData -->
 <servlet>
