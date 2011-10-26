@@ -16,29 +16,6 @@
 </servlet-mapping>
 <!--end  DashBoard -->
    
-<!--start  SystemDetail -->
-<servlet>
-    <servlet-name>systemdetail</servlet-name>
-    <servlet-class>cmg.org.monitor.entry.systemdetail.server.SystemDetailServiceImpl</servlet-class>
-</servlet>
-  
-<servlet-mapping>
-    <servlet-name>systemdetail</servlet-name>
-    <url-pattern>systemdetail/systemdetail</url-pattern>
-</servlet-mapping>
-<!--end  SystemDetail -->
-  
-<!--start  AutoGatherData -->
-<servlet>
-    <servlet-name>gatherdata</servlet-name>
-    <servlet-class>cmg.org.monitor.server.GatherDataServiceImpl</servlet-class>
-</servlet>
-<servlet-mapping>
-    <servlet-name>gatherdata</servlet-name>
-    <url-pattern>autogatherdata/gatherdata</url-pattern>
-</servlet-mapping>
-<!--end  AutoGatherData -->
-
 <!-- Default page to server -->
 <welcome-file-list>
     <welcome-file>DashBoard.html</welcome-file>
