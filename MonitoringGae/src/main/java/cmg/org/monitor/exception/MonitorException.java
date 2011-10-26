@@ -2,32 +2,26 @@ package cmg.org.monitor.exception;
 
 /**
  * @author lamphan
- * 
+ * @version 1.0
  */
-public class MonitorException extends BaseException {
+public class MonitorException extends Exception {
 
-	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
 
 	/**
-     * MonitorException constructor.<br>
+     * Creates a new MonitorException object.
+     *
+     * @param  message  DOCUMENT ME!
      */
-	public MonitorException() {
-		super();
-	}
+    public MonitorException(String message) {
+        super(message);
+        // TODO Auto-generated constructor stub
+    }
 
-	public MonitorException(String message) {
-
-	}
-
-	/**
-	 * @param aThrowable
-	 * @param aUserMessageKey
-	 * @param level
-	 * @param errorCode
-	 */
-	public MonitorException(Throwable aThrowable, String aUserMessageKey
-			) {
-		super(aThrowable, aUserMessageKey);
-	}
+    /**
+     * Creates a new MonitorException object.
+     */
+    public MonitorException() {
+        // TODO Auto-generated constructor stub
+    }
 }
