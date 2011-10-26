@@ -4,29 +4,30 @@ import java.util.logging.Logger;
 
 import cmg.org.monitor.dao.SystemMonitorDAO;
 import cmg.org.monitor.dao.impl.SystemMonitorDaoJDOImpl;
-import cmg.org.monitor.entity.SystemMonitor;
+import cmg.org.monitor.entity.shared.SystemMonitor;
 
 
 public class SystemService {
 	private static final Logger logger = Logger.getLogger(SystemService.class
 			.getCanonicalName());
-	SystemMonitorDAO systemMonDao = null;
+	private static SystemMonitorDAO systemMonDao =  new SystemMonitorDaoJDOImpl();
 
 	public SystemService() {
-		this.systemMonDao = new SystemMonitorDaoJDOImpl();
 	}
 
-	public void addSystemMonitor(SystemMonitor system) {
-
-		if (systemMonDao != null) {
-			system.setAddress("c-mg.com.vn");
-			system.setIp("193.168.1.12");
-			system.setName("cmg viet nam");
-			systemMonDao.addSystem(system);
-			logger.info("Add system ok");
+	public static void addSystemMonitor(SystemMonitor system) {
+		systemMonDao.addSystem(system);
+	}
+	
+	
+	public static SystemMonitor[] listSystems(boolean b) {
+		SystemMonitor[] list = null;
+		try {
+			list = systemMonDao.listSystems(b);
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
-
-
+		return list;
 	}
 
 }
