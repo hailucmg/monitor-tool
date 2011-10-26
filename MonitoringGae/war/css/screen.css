@@ -26,15 +26,13 @@ body	{
 	min-width: 850px;
 	position: relative;
 	}
-
 #logo	{
 	float: left;
 	margin-top: 8px;
 	margin-right: 0;
 	margin-bottom: 0;
-	margin-left: 0;
+	margin-left: 8px;
 	}
-	
 #logo	a	{
 	display: block;
 	}
@@ -115,9 +113,15 @@ body	{
 #table-content	{
 	line-height: 16px;
 	margin: 0 10px 10px 10px;
-	min-height: 300px;
+	min-height: 80px;
 	}
-	
+
+#img-loading img {
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 50px;
+	display: block;
+}
 .topleft {
 background: url(../images/shared/corner_top_left.jpg) no-repeat;
 width:15px;
@@ -188,12 +192,23 @@ h3	{
 	font-weight: bold;
 	padding: 0 0 0 20px;
 	}
-.yellow-left a	{
+.yellow-left a {
 	color: #e79300;
 	font-family: Tahoma;
 	font-weight: normal;
 	text-decoration: underline;
 	}
+.yellow-left a:hover {
+	color: #e79300;
+}
+.yellow-left  a:active {
+	color: #e79300;
+}
+
+.yellow-left  a:visited {
+	color: #e79300;
+}
+
 .yellow-right a	{
 	cursor: pointer;
 	}
@@ -216,6 +231,16 @@ h3	{
 	font-weight: normal;
 	text-decoration: underline;
 	}
+.blue-left a:hover {
+	color: #2e74b2;
+}
+.blue-left  a:active {
+	color: #2e74b2;
+}
+
+.blue-left  a:visited {
+	color: #2e74b2;
+}
 .blue-right a	{
 	cursor: pointer;
 	}
@@ -238,6 +263,16 @@ h3	{
 	font-weight: normal;
 	text-decoration: underline;
 	}
+.red-left a:hover {
+	color: #ce2700;
+}
+.red-left  a:active {
+	color: #ce2700;
+}
+
+.red-left  a:visited {
+	color: #ce2700;
+}
 .red-right a	{
 	cursor: pointer;
 	}
@@ -245,7 +280,7 @@ h3	{
 	width: 55px;
 	}
 #message-green	{
-    margin-bottom: 5px;
+	margin-bottom: 5px;
 	}
 .green-left	{
 	background: url(../images/table/message_green.gif) top left no-repeat;
@@ -261,6 +296,16 @@ h3	{
 	font-weight: normal;
 	text-decoration: underline;
 	}
+.green-left a:hover {
+	color: #6da827;
+}
+.green-left  a:active {
+	color: #6da827;
+}
+
+.green-left  a:visited {
+	color: #6da827;
+}
 .green-right a	{
 	cursor: pointer;
 	}
@@ -620,53 +665,6 @@ a:hover.action-delete	{
 		 
 	
 /* FORM ------------------------------------------------------- */	
-.form-back	{
-	background: url(../images/forms/form_back.png) no-repeat;
-	border: none;
-	cursor: pointer;
-	display: block;
-	float: left;
-	height: 30px;
-	margin: 0 0 0 4px;
-	text-indent: -3000px;
-	width: 80px;
-	}
-.form-edit	{
-	background: url(../images/forms/form_Edit.gif) no-repeat;
-	border: none;
-	cursor: pointer;
-	display: block;
-	float: left;
-	height: 30px;
-	margin: 0 4px 0 0;
-	padding: 0;
-	text-indent: -3000px;
-	width: 80px;
-	}
-	.form-delete	{
-	background: url(../images/forms/form_delete.png) no-repeat;
-	border: none;
-	cursor: pointer;
-	display: block;
-	float: left;
-	height: 30px;
-	margin: 0 4px 0 0;
-	padding: 0;
-	text-indent: -3000px;
-	width: 80px;
-	}
-.form-create	{
-	background: url(../images/forms/form_create.gif) no-repeat;
-	border: none;
-	cursor: pointer;
-	display: block;
-	float: left;
-	height: 30px;
-	margin: 0 4px 0 0;
-	padding: 0;
-	text-indent: -3000px;
-	width: 80px;
-	}
 .form-submit	{
 	background: url(../images/forms/form_submit.gif) no-repeat;
 	border: none;
@@ -696,6 +694,7 @@ a:hover.action-delete	{
 	border: none;
 	color: #393939;
 	height: 25px;
+ 
 	padding: 6px 6px 0 6px;
 	width: 186px;
 	}
@@ -1335,16 +1334,13 @@ div.selectbox-wrapper2 ul li	{
 	font-family: Arial;
 	font-size: 12px;
 	height: 24px;
-	margin: 0px;
+	margin: 0px 0px 0px 0px;
+	padding: 7px 0 0 6px;
 	text-align: left;
 	width: 192px;
-	padding-top: 7px;
-	padding-right: 0;
-	padding-bottom: 0;
-	padding-left: 6px;
 	}
 .styledselect_form_2	{
-	background: url(../images/forms/form_select.gif) left no-repeat;
+	background: url(../images/forms/form_select_small.gif) left no-repeat;
 	border: none;
 	border-left: none;
 	color: #393939;
@@ -1353,13 +1349,10 @@ div.selectbox-wrapper2 ul li	{
 	font-family: Arial;
 	font-size: 12px;
 	height: 24px;
-	margin: 0px;
+	margin: 0px 0px 0px 0px;
+	padding: 7px 0 0 10px;
 	text-align: left;
-	width: 192px;
-	padding-top: 7px;
-	padding-right: 0;
-	padding-bottom: 0;
-	padding-left: 6px;
+	width: 60px;
 	}
 
 	
@@ -1547,15 +1540,9 @@ label	{
 	}
 #logo-login	{
 	float: left;
-	width: auto;
-	height: auto;
+	height: 35px;
 	margin: 145px 0 0 15px;
-	
 	}
-#logo-login img{
-	width: 210px;
-	height: auto;
-	}	
 a.forgot-pwd	{
 	bottom: 30px;
 	color: #161616;
