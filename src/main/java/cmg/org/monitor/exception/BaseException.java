@@ -13,11 +13,6 @@ public class BaseException {
 
 	private String userMessageKey = null;
 
-
-
-	/** Level error. */
-	private ErrorLevels errorLevel = null;
-
 	/** Status log. */
 	private boolean logged = false;
 
@@ -39,15 +34,11 @@ public class BaseException {
 	 *            Exception passing.
 	 * @param aUserMessageKey
 	 *            Key message .
-	 * @param level
-	 *            error level.
-	 * @param errorCode
-	 *            error code.
+	 *            
 	 */
 	public BaseException(Throwable aThrowable, String aUserMessageKey) {
 		this.throwable = aThrowable;
 		this.userMessageKey = aUserMessageKey;
-
 
 	}
 	
@@ -55,16 +46,8 @@ public class BaseException {
         return userMessageKey;
     }
 
-
-
-    public ErrorLevels getErrorLevel() {
-        return errorLevel;
-    }
-
     public boolean isLogged() {
         return logged;
     }
-
-
 
 }
