@@ -1,142 +1,116 @@
 package cmg.org.monitor.dao.impl;
 
 import java.util.List;
-
-
+import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
-
+import javax.jdo.Query;
 
 import cmg.org.monitor.dao.SystemMonitorDAO;
-import cmg.org.monitor.entity.SystemMonitor;
+import cmg.org.monitor.entity.shared.CpuMemory;
+import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.util.shared.MonitorConstant;
+import cmg.org.monitor.util.shared.PMF;
 
-import cmg.org.monitor.util.PMF;
-import javax.jdo.Query;
 public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public SystemMonitor[] listSystem(boolean isDeleted) {
+	private static final Logger logger = Logger.getLogger(SystemMonitorDaoJDOImpl.class.getCanonicalName());
+	
+	private static SystemMonitorDaoJDOImpl sysDAO;
+	
+	public SystemMonitorDaoJDOImpl() {
+		sysDAO = this;
+	}
+	
+	public static SystemMonitorDaoJDOImpl getInstance() {
+		return sysDAO;
+	}
+	
+	public void addSystem(SystemMonitor system) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		try {			
+			pm.makePersistent(system);
+			logger.info(MonitorConstant.DONE_MESSAGE);
+		} finally {
+			pm.close();
+		}
+	}
+	
+	public SystemMonitor[] listSystems(boolean isDeleted) throws Exception {
 		// TODO Auto-generated method stub
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		List<SystemMonitor> list = null;
+		CpuMemoryDaoJDOImpl cmDao = new CpuMemoryDaoJDOImpl();
+		List<SystemMonitor> listData = null;
 		SystemMonitor[] listReturn = null;
+		CpuMemory cpuMem = null;
+		
 		Query query = pm.newQuery(SystemMonitor.class);
 		query.setFilter("isDeleted == isDeletedPara");
 		query.declareParameters("boolean isDeletedPara");
-		try
-		{
-			list = (List<SystemMonitor>) query.execute(isDeleted);
-			if(list.size() > 0){
-				listReturn = new SystemMonitor[list.size()];
-				for(int i = 0; i< list.size();i++){
-					listReturn[i] = list.get(i);
+		try {
+			listData = (List<SystemMonitor>) query.execute(isDeleted);
+			if (listData.size() > 0) {
+				listReturn = new SystemMonitor[listData.size()];
+				for (int i = 0; i < listData.size(); i++) {
+					listReturn[i] = listData.get(i);
+					cpuMem = (cmDao.getLastestCpuMemory(listReturn[i], 1) == null) 
+								? null
+								: cmDao.getLastestCpuMemory(listReturn[i], 1)[0];
+					listReturn[i].setLastCpuMemory(cpuMem);
 				}
 			}
-		}finally {
+		} catch (Exception ex) {
+			throw ex;
+		}
+		finally {
 			query.closeAll();
 			pm.close();
-			
 		}
 		return listReturn;
 	}
 	
-	@Override
-	public SystemMonitor getSystembyID(String id){
+	public void removeSystem(SystemMonitor system) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		SystemMonitor system;
-		try{
-			system = pm.getObjectById(SystemMonitor.class,id);
-			
-		}finally{
-			pm.close();
-		}
-		return system;
-		
-	}
-	@Override
-	public boolean addnewSystem(SystemMonitor system) {
-		// TODO Auto-generated method stub
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-		try{
-			pm.makePersistent(system);
-		}finally {
-			// TODO: handle exception
-			pm.close();
-		}
-		return true;
-	}
-
-	@Override
-	public boolean editSystembyID(String id, String newName, String newAddress,
-			String newIp, boolean isActive) throws Exception {
-		// TODO Auto-generated method stub
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-		SystemMonitor system;
-		try{
-			
-			system = pm.getObjectById(SystemMonitor.class,id);;
+		try {
 			pm.currentTransaction().begin();
-			system.setName(newName);
-			system.setAddress(newAddress);
-			system.setIp(newIp);
-			system.setIsActive(isActive);
-			pm.makePersistent(system);
+
+			// We have to look it up first,
+			system = pm.getObjectById(SystemMonitor.class, system.getId());
+			pm.deletePersistent(system);
+
 			pm.currentTransaction().commit();
-		}catch (Exception e) {
-			// TODO: handle exception
+		} catch (Exception ex) {
 			pm.currentTransaction().rollback();
-			throw e;
-		}finally{
-			pm.close();	
-			
+			throw new RuntimeException(ex);
+		} finally {
+			pm.close();
 		}
-		return true;
 	}
 
-	@Override
-	public boolean deleteSystembyID(String id) {
-		// TODO Auto-generated method stub
+	public void updateSystem(SystemMonitor contact) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		SystemMonitor system = pm.getObjectById(SystemMonitor.class,id);
-		try
-		{
-			boolean delele = true;
-			pm.currentTransaction().begin();
-			system.setIsDeleted(delele);
-			system.setIsActive(false);
-			pm.makePersistent(system);
-			pm.currentTransaction().commit();
-		}catch (Exception e) {
-			// TODO: handle exception
-		}finally{
-			pm.close();
-		}
-		return true;
-	}
+		/*
+		String name = contact.getName();
+		String url = contact.getUrl();
+		String ip = contact.getIp();
+		*/
 
-	@Override
-	public boolean deleteListSystembyID(String[] ids) throws Exception {
-		// TODO Auto-generated method stub
-		boolean delete = true;
-		for(int i=0;i<ids.length;i++){
-			 PersistenceManager pm = PMF.get().getPersistenceManager();
-			 SystemMonitor system = pm.getObjectById(SystemMonitor.class,ids[i]);
-			try
-			{
-				pm.currentTransaction().begin();
-				system.setIsDeleted(delete);
-				system.setIsActive(false);
-				pm.makePersistent(system);
-				pm.currentTransaction().commit();
-			}catch (Exception e) {
-				pm.currentTransaction().rollback();
-				throw e;
-			}
+		try {
+			pm.currentTransaction().begin();			
+			// We have to look it up first,
+			/*
+			contact = pm.getObjectById(SystemMonitor.class, contact.getId());
+			contact.setName(name);
+			contact.setUrl(url);
+			contact.setIp(ip);
+			*/
+			pm.makePersistent(contact);
+			pm.currentTransaction().commit();
+		} catch (Exception ex) {
+			pm.currentTransaction().rollback();
+			throw new RuntimeException(ex);
+		} finally {
 			pm.close();
 		}
-		
-		return true;
 	}
 	
   
