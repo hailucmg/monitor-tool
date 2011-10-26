@@ -15,6 +15,26 @@ public class HTMLControl {
 	public HTMLControl() {		
 	}
 	
+	public static String getColor(int type) {
+		String color = "";
+		switch (type) {		
+		case HTMLControl.BLUE_MESSAGE:
+			color = "blue";
+			break;
+		case HTMLControl.RED_MESSAGE:
+			color = "red";
+			break;
+		case HTMLControl.YELLOW_MESSAGE :
+			color = "yellow";
+			break;
+		case HTMLControl.GREEN_MESSAGE:			
+		default:
+			color = "green";
+			break;
+		}	
+		return color;
+	}
+	
 	public static HTML getMessageBox(String message, String url, String urlName, int type) {
 		String color = "";
 		switch (type) {		
@@ -52,10 +72,22 @@ public class HTMLControl {
 	}
 	
 	public static String getLinkSystemDetail(String id, String code) {
-		return "<a href=\"demo_system_details.html?sid="
+		return "<a href=\"SystemDetail.html#?view=details&sid="
 				+ id
 				+"\">"
 				+ code +"</a>";
 		
+	}
+	
+	public static String getStringTime(int secsIn) {
+		int hours = secsIn / 3600,
+		remainder = secsIn % 3600,
+		minutes = remainder / 60,
+		seconds = remainder % 60;
+
+		String time = ( (hours < 10 ? "0" : "") + hours
+				+ ":" + (minutes < 10 ? "0" : "") + minutes
+				+ ":" + (seconds< 10 ? "0" : "") + seconds );
+		return time;
 	}
 }
