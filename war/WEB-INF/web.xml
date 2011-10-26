@@ -4,21 +4,44 @@
               http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          version="2.5"
          xmlns="http://java.sun.com/xml/ns/javaee">
+<!--start  DashBoard -->
+<servlet>
+	<servlet-name>dashboard</servlet-name>
+	<servlet-class>cmg.org.monitor.entry.dashboard.server.DashBoardServiceImpl</servlet-class>
+</servlet>
+  
+<servlet-mapping>
+    <servlet-name>dashboard</servlet-name>
+    <url-pattern>dashboard/dashboard</url-pattern>
+</servlet-mapping>
+<!--end  DashBoard -->
+   
+<!--start  SystemDetail 
+<servlet>
+    <servlet-name>systemdetail</servlet-name>
+    <servlet-class>cmg.org.monitor.entry.systemdetail.server.SystemDetailServiceImpl</servlet-class>
+</servlet>
+  
+<servlet-mapping>
+    <servlet-name>systemdetail</servlet-name>
+    <url-pattern>systemdetail/systemdetail</url-pattern>
+</servlet-mapping>
+end  SystemDetail -->
+  
+<!--start  AutoGatherData -->
+<servlet>
+    <servlet-name>gatherdata</servlet-name>
+    <servlet-class>cmg.org.monitor.server.GatherDataServiceImpl</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>gatherdata</servlet-name>
+    <url-pattern>autogatherdata/gatherdata</url-pattern>
+</servlet-mapping>
+<!--end  AutoGatherData -->
 
-  <!-- Servlets -->
-  <servlet>
-    <servlet-name>greetServlet</servlet-name>
-    <servlet-class>cmg.org.monitor.entry.server.GreetingServiceImpl</servlet-class>
-  </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>greetServlet</servlet-name>
-    <url-pattern>/monitoringgae/greet</url-pattern>
-  </servlet-mapping>
-  
-  <!-- Default page to serve -->
-  <welcome-file-list>
-    <welcome-file>MonitoringGae.html</welcome-file>
-  </welcome-file-list>
+<!-- Default page to server -->
+<welcome-file-list>
+    <welcome-file>DashBoard.html</welcome-file>
+</welcome-file-list>
 
 </web-app>
