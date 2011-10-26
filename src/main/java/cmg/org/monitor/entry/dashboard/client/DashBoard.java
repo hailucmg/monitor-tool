@@ -10,6 +10,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
@@ -32,10 +33,15 @@ public class DashBoard implements EntryPoint {
 	private final DashBoardServiceAsync dashboardSv = GWT.create(DashBoardService.class);
 	
 	private static boolean isDone = false;
+	
+	private static int count = 0;
+	
+	Timer timerMess;
+	Timer timerReload;
 	@Override
 	public void onModuleLoad() {
 		// Create a callback to be called when the visualization API
-	    // has been loaded.
+	    // has been loaded.		
 		Runnable onLoadCallback = new Runnable() {
 			@Override
 			public void run() {		
@@ -46,14 +52,14 @@ public class DashBoard implements EntryPoint {
 				// Add table to div id 'tableListSystem'
 				RootPanel.get("tableListSystem").add(tableListSystem);
 				// Create Timer object which auto refresh data table list system
-				callBack();				
-				Timer t = new Timer() {
+				timerReload = new Timer() {
 					@Override
 					public void run() {											
 						callBack();
 					}					
 				};
-				t.scheduleRepeating(MonitorConstant.REFRESH_RATE);
+				timerReload.run();
+				timerReload.scheduleRepeating(MonitorConstant.REFRESH_RATE);
 			}
 			
 		};
@@ -75,22 +81,17 @@ public class DashBoard implements EntryPoint {
 		dashboardSv.listSystems(new AsyncCallback<SystemMonitor[]>() {
 			@Override
 			public void onFailure(Throwable caught) {	
-				showMessage("Server error. ","DashBoard.html", "Try again.", HTMLControl.RED_MESSAGE);
+				initMessage("Server error. ","DashBoard.html", "Try again.", HTMLControl.RED_MESSAGE);
+				setVisibleMessage(true, HTMLControl.RED_MESSAGE);
 				setVisibleLoadingImage(true);
+				showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
 			}
-
 			@Override
 			public void onSuccess(SystemMonitor[] result) {						
 				drawTable(result);
 			}					
-		});
-		
-		
+		});		
 	}	
-	
-	void setVisibleLoadingImage(boolean b) {
-		RootPanel.get("img-loading").setVisible(b);
-	}
 	/*
 	 *  Draw table ui with result callback from server via RPC
 	 */
@@ -131,58 +132,55 @@ public class DashBoard implements EntryPoint {
 			setVisibleLoadingImage(false);
 			// draw table
 			tableListSystem.draw(dataListSystem, opsTableListSystem);
-			
-			
 		} else {
-			showMessage("No system found. ","AddNewSystem.html", "Add new system.", HTMLControl.RED_MESSAGE);	
+			initMessage("No system found. ","AddNewSystem.html", "Add new system.", HTMLControl.RED_MESSAGE);
+			setVisibleMessage(true,  HTMLControl.RED_MESSAGE);
+			showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
 			setVisibleLoadingImage(true);
 		}
 	}
+	
+	void showReloadCountMessage(final int typeMessage) {
+		count = MonitorConstant.REFRESH_RATE / 1000;
+		if (timerMess != null) {
+			setVisibleMessage(false, typeMessage);
+			timerMess.cancel();
+		}
+		timerMess = new Timer() {			
+			@Override
+			public void run() {
+				initMessage("Reload table in " + HTMLControl.getStringTime(--count),
+						"DashBoard.html", 
+						"Reload now.", 
+						typeMessage);
+				setVisibleMessage(true, typeMessage);
+				if (count <= 0) {
+					setVisibleMessage(false, typeMessage);
+					this.cancel();
+				}
+			}
+		};				
+		timerMess.run();
+		timerMess.scheduleRepeating(1000);
+	}
+	
+	void setVisibleLoadingImage(boolean b) {
+		RootPanel.get("img-loading").setVisible(b);
+	}
+	
 	/*
 	 *  Set visible message box
 	 */
 	void setVisibleMessage(boolean b, int type) {
-		String color = "";
-		switch (type) {		
-		case HTMLControl.BLUE_MESSAGE:
-			color = "blue";
-			break;
-		case HTMLControl.RED_MESSAGE:
-			color = "red";
-		case HTMLControl.YELLOW_MESSAGE :
-			color = "yellow";
-			break;
-		case HTMLControl.GREEN_MESSAGE:			
-		default:
-			color = "green";
-			break;
-		}	
-		RootPanel.get("message-" + color).setVisible(b);
+		RootPanel.get("message-" +  HTMLControl.getColor(type)).setVisible(b);
 	}
 	/*
 	 *  Show message with content
 	 */
-	void showMessage(String message, String url, String titleUrl, int type) {
-		String color = "";
-		switch (type) {		
-		case HTMLControl.BLUE_MESSAGE:
-			color = "blue";
-			break;
-		case HTMLControl.RED_MESSAGE:
-			color = "red";
-		case HTMLControl.YELLOW_MESSAGE :
-			color = "yellow";
-			break;
-		case HTMLControl.GREEN_MESSAGE:			
-		default:
-			color = "green";
-			break;
-		}		
-		
-		RootPanel.get("content-" + color).clear();
-		RootPanel.get("content-" + color)
+	void initMessage(String message, String url, String titleUrl, int type) {		
+		RootPanel.get("content-" + HTMLControl.getColor(type)).clear();
+		RootPanel.get("content-" + HTMLControl.getColor(type))
 			.add(new HTML(message + " <a href=\""+ url + "\">" + titleUrl + "</a>", true));
-		setVisibleMessage(true, type);
 	}
 	
 	/*
@@ -224,24 +222,5 @@ public class DashBoard implements EntryPoint {
 		BarFormat bf = BarFormat.create(ops);
 		bf.format(dataListSystem, 4);
 		bf.format(dataListSystem, 5);
-		/*
-		// create pattern format SID column
-		PatternFormat pfSid = PatternFormat.create("<a href=\"demo_system_details.html?sid={0}\">{0}</a>");
-		JsArrayInteger jsaSid = (JsArrayInteger) JsArrayInteger.createArray();
-		jsaSid.set(0, 0);
-		pfSid.format(dataListSystem, jsaSid, 0);
-				
-		//create pattern format Status column	
-		PatternFormat pfStatus = PatternFormat.create("<img src=\"images/icon/{0}_icon.png\" width=\"24\" height=\"24\" alt=\"\" />");
-		JsArrayInteger jsaStatus = (JsArrayInteger) JsArrayInteger.createArray();
-		jsaStatus.set(0, 6);
-		pfStatus.format(dataListSystem, jsaStatus, 6);
-		
-		//create pattern format Active column	
-		PatternFormat pfActive = PatternFormat.create();
-		JsArrayInteger jsaActive = (JsArrayInteger) JsArrayInteger.createArray();
-		jsaActive.set(0, 7);
-		pfActive.format(dataListSystem, jsaActive, 7);		
-		*/
 	}
 }
