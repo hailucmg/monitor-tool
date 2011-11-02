@@ -1,10 +1,10 @@
-/**
- * 
- */
+
 package cmg.org.monitor.entity.shared;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 import javax.jdo.annotations.Element;
@@ -15,6 +15,8 @@ import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+
+import cmg.org.monitor.ext.model.dto.SystemEntityDto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -27,6 +29,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
 public class SystemMonitor implements Model, IsSerializable {
 
+	@Persistent(mappedBy = "systemMonitor")
+	@Element(dependent = "true")
+	private Set<AlertMonitor> alerts = new HashSet<AlertMonitor>();
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -66,13 +71,17 @@ public class SystemMonitor implements Model, IsSerializable {
 	@Persistent
 	private String protocol;
 
+	@Persistent
+	private String groupEmail;
+	
 	@NotPersistent
 	private
 	CpuMemory lastCpuMemory;
+	
+	
 	/**
 	 * Default constructor.<br>
 	 */
-	
 	public SystemMonitor() {
 
 	}
@@ -95,6 +104,21 @@ public class SystemMonitor implements Model, IsSerializable {
 		this.isActive = isActive;
 		this.isDeleted = false;
 		this.status = true;
+	}
+	
+	/**
+	 * 
+	 * Convert an Entity to Data transfer object.
+	 * 
+	 * @return an DTO object.
+	 */
+	public SystemEntityDto toDTO() {
+		SystemEntityDto entityDTO = new SystemEntityDto(this.getName(),
+			 this.getIp(), this.getUrl() , this.isActive(),
+				this.getStatus(), this.isDeleted(), this.getProtocol(), this.getAlerts(), this.getGroupEmail());
+		entityDTO.setId(this.getId());
+
+		return entityDTO;
 	}
 	
 	@Override
@@ -232,4 +256,22 @@ public class SystemMonitor implements Model, IsSerializable {
 	public void setLastCpuMemory(CpuMemory lastCpuMemory) {
 		this.lastCpuMemory = lastCpuMemory;
 	}
+	
+	public String getGroupEmail() {
+		return groupEmail;
+	}
+
+	public void setGroupEmail(String groupEmail) {
+		this.groupEmail = groupEmail;
+	}
+	
+	/**
+	 * Get list of alerts.
+	 * 
+	 * @return set of alerts
+	 */
+	public Set<AlertMonitor> getAlerts() {
+		return alerts;
+	}
+	
 }

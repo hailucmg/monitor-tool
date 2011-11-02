@@ -7,29 +7,82 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import cmg.org.monitor.dao.SystemMonitorDAO;
+import cmg.org.monitor.entity.shared.AlertMonitor;
 import cmg.org.monitor.entity.shared.CpuMemory;
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.ext.model.dto.SystemEntityDto;
 import cmg.org.monitor.util.shared.MonitorConstant;
 import cmg.org.monitor.util.shared.PMF;
 
 public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 	private static final Logger logger = Logger.getLogger(SystemMonitorDaoJDOImpl.class.getCanonicalName());
 	
-	private static SystemMonitorDaoJDOImpl sysDAO;
-	
-	public SystemMonitorDaoJDOImpl() {
-		sysDAO = this;
-	}
-	
-	public static SystemMonitorDaoJDOImpl getInstance() {
-		return sysDAO;
-	}
-	
 	public void addSystem(SystemMonitor system) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		try {			
+		try {
+			
 			pm.makePersistent(system);
 			logger.info(MonitorConstant.DONE_MESSAGE);
+		} finally {
+			pm.close();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<SystemMonitor> listSystems() {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		String query = "select from " + SystemMonitor.class.getName();
+		return (List<SystemMonitor>) pm.newQuery(query).execute();
+	}
+	
+	
+
+//	public void updateSystem(SystemMonitor entity) {
+//		PersistenceManager pm = PMF.get().getPersistenceManager();
+//		String name = entity.getName();
+//		String url = entity.getUrl();
+//		String ip = entity.getIp();
+//
+//		try {
+//			pm.currentTransaction().begin();
+//			
+//			// We have to look it up first,
+//			entity = pm.getObjectById(SystemMonitor.class, entity.getId());
+//			entity.setName(name);
+//			entity.setUrl(url);
+//			entity.setIp(ip);
+//			pm.makePersistent(entity);
+//			pm.currentTransaction().commit();
+//		} catch (Exception ex) {
+//			pm.currentTransaction().rollback();
+//			throw new RuntimeException(ex);
+//		} finally {
+//			pm.close();
+//		}
+//	}
+	
+	
+	
+	public void updateSystem(SystemEntityDto aSystemDTO, AlertMonitor anAlertEntity) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		String name = aSystemDTO.getName();
+		String address = aSystemDTO.getUrl();
+		String ip = aSystemDTO.getIp();
+		SystemMonitor sysMonitor = new SystemMonitor();
+		try {
+			pm.currentTransaction().begin();
+			
+			// We have to look it up first,
+			sysMonitor = pm.getObjectById(SystemMonitor.class, aSystemDTO.getId());
+			sysMonitor.setName(name);
+			sysMonitor.setUrl(address);
+			sysMonitor.setIp(ip);
+			sysMonitor.getAlerts().add(anAlertEntity);
+			pm.makePersistent(sysMonitor);
+			pm.currentTransaction().commit();
+		} catch (Exception ex) {
+			pm.currentTransaction().rollback();
+			throw new RuntimeException(ex);
 		} finally {
 			pm.close();
 		}

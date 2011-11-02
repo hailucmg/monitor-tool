@@ -1,13 +1,37 @@
 package cmg.org.monitor.dao;
 
+import java.util.List;
+
+import cmg.org.monitor.entity.shared.AlertMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.ext.model.dto.SystemEntityDto;
 
 public interface SystemMonitorDAO {
-	void addSystem(SystemMonitor system);
 	
-	void removeSystem(SystemMonitor system);
-	
-	void updateSystem(SystemMonitor system);
 	
 	SystemMonitor[] listSystems(boolean isDeleted) throws Exception;
+	
+	/**
+	 * @param system
+	 */
+	void addSystem(SystemMonitor system);
+	/**
+	 * @param system
+	 */
+	void removeSystem(SystemMonitor system);
+	/**
+	 * @param system
+	 * @param alert
+	 */
+	public void updateSystem(SystemMonitor system);
+	
+	/**
+	 * @param system
+	 * @param alert
+	 */
+	public void updateSystem(SystemEntityDto system, AlertMonitor alert);
+	/**
+	 * @return
+	 */
+	List<SystemMonitor> listSystems();
 }
