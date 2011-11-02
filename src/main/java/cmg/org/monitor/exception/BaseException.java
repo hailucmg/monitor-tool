@@ -1,13 +1,7 @@
 package cmg.org.monitor.exception;
 
 public class BaseException {
-	private static final String INF_MESSAGE = "Info Message: ID - ";
 
-	private static final String WARN_MESSAGE = "Warn Message: ID - ";
-
-	private static final String ERROR_MESSAGE = "Error Message: ID - ";
-
-	private static final String FATAL_MESSAGE = "Fatal Message: ID - ";
 
 	private Throwable throwable = null;
 

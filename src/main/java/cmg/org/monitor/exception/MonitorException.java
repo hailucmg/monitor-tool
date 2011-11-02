@@ -1,13 +1,22 @@
 package cmg.org.monitor.exception;
 
+import java.io.Serializable;
+
 /**
  * @author lamphan
  * @version 1.0
  */
-public class MonitorException extends Exception {
+public class MonitorException extends Exception implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+     * Creates a new MonitorException object.
+     */
+    public MonitorException() {
+        // TODO Auto-generated constructor stub
+    }
+    
 	/**
      * Creates a new MonitorException object.
      *
@@ -17,11 +26,19 @@ public class MonitorException extends Exception {
         super(message);
         // TODO Auto-generated constructor stub
     }
-
+    
     /**
-     * Creates a new MonitorException object.
+     * @param message
+     * @param cause
      */
-    public MonitorException() {
-        // TODO Auto-generated constructor stub
-    }
+    public MonitorException(String message, Throwable cause) {
+        super(message, cause);
+      }
+    
+    /**
+     * @param cause
+     */
+    public MonitorException(Throwable cause) {
+        super(cause);
+      }
 }
