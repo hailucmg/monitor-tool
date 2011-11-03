@@ -30,7 +30,10 @@ import javax.mail.internet.MimeMessage;
 
 import cmg.org.monitor.common.Constant;
 import cmg.org.monitor.dao.AlertDao;
+import cmg.org.monitor.dao.CpuMemoryDAO;
 import cmg.org.monitor.dao.impl.AlertDaoJDOImpl;
+import cmg.org.monitor.dao.impl.CpuMemoryDaoJDOImpl;
+import cmg.org.monitor.entity.shared.CpuMemory;
 import cmg.org.monitor.exception.MonitorException;
 import cmg.org.monitor.ext.model.CPUObject;
 import cmg.org.monitor.ext.model.Component;
@@ -269,6 +272,8 @@ public class URLMonitor {
 				// CpuusageDao cpuDao = null;
 				if (cpuPerc >= Constant.CPU_LEVEL_HISTORY_UPDATE) {
 					try {
+						CpuMemoryDAO cpuDao = new CpuMemoryDaoJDOImpl();
+						
 						// dao = DaoFactory.createHistoryCpuDao();
 						// HistoryCpu dto = getHistory(cpuObj,
 						// proj.getProjectId(), compId,
@@ -289,10 +294,10 @@ public class URLMonitor {
 				// Update CPU table
 				CpuDto cpuDto = new CpuDto();
 				cpuDto.setCpuName(compId);
-				cpuDto.setCpuUsage(cpuObj.getUsedCPU());
+				cpuDto.setCpuUsage(Integer.parseInt(cpuObj.getUsedCPU()));
 				cpuDto.setVendor(cpuObj.getVendor());
 				cpuDto.setModel(cpuObj.getModel());
-				cpuDto.setTotalCpu(String.valueOf(cpuObj.getTotalCPUs()));
+				cpuDto.setTotalCpu(cpuObj.getTotalCPUs());
 				cpuDto.setTimeStamp(currentDate);
 				cpuDto.setProjectId(Long.parseLong(proj.getId()));
 				// worker.updateCPU(cpuDto);

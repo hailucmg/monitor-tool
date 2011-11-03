@@ -8,6 +8,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import cmg.org.monitor.ext.model.dto.CpuDto;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -18,7 +20,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 @SuppressWarnings("serial")
 @PersistenceCapable
 public class CpuMemory implements Model, IsSerializable {
-	
+
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	@Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
@@ -47,13 +49,55 @@ public class CpuMemory implements Model, IsSerializable {
 
 	@Persistent
 	private SystemMonitor systemMonitor;
+
 	/**
-	 * Default constructor.<br> 
+	 * Default constructor.<br>
 	 */
 	public CpuMemory() {
-		
+
 	}
 
+	/**
+	 * @param alertDto
+	 */
+	public CpuMemory(CpuDto alertDto) {
+
+		this();
+		this.setBasicInfo(alertDto.getTotalCpu(), alertDto.getUsedMemory(),
+				alertDto.getCpuUsage(), alertDto.getTotalCpu(),
+				alertDto.getVendor(), alertDto.getModel(),
+				alertDto.getTimeStamp());
+	}
+
+	/**
+	 * Method 'setBasicInfo' set basic class properties.<br>
+	 * 
+	 * @param error
+	 * @param description
+	 * @param timeStamp
+	 */
+	public void setBasicInfo(double totalMemory, double usedMemory,
+			int cpuUsage, int totalCpu, String vendor, String model,
+			Date timeStamp) {
+
+		this.totalMemory = totalMemory;
+		this.usedMemory = usedMemory;
+		this.cpuUsage = cpuUsage;
+		this.totalCpu = totalCpu;
+		this.vendor = vendor;
+		this.model = model;
+		this.timeStamp = timeStamp;
+	}
+
+	/**
+	 * @param totalMemory
+	 * @param usedMemory
+	 * @param cpuUsage
+	 * @param totalCpu
+	 * @param vendor
+	 * @param model
+	 * @param timeStamp
+	 */
 	public CpuMemory(double totalMemory, double usedMemory, int cpuUsage,
 			int totalCpu, String vendor, String model, Date timeStamp) {
 
@@ -66,14 +110,46 @@ public class CpuMemory implements Model, IsSerializable {
 		this.timeStamp = timeStamp;
 	}
 
+	/**
+	 * Convert entity to data transfer object.
+	 * 
+	 * @return data transfer object type
+	 */
+	public CpuDto toDTO() {
+		CpuDto cpuDTO = new CpuDto(this.getTotalMemory(), this.getUsedMemory(),
+				this.getCpuUsage(), this.getTotalCpu(), this.getVendor(),
+				this.getModel(), this.getTimeStamp());
+		return cpuDTO;
+	}
+
+	/**
+	 * update existing alert object based on System DTO
+	 * 
+	 * @param systemDto
+	 */
+	public void updateFromDTO(CpuDto dto) {
+
+		this.totalMemory = dto.getUsedMemory();
+		this.usedMemory = dto.getUsedMemory();
+		this.cpuUsage = dto.getCpuUsage();
+		this.totalCpu = dto.getTotalCpu();
+		this.vendor = dto.getVendor();
+		this.model = dto.getModel();
+		this.timeStamp = dto.getTimeStamp();
+
+	}
+
+	/**
+	 * @return
+	 */
 	public int getPercentMemoryUsage() {
 		return (int) ((usedMemory / totalMemory) * 100);
 	}
-	
+
 	@Override
-    public String getId() {
-        return encodedKey;
-    }
+	public String getId() {
+		return encodedKey;
+	}
 
 	public double getTotalMemory() {
 		return totalMemory;

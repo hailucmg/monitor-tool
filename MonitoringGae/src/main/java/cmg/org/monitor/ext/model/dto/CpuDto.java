@@ -9,6 +9,10 @@ public class CpuDto implements Serializable
 	/** Default UUID value */
 	private static final long serialVersionUID = 1L;
 
+	private String id;
+	
+	private double usedMemory;
+	
 	/** 
 	 * This attribute maps to the column cpu_name in the cpu table.
 	 */
@@ -22,7 +26,7 @@ public class CpuDto implements Serializable
 	/** 
 	 * This attribute maps to the column cpu_usage in the cpu table.
 	 */
-	protected String cpuUsage;
+	protected int cpuUsage;
 
 	/** 
 	 * This attribute represents whether the attribute cpuUsage has been modified since being read from the database.
@@ -52,7 +56,7 @@ public class CpuDto implements Serializable
 	/** 
 	 * This attribute maps to the column total_cpu in the cpu table.
 	 */
-	protected String totalCpu;
+	protected int totalCpu;
 
 	/** 
 	 * This attribute represents whether the attribute totalCpu has been modified since being read from the database.
@@ -80,12 +84,57 @@ public class CpuDto implements Serializable
 	protected boolean timeStampModified = false;
 
 	/**
-	 * Method 'Cpu'
+	 * Default contructor 'Cpu'
 	 * 
 	 */
 	public CpuDto()
 	{
 	}
+
+	
+	
+	public CpuDto(double totalMemory, double usedMemory, int cpuUsage,
+			int totalCpu, String vendor, String model, Date timeStamp) {
+		super();
+		this.usedMemory = usedMemory;
+		this.cpuUsage = cpuUsage;
+		this.vendor = vendor;
+		this.model = model;
+		this.totalCpu = totalCpu;		
+		this.timeStamp = timeStamp;
+	}
+
+
+
+	/**
+	 * @return
+	 */
+	public String getId() {
+		return id;
+	}
+
+
+
+	/**
+	 * @param id
+	 */
+	public void setId(String id) {
+		this.id = id;
+	}
+
+
+
+	public double getUsedMemory() {
+		return usedMemory;
+	}
+
+
+
+	public void setUsedMemory(double usedMemory) {
+		this.usedMemory = usedMemory;
+	}
+
+
 
 	/**
 	 * Method 'getCpuName'
@@ -129,7 +178,7 @@ public class CpuDto implements Serializable
 	 * 
 	 * @return String
 	 */
-	public String getCpuUsage()
+	public int getCpuUsage()
 	{
 		return cpuUsage;
 	}
@@ -139,7 +188,7 @@ public class CpuDto implements Serializable
 	 * 
 	 * @param cpuUsage
 	 */
-	public void setCpuUsage(String cpuUsage)
+	public void setCpuUsage(int cpuUsage)
 	{
 		this.cpuUsage = cpuUsage;
 		this.cpuUsageModified = true;
@@ -240,7 +289,7 @@ public class CpuDto implements Serializable
 	 * 
 	 * @return String
 	 */
-	public String getTotalCpu()
+	public int getTotalCpu()
 	{
 		return totalCpu;
 	}
@@ -250,7 +299,7 @@ public class CpuDto implements Serializable
 	 * 
 	 * @param totalCpu
 	 */
-	public void setTotalCpu(String totalCpu)
+	public void setTotalCpu(int totalCpu)
 	{
 		this.totalCpu = totalCpu;
 		this.totalCpuModified = true;
@@ -346,128 +395,8 @@ public class CpuDto implements Serializable
 		return timeStampModified;
 	}
 
-	/**
-	 * Method 'equals'
-	 * 
-	 * @param _other
-	 * @return boolean
-	 */
-	public boolean equals(Object _other)
-	{
-		if (_other == null) {
-			return false;
-		}
-		
-		if (_other == this) {
-			return true;
-		}
-		
-		if (!(_other instanceof CpuDto)) {
-			return false;
-		}
-		
-		final CpuDto _cast = (CpuDto) _other;
-		if (cpuName == null ? _cast.cpuName != cpuName : !cpuName.equals( _cast.cpuName )) {
-			return false;
-		}
-		
-		if (cpuNameModified != _cast.cpuNameModified) {
-			return false;
-		}
-		
-		if (cpuUsage == null ? _cast.cpuUsage != cpuUsage : !cpuUsage.equals( _cast.cpuUsage )) {
-			return false;
-		}
-		
-		if (cpuUsageModified != _cast.cpuUsageModified) {
-			return false;
-		}
-		
-		if (vendor == null ? _cast.vendor != vendor : !vendor.equals( _cast.vendor )) {
-			return false;
-		}
-		
-		if (vendorModified != _cast.vendorModified) {
-			return false;
-		}
-		
-		if (model == null ? _cast.model != model : !model.equals( _cast.model )) {
-			return false;
-		}
-		
-		if (modelModified != _cast.modelModified) {
-			return false;
-		}
-		
-		if (totalCpu == null ? _cast.totalCpu != totalCpu : !totalCpu.equals( _cast.totalCpu )) {
-			return false;
-		}
-		
-		if (totalCpuModified != _cast.totalCpuModified) {
-			return false;
-		}
-		
-		if (projectId != _cast.projectId) {
-			return false;
-		}
-		
-		if (projectIdModified != _cast.projectIdModified) {
-			return false;
-		}
-		
-		if (timeStamp == null ? _cast.timeStamp != timeStamp : !timeStamp.equals( _cast.timeStamp )) {
-			return false;
-		}
-		
-		if (timeStampModified != _cast.timeStampModified) {
-			return false;
-		}
-		
-		return true;
-	}
-
-	/**
-	 * Method 'hashCode'
-	 * 
-	 * @return int
-	 */
-	public int hashCode()
-	{
-		int _hashCode = 0;
-		if (cpuName != null) {
-			_hashCode = 29 * _hashCode + cpuName.hashCode();
-		}
-		
-		_hashCode = 29 * _hashCode + (cpuNameModified ? 1 : 0);
-		if (cpuUsage != null) {
-			_hashCode = 29 * _hashCode + cpuUsage.hashCode();
-		}
-		
-		_hashCode = 29 * _hashCode + (cpuUsageModified ? 1 : 0);
-		if (vendor != null) {
-			_hashCode = 29 * _hashCode + vendor.hashCode();
-		}
-		
-		_hashCode = 29 * _hashCode + (vendorModified ? 1 : 0);
-		if (model != null) {
-			_hashCode = 29 * _hashCode + model.hashCode();
-		}
-		
-		_hashCode = 29 * _hashCode + (modelModified ? 1 : 0);
-		if (totalCpu != null) {
-			_hashCode = 29 * _hashCode + totalCpu.hashCode();
-		}
-		
-		_hashCode = 29 * _hashCode + (totalCpuModified ? 1 : 0);
-		_hashCode = 29 * _hashCode + (int) (projectId ^ (projectId >>> 32));
-		_hashCode = 29 * _hashCode + (projectIdModified ? 1 : 0);
-		if (timeStamp != null) {
-			_hashCode = 29 * _hashCode + timeStamp.hashCode();
-		}
-		
-		_hashCode = 29 * _hashCode + (timeStampModified ? 1 : 0);
-		return _hashCode;
-	}
+	
+	
 
 	
 	/**
