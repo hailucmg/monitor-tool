@@ -10,7 +10,7 @@ import cmg.org.monitor.dao.SystemMonitorDAO;
 import cmg.org.monitor.entity.shared.AlertMonitor;
 import cmg.org.monitor.entity.shared.CpuMemory;
 import cmg.org.monitor.entity.shared.SystemMonitor;
-import cmg.org.monitor.ext.model.dto.SystemEntityDto;
+import cmg.org.monitor.ext.model.dto.SystemDto;
 import cmg.org.monitor.util.shared.MonitorConstant;
 import cmg.org.monitor.util.shared.PMF;
 
@@ -63,7 +63,7 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 	
 	
 	
-	public void updateSystem(SystemEntityDto aSystemDTO, AlertMonitor anAlertEntity) {
+	public void updateSystem(SystemDto aSystemDTO, AlertMonitor anAlertEntity) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		String name = aSystemDTO.getName();
 		String address = aSystemDTO.getUrl();

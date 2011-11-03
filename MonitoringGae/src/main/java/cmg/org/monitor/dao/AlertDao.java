@@ -1,7 +1,7 @@
 package cmg.org.monitor.dao;
 
 import cmg.org.monitor.ext.model.dto.AlertDto;
-import cmg.org.monitor.ext.model.dto.SystemEntityDto;
+import cmg.org.monitor.ext.model.dto.SystemDto;
 
 /**
  * @author lamphan
@@ -13,7 +13,7 @@ public interface AlertDao {
 	 * @param alertDTO
 	 * @return
 	 */
-	public AlertDto updateAlert(AlertDto alertDTO, SystemEntityDto entityDto);
+	public AlertDto updateAlert(AlertDto alertDTO, SystemDto entityDto);
 	
 	/**
 	 * @param id

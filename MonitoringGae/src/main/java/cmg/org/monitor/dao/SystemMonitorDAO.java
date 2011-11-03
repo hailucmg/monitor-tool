@@ -4,7 +4,7 @@ import java.util.List;
 
 import cmg.org.monitor.entity.shared.AlertMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
-import cmg.org.monitor.ext.model.dto.SystemEntityDto;
+import cmg.org.monitor.ext.model.dto.SystemDto;
 
 public interface SystemMonitorDAO {
 	
@@ -29,7 +29,7 @@ public interface SystemMonitorDAO {
 	 * @param system
 	 * @param alert
 	 */
-	public void updateSystem(SystemEntityDto system, AlertMonitor alert);
+	public void updateSystem(SystemDto system, AlertMonitor alert);
 	/**
 	 * @return
 	 */

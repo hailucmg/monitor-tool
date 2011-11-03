@@ -39,7 +39,7 @@ import cmg.org.monitor.ext.model.URLPageObject;
 import cmg.org.monitor.ext.model.dto.AlertDto;
 import cmg.org.monitor.ext.model.dto.CpuDto;
 import cmg.org.monitor.ext.model.dto.CpuUsageDto;
-import cmg.org.monitor.ext.model.dto.SystemEntityDto;
+import cmg.org.monitor.ext.model.dto.SystemDto;
 import cmg.org.monitor.ext.util.HttpUtils.Page;
 import cmg.org.monitor.services.MonitorWorker;
 
@@ -82,7 +82,7 @@ public class URLMonitor {
 	 * @throws MonitorException
 	 *             if monitor failed
 	 */
-	public URLPageObject generateInfo(SystemEntityDto proj) throws MonitorException {
+	public URLPageObject generateInfo(SystemDto proj) throws MonitorException {
 		URLPageObject obj = null;
 		try {
 			SimpleDateFormat dateFormat = new SimpleDateFormat(
@@ -388,7 +388,7 @@ public class URLMonitor {
 		}
 	}
 
-	private void sendAlerts(SystemEntityDto sysDto) {
+	private void sendAlerts(SystemDto sysDto) {
 
 		try {
 			AlertDao alert = new AlertDaoJDOImpl();
@@ -406,7 +406,7 @@ public class URLMonitor {
 		}
 	}
 
-	private void sendMail(SystemEntityDto systemDto) {
+	private void sendMail(SystemDto systemDto) {
 		Properties props = new Properties();
 		Session session = Session.getDefaultInstance(props, null);
 		String msgBody = "Your account is testing for alert send mail";

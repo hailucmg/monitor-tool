@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 
 import cmg.org.monitor.exception.MonitorException;
 import cmg.org.monitor.ext.model.URLPageObject;
-import cmg.org.monitor.ext.model.dto.SystemEntityDto;
+import cmg.org.monitor.ext.model.dto.SystemDto;
 import cmg.org.monitor.ext.util.URLMonitor;
 
 public class MonitorService {
@@ -37,9 +37,9 @@ public class MonitorService {
 	 * 
 	 * @return
 	 */
-	static List<SystemEntityDto> makeStaticDatas() {
-		SystemEntityDto systemDto = new SystemEntityDto();
-		List<SystemEntityDto> systems = new ArrayList<SystemEntityDto>();
+	static List<SystemDto> makeStaticDatas() {
+		SystemDto systemDto = new SystemDto();
+		List<SystemDto> systems = new ArrayList<SystemDto>();
 		for (int i = 0; i < urls.length; ++i) {
 			systemDto.setUrl(urls[i]);
 			systemDto.setIsActive(Boolean.parseBoolean(statuses[i]));
@@ -66,7 +66,7 @@ public class MonitorService {
 		logger.info("Begin monitoring... ");
 
 		// Test processes system nodes
-		List<SystemEntityDto> systems = makeStaticDatas();
+		List<SystemDto> systems = makeStaticDatas();
 
 		URLMonitor urlMonitor = null;
 		Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
@@ -79,7 +79,7 @@ public class MonitorService {
 		// Initializes monitor object list
 		URLPageObject obj = null;
 		int continueCount = 0;
-		for (SystemEntityDto aSystem : systems) {
+		for (SystemDto aSystem : systems) {
 			if (!aSystem.getIsActive()) {
 				logger.info("The system " + aSystem.getName()
 						+ " is existed but is not active. "

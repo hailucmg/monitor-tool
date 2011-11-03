@@ -13,7 +13,7 @@ import cmg.org.monitor.entity.shared.AlertMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.exception.MonitorException;
 import cmg.org.monitor.ext.model.dto.AlertDto;
-import cmg.org.monitor.ext.model.dto.SystemEntityDto;
+import cmg.org.monitor.ext.model.dto.SystemDto;
 import cmg.org.monitor.util.shared.PMF;
 
 public class AlertDaoJDOImpl implements AlertDao {
@@ -26,7 +26,7 @@ public class AlertDaoJDOImpl implements AlertDao {
 	 * @param alertDTO
 	 * @return
 	 */
-	public AlertDto updateAlert(AlertDto alertDTO, SystemEntityDto sysDto) {
+	public AlertDto updateAlert(AlertDto alertDTO, SystemDto sysDto) {
 		if (alertDTO.getId() == null) {
 
 			// Create new case
@@ -54,11 +54,11 @@ public class AlertDaoJDOImpl implements AlertDao {
 	 * @param alertDTO
 	 * @return Alert Monitor object.
 	 */
-	private AlertMonitor addAlert(AlertDto alertDTO, SystemEntityDto sysDto) {
+	private AlertMonitor addAlert(AlertDto alertDTO, SystemDto sysDto) {
 
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		AlertMonitor alertEntity = null;
-		SystemEntityDto existSystemDTO = null;
+		SystemDto existSystemDTO = null;
 
 		try {
 
@@ -101,7 +101,7 @@ public class AlertDaoJDOImpl implements AlertDao {
 		return detached.toDTO();
 	}
 
-	public SystemEntityDto getSystem(String id) {
+	public SystemDto getSystem(String id) {
 
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		SystemMonitor systemEntity = null, detached = null;
@@ -121,7 +121,7 @@ public class AlertDaoJDOImpl implements AlertDao {
 	}
 
 	@SuppressWarnings("unchecked")
-	public SystemEntityDto getSystemByAddress(String address)
+	public SystemDto getSystemByAddress(String address)
 			throws MonitorException {
 
 		PersistenceManager pm = PMF.get().getPersistenceManager();
