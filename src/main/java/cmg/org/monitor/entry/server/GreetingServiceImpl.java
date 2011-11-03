@@ -2,6 +2,7 @@ package cmg.org.monitor.entry.server;
 
 import javax.persistence.PersistenceException;
 
+import cmg.org.monitor.app.schedule.GlobalScheduler;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.entry.client.GreetingService;
 import cmg.org.monitor.entry.shared.FieldVerifier;
@@ -35,8 +36,8 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		userAgent = escapeHtml(userAgent);
 
 		try {
-			//SystemService aService = new SystemService();
-			//aService.addSystemMonitor( new SystemMonitor());
+			 GlobalScheduler schedule = new GlobalScheduler();
+		        schedule.doSchedule();
 		}catch(Exception e) {
 			return "System exception occurrence";
 		} 

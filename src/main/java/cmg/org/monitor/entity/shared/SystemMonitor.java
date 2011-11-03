@@ -16,7 +16,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import cmg.org.monitor.ext.model.dto.SystemEntityDto;
+import cmg.org.monitor.ext.model.dto.SystemDto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -112,8 +112,8 @@ public class SystemMonitor implements Model, IsSerializable {
 	 * 
 	 * @return an DTO object.
 	 */
-	public SystemEntityDto toDTO() {
-		SystemEntityDto entityDTO = new SystemEntityDto(this.getName(),
+	public SystemDto toDTO() {
+		SystemDto entityDTO = new SystemDto(this.getName(),
 			 this.getIp(), this.getUrl() , this.isActive(),
 				this.getStatus(), this.isDeleted(), this.getProtocol(), this.getAlerts(), this.getGroupEmail());
 		entityDTO.setId(this.getId());
