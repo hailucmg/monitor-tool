@@ -15,54 +15,50 @@ import cmg.org.monitor.util.shared.MonitorConstant;
 import cmg.org.monitor.util.shared.PMF;
 
 public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
-	private static final Logger logger = Logger.getLogger(SystemMonitorDaoJDOImpl.class.getCanonicalName());
-	
+	private static final Logger logger = Logger
+			.getLogger(SystemMonitorDaoJDOImpl.class.getCanonicalName());
+
 	public void addSystem(SystemMonitor system) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try {
-			
+
 			pm.makePersistent(system);
 			logger.info(MonitorConstant.DONE_MESSAGE);
 		} finally {
 			pm.close();
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<SystemMonitor> listSystems() {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		String query = "select from " + SystemMonitor.class.getName();
 		return (List<SystemMonitor>) pm.newQuery(query).execute();
 	}
-	
-	
 
-//	public void updateSystem(SystemMonitor entity) {
-//		PersistenceManager pm = PMF.get().getPersistenceManager();
-//		String name = entity.getName();
-//		String url = entity.getUrl();
-//		String ip = entity.getIp();
-//
-//		try {
-//			pm.currentTransaction().begin();
-//			
-//			// We have to look it up first,
-//			entity = pm.getObjectById(SystemMonitor.class, entity.getId());
-//			entity.setName(name);
-//			entity.setUrl(url);
-//			entity.setIp(ip);
-//			pm.makePersistent(entity);
-//			pm.currentTransaction().commit();
-//		} catch (Exception ex) {
-//			pm.currentTransaction().rollback();
-//			throw new RuntimeException(ex);
-//		} finally {
-//			pm.close();
-//		}
-//	}
-	
-	
-	
+	public SystemDto getSystemEntity(String id) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		SystemDto sysDto = new SystemDto();
+		SystemMonitor sysMonitor = new SystemMonitor();
+		try {
+
+			// We have to look it up first,
+			sysMonitor = pm.getObjectById(SystemMonitor.class, id);
+
+			// Check given entity object
+			if (sysMonitor != null)
+				return sysMonitor.toDTO();
+
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		} finally {
+			pm.close();
+		}
+		
+		// Return DTO object
+		return sysDto;
+	}
+
 	public void updateSystem(SystemDto aSystemDTO, AlertMonitor anAlertEntity) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		String name = aSystemDTO.getName();
@@ -71,9 +67,10 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 		SystemMonitor sysMonitor = new SystemMonitor();
 		try {
 			pm.currentTransaction().begin();
-			
+
 			// We have to look it up first,
-			sysMonitor = pm.getObjectById(SystemMonitor.class, aSystemDTO.getId());
+			sysMonitor = pm.getObjectById(SystemMonitor.class,
+					aSystemDTO.getId());
 			sysMonitor.setName(name);
 			sysMonitor.setUrl(address);
 			sysMonitor.setIp(ip);
@@ -87,7 +84,37 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 			pm.close();
 		}
 	}
-	
+
+	public void updateSystemByCpu(SystemDto aSystemDTO, CpuMemory anCpuEntity) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		String name = aSystemDTO.getName();
+		String address = aSystemDTO.getUrl();
+		String ip = aSystemDTO.getIp();
+		SystemMonitor sysMonitor = new SystemMonitor();
+		try {
+			pm.currentTransaction().begin();
+
+			// We have to look it up first
+			sysMonitor = pm.getObjectById(SystemMonitor.class,
+					aSystemDTO.getId());
+
+			// Set properties's object
+			sysMonitor.setName(name);
+			sysMonitor.setUrl(address);
+			sysMonitor.setIp(ip);
+			sysMonitor.addCpuMemory(anCpuEntity);
+
+			// Store to JDO entity
+			pm.makePersistent(sysMonitor);
+			pm.currentTransaction().commit();
+		} catch (Exception ex) {
+			pm.currentTransaction().rollback();
+			throw new RuntimeException(ex);
+		} finally {
+			pm.close();
+		}
+	}
+
 	public SystemMonitor[] listSystems(boolean isDeleted) throws Exception {
 		// TODO Auto-generated method stub
 		PersistenceManager pm = PMF.get().getPersistenceManager();
@@ -95,7 +122,7 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 		List<SystemMonitor> listData = null;
 		SystemMonitor[] listReturn = null;
 		CpuMemory cpuMem = null;
-		
+
 		Query query = pm.newQuery(SystemMonitor.class);
 		query.setFilter("isDeleted == isDeletedPara");
 		query.declareParameters("boolean isDeletedPara");
@@ -105,22 +132,20 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 				listReturn = new SystemMonitor[listData.size()];
 				for (int i = 0; i < listData.size(); i++) {
 					listReturn[i] = listData.get(i);
-					cpuMem = (cmDao.getLastestCpuMemory(listReturn[i], 1) == null) 
-								? null
-								: cmDao.getLastestCpuMemory(listReturn[i], 1)[0];
+					cpuMem = (cmDao.getLastestCpuMemory(listReturn[i], 1) == null) ? null
+							: cmDao.getLastestCpuMemory(listReturn[i], 1)[0];
 					listReturn[i].setLastCpuMemory(cpuMem);
 				}
 			}
 		} catch (Exception ex) {
 			throw ex;
-		}
-		finally {
+		} finally {
 			query.closeAll();
 			pm.close();
 		}
 		return listReturn;
 	}
-	
+
 	public void removeSystem(SystemMonitor system) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try {
@@ -142,20 +167,17 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 	public void updateSystem(SystemMonitor contact) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		/*
-		String name = contact.getName();
-		String url = contact.getUrl();
-		String ip = contact.getIp();
-		*/
+		 * String name = contact.getName(); String url = contact.getUrl();
+		 * String ip = contact.getIp();
+		 */
 
 		try {
-			pm.currentTransaction().begin();			
+			pm.currentTransaction().begin();
 			// We have to look it up first,
 			/*
-			contact = pm.getObjectById(SystemMonitor.class, contact.getId());
-			contact.setName(name);
-			contact.setUrl(url);
-			contact.setIp(ip);
-			*/
+			 * contact = pm.getObjectById(SystemMonitor.class, contact.getId());
+			 * contact.setName(name); contact.setUrl(url); contact.setIp(ip);
+			 */
 			pm.makePersistent(contact);
 			pm.currentTransaction().commit();
 		} catch (Exception ex) {
@@ -165,6 +187,5 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 			pm.close();
 		}
 	}
-	
-  
+
 }
