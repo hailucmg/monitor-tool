@@ -3,6 +3,7 @@ package cmg.org.monitor.exception;
 public class BaseException {
 
 
+	@SuppressWarnings("unused")
 	private Throwable throwable = null;
 
 	private String userMessageKey = null;
