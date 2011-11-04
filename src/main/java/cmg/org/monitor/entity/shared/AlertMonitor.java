@@ -9,7 +9,6 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import javax.jdo.listener.StoreCallback;
 
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.dto.AlertDto;
@@ -19,7 +18,7 @@ import cmg.org.monitor.ext.model.dto.AlertDto;
  * @version 1.0
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-public class AlertMonitor implements StoreCallback {
+public class AlertMonitor {
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -137,21 +136,5 @@ public class AlertMonitor implements StoreCallback {
 		this.timeStamp = timeStamp;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.jdo.listener.StoreCallback#jdoPreStore()
-	 */
-	public void jdoPreStore() {
-		if (getError() != null) {
-			error = getError().toLowerCase();
-		} else {
-			error = null;
-		}
-		if (getDescription() != null) {
-			description = getDescription().toLowerCase();
-		} else {
-			description = null;
-		}
-	}
+	
 } // End class
