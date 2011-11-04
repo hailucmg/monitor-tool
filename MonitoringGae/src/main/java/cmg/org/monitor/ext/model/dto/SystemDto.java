@@ -25,8 +25,6 @@ public class SystemDto implements Serializable {
 
 	private String url;
 
-
-
 	/** Represent ID of entity */
 	private String ip;
 
@@ -46,7 +44,7 @@ public class SystemDto implements Serializable {
 	private String groupEmail;
 
 	/** **/
-	private Set<AlertMonitor> alerts;
+	private Set<AlertDto> alerts;
 
 	/**
 	 * Default constructor.<br>
@@ -65,11 +63,11 @@ public class SystemDto implements Serializable {
 	 * @param isDeleted
 	 * @param protocol
 	 */
-	public SystemDto(String name,  String ip, String url,
-			Boolean isActive, Boolean systemStatus, Boolean isDeleted,
-			String protocol, Set<AlertMonitor> alerts, String groupEmail) {
+	public SystemDto(String name, String ip, String url, Boolean isActive,
+			Boolean systemStatus, Boolean isDeleted, String protocol,
+			Set<AlertMonitor> alerts, String groupEmail) {
 		this();
-		setBasicInfo(name,  ip, url, isActive, systemStatus, isDeleted,
+		setBasicInfo(name, ip, url, isActive, systemStatus, isDeleted,
 				protocol, alerts, groupEmail);
 	}
 
@@ -82,12 +80,11 @@ public class SystemDto implements Serializable {
 	 * @param isDeleted
 	 * @param protocol
 	 */
-	public void setBasicInfo(String name,  String ip,
-			String url, Boolean isActive, Boolean systemStatus,
-			Boolean isDeleted, String protocol, Set<AlertMonitor> alerts,
-			String groupEmail) {
+	public void setBasicInfo(String name, String ip, String url,
+			Boolean isActive, Boolean systemStatus, Boolean isDeleted,
+			String protocol, Set<AlertMonitor> alerts, String groupEmail) {
 		this.name = name;
-		
+
 		this.url = url;
 		this.ip = ip;
 		this.isActive = isActive;
@@ -177,11 +174,11 @@ public class SystemDto implements Serializable {
 		this.groupEmail = groupEmail;
 	}
 
-	public Set<AlertMonitor> getAlerts() {
+	public Set<AlertDto> getAlerts() {
 		return alerts;
 	}
 
-	public void setAlerts(Set<AlertMonitor> alerts) {
+	public void setAlerts(Set<AlertDto> alerts) {
 		this.alerts = alerts;
 	}
 }
