@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cmg.org.monitor.exception.MonitorException;
 import cmg.org.monitor.services.MonitorService;
 
 /**
@@ -27,7 +28,7 @@ public class GlobalScheduler extends HttpServlet {
 	private static final Logger logger = Logger.getLogger(GlobalScheduler.class
 			.getName());
 
-	@Override
+	// @Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		doPost(req, resp);
@@ -35,17 +36,23 @@ public class GlobalScheduler extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		doSchedule();
+			throws ServletException {
+
+		try {
+			doSchedule();
+		} catch (MonitorException me) {
+			logger.info("System cannot perform alert jobs successfully ");
+		}
 	}
 
 	/**
 	 * Main schedule method.<br>
 	 * The method is executed by cron job task.
 	 */
-	public void doSchedule() {
+	public void doSchedule() throws MonitorException {
 		MonitorService monitorService = null;
 		try {
+
 			long start = System.currentTimeMillis();
 			if (logger.isLoggable(Level.CONFIG)) {
 				logger.log(Level.ALL, "Start scheduled monitoring ...");
@@ -67,4 +74,5 @@ public class GlobalScheduler extends HttpServlet {
 		}
 
 	}
+
 }

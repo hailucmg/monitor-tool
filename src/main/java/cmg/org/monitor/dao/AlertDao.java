@@ -1,7 +1,7 @@
 package cmg.org.monitor.dao;
 
-import cmg.org.monitor.ext.model.dto.AlertDto;
-import cmg.org.monitor.ext.model.dto.SystemDto;
+import cmg.org.monitor.ext.model.shared.AlertDto;
+import cmg.org.monitor.ext.model.shared.SystemDto;
 
 /**
  * @author lamphan

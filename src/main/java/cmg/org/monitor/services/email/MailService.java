@@ -14,7 +14,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import cmg.org.monitor.dao.impl.AlertDaoJDOImpl;
-import cmg.org.monitor.ext.model.dto.SystemDto;
+import cmg.org.monitor.ext.model.shared.SystemDto;
 
 /**
  * @author lamphan

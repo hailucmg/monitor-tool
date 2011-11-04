@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import cmg.org.monitor.dao.SystemMonitorDAO;
+import cmg.org.monitor.dao.impl.SystemMonitorDaoJDOImpl;
 import cmg.org.monitor.exception.MonitorException;
 import cmg.org.monitor.ext.model.URLPageObject;
-import cmg.org.monitor.ext.model.dto.SystemDto;
+import cmg.org.monitor.ext.model.shared.SystemDto;
 import cmg.org.monitor.ext.util.URLMonitor;
 
 public class MonitorService {
@@ -65,8 +67,9 @@ public class MonitorService {
 		// List<Node> nodes = nodeService.getNodes();
 		logger.info("Begin monitoring... ");
 
-		// Test processes system nodes
-		List<SystemDto> systems = makeStaticDatas();
+		SystemMonitorDAO systemDao = new SystemMonitorDaoJDOImpl();
+		List<SystemDto> systems =  
+				makeStaticDatas();
 
 		URLMonitor urlMonitor = null;
 		Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
