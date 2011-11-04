@@ -11,7 +11,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import cmg.org.monitor.entity.shared.SystemMonitor;
-import cmg.org.monitor.ext.model.dto.AlertDto;
+import cmg.org.monitor.ext.model.shared.AlertDto;
 
 /**
  * @author lamphan

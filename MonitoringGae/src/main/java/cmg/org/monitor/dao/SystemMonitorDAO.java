@@ -5,7 +5,7 @@ import java.util.List;
 import cmg.org.monitor.entity.shared.AlertMonitor;
 import cmg.org.monitor.entity.shared.CpuMemory;
 import cmg.org.monitor.entity.shared.SystemMonitor;
-import cmg.org.monitor.ext.model.dto.SystemDto;
+import cmg.org.monitor.ext.model.shared.SystemDto;
 
 public interface SystemMonitorDAO {
 	

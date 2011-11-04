@@ -12,8 +12,8 @@ import cmg.org.monitor.dao.SystemMonitorDAO;
 import cmg.org.monitor.entity.shared.AlertMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.exception.MonitorException;
-import cmg.org.monitor.ext.model.dto.AlertDto;
-import cmg.org.monitor.ext.model.dto.SystemDto;
+import cmg.org.monitor.ext.model.shared.AlertDto;
+import cmg.org.monitor.ext.model.shared.SystemDto;
 import cmg.org.monitor.util.shared.PMF;
 
 public class AlertDaoJDOImpl implements AlertDao {

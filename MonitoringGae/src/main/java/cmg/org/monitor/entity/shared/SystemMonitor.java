@@ -16,7 +16,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import cmg.org.monitor.ext.model.dto.SystemDto;
+import cmg.org.monitor.ext.model.shared.SystemDto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 

@@ -8,7 +8,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import cmg.org.monitor.ext.model.dto.CpuDto;
+import cmg.org.monitor.ext.model.shared.CpuDto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 

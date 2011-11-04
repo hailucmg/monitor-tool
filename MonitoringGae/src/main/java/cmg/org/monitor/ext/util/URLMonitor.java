@@ -39,10 +39,10 @@ import cmg.org.monitor.ext.model.CPUObject;
 import cmg.org.monitor.ext.model.Component;
 import cmg.org.monitor.ext.model.MemoryObject;
 import cmg.org.monitor.ext.model.URLPageObject;
-import cmg.org.monitor.ext.model.dto.AlertDto;
-import cmg.org.monitor.ext.model.dto.CpuDto;
-import cmg.org.monitor.ext.model.dto.CpuUsageDto;
-import cmg.org.monitor.ext.model.dto.SystemDto;
+import cmg.org.monitor.ext.model.shared.AlertDto;
+import cmg.org.monitor.ext.model.shared.CpuDto;
+import cmg.org.monitor.ext.model.shared.CpuUsageDto;
+import cmg.org.monitor.ext.model.shared.SystemDto;
 import cmg.org.monitor.ext.util.HttpUtils.Page;
 import cmg.org.monitor.services.MonitorWorker;
 
@@ -59,9 +59,7 @@ import cmg.org.monitor.services.MonitorWorker;
 public class URLMonitor {
 
 	private Timestamp timeStamp;
-	private final int RUNNING = 1;
-	private final int WARNING = 2;
-	private final int CRITICAL = 3;
+
 
 	/** Log object. */
 	private static final Logger logger = Logger.getLogger(URLMonitor.class
@@ -411,7 +409,7 @@ public class URLMonitor {
 		}
 	}
 
-	private void sendMail(SystemDto systemDto) {
+	private void sendMail(SystemDto systemDto) throws AddressException, MessagingException , UnsupportedEncodingException {
 		Properties props = new Properties();
 		Session session = Session.getDefaultInstance(props, null);
 		String msgBody = "Your account is testing for alert send mail";
@@ -419,21 +417,26 @@ public class URLMonitor {
 		try {
 			Message msg = new MimeMessage(session);
 			msg.setFrom(new InternetAddress("lam.phan@c-mg.com",
-					"Example.com Admin"));
+					"Monitor Administrator"));
 			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
-					systemDto.getGroupEmail(), "Mr. User"));
-			msg.setSubject("alert email sending");
+					systemDto.getGroupEmail(), "Monitor Group"));
+			msg.setSubject("Monitor alert email");
 			msg.setText(msgBody);
 			Transport.send(msg);
 
-		} catch (AddressException e) {
-			// ...
-		} catch (MessagingException e) {
-			// ...
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (AddressException ae) {
+			logger.warning("Address exception occurrence due to :"+ae.getCause().getMessage());
+			throw new AddressException(ae.getCause().getMessage());
+		} catch (MessagingException me) {
+			logger.warning("Messaging exception occurrence due to :"+me.getCause().getMessage());
+			throw new MessagingException(me.getCause().getMessage());
+		} catch (UnsupportedEncodingException uee) {
+			logger.warning("Unsupported encoding exception due to :"+uee.getCause().getMessage());
+			throw new UnsupportedEncodingException(uee.getCause().getMessage());
+			
+		} catch(Exception e) { 
+			logger.log(Level.SEVERE, e.getCause().getMessage()); 
+			}
 	}
 
 	/**

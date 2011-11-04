@@ -102,9 +102,6 @@ public class MonitorUtil {
     public static String getIpFromUrl(String url) {
     	try {
 	    	InetAddress addr = InetAddress.getByName ( "microsoft.com" );
-	        System.out.println( "main IP Address : " + addr.getHostAddress());
-	        System.out.println( "main hostname   : " + addr.getHostName() );
-	        System.out.println();
 	        return addr.getHostAddress();
     	} catch(UnknownHostException uhe) {
     		uhe.printStackTrace();
