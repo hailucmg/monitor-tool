@@ -62,13 +62,13 @@ public class AlertMonitor {
 	 * @param system
 	 * @param pm
 	 */
-	public AlertMonitor(AlertDto alertDto, SystemMonitor system,
-			PersistenceManager pm) {
+	public AlertMonitor(AlertDto alertDto, SystemMonitor system
+			) {
 		this();
 		this.setBasicInfo(alertDto.getError(), alertDto.getDescription(),
 				alertDto.getTimeStamp());
 		system.getAlerts().add(this);
-		pm.makePersistent(system); // this trunk will give you the newly-generated id
+		
 	}
 
 	/**
