@@ -3,8 +3,6 @@ package cmg.org.monitor.ext.model.dto;
 import java.io.Serializable;
 import java.util.Set;
 
-import cmg.org.monitor.entity.shared.AlertMonitor;
-
 /**
  * 
  * @author lamphan
@@ -65,7 +63,7 @@ public class SystemDto implements Serializable {
 	 */
 	public SystemDto(String name, String ip, String url, Boolean isActive,
 			Boolean systemStatus, Boolean isDeleted, String protocol,
-			Set<AlertMonitor> alerts, String groupEmail) {
+			 String groupEmail) {
 		this();
 		setBasicInfo(name, ip, url, isActive, systemStatus, isDeleted,
 				protocol, alerts, groupEmail);
@@ -82,7 +80,7 @@ public class SystemDto implements Serializable {
 	 */
 	public void setBasicInfo(String name, String ip, String url,
 			Boolean isActive, Boolean systemStatus, Boolean isDeleted,
-			String protocol, Set<AlertMonitor> alerts, String groupEmail) {
+			String protocol, Set<AlertDto> alerts, String groupEmail) {
 		this.name = name;
 
 		this.url = url;

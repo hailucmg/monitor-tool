@@ -115,7 +115,7 @@ public class SystemMonitor implements Model, IsSerializable {
 	public SystemDto toDTO() {
 		SystemDto entityDTO = new SystemDto(this.getName(),
 			 this.getIp(), this.getUrl() , this.isActive(),
-				this.getStatus(), this.isDeleted(), this.getProtocol(), this.getAlerts(), this.getGroupEmail());
+				this.getStatus(), this.isDeleted(), this.getProtocol(), this.getGroupEmail());
 		entityDTO.setId(this.getId());
 
 		return entityDTO;
