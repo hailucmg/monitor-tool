@@ -1,14 +1,19 @@
 package cmg.org.monitor.dao.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import cmg.org.monitor.dao.CpuMemoryDAO;
+import cmg.org.monitor.dao.FileSystemDAO;
+import cmg.org.monitor.dao.ServiceMonitorDAO;
 import cmg.org.monitor.dao.SystemMonitorDAO;
 import cmg.org.monitor.entity.shared.AlertMonitor;
 import cmg.org.monitor.entity.shared.CpuMemory;
+import cmg.org.monitor.entity.shared.FileSystem;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.SystemDto;
 import cmg.org.monitor.util.shared.MonitorConstant;
@@ -120,6 +125,7 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 		// TODO Auto-generated method stub
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		CpuMemoryDaoJDOImpl cmDao = new CpuMemoryDaoJDOImpl();
+		SystemMonitorDAO sysDao = new SystemMonitorDaoJDOImpl();
 		List<SystemMonitor> listData = null;
 		SystemMonitor[] listReturn = null;
 		CpuMemory cpuMem = null;
@@ -136,6 +142,7 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 					cpuMem = (cmDao.getLastestCpuMemory(listReturn[i], 1) == null) ? null
 							: cmDao.getLastestCpuMemory(listReturn[i], 1)[0];
 					listReturn[i].setLastCpuMemory(cpuMem);
+					listReturn[i].setHealthStatus(sysDao.getCurrentHealthStatus(listReturn[i]));
 				}
 			}
 		} catch (Exception ex) {
@@ -325,4 +332,64 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 		return code;
 		
 	}
+	
+	@Override
+	public Date getLastestTimeStamp(SystemMonitor system, String className) {
+		Date time = null;
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		Query query = pm.newQuery("select timeStamp from " + className);
+		query.setFilter("systemMonitor == sys");
+		query.declareParameters("SystemMonitor sys");
+		query.setOrdering("timeStamp desc");
+		try {
+			List<Date> list = (List<Date>) query.execute(system);
+			if (list.size() > 0) {
+				time = list.get(0);
+			}
+		} finally {
+			query.closeAll();
+			pm.close();
+		}
+		return time;
+	}
+
+	@Override
+	public String getCurrentHealthStatus(SystemMonitor system) {
+		ServiceMonitorDAO smDAO = new ServiceMonitorDaoJDOImpl();
+		CpuMemoryDAO cmDAO = new CpuMemoryDaoJDOImpl();
+		FileSystemDAO fsDAO = new FileSystemDaoJDOImpl();
+		
+		boolean checkService = false;
+		boolean checkCpuMemory = false;
+		boolean checkFileSystem = true;
+		
+		try {
+			CpuMemory cm = (cmDAO.getLastestCpuMemory(system, 1) == null)
+					         ? null
+					        		 :cmDAO.getLastestCpuMemory(system, 1)[0];
+			if (cm != null) {
+				checkCpuMemory = (cm.getPercentMemoryUsage() < 90) && (cm.getCpuUsage() < 90);
+			}
+			checkService = smDAO.checkStatusAllService(system);
+			
+			FileSystem[] listFs = fsDAO.listLastestFileSystem(system);
+			if (listFs != null) {
+				for (FileSystem fs : listFs) {
+					if (fs.getPercentUsage() >= 90) {
+						checkFileSystem = false;
+						break;
+					}
+				}
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+			
+		return system.getStatus() && system.isActive()
+				 ?  (checkCpuMemory && checkFileSystem && checkService 
+						 ? "smile"
+								 : "bored")
+				  : "dead";
+	}
+
 }
