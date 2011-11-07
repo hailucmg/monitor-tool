@@ -5,8 +5,28 @@
          version="2.5"
          xmlns="http://java.sun.com/xml/ns/javaee">
 <!--start  DashBoard -->
+<servlet>
+	<servlet-name>dashboard</servlet-name>
+	<servlet-class>cmg.org.monitor.module.server.DashBoardServiceImpl</servlet-class>
+</servlet>
+  
+<servlet-mapping>
+    <servlet-name>dashboard</servlet-name>
+    <url-pattern>dashboard/dashboard</url-pattern>
+</servlet-mapping>
 
 <!--end  DashBoard -->
+<!--start  SystemDetail -->
+<servlet>
+    <servlet-name>systemdetail</servlet-name>
+    <servlet-class>cmg.org.monitor.module.server.SystemDetailServiceImpl</servlet-class>
+</servlet>
+  
+<servlet-mapping>
+    <servlet-name>systemdetail</servlet-name>
+    <url-pattern>systemdetail/systemdetail</url-pattern>
+</servlet-mapping>
+<!--end  SystemDetail -->
 
 <servlet>
     <servlet-name>SystemManagementServlet</servlet-name>
@@ -42,7 +62,7 @@
    
 <!-- Default page to server -->
 <welcome-file-list>
-    <welcome-file>AddnewSystem.html</welcome-file>
+    <welcome-file>DashBoard.html</welcome-file>
 </welcome-file-list>
 
 </web-app>
