@@ -68,6 +68,10 @@ public class FileSystem implements Model, IsSerializable {
 		this.timeStamp = timeStamp;
 	}
 
+	public int getPercentUsage() {
+		return (int) ((used / size) * 100);
+	}
+	
 	@Override
     public String getId() {
         return encodedKey;
