@@ -78,6 +78,20 @@ public class SystemMonitor implements Model, IsSerializable {
 	private
 	CpuMemory lastCpuMemory;
 	
+	@NotPersistent
+	private
+	String healthStatus;
+	@NotPersistent
+	private
+	CpuMemory[] listHistoryCpuMemory;
+	
+	@NotPersistent
+	private
+	FileSystem[] lastestFileSystems;
+	
+	@NotPersistent
+	private
+	ServiceMonitor[] lastestServiceMonitors;
 	
 	/**
 	 * Default constructor.<br>
@@ -106,6 +120,18 @@ public class SystemMonitor implements Model, IsSerializable {
 		this.status = true;
 	}
 	
+	
+	public SystemMonitor(String code,String name, String url, String ip,
+			boolean isActive) {
+		super();
+		this.code = code;
+		this.name = name;
+		this.url = url;
+		this.ip = ip;
+		this.isActive = isActive;
+		this.isDeleted = false;
+		this.status = true;
+	}
 	/**
 	 * 
 	 * Convert an Entity to Data transfer object.
@@ -272,6 +298,38 @@ public class SystemMonitor implements Model, IsSerializable {
 	 */
 	public Set<AlertMonitor> getAlerts() {
 		return alerts;
+	}
+
+	public String getHealthStatus() {
+		return healthStatus;
+	}
+
+	public void setHealthStatus(String healthStatus) {
+		this.healthStatus = healthStatus;
+	}
+
+	public CpuMemory[] getListHistoryCpuMemory() {
+		return listHistoryCpuMemory;
+	}
+
+	public void setListHistoryCpuMemory(CpuMemory[] listHistoryCpuMemory) {
+		this.listHistoryCpuMemory = listHistoryCpuMemory;
+	}
+
+	public FileSystem[] getLastestFileSystems() {
+		return lastestFileSystems;
+	}
+
+	public void setLastestFileSystems(FileSystem[] lastestFileSystems) {
+		this.lastestFileSystems = lastestFileSystems;
+	}
+
+	public ServiceMonitor[] getLastestServiceMonitors() {
+		return lastestServiceMonitors;
+	}
+
+	public void setLastestServiceMonitors(ServiceMonitor[] lastestServiceMonitors) {
+		this.lastestServiceMonitors = lastestServiceMonitors;
 	}
 	
 }
