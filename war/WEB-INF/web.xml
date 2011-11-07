@@ -5,20 +5,44 @@
          version="2.5"
          xmlns="http://java.sun.com/xml/ns/javaee">
 <!--start  DashBoard -->
-<servlet>
-	<servlet-name>dashboard</servlet-name>
-	<servlet-class>cmg.org.monitor.entry.dashboard.server.DashBoardServiceImpl</servlet-class>
-</servlet>
-  
-<servlet-mapping>
-    <servlet-name>dashboard</servlet-name>
-    <url-pattern>dashboard/dashboard</url-pattern>
-</servlet-mapping>
+
 <!--end  DashBoard -->
+
+<servlet>
+    <servlet-name>SystemManagementServlet</servlet-name>
+    <servlet-class>cmg.org.monitor.module.server.SystemManagementServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>SystemManagementServlet</servlet-name>
+    <url-pattern>/monitorsystemmanagement/SystemManagement</url-pattern>
+  </servlet-mapping>
+  
+  
+   <servlet>
+    <servlet-name>AddSystemServlet</servlet-name>
+    <servlet-class>cmg.org.monitor.module.server.AddnewSystemServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>AddSystemServlet</servlet-name>
+    <url-pattern>/monitoraddnewsystem/AddSystem</url-pattern>
+  </servlet-mapping>
+  
+     <servlet>
+    <servlet-name>EditSystemServlet</servlet-name>
+    <servlet-class>cmg.org.monitor.module.server.EditSystemServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>EditSystemServlet</servlet-name>
+    <url-pattern>/monitoreditsystem/EditSystem</url-pattern>
+  </servlet-mapping>
+
    
 <!-- Default page to server -->
 <welcome-file-list>
-    <welcome-file>DashBoard.html</welcome-file>
+    <welcome-file>AddnewSystem.html</welcome-file>
 </welcome-file-list>
 
 </web-app>
