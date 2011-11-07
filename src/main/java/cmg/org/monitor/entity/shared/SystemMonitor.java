@@ -94,10 +94,10 @@ public class SystemMonitor implements Model, IsSerializable {
 	 * @param systemStatus
 	 * @param isDeleted
 	 */
-	public SystemMonitor(String code,String name, String url, String ip,
+	public SystemMonitor(String name, String url, String ip,
 			boolean isActive) {
 		super();
-		this.code = code;
+		
 		this.name = name;
 		this.url = url;
 		this.ip = ip;

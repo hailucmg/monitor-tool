@@ -13,6 +13,7 @@ import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.SystemDto;
 import cmg.org.monitor.util.shared.MonitorConstant;
 import cmg.org.monitor.util.shared.PMF;
+import cmg.org.monitor.util.shared.Ultility;
 
 public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 	private static final Logger logger = Logger
@@ -187,5 +188,141 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 			pm.close();
 		}
 	}
+	
+	@Override
+	public SystemMonitor getSystembyID(String id) throws Exception{
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		SystemMonitor system;
+		try{
+			system = pm.getObjectById(SystemMonitor.class,id);
+		}catch (Exception e) {
+			throw e;
+			
+		}finally{
+			pm.close();
+		}
+		return system;
+		
+	}
+	@Override
+	public boolean addnewSystem(SystemMonitor system) throws Exception {
+		// TODO Auto-generated method stub
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		boolean check = false;
+		try{
+			//system.setCode(Ultility.createSID(pm));
+			pm.makePersistent(system);
+			check = true;
+		}catch (Exception e) {
+			throw e;
+		}finally {
+			// TODO: handle exception
+			pm.close();
+		}
+		return check;
+	}
 
+	@Override
+	public boolean editSystembyID(String id, String newName, String newAddress, String protocol, String group,
+			 boolean isActive) throws Exception {
+		// TODO Auto-generated method stub
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		SystemMonitor system;
+		boolean check =false;
+		try{
+			
+			system = pm.getObjectById(SystemMonitor.class,id);;
+			pm.currentTransaction().begin();
+			system.setName(newName);
+			system.setUrl(newAddress);
+			system.setProtocol(protocol);
+			system.setGroupEmail(group);
+			system.setActive(isActive);
+			pm.makePersistent(system);
+			pm.currentTransaction().commit();
+			check = true;
+		}catch (Exception e) {
+			// TODO: handle exception
+			pm.currentTransaction().rollback();
+			
+		}finally{
+			pm.close();		
+		}
+		return check;
+	}
+
+	@Override
+	public boolean deleteSystembyID(String id) throws Exception {
+		// TODO Auto-generated method stub
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		SystemMonitor system = pm.getObjectById(SystemMonitor.class,id);
+		boolean check = false;
+		try
+		{
+			boolean delele = true;
+			pm.currentTransaction().begin();
+			system.setDeleted(delele);
+			system.setActive(false);
+			pm.makePersistent(system);
+			pm.currentTransaction().commit();
+			check = true;
+		}catch (Exception e) {
+			// TODO: handle exception
+			throw e;	
+		}finally{
+			pm.close();
+		}
+		return check;
+	}
+
+	@Override
+	public boolean deleteListSystembyID(String[] ids) throws Exception {
+		// TODO Auto-generated method stub
+		boolean delete = true;
+		for(int i=0;i<ids.length;i++){
+			 PersistenceManager pm = PMF.get().getPersistenceManager();
+			 SystemMonitor system = pm.getObjectById(SystemMonitor.class,ids[i]);
+			try
+			{
+				pm.currentTransaction().begin();
+				system.setDeleted(delete);
+				system.setActive(false);
+				pm.makePersistent(system);
+				pm.currentTransaction().commit();
+			}catch (Exception e) {
+				pm.currentTransaction().rollback();
+				return false;	
+			}
+			pm.close();
+		}
+		
+		return true;
+	}
+	
+	@Override
+	public String getIPbyURL(String url) throws Exception{
+		String ip = null;
+		try {
+			ip = Ultility.getIpbyUrl(url);
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw e;
+		}
+		return ip;
+		
+	}
+	
+	@Override
+	public String createCode() throws Exception{
+		String code=null;
+		try {
+			code=Ultility.createSID();
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw e;
+		}
+		
+		return code;
+		
+	}
 }
