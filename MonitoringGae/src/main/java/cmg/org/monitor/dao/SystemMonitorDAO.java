@@ -1,5 +1,6 @@
 package cmg.org.monitor.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import cmg.org.monitor.entity.shared.AlertMonitor;
@@ -71,4 +72,8 @@ public interface SystemMonitorDAO {
 	public String getIPbyURL(String url) throws Exception;
 	
 	public String createCode() throws Exception;
+	
+	Date getLastestTimeStamp(SystemMonitor system, String className);
+	
+	String getCurrentHealthStatus(SystemMonitor system);	
 }

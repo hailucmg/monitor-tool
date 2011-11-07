@@ -9,6 +9,4 @@ public interface FileSystemDAO {
 	void addFileSystem(SystemMonitor system, FileSystem fileSystem);
 	
 	FileSystem[] listLastestFileSystem(SystemMonitor system) throws Exception;
-	
-	Date getLastestTimeStamp(SystemMonitor system);
 }
