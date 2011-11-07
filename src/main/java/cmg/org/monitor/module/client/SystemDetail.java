@@ -18,6 +18,7 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
@@ -52,6 +53,8 @@ public class SystemDetail implements EntryPoint {
 
 	private PieChart pieFileSystem;
 
+	private AbsolutePanel panelSystemInfo;
+	
 	private AreaChart achCpu;
 
 	private AreaChart achMemory;
@@ -192,7 +195,8 @@ public class SystemDetail implements EntryPoint {
 			achMemory = new AreaChart();
 			pieFileSystem = new PieChart();
 			tblFileSystem = new Table();
-
+			panelSystemInfo = new AbsolutePanel();
+			
 			flexTableContent.setCellPadding(3);
 			flexTableContent.setCellSpacing(0);
 			flexTableContent.getFlexCellFormatter().setColSpan(0, 0, 2);
@@ -217,7 +221,7 @@ public class SystemDetail implements EntryPoint {
 					.setWidget(4, 0, HTMLControl.getColorTitle(
 							"CPU & Memory Information", true));
 
-			
+			flexTableContent.setWidget(1, 0, panelSystemInfo);
 			flexTableContent.setWidget(1, 1, tblService);
 			flexTableContent.setWidget(3, 0, pieFileSystem);
 			flexTableContent.setWidget(3, 1, tblFileSystem);
@@ -237,6 +241,7 @@ public class SystemDetail implements EntryPoint {
 							if (cellIndex == 0) {
 								isShowService = !isShowService;
 								tblService.setVisible(isShowService);
+								panelSystemInfo.setVisible(isShowService);
 								flexTableContent.setWidget(0, 0, HTMLControl
 										.getColorTitle("Service Information",
 												isShowService));
@@ -306,8 +311,7 @@ public class SystemDetail implements EntryPoint {
 				if (count <= 0) {
 					setVisibleMessage(false, typeMessage);
 					this.cancel();
-					
-					Window.open(HTMLControl.HTML_DASHBOARD_NAME, "dashboard", "_self");
+					Window.Location.assign(HTMLControl.HTML_DASHBOARD_NAME);
 				}
 			}
 		};
@@ -335,7 +339,7 @@ public class SystemDetail implements EntryPoint {
 	}
 
 	void drawSystemDetails(SystemMonitor sys) {
-		flexTableContent.setWidget(1, 0, HTMLControl.getSystemInfo(sys));
+		panelSystemInfo.add(HTMLControl.getSystemInfo(sys));
 
 		drawCpuMemoryInfo(sys);
 
