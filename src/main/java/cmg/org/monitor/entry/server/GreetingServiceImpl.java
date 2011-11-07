@@ -9,6 +9,7 @@ import cmg.org.monitor.entry.shared.FieldVerifier;
 import cmg.org.monitor.exception.BaseException;
 import cmg.org.monitor.exception.MonitorException;
 import cmg.org.monitor.services.SystemService;
+import cmg.org.monitor.util.shared.SampleConsumer;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -36,13 +37,11 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		userAgent = escapeHtml(userAgent);
 
 		try {
-			 GlobalScheduler schedule = new GlobalScheduler();
-		        schedule.doSchedule();
+//				GlobalScheduler schedule = new GlobalScheduler();
+//		        schedule.doSchedule();
 		}catch(Exception e) {
 			return "System exception occurrence";
 		} 
-		
-		
 		
 		return "Hello, " + input + "!<br><br>I am running " + serverInfo
 				+ ".<br><br>It looks like you are using:<br>" + userAgent;
