@@ -5,5 +5,5 @@ public final class MonitorConstant {
 	// time to refresh data for all module
 	public static final int REFRESH_RATE = 10000;
 	
-	
+	public static final int REDIRECT_WAIT_TIME = 5000;
 }
