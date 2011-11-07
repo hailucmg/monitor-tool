@@ -339,6 +339,7 @@ public class SystemDetail implements EntryPoint {
 	}
 
 	void drawSystemDetails(SystemMonitor sys) {
+		panelSystemInfo.clear();
 		panelSystemInfo.add(HTMLControl.getSystemInfo(sys));
 
 		drawCpuMemoryInfo(sys);
