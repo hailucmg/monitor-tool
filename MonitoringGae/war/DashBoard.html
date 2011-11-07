@@ -9,7 +9,7 @@
 <![endif]-->
       
 <!--  -->
-<script language="javascript" src="systemdetail/systemdetail.nocache.js"></script>
+<script language="javascript" src="dashboard/dashboard.nocache.js"></script>
 <!--  jquery core -->
 <script src="js/jquery/jquery-1.4.1.min.js" type="text/javascript"></script>
 <!-- Custom jquery scripts -->
@@ -184,7 +184,7 @@ $(document).pngFix( );
 
 	<!--  start page-heading -->
 	<div id="page-heading">
-		
+		<h1>Dashboard</h1>
 	</div>
 	<!-- end page-heading -->
 
@@ -204,9 +204,6 @@ $(document).pngFix( );
 		
 			<!--  start table-content  -->
 			<div id="table-content">
-				<div id="step-holder">
-				
-				</div>
 				<!--  start message-red -->
 				<div id="message-red" style="display: none; ">
 				<table border="0" width="100%" cellpadding="0" cellspacing="0">
@@ -249,8 +246,10 @@ $(document).pngFix( );
 				</table>
 				</div>
 				<!--  end message-green -->
-				<div id="systemContent">
-				</div>
+				<div id="img-loading">
+					<img src="images/icon/loading11.gif" />
+				</div>				
+				<div id="tableListSystem"></div>			
 			</div>
 			<!--  end table-content  -->
 	
