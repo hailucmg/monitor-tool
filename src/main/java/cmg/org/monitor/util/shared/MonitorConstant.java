@@ -6,4 +6,10 @@ public final class MonitorConstant {
 	public static final int REFRESH_RATE = 120000;
 	
 	public static final int REDIRECT_WAIT_TIME = 5000;
+	
+	public static final String Domain = "c-mg.vn";
+	
+	public static final String ADMIN_EMAIL = "monitor@c-mg.vn";
+	
+	public static final String ADMIN_PASSWORD = "31102011";
 }
