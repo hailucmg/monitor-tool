@@ -50,7 +50,7 @@ public class SystemManagement implements EntryPoint {
 								
 								@Override
 								public void onSuccess(Boolean result) {
-									// TODO Auto-generated method stub
+									// TODO Auto-s method stub
 									if(result){
 										try {
 											init();
