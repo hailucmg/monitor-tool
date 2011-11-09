@@ -189,7 +189,9 @@ public class AddnewSystem implements EntryPoint {
 				msg="name is not validate";
 			}
 			
+	
 			return msg;
+			
 		}
 		// validate URL
 		private String validateURL(String url){
@@ -199,7 +201,12 @@ public class AddnewSystem implements EntryPoint {
 			}else if(url.length()<3){
 				msg+="URL is not validate";
 			}
-			
+		/*	String patternStr = "(?i)\b((?:https?://|www\\d"+"{0,3}[.]|[a-z0-9.\\-]"+"+[.][a-z]{2,4}/)(?:[^\\s"+"()<>]+|\\("+"([^\\s"+"()<>]+|(\\("+"[^\\s"+"()<>]+\\))"+")*\\))"+"+(?:\\("+"([^\\s()<>]"+"+|(\\([^\\s"+"()<>]+\\)))*\\)|[^\\s`!()\\[\\]{};:'\\"+".,<>?«»“”‘’]))";
+			RegExp regExp = RegExp.compile(patternStr);
+			boolean matchFound = regExp.test(url);
+			if(matchFound == false){
+				msg = "url is not validate";
+			}*/
 			return msg;
 		}
 		
