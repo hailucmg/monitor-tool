@@ -1,9 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
-              http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-         version="2.5"
-         xmlns="http://java.sun.com/xml/ns/javaee">
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee                http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 <!--start  DashBoard -->
 <servlet>
 	<servlet-name>dashboard</servlet-name>
@@ -12,7 +7,7 @@
   
 <servlet-mapping>
     <servlet-name>dashboard</servlet-name>
-    <url-pattern>dashboard/dashboard</url-pattern>
+    <url-pattern>/dashboard/dashboard</url-pattern>
 </servlet-mapping>
 
 <!--end  DashBoard -->
@@ -24,11 +19,40 @@
   
 <servlet-mapping>
     <servlet-name>systemdetail</servlet-name>
-    <url-pattern>systemdetail/systemdetail</url-pattern>
+    <url-pattern>/systemdetail/systemdetail</url-pattern>
 </servlet-mapping>
 <!--end  SystemDetail -->
 
-<servlet>
+<!-- Application Servlets -->
+  <servlet>
+    <servlet-name>schedule</servlet-name>
+    <servlet-class>cmg.org.monitor.app.schedule.GlobalScheduler</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>schedule</servlet-name>
+    <url-pattern>/monitoringgae/job</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+	<servlet-name>dashboard</servlet-name>
+	<servlet-class>cmg.org.monitor.module.server.DashBoardServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>dashboard</servlet-name>
+    <url-pattern>/dashboard/dashboard</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>systemdetail</servlet-name>
+    <servlet-class>cmg.org.monitor.module.server.SystemDetailServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>systemdetail</servlet-name>
+    <url-pattern>/systemdetail/systemdetail</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>SystemManagementServlet</servlet-name>
     <servlet-class>cmg.org.monitor.module.server.SystemManagementServiceImpl</servlet-class>
   </servlet>
@@ -73,4 +97,47 @@
     <welcome-file>DashBoard.html</welcome-file>
 </welcome-file-list>
 
+<!--OnPositive Tools-->
+    <servlet>
+		<servlet-name>baseViewerServlet</servlet-name>
+		<servlet-class>com.onpositive.gae.tools.servlets.BaseViewerServlet
+		</servlet-class>
+	</servlet>
+    <servlet-mapping>
+		<servlet-name>baseViewerServlet</servlet-name>
+		<url-pattern>/appwrench/baseviewer</url-pattern>
+	</servlet-mapping>
+	
+    <servlet>
+		<servlet-name>SessionAuth</servlet-name>
+		<servlet-class>com.onpositive.auth.AuthServlet</servlet-class>
+	</servlet>
+    <servlet-mapping>
+		<servlet-name>SessionAuth</servlet-name>
+		<url-pattern>/appwrench/auth</url-pattern>
+	</servlet-mapping>
+	
+    <servlet>
+		<servlet-name>QueueHandler</servlet-name>
+		<servlet-class>com.onpositive.gae.tools.servlets.QueueHandlerServlet
+		</servlet-class>
+    </servlet>
+    <servlet-mapping>
+		<servlet-name>QueueHandler</servlet-name>
+		<url-pattern>/appwrench/queuehandler</url-pattern>
+	</servlet-mapping>
+	
+    <security-constraint>
+		<web-resource-collection>
+			<url-pattern>/appwrench/queuehandler</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>admin</role-name>
+		</auth-constraint>
+	</security-constraint>
+<servlet>
+		<servlet-name>QueueHandler</servlet-name>
+		<servlet-class>com.onpositive.gae.tools.servlets.QueueHandlerServlet
+		</servlet-class>
+	</servlet>
 </web-app>
