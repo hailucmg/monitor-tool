@@ -9,6 +9,8 @@ public interface AddnewSystemServiceAsync {
 	void addSystem(SystemMonitor system, String url,
 			AsyncCallback<String> callback);
 
+	void groups(AsyncCallback<String[]> callback);
+
 
 
 

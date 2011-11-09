@@ -31,6 +31,7 @@ public class SystemManagement implements EntryPoint {
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
+					
 					myTable = new Table();
 					RootPanel.get("dataTableSystem").add(myTable);
 					init();
@@ -77,7 +78,9 @@ public class SystemManagement implements EntryPoint {
 			public void onSuccess(SystemMonitor[] result) {
 				// TODO Auto-generated method stub
 				if(result!=null){
+					setVisibleLoadingImage(false);
 					drawTable(result);
+					
 				}else{
 					DOM.getElementById("dataTableSystem").setInnerHTML("<h1>no system</h1>");
 				}
@@ -124,5 +127,9 @@ public class SystemManagement implements EntryPoint {
 	}
 	private void drawTable(SystemMonitor[] list){
 		myTable.draw(createData(list), createOption());
+	}
+	
+	void setVisibleLoadingImage(boolean b) {
+		RootPanel.get("img-loading").setVisible(b);
 	}
 }
