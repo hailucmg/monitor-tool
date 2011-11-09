@@ -48,8 +48,8 @@ public class Ultility {
 	}
 	
 	public static String[] listGroup() throws Exception {
-		Appforyourdomain client = new Appforyourdomain("monitor@c-mg.vn",
-				"31102011", "c-mg.vn");
+		Appforyourdomain client = new Appforyourdomain(MonitorConstant.ADMIN_EMAIL,
+				MonitorConstant.ADMIN_PASSWORD, MonitorConstant.Domain);
 
 		String[] groups = null;
 		try {
@@ -63,8 +63,8 @@ public class Ultility {
 	}
 
 	public static String[] listAdmin() throws Exception {
-		Appforyourdomain client = new Appforyourdomain("monitor@c-mg.vn",
-				"31102011", "c-mg.vn");
+		Appforyourdomain client = new Appforyourdomain(MonitorConstant.ADMIN_EMAIL,
+				MonitorConstant.ADMIN_PASSWORD, MonitorConstant.Domain);
 		String[] admins = null;
 		String[] ids = null;
 		try {
@@ -78,8 +78,8 @@ public class Ultility {
 	}
 
 	public static String[] listUser() throws Exception {
-		Appforyourdomain client = new Appforyourdomain("monitor@c-mg.vn",
-				"31102011", "c-mg.vn");
+		Appforyourdomain client = new Appforyourdomain(MonitorConstant.ADMIN_EMAIL,
+				MonitorConstant.ADMIN_PASSWORD, MonitorConstant.Domain);
 		List<String> list = new ArrayList<String>();
 		String[] ids = null;
 		String[] users = null;
