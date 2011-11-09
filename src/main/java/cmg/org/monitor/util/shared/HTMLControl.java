@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.HTML;
 public class HTMLControl {
 	public static final String HTML_DASHBOARD_NAME = "DashBoard.html";
 	public static final String HTML_SYSTEM_DETAIL_NAME = "SystemDetail.html";
-	public static final String HTML_ADD_NEW_SYSTEM_NAME = "AddNewSystem.html";
+	public static final String HTML_ADD_NEW_SYSTEM_NAME = "AddnewSystem.html";
 	
 	public static final int VIEW_DETAILS = 0x001;
 	public static final int VIEW_STATISTIC = 0x002;
