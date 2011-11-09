@@ -2,8 +2,8 @@
 <cronentries>
   <cron>
     <url>/monitoringgae/job</url>
-    <description>Repopulate the cache every 1 minutes</description>
-    <schedule>every 1 minutes</schedule>
+    <description>Repopulate the cache every 30 minutes</description>
+    <schedule>every 30 minutes</schedule>
   </cron>
 
 </cronentries>
