@@ -2,7 +2,6 @@ package cmg.org.monitor.dao.impl;
 
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
@@ -220,6 +219,7 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 		try{
 			//system.setCode(Ultility.createSID(pm));
 			pm.makePersistent(system);
+			logger.info(MonitorConstant.DONE_MESSAGE);
 			check = true;
 		}catch (Exception e) {
 			throw e;
@@ -232,13 +232,12 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 
 	@Override
 	public boolean editSystembyID(String id, String newName, String newAddress, String protocol, String group,
-			 boolean isActive) throws Exception {
+			 String ip,String remoteURL,boolean isActive) throws Exception {
 		// TODO Auto-generated method stub
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		SystemMonitor system;
 		boolean check =false;
 		try{
-			
 			system = pm.getObjectById(SystemMonitor.class,id);;
 			pm.currentTransaction().begin();
 			system.setName(newName);
@@ -246,6 +245,8 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 			system.setProtocol(protocol);
 			system.setGroupEmail(group);
 			system.setActive(isActive);
+			system.setIp(ip);
+			system.setRemoteUrl(remoteURL);
 			pm.makePersistent(system);
 			pm.currentTransaction().commit();
 			check = true;
@@ -324,7 +325,7 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 	public String createCode() throws Exception{
 		String code=null;
 		try {
-			code=Ultility.createSID();
+			code = Ultility.createSID();
 		} catch (Exception e) {
 			// TODO: handle exception
 			throw e;
@@ -342,14 +343,11 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 		query.setFilter("systemMonitor == sys");
 		query.declareParameters("SystemMonitor sys");
 		query.setOrdering("timeStamp desc");
-		query.setRange(0, 1);
 		try {
 			List<Date> list = (List<Date>) query.execute(system);
 			if (list.size() > 0) {
 				time = list.get(0);
 			}
-		} catch (Exception ex) {
-			logger.log(Level.SEVERE, ex.getCause().getMessage());
 		} finally {
 			query.closeAll();
 			pm.close();
@@ -386,7 +384,7 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 				}
 			}
 		} catch (Exception ex) {
-			logger.log(Level.SEVERE, ex.getCause().getMessage());
+			ex.printStackTrace();
 		}
 			
 		return system.getStatus() && system.isActive()
@@ -394,6 +392,19 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 						 ? "smile"
 								 : "bored")
 				  : "dead";
+	}
+
+	@Override
+	public String[] groups() throws Exception {
+		// TODO Auto-generated method stub
+		String[] groups = null;
+		try {
+			groups=Ultility.listGroup();
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return groups;
 	}
 
 }
