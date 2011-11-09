@@ -87,6 +87,7 @@ public class SystemManagement implements EntryPoint {
 					drawTable(result);
 					
 				}else{
+					setVisibleLoadingImage(false);
 					DOM.getElementById("dataTableSystem").setInnerHTML("<h1>no system</h1>");
 				}
 			}
