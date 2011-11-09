@@ -90,6 +90,33 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 			pm.close();
 		}
 	}
+	
+	public void updateSystemByFileSystem(SystemDto aSystemDTO, FileSystem anFileSystemEntity) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		String name = aSystemDTO.getName();
+		String address = aSystemDTO.getUrl();
+		String ip = aSystemDTO.getIp();
+		SystemMonitor sysMonitor = new SystemMonitor();
+		try {
+			pm.currentTransaction().begin();
+
+			// We have to look it up first,
+			sysMonitor = pm.getObjectById(SystemMonitor.class,
+					aSystemDTO.getId());
+			sysMonitor.setName(name);
+			sysMonitor.setUrl(address);
+			sysMonitor.setIp(ip);
+			sysMonitor.addFileSystem(anFileSystemEntity);
+			
+			pm.makePersistent(sysMonitor);
+			pm.currentTransaction().commit();
+		} catch (Exception ex) {
+			pm.currentTransaction().rollback();
+			throw new RuntimeException(ex);
+		} finally {
+			pm.close();
+		}
+	}
 
 	public void updateSystemByCpu(SystemDto aSystemDTO, CpuMemory anCpuEntity) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();

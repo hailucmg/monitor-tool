@@ -22,6 +22,8 @@ public class SystemDto implements Serializable {
 	private String name;
 
 	private String url;
+	
+	private String remoteUrl;
 
 	/** Represent ID of entity */
 	private String ip;
@@ -61,11 +63,11 @@ public class SystemDto implements Serializable {
 	 * @param isDeleted
 	 * @param protocol
 	 */
-	public SystemDto(String name, String ip, String url, Boolean isActive,
+	public SystemDto(String name, String ip, String url, String remoteUrl, Boolean isActive,
 			Boolean systemStatus, Boolean isDeleted, String protocol,
 			 String groupEmail) {
 		this();
-		setBasicInfo(name, ip, url, isActive, systemStatus, isDeleted,
+		setBasicInfo(name, ip, url, remoteUrl, isActive, systemStatus, isDeleted,
 				protocol, alerts, groupEmail);
 	}
 
@@ -78,12 +80,12 @@ public class SystemDto implements Serializable {
 	 * @param isDeleted
 	 * @param protocol
 	 */
-	public void setBasicInfo(String name, String ip, String url,
+	public void setBasicInfo(String name, String ip, String url, String remoteUrl,
 			Boolean isActive, Boolean systemStatus, Boolean isDeleted,
 			String protocol, Set<AlertDto> alerts, String groupEmail) {
 		this.name = name;
-
 		this.url = url;
+		this.remoteUrl = remoteUrl;
 		this.ip = ip;
 		this.isActive = isActive;
 		this.systemStatus = systemStatus;
@@ -122,6 +124,14 @@ public class SystemDto implements Serializable {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+	
+	public String getRemoteUrl() {
+		return remoteUrl;
+	}
+
+	public void setRemoteUrl(String remoteUrl) {
+		this.remoteUrl = remoteUrl;
 	}
 
 	public String getIp() {

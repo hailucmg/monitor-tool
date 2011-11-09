@@ -11,10 +11,15 @@ import cmg.org.monitor.common.Constant;
 import cmg.org.monitor.ext.model.FreeObject;
 import cmg.org.monitor.ext.model.MemoryObject;
 import cmg.org.monitor.ext.model.shared.CpuDto;
+import cmg.org.monitor.ext.model.shared.FileSystemDto;
 
+/**
+ * @author admin
+ *
+ */
 public class MonitorWorker {
-	
-	/** log instance for the class*/
+
+	/** log instance for the class */
 	private static final Logger logger = Logger.getLogger(MonitorWorker.class
 			.getCanonicalName());
 
@@ -158,6 +163,47 @@ public class MonitorWorker {
 		}
 
 		return memObj;
+	}
+
+	// public List<DFObject> getDFMonitor(String webContent) {
+	public List<FileSystemDto> getDFMonitor(String webContent) {
+		// List<DFObject> objList = new ArrayList<DFObject>();
+		List<FileSystemDto> objList = new ArrayList<FileSystemDto>();
+		try {
+			Pattern pattern = Pattern.compile(Constant.PATTERN_FILESYSTEM);
+			Matcher matcher = pattern.matcher(webContent);
+
+			// Finds value for CPU Usage
+			String value = null;
+			List<String> list = new ArrayList<String>();
+			while (matcher.find()) {
+				value = matcher.group(2).replace("%", "");
+				list.add(value);
+			} // while
+
+			// Assigns list to object list
+			int i = 0;
+			FileSystemDto obj = null;
+			while (i < list.size()) {
+				obj = new FileSystemDto();
+				obj.setName(list.get(i));
+				obj.setSize(Long.parseLong(list.get(i + 1)));
+				obj.setUsed(Long.parseLong(list.get(i + 4)));
+				obj.setType(list.get(i + 6));
+
+				// Adds to object list
+				objList.add(obj);
+
+				// Increases count
+				i += 7;
+			}
+		} catch (Exception ex) {
+			logger.log(Level.ALL,
+					"Failed to get File system values from web page, error: "
+							+ ex.getMessage());
+		}
+
+		return objList;
 	}
 
 }
