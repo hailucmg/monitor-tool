@@ -7,7 +7,7 @@ public final class MonitorConstant {
 	
 	public static final int REDIRECT_WAIT_TIME = 5000;
 	
-	public static final String Domain = "c-mg.vn";
+	public static final String DOMAIN = "c-mg.vn";
 	
 	public static final String ADMIN_EMAIL = "monitor@c-mg.vn";
 	
