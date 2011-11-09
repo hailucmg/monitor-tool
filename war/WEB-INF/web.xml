@@ -59,7 +59,15 @@
     <url-pattern>/monitoreditsystem/EditSystem</url-pattern>
   </servlet-mapping>
 
-   
+      <servlet>
+    <servlet-name>UserManagement</servlet-name>
+    <servlet-class>cmg.org.monitor.module.server.UserManagementServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>UserManagement</servlet-name>
+    <url-pattern>/monitorusermanagement/usermanagement</url-pattern>
+  </servlet-mapping>
 <!-- Default page to server -->
 <welcome-file-list>
     <welcome-file>DashBoard.html</welcome-file>
