@@ -17,6 +17,9 @@ import com.google.gdata.data.appsforyourdomain.provisioning.UserFeed;
 
 
 public class Ultility {
+	public static final int ROLE_ADMIN = 0x001;
+	public static final int ROLE_NORMAL_USER = 0x002;
+	public static final int ROLE_GUEST = 0x003;
 	//UserService us = UserServiceFactory.getUserService();
 	//URL ul = new URL ("https://apps-apis.google.com/a/feeds/domain/user/2.0/c-mg.vn");
 	//UserFeed fedd = us.getFeed (ul);
@@ -24,6 +27,11 @@ public class Ultility {
 	//fedd.get(4).getAddress();
 	
 
+	public static int getSystemRole(String userId) {
+		int role = ROLE_GUEST;
+		return role;
+	}
+	
 	public static GenericFeed listGroup() throws Exception{
 		return null;
 	
