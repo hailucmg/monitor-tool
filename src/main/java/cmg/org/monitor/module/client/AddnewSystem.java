@@ -82,7 +82,7 @@ public class AddnewSystem implements EntryPoint {
 		listProtocol.setWidth("198px");
 		listProtocol.setHeight("28px");
 		listProtocol.setSelectedIndex(0);
-		listProtocol.addItem("HTTP");
+		listProtocol.addItem("HTTP(s)");
 		listProtocol.addItem("SMTP");
 		RootPanel.get("protocol").add(listProtocol);
 		
