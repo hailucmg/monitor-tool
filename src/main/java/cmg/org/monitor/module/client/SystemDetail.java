@@ -401,40 +401,44 @@ public class SystemDetail implements EntryPoint {
 	}
 
 	void drawCpuMemoryInfo(SystemMonitor sys) {
+		CpuMemory cm = sys.getLastCpuMemory() == null ? null : sys.getLastCpuMemory();
 		// Gauge CPU Usage
-		ggCpu.draw(
-				createGaugeDataTable("CPU", sys.getLastCpuMemory()
-						.getCpuUsage()), createGaugeOptions());
+		if (cm != null) {
+			ggCpu.draw(
+					createGaugeDataTable("CPU",cm.getCpuUsage()) , createGaugeOptions());
+			ggMemory.draw(
+					createGaugeDataTable("Memory", cm.getPercentMemoryUsage()), createGaugeOptions());
+		}
 		// Gauge Memory Usage
-		ggMemory.draw(
-				createGaugeDataTable("Memory", sys.getLastCpuMemory()
-						.getPercentMemoryUsage()), createGaugeOptions());
+		;
 		// Area Chart CPU Usage & Memory Usage
 		listCpuMemory = sys.getListHistoryCpuMemory();
-		double[] listCpuUsage = new double[20];
-		double[] listMemoryUsage = new double[20];
-		if (listCpuMemory.length < 20) {
-			for (int i = 0; i < 20 - listCpuMemory.length; i++) {
-				listCpuUsage[i] = 0;
-				listMemoryUsage[i] = 0;
+		if (listCpuMemory != null) {
+			double[] listCpuUsage = new double[20];
+			double[] listMemoryUsage = new double[20];
+			if (listCpuMemory.length < 20) {
+				for (int i = 0; i < 20 - listCpuMemory.length; i++) {
+					listCpuUsage[i] = 0;
+					listMemoryUsage[i] = 0;
+				}
+				for (int i = 0; i < listCpuMemory.length; i++) {
+					listCpuUsage[19 - i] = listCpuMemory[i].getCpuUsage();
+					listMemoryUsage[19 - i] = listCpuMemory[i].getUsedMemory();
+				}
+			} else {
+				for (int i = 0; i < listCpuMemory.length; i++) {
+					listCpuUsage[listCpuMemory.length - i - 1] = listCpuMemory[i]
+							.getCpuUsage();
+					listMemoryUsage[listCpuMemory.length - i - 1] = listCpuMemory[i]
+							.getUsedMemory();
+				}
 			}
-			for (int i = 0; i < listCpuMemory.length; i++) {
-				listCpuUsage[19 - i] = listCpuMemory[i].getCpuUsage();
-				listMemoryUsage[19 - i] = listCpuMemory[i].getUsedMemory();
-			}
-		} else {
-			for (int i = 0; i < listCpuMemory.length; i++) {
-				listCpuUsage[listCpuMemory.length - i - 1] = listCpuMemory[i]
-						.getCpuUsage();
-				listMemoryUsage[listCpuMemory.length - i - 1] = listCpuMemory[i]
-						.getUsedMemory();
-			}
+			achCpu.draw(createAreaChartDataTable("CPU Usage", listCpuUsage),
+					createAreaChartOptions(100, 0));
+			achMemory.draw(
+					createAreaChartDataTable("Memory Usage", listMemoryUsage),
+					createAreaChartOptions(listCpuMemory[0].getTotalMemory(), 0));
 		}
-		achCpu.draw(createAreaChartDataTable("CPU Usage", listCpuUsage),
-				createAreaChartOptions(100, 0));
-		achMemory.draw(
-				createAreaChartDataTable("Memory Usage", listMemoryUsage),
-				createAreaChartOptions(listCpuMemory[0].getTotalMemory(), 0));
 	}
 
 	void drawServiceInfo(SystemMonitor sys) {
@@ -456,11 +460,13 @@ public class SystemDetail implements EntryPoint {
 	}
 
 	void drawPieFileSystem(int index) {
-		pieFileSystem.draw(
-				createDataTableFileSystem(listFileSystem[index]),
-				createPieChartOptions("Local Disk "
-						+ listFileSystem[index].getName() + " ("
-						+ listFileSystem[index].getType() + ")"));
+		if (listFileSystem != null) {
+			pieFileSystem.draw(
+					createDataTableFileSystem(listFileSystem[index]),
+					createPieChartOptions("Local Disk "
+							+ listFileSystem[index].getName() + " ("
+							+ listFileSystem[index].getType() + ")"));
+		}
 	}
 
 	PieChart.Options createPieChartOptions(String title) {
