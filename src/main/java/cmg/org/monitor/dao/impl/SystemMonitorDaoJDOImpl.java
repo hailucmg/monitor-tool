@@ -341,6 +341,7 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 		query.setFilter("systemMonitor == sys");
 		query.declareParameters("SystemMonitor sys");
 		query.setOrdering("timeStamp desc");
+		query.setRange(0, 1);
 		try {
 			List<Date> list = (List<Date>) query.execute(system);
 			if (list.size() > 0) {
