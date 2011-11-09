@@ -2,6 +2,7 @@ package cmg.org.monitor.dao.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
@@ -347,6 +348,8 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 			if (list.size() > 0) {
 				time = list.get(0);
 			}
+		} catch (Exception ex) {
+			logger.log(Level.SEVERE, ex.getCause().getMessage());
 		} finally {
 			query.closeAll();
 			pm.close();
@@ -383,7 +386,7 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 				}
 			}
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			logger.log(Level.SEVERE, ex.getCause().getMessage());
 		}
 			
 		return system.getStatus() && system.isActive()

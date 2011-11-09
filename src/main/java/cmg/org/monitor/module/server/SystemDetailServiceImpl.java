@@ -1,5 +1,6 @@
 package cmg.org.monitor.module.server;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -15,7 +16,6 @@ import cmg.org.monitor.dao.impl.SystemMonitorDaoJDOImpl;
 import cmg.org.monitor.entity.shared.CpuMemory;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.module.client.SystemDetailService;
-import cmg.org.monitor.services.MonitorService;
 
 public class SystemDetailServiceImpl extends RemoteServiceServlet implements SystemDetailService {
 
@@ -46,8 +46,7 @@ public class SystemDetailServiceImpl extends RemoteServiceServlet implements Sys
 				sys.setHealthStatus(sysDAO.getCurrentHealthStatus(sys));
 			}
 		} catch (Exception ex) {
-			ex.printStackTrace();
-			logger.info("Cannot get data from database\n" + ex.getMessage());
+			logger.log(Level.SEVERE, ex.getCause().getMessage());
 		}		
 		return sys;
 	}
@@ -59,8 +58,7 @@ public class SystemDetailServiceImpl extends RemoteServiceServlet implements Sys
 			b = sysDAO.getSystembyID(sysID) != null;
 		} catch (Exception ex) {
 			b= false;
-			ex.printStackTrace();
-			logger.info("Invalid System ID or Error when load from database.\n" + ex.getMessage());
+			logger.log(Level.SEVERE, ex.getCause().getMessage());
 		}
 		return b;
 	}
@@ -73,8 +71,7 @@ public class SystemDetailServiceImpl extends RemoteServiceServlet implements Sys
 			sys = sysDAO.getSystembyID(sysID);
 			list = cmDAO.getLastestCpuMemory(sys, 64800);
 		} catch (Exception ex) {
-			ex.printStackTrace();
-			logger.info("Cannot get data from database\n" + ex.getMessage());
+			logger.log(Level.SEVERE, ex.getCause().getMessage());
 		}
 		return list;
 	}

@@ -19,7 +19,7 @@ import cmg.org.monitor.util.shared.PMF;
 public class CpuMemoryDaoJDOImpl implements CpuMemoryDAO {
 
 	/** Default log for application */
-	private static final Logger logger = Logger.getLogger(AlertDaoJDOImpl.class
+	private static final Logger logger = Logger.getLogger(CpuMemoryDaoJDOImpl.class
 			.getName());
 
 	/** Initiate an instance of Dao  */
@@ -74,8 +74,7 @@ public class CpuMemoryDaoJDOImpl implements CpuMemoryDAO {
 					listMemDto.add(list.get(i).toDTO());
 				}
 			}
-		} catch (Exception ex) {
-			logger.info(ex.getCause().getMessage());
+		} catch (Exception ex) {			
 			throw ex;
 		} finally {
 			query.closeAll();
@@ -90,6 +89,8 @@ public class CpuMemoryDaoJDOImpl implements CpuMemoryDAO {
 		system.addCpuMemory(cpuMemory);
 		try {
 			pm.makePersistent(system);
+		} catch (Exception ex) {
+			logger.log(Level.SEVERE, ex.getCause().getMessage());
 		} finally {
 			pm.close();
 		}
