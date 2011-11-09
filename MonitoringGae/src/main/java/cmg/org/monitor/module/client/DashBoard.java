@@ -1,5 +1,9 @@
 package cmg.org.monitor.module.client;
 
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
+import cmg.org.monitor.dao.impl.FileSystemDaoJDOImpl;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
@@ -9,6 +13,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -45,6 +50,10 @@ public class DashBoard implements EntryPoint {
 		Runnable onLoadCallback = new Runnable() {
 			@Override
 			public void run() {
+				/* Window.alert(Boolean.toString(Pattern.matches("^([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}$"
+						 			, "123.123.12.23")));*/
+				 
+				 
 				// Create table
 				tableListSystem = new Table();
 				// Create options and datatable of table list system

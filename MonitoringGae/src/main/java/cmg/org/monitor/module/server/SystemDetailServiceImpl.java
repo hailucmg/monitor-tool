@@ -46,7 +46,7 @@ public class SystemDetailServiceImpl extends RemoteServiceServlet implements Sys
 				sys.setHealthStatus(sysDAO.getCurrentHealthStatus(sys));
 			}
 		} catch (Exception ex) {
-			logger.log(Level.SEVERE, ex.getCause().getMessage());
+			//logger.log(Level.SEVERE, ex.getCause().getMessage());
 		}		
 		return sys;
 	}
