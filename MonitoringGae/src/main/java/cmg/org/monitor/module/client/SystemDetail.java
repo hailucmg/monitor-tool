@@ -146,13 +146,61 @@ public class SystemDetail implements EntryPoint {
 		flexTableContent.clear();
 		cancelTimer();
 		int view = getViewIndex(hash);
+		setVisibleLoadingImage(false);
 		initFlexTableContent(view);
+		
 		if (view == HTMLControl.VIEW_STATISTIC) {
 			initSystemStatistic();
 		} else {
 			initSystemDetails();
 		}
 	}
+	
+	void initSystemStatistic() {
+		timerLoadStatistic = new Timer() {
+			
+			@Override
+			public void run() {
+				sysDetailSv.listCpuMemoryHistory(sysID, new AsyncCallback<CpuMemory[]>() {
+					
+					@Override
+					public void onSuccess(CpuMemory[] result) {
+						if (result != null) {
+							drawSystemStatistic(result);
+						} else {
+							//
+						}
+					}
+					
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();						
+					}
+				});
+			}
+		};
+		timerLoadStatistic.run();
+		timerLoadStatistic.scheduleRepeating(MonitorConstant.REFRESH_RATE);
+	}
+	
+	void drawSystemStatistic(CpuMemory[] list) {
+		DataTable data = DataTable.create();
+		data.addColumn(ColumnType.DATETIME, "Date");
+	    data.addColumn(ColumnType.NUMBER, "Memory Usage");
+	    data.addColumn(ColumnType.STRING, "title1");
+	    data.addColumn(ColumnType.STRING, "text1");
+	    data.addColumn(ColumnType.NUMBER, "CPU Usage");
+	    data.addColumn(ColumnType.STRING, "title2");
+	    data.addColumn(ColumnType.STRING, "text2");
+	    data.addRows(list.length);
+	    for (int i = 0; i < list.length; i++) {
+	    	data.setValue(i, 0, list[i].getTimeStamp());
+	        data.setValue(i, 1, list[i].getPercentMemoryUsage());
+	        data.setValue(i, 4, list[i].getCpuUsage());
+	    }
+		atlStatistic.draw(data, createAnnotatedTimeLineOptions());
+	}
+	
 
 	void initSystemDetails() {
 		timerLoadSystemDetails = new Timer() {
@@ -167,14 +215,12 @@ public class SystemDetail implements EntryPoint {
 								if (result != null) {
 									drawSystemDetails(result);
 								} else {
-									Window.alert("null????");
+									
 								}
 							}
 
 							@Override
 							public void onFailure(Throwable caught) {
-								Window.alert("Failure on load System Details!!!!\n"
-										+ caught.getMessage());
 								caught.printStackTrace();
 							}
 						});
@@ -186,7 +232,8 @@ public class SystemDetail implements EntryPoint {
 
 	void initFlexTableContent(int view) {
 		if (view == HTMLControl.VIEW_STATISTIC) {
-
+			atlStatistic = new AnnotatedTimeLine("1000px", "600px");
+			flexTableContent.setWidget(0, 0, atlStatistic);
 		} else {
 			tblService = new Table();
 			ggCpu = new Gauge();
@@ -338,7 +385,11 @@ public class SystemDetail implements EntryPoint {
 		};
 	}
 
+	void setVisibleLoadingImage(boolean b) {
+		RootPanel.get("img-loading").setVisible(b);
+	}
 	void drawSystemDetails(SystemMonitor sys) {
+		
 		panelSystemInfo.clear();
 		panelSystemInfo.add(HTMLControl.getSystemInfo(sys));
 
@@ -546,12 +597,10 @@ public class SystemDetail implements EntryPoint {
 
 	AnnotatedTimeLine.Options createAnnotatedTimeLineOptions() {
 		AnnotatedTimeLine.Options ops = AnnotatedTimeLine.Options.create();
+		ops.setMax(100);
+		ops.setMin(0);
 		ops.setDisplayAnnotations(true);
 		return ops;
-	}
-
-	void initSystemStatistic() {
-
 	}
 
 	private int getViewIndex(String hash) {
