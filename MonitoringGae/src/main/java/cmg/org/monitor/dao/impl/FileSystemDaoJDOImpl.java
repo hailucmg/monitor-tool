@@ -12,16 +12,102 @@ import cmg.org.monitor.dao.FileSystemDAO;
 import cmg.org.monitor.dao.SystemMonitorDAO;
 import cmg.org.monitor.entity.shared.FileSystem;
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.ext.model.shared.FileSystemDto;
+import cmg.org.monitor.ext.model.shared.SystemDto;
 import cmg.org.monitor.util.shared.PMF;
 
+/**
+ * @author admin
+ *
+ */
 public class FileSystemDaoJDOImpl implements FileSystemDAO {
-	private static final Logger logger = Logger
-			.getLogger(FileSystemDaoJDOImpl.class.getCanonicalName());
+	private static final Logger logger = Logger.getLogger(AlertDaoJDOImpl.class
+			.getName());
+	private static SystemMonitorDAO systemDao = new SystemMonitorDaoJDOImpl();
+
+	public FileSystemDto updateFileSystem(FileSystemDto fileSysDTO,
+			SystemDto sysDto) {
+		if (fileSysDTO.getId() == null) {
+
+			// Create new case
+			FileSystem newFileSystem = addFileSystem(fileSysDTO, sysDto);
+			return newFileSystem.toDTO();
+		}
+
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		FileSystem alert = null;
+		try {
+			alert = pm.getObjectById(FileSystem.class, fileSysDTO.getId());
+			alert.updateFromDTO(fileSysDTO);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, e.fillInStackTrace().getMessage());
+		} finally {
+			pm.close();
+		}
+		return fileSysDTO;
+	}
+
+	/**
+	 * 
+	 * Create new Alert object in Datastore.<br>
+	 * 
+	 * @param fileSysDTO
+	 * @return Alert Monitor object.
+	 */
+	private FileSystem addFileSystem(FileSystemDto fileSysDTO, SystemDto sysDto) {
+
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		FileSystem alertEntity = null;
+		SystemDto existSystemDTO = null;
+
+		try {
+
+			// Begin a jdo transation
+			pm.currentTransaction().begin();
+			existSystemDTO = getSystem(sysDto.getId());
+			alertEntity = new FileSystem(fileSysDTO);
+
+			// Check a system existence
+			if (existSystemDTO != null)
+				systemDao.updateSystemByFileSystem(sysDto, alertEntity);
+
+			// Do commit a transaction
+			pm.currentTransaction().commit();
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, e.fillInStackTrace().getMessage());
+			pm.currentTransaction().rollback();
+			throw new RuntimeException(e);
+
+		} finally {
+			pm.close();
+		}
+		return alertEntity;
+	}
+
+	public SystemDto getSystem(String id) {
+
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		SystemMonitor systemEntity = null, detached = null;
+
+		try {
+			systemEntity = pm.getObjectById(SystemMonitor.class, id);
+			detached = pm.detachCopy(systemEntity);
+		} catch (Exception e) {
+
+			logger.log(Level.SEVERE, e.getCause().getMessage());
+
+		} finally {
+			pm.close();
+		}
+
+		return detached.toDTO();
+	}
+
 	@Override
 	public void addFileSystem(SystemMonitor system, FileSystem fileSystem) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		system.addFileSystem(fileSystem);
-		try {			
+		try {
 			pm.makePersistent(system);
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, ex.getCause().getMessage());
@@ -32,15 +118,18 @@ public class FileSystemDaoJDOImpl implements FileSystemDAO {
 	}
 
 	@Override
-	public FileSystem[] listLastestFileSystem(SystemMonitor system) throws Exception {
+	public FileSystem[] listLastestFileSystem(SystemMonitor system)
+			throws Exception {
 		FileSystem[] listFs = null;
 		List<FileSystem> list = null;
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		Query query = pm.newQuery(FileSystem.class, "systemMonitor == sys && timeStamp == time");	
-		query.declareParameters("SystemMonitor sys, java.util.Date time");	
+		Query query = pm.newQuery(FileSystem.class,
+				"systemMonitor == sys && timeStamp == time");
+		query.declareParameters("SystemMonitor sys, java.util.Date time");
 		SystemMonitorDAO sysDAO = new SystemMonitorDaoJDOImpl();
-		Date time = sysDAO.getLastestTimeStamp(system, FileSystem.class.getName());
-		
+		Date time = sysDAO.getLastestTimeStamp(system,
+				FileSystem.class.getName());
+
 		try {
 			list = (List<FileSystem>) query.execute(system, time);
 			if (list.size() > 0) {
@@ -51,8 +140,7 @@ public class FileSystemDaoJDOImpl implements FileSystemDAO {
 			}
 		} catch (Exception ex) {
 			throw ex;
-		}
-		finally {
+		} finally {
 			query.closeAll();
 			pm.close();
 		}

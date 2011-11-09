@@ -16,7 +16,6 @@ import javax.mail.internet.MimeMessage;
 import cmg.org.monitor.dao.impl.AlertDaoJDOImpl;
 import cmg.org.monitor.ext.model.Component;
 import cmg.org.monitor.ext.model.shared.SystemDto;
-
 /**
  * @author lamphan
  * @version 1.0
@@ -41,22 +40,19 @@ public class MailService {
 	 * @throws MessagingException
 	 * @throws UnsupportedEncodingException
 	 */
-	public void sendAlertMail(SystemDto systemDto) throws AddressException,
+	public void sendAlertMail(SystemDto systemDto, String messageError) throws AddressException,
 			MessagingException, UnsupportedEncodingException {
 		Properties props = new Properties();
 		Session session = Session.getDefaultInstance(props, null);
-		String msgBody = "This is monitoring alert email.";
 
 		try {
-			StringBuilder strBuild = new StringBuilder(msgBody);
 			Message msg = new MimeMessage(session);
 			msg.setFrom(new InternetAddress(EMAIL_ADMINISTRATOR,
-					"Monitor Administrator"));
+					systemDto.getName()+" Monitor system"));
 			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
-					systemDto.getGroupEmail(), "Mr Lam"));
+					systemDto.getGroupEmail(), "CMG monitor email"));
 			msg.setSubject(systemDto.getName() + ALERT_NAME);
-			msg.setText(strBuild.append(systemDto.getName())
-					.append("is under alert ").toString());
+			msg.setText(messageError);
 			Transport.send(msg);
 
 		} catch (AddressException ae) {
@@ -90,15 +86,15 @@ public class MailService {
 			MessagingException, UnsupportedEncodingException {
 		Properties props = new Properties();
 		Session session = Session.getDefaultInstance(props, null);
-		String msgBody = component.getDescription();
+		String msgBody = component.getError();
 
 		try {
 			
 			Message msg = new MimeMessage(session);
 			msg.setFrom(new InternetAddress(EMAIL_ADMINISTRATOR,
-					"Monitor Administrator"));
+					systemDto.getName()+" Monitor system"));
 			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
-					systemDto.getGroupEmail(), "Mr. Lam"));
+					systemDto.getGroupEmail(), "Cmg monitor email"));
 			msg.setSubject(systemDto.getName() + ALERT_NAME);
 			msg.setText(msgBody);
 			Transport.send(msg);
@@ -122,4 +118,6 @@ public class MailService {
 		}
 
 	}
+	
+	
 }

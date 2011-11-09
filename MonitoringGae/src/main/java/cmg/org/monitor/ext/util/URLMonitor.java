@@ -8,43 +8,33 @@
  */
 package cmg.org.monitor.ext.util;
 
-import java.io.UnsupportedEncodingException;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
 import cmg.org.monitor.common.Constant;
 import cmg.org.monitor.dao.AlertDao;
 import cmg.org.monitor.dao.CpuMemoryDAO;
+import cmg.org.monitor.dao.FileSystemDAO;
 import cmg.org.monitor.dao.SystemMonitorDAO;
 import cmg.org.monitor.dao.impl.AlertDaoJDOImpl;
 import cmg.org.monitor.dao.impl.CpuMemoryDaoJDOImpl;
+import cmg.org.monitor.dao.impl.FileSystemDaoJDOImpl;
 import cmg.org.monitor.dao.impl.SystemMonitorDaoJDOImpl;
-import cmg.org.monitor.entity.shared.CpuMemory;
 import cmg.org.monitor.exception.MonitorException;
-import cmg.org.monitor.ext.model.CPUObject;
 import cmg.org.monitor.ext.model.Component;
 import cmg.org.monitor.ext.model.MemoryObject;
 import cmg.org.monitor.ext.model.URLPageObject;
 import cmg.org.monitor.ext.model.shared.AlertDto;
 import cmg.org.monitor.ext.model.shared.CpuDto;
 import cmg.org.monitor.ext.model.shared.CpuUsageDto;
+import cmg.org.monitor.ext.model.shared.FileSystemDto;
 import cmg.org.monitor.ext.model.shared.SystemDto;
 import cmg.org.monitor.ext.util.HttpUtils.Page;
 import cmg.org.monitor.services.MonitorWorker;
@@ -68,9 +58,7 @@ public class URLMonitor {
 	/** Time instance */
 	private Timestamp timeStamp;
 
-	/** Archive email address of sender. */
-	private static String EMAIL_SENDER = "lam.phan@c-mg.vn";
-
+	private static String ERROR = "ERROR";
 	/** Log object. */
 	private static final Logger logger = Logger.getLogger(URLMonitor.class
 			.getCanonicalName());
@@ -80,31 +68,6 @@ public class URLMonitor {
 	 */
 	public URLMonitor() {
 		super();
-	}
-
-	/**
-	 * @param component
-	 * @param compId
-	 */
-	private void sendAlerts(Component component, String compId) {
-		SystemMonitorDAO systemDao = new SystemMonitorDaoJDOImpl();
-
-		try {
-			SystemDto localSystemDto = systemDao.getSystembyID(compId).toDTO();
-			if (localSystemDto != null) {
-				MailService mailSrv = new MailService();
-				mailSrv.sendAlertMail(component, localSystemDto);
-				logger.info("An email has been delivered to "
-						+ localSystemDto.getGroupEmail()
-						+ " to notify about error");
-			}
-		} catch (Exception e) {
-			logger.log(
-					Level.ALL,
-					"Cannot send email about error" + " of component "
-							+ component.getName() + ", error: "
-							+ e.getMessage());
-		}
 	}
 
 	/**
@@ -133,12 +96,6 @@ public class URLMonitor {
 
 			// Checks the URL to monitor
 			List<String> list = new ArrayList<String>();
-			// ComponentService cs = (ComponentService) ctx.getBean(
-			// Constant.SERVICE_COMPONENT_NAME);
-			// UserManager userService = (UserManager) ctx.getBean(
-			// Constant.SERVICE_USER_NAME);
-			// MailService mailService = (MailService) ctx.getBean(
-			// Constant.SERVICE_MAIL_NAME);
 			Pattern pattern = Pattern.compile(Constant.PATTERN_COMPONENT);
 
 			// Processes page
@@ -148,28 +105,28 @@ public class URLMonitor {
 				message = "Retrieves website content from " + proj.getUrl();
 				logger.info("Retrieves website content from ");
 
-				page = HttpUtils.retrievePage(proj.getUrl());
+				page = HttpUtils.retrievePage(proj.getRemoteUrl().trim());
 
-				// Prints out
+				// log the message
 				message = "The website has been retrieved, content type: "
 						+ page.getContentType();
 				logger.info(message);
 			} catch (Exception mx) {
 				try {
-					// updateProjectStatus(proj, false);
 					if (ConnectionUtil.internetAvail()) {
-						sendAlerts(proj);
-
 						// Prints out
-						message = "Error occurred so that updates project's status";
-
+						message = "The system can not get data from"
+								+ proj.getRemoteUrl()
+								+ ". Error occurred so that updates system's status of "
+								+ proj.getName();
+						sendUnknownAlerts(proj, message);
 						isError = true;
 					} else {
 						logger.info("Internet connection failed");
 					}
 				} catch (Exception e) {
 
-					// Don't say anything to the user
+					// log with message
 					message = "The monitoring failed, try to update"
 							+ " project's status but not success, error details: "
 							+ e.getMessage();
@@ -183,12 +140,11 @@ public class URLMonitor {
 			// Reads content
 			if ((page == null) || (page.getContent() == null)) {
 				if ((ConnectionUtil.internetAvail()) && (!isError)) {
-					// updateProjectStatus(proj, false);
-					sendAlerts(proj);
 
 					// Prints out
 					message = "Error occurred so that the page content is null,"
-							+ " updated project's status";
+							+ " updated system's status";
+					sendUnknownAlerts(proj, message);
 					logger.info(message);
 				} else {
 					logger.info("Internet connection failed");
@@ -196,18 +152,15 @@ public class URLMonitor {
 
 				return obj;
 			}
-			if ((page.getContent().equals("ERROR"))
+			if ((page.getContent().equals(ERROR))
 					|| (page.getContent().equals(MonitorUtil.getErrorContent()))) {
-				// updateProjectStatus(proj, false);
-				sendAlerts(proj);
 
 				// Prints out
 				message = " Error occurred so that the page content is null,"
 						+ " updated project's status";
+				sendUnknownAlerts(proj, message);
 				logger.info(message);
 			}
-			sendMail(proj);
-			sendAlerts(proj);
 
 			String webContent = page.getContent();
 			String item = null;
@@ -255,10 +208,6 @@ public class URLMonitor {
 
 				// Prints out
 				logger.info("Comp: " + component);
-				// printf("Comp: " + component);
-
-				// Checks if component existing or not
-				// updateComponent(cs, component, id);
 
 				// Increases count variable
 				ioc += 4;
@@ -277,6 +226,7 @@ public class URLMonitor {
 			MemoryObject memObj = worker.getMemObjectMonitor(webContent);
 			CpuMemoryDAO cpuDao = new CpuMemoryDaoJDOImpl();
 			if (cpuObj != null) {
+
 				// Gets CPU usage
 				String cpuUsage = String.valueOf(cpuObj.getUsedMemory());
 				double cpuPerc = 0.0;
@@ -296,24 +246,23 @@ public class URLMonitor {
 				component.setError(error);
 				component.setSysDate(dateFormat.format(currentDate));
 
-				// HistoryCpuDao dao = null;
-				// CpuusageDao cpuDao = null;
 				if (cpuPerc >= Constant.CPU_LEVEL_HISTORY_UPDATE) {
+					// if (cpuPerc >= 0) {
 					try {
-
 						cpuDao.updateCpu(cpuObj, proj);
 						error = "CPU: " + cpuUsage;
 					} catch (Exception e) {
-						logger.log(Level.SEVERE,
-								"Cannot update alert for CPU usage, error: "
+						logger.log(
+								Level.SEVERE,
+								"Cannot update alert for CPU, error: "
 										+ e.getMessage());
 					}
 				}
 				logger.info("CPU: " + cpuObj);
 				obj.setCpu(cpuObj);
 
-				// worker.updateCPU(cpuDto);
-				// Gets CPU from history for 3 times, if this values are greater
+				// Gets CPU from Cpu memory for 3 times, if this values are
+				// greater
 				// than 90% Then send alert
 				try {
 					boolean cpuCritical = true;
@@ -330,7 +279,6 @@ public class URLMonitor {
 							for (CpuUsageDto cpu : cpuList) {
 								if (cpu.getCpuUsage() < Constant.CPU_LEVEL_HISTORY_UPDATE) {
 									cpuCritical = false;
-
 									break;
 								}
 							}
@@ -343,61 +291,74 @@ public class URLMonitor {
 								+ " is greater than "
 								+ Constant.CPU_LEVEL_HISTORY_UPDATE);
 						sendAlerts(component, compId);
-								
+
 					}
 				} catch (Exception e) {
-					logger.log(Level.SEVERE,
-							"Cannot get values for CPU history today, error: "
-									+ e.getMessage());
+					logger.info("Cannot get values for CPU , error: "
+							+ e.getMessage());
 				}
 
-				// Update component
-				// updateComponent(cs, component, compId);
-
-				// Update history
-				// List<HistoryCpu> hcList = null;
 				try {
-					// dao = DaoFactory.createHistoryCpuDao();
-					// hcList = dao.getTodayHistories();
-					// if ((hcList == null) || (hcList.size() <= 0)
-					// || (hcList.size() < 3)) {
-					// Update history for CPU usage
-					// HistoryCpu dto = getHistory(cpuObj,
-					// proj.getProjectId(), compId, currentDate);
-					// dao.insert(dto);
 					logger.info("Update history CPU daily successfully!");
-					// }
 				} catch (Exception e) {
-					logger.log(Level.SEVERE,
-							"Cannot get values for CPU history today, error: "
+					logger.log(
+							Level.SEVERE,
+							"Cannot get values for CPU  today, error: "
 									+ e.getMessage());
 				}
+			}
 
-				// Update CPU usages timely
+			// File system Monitor
+			List<FileSystemDto> fileSystems = worker.getDFMonitor(webContent);
+			currentDate = new Timestamp(System.currentTimeMillis());
+			for (FileSystemDto fileDto : fileSystems) {
+				String used = String.valueOf(fileDto.getUsed());
+				double percUsed = 50.0;
 				try {
-					currentDate = new Timestamp(System.currentTimeMillis());
-					// cpuDao = DaoFactory.createCpuusageDao();
-					CpuUsageDto dto = new CpuUsageDto();
-					// dto.setCpuUsage(Double.parseDouble(cpuObj.getUsedMemory()));
-					dto.setTimeStamp(dateFormat.format(currentDate));
-					dto.setProject_id(Long.parseLong(proj.getId()));
-					// cpuDao.insert(dto);
-				} catch (Exception e) {
-					logger.log(Level.SEVERE,
-							"Cannot get values for CPU history today, error: "
-									+ e.getMessage());
+					if (used.equals("-")) {
+						percUsed = 0;
+					} else {
+						percUsed = Double.parseDouble(used.trim());
+					}
+				} catch (Exception ex) {
+					logger.info("Cannot parse disk used value: "
+							+ ex.toString());
 				}
+				error = "None";
+				String compId = proj.getName() + "_Filesystem_"
+						+ fileDto.getName().replace("\\", "").replace(":", "");
+
+				// Updates to component table
+				component = new Component();
+				component.setComponentId(compId);
+				component.setProjectId(proj.getId());
+				component.setName(compId);
+				component.setError(error);
+				component.setSysDate(dateFormat.format(currentDate));
+
+				// Constant.DF_LEVEL_HISTORY_UPDATE
+				if (percUsed > Constant.DF_LEVEL_HISTORY_UPDATE) {
+					// Alert
+					error = "Error with Filesystem " + fileDto.getName()
+							+ " Used: " + used + "%";
+					component.setError(error);
+
+					// Send alert
+					sendAlerts(component, compId);
+					try {
+						FileSystemDAO fileSystemDao = new FileSystemDaoJDOImpl();
+
+						// Do update
+						fileSystemDao.updateFileSystem(fileDto, proj);
+					} catch (Exception e) {
+						logger.info("Cannot update data for Filesystem, error: "
+								+ e.getMessage());
+					}
+				}
+				logger.info("DF: " + fileDto);
 			}
 
 			// -------
-
-			if ((components != null) && (components.size() > 0)) {
-				// proj.setComponents(compList);
-				// obj.setProject(proj);
-			}
-			if (((components != null) && (components.size() > 0))) {
-				// updateProjectStatus(proj, true);
-			}
 
 			return obj;
 		} catch (Exception ex) {
@@ -406,65 +367,60 @@ public class URLMonitor {
 	}
 
 	/**
-	 * @param sysDto
+	 * Make alert and email with given component
+	 * 
+	 * @param component
+	 * @param compId
 	 */
-	private void sendAlerts(SystemDto sysDto) {
+	private void sendAlerts(Component component, String compId)
+			throws Exception {
+		SystemMonitorDAO systemDao = new SystemMonitorDaoJDOImpl();
+
+		try {
+			SystemDto localSystemDto = systemDao.getSystembyID(compId).toDTO();
+			if (localSystemDto != null) {
+				MailService mailSrv = new MailService();
+				mailSrv.sendAlertMail(component, localSystemDto);
+				logger.info("An email has been delivered to "
+						+ localSystemDto.getGroupEmail()
+						+ " to notify about error");
+			}
+		} catch (Exception e) {
+			logger.log(
+					Level.ALL,
+					"Cannot send email about error" + " of component "
+							+ component.getName() + ", error: "
+							+ e.getMessage());
+			throw e;
+		}
+	}
+
+	/**
+	 * Make alert by email.
+	 * 
+	 * @param sysDto
+	 * @param comp
+	 */
+	private void sendUnknownAlerts(SystemDto sysDto, String message) {
+		MailService service = new MailService();
 
 		try {
 			AlertDao alert = new AlertDaoJDOImpl();
 			AlertDto alertDTO = new AlertDto();
 
-			alertDTO.setBasicInfo("SQLException", "database error", new Date());
+			alertDTO.setBasicInfo(
+					"The monitor system don't know url or some error happen at "
+							+ sysDto.getName(), message, new Date());
 
 			// Create an alert
 			alertDTO = alert.updateAlert(alertDTO, sysDto);
 
 			// Send alert email to email group
-			sendMail(sysDto);
+			service.sendAlertMail(sysDto, message);
 
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Cannot send alert about error"
 					+ " of component " + ", error: " + e.getMessage());
-		}
-	}
-
-	/**
-	 * @param systemDto
-	 * @throws AddressException
-	 * @throws MessagingException
-	 * @throws UnsupportedEncodingException
-	 */
-	private void sendMail(SystemDto systemDto) throws AddressException,
-			MessagingException, UnsupportedEncodingException {
-		Properties props = new Properties();
-		Session session = Session.getDefaultInstance(props, null);
-		String msgBody = "Your account is testing for alert send mail";
-
-		try {
-			Message msg = new MimeMessage(session);
-			msg.setFrom(new InternetAddress(EMAIL_SENDER,
-					"Monitor Administrator"));
-			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
-					systemDto.getGroupEmail(), "Monitor Group"));
-			msg.setSubject("Monitor alert email");
-			msg.setText(msgBody);
-			Transport.send(msg);
-
-		} catch (AddressException ae) {
-			logger.warning("Address exception occurrence due to :"
-					+ ae.getCause().getMessage());
-			throw new AddressException(ae.getCause().getMessage());
-		} catch (MessagingException me) {
-			logger.warning("Messaging exception occurrence due to :"
-					+ me.getCause().getMessage());
-			throw new MessagingException(me.getCause().getMessage());
-		} catch (UnsupportedEncodingException uee) {
-			logger.warning("Unsupported encoding exception due to :"
-					+ uee.getCause().getMessage());
-			throw new UnsupportedEncodingException(uee.getCause().getMessage());
-
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, e.getCause().getMessage());
 		}
 	}
 

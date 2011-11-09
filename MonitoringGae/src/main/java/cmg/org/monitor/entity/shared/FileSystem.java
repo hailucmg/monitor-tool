@@ -11,6 +11,10 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import cmg.org.monitor.ext.model.shared.AlertDto;
+import cmg.org.monitor.ext.model.shared.FileSystemDto;
+import cmg.org.monitor.ext.model.shared.FileSystemDto;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -52,6 +56,20 @@ public class FileSystem implements Model, IsSerializable {
 	}
 
 	/**
+	 * Constructor with parameters.
+	 * 
+	 * @param fileDto File system data transfer object.
+	 */
+	public FileSystem(FileSystemDto fileDto) {
+
+		this();
+		this.setBasicInfo(fileDto.getName(), fileDto.getSize(),
+				fileDto.getUsed(), fileDto.getType(), fileDto.getTimeStamp());
+	}
+
+	
+	/**
+	 * Constructor with parameters.<br>
 	 * @param name
 	 * @param size
 	 * @param used
@@ -68,6 +86,47 @@ public class FileSystem implements Model, IsSerializable {
 		this.timeStamp = timeStamp;
 	}
 
+	/**
+	 * Method 'setBasicInfo' set basic class properties.<br>
+	 * @param error
+	 * @param description
+	 * @param timeStamp
+	 */
+	public void setBasicInfo(String name, long size, long used, String type,
+			Date timeStamp) {
+
+		this.name = name;
+		this.size = size;
+		this.used = used;
+		this.type = type;
+		this.timeStamp = timeStamp;
+	}
+	
+	/**
+	 * Convert entity object to data transfer object.<br>
+	 * @return data transfer object type.
+	 */
+	public FileSystemDto toDTO() {
+		FileSystemDto alertDTO = new FileSystemDto(this.getName(),
+				this.getSize(),this.getUsed(), this.getType(), this.getTimeStamp());
+		alertDTO.setId(this.getId());
+
+		return alertDTO;
+	}
+	
+	/**
+	 * update existing alert object based on File System DTO id
+	 * 
+	 * @param alertDTO
+	 */
+	public void updateFromDTO(FileSystemDto alertDTO) {
+		this.name = alertDTO.getName();
+		this.size = alertDTO.getSize();
+		this.used = alertDTO.getUsed();
+		this.type = alertDTO.getType();
+		this.timeStamp = alertDTO.getTimeStamp();
+	}
+	
 	public int getPercentUsage() {
 		return (int) ((used / size) * 100);
 	}
