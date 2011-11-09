@@ -2,6 +2,7 @@ package cmg.org.monitor.dao.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -14,6 +15,8 @@ import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.util.shared.PMF;
 
 public class ServiceMonitorDaoJDOImpl implements ServiceMonitorDAO {
+	private static final Logger logger = Logger
+			.getLogger(ServiceMonitorDaoJDOImpl.class.getCanonicalName());
 	@Override
 	public void addServiceMonitor(SystemMonitor system, ServiceMonitor serviceMonitor) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();

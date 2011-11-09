@@ -2,6 +2,8 @@ package cmg.org.monitor.dao.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -13,13 +15,18 @@ import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.util.shared.PMF;
 
 public class FileSystemDaoJDOImpl implements FileSystemDAO {
+	private static final Logger logger = Logger
+			.getLogger(FileSystemDaoJDOImpl.class.getCanonicalName());
 	@Override
 	public void addFileSystem(SystemMonitor system, FileSystem fileSystem) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		system.addFileSystem(fileSystem);
 		try {			
 			pm.makePersistent(system);
-		} finally {
+		} catch (Exception ex) {
+			logger.log(Level.SEVERE, ex.getCause().getMessage());
+		}
+		finally {
 			pm.close();
 		}
 	}

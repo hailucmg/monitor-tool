@@ -1,5 +1,6 @@
 package cmg.org.monitor.module.server;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import cmg.org.monitor.dao.SystemMonitorDAO;
@@ -17,7 +18,7 @@ public class DashBoardServiceImpl extends RemoteServiceServlet implements DashBo
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private static final Logger logger = Logger.getLogger(MonitorService.class
+	private static final Logger logger = Logger.getLogger(DashBoardServiceImpl.class
 			.getCanonicalName());
 
 	@Override
@@ -27,7 +28,7 @@ public class DashBoardServiceImpl extends RemoteServiceServlet implements DashBo
 		try {
 			list = sysDAO.listSystems(false);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			logger.log(Level.SEVERE, ex.getCause().getMessage());
 		}
 		return list;
 	}
