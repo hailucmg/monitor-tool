@@ -40,7 +40,12 @@ public class SystemManagement implements EntryPoint {
 						@Override
 						public void onValueChange(ValueChangeEvent<String> event) {
 							// TODO Auto-generated method stub
+							boolean check = Window.confirm("do you want to delete?");
+							if(check==false){
+								return;
+							}
 							String id = event.getValue().toString();
+							
 							systemMSA.deleteSystem(id, new AsyncCallback<Boolean>() {
 								
 								@Override
