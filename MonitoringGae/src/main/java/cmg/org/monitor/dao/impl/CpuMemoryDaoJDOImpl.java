@@ -1,5 +1,6 @@
 package cmg.org.monitor.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,9 +18,11 @@ import cmg.org.monitor.util.shared.PMF;
 
 public class CpuMemoryDaoJDOImpl implements CpuMemoryDAO {
 
+	/** Default log for application */
 	private static final Logger logger = Logger.getLogger(AlertDaoJDOImpl.class
 			.getName());
 
+	/** Initiate an instance of Dao  */
 	private static SystemMonitorDAO systemDao = new SystemMonitorDaoJDOImpl();
 
 	public CpuMemory[] getLastestCpuMemory(SystemMonitor system,
@@ -49,6 +52,37 @@ public class CpuMemoryDaoJDOImpl implements CpuMemoryDAO {
 		}
 		return cpuMem;
 	}
+	
+	public List<CpuDto> getLastestCpuMemory(SystemDto system,
+			int numberOfResult) throws Exception {
+
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		
+		List<CpuDto> listMemDto = null;
+		List<CpuMemory> list = null;
+		Query query = pm.newQuery(CpuMemory.class);
+		query.setFilter("systemMonitor == sys");
+		query.declareParameters("SystemDto sys");
+		query.setOrdering("timeStamp desc");
+		query.setRange(0, numberOfResult);
+		try {
+			list = (List<CpuMemory>) query.execute(system);
+			if (list.size() > 0) {
+				
+				listMemDto = new ArrayList<CpuDto>();
+				for (int i = 0; i < list.size(); i++) {
+					listMemDto.add(list.get(i).toDTO());
+				}
+			}
+		} catch (Exception ex) {
+			logger.info(ex.getCause().getMessage());
+			throw ex;
+		} finally {
+			query.closeAll();
+			pm.close();
+		}
+		return listMemDto;
+	}
 
 	@Override
 	public void addCpuMemory(SystemMonitor system, CpuMemory cpuMemory) {
@@ -61,17 +95,14 @@ public class CpuMemoryDaoJDOImpl implements CpuMemoryDAO {
 		}
 	}
 
-	/**
-	 * @param cpuDTO
-	 * @return
-	 */
+	
 	public CpuDto updateCpu(CpuDto cpuDTO, SystemDto sysDto) {
 		
 		if (cpuDTO.getId() == null) {
 
 			// Create new case
-			CpuMemory newCpuEntity = addCpu(cpuDTO, sysDto);
-			return newCpuEntity.toDTO();
+			CpuMemory entityCpu = addCpu(cpuDTO, sysDto);
+			return entityCpu.toDTO();
 		}
 
 		PersistenceManager pm = PMF.get().getPersistenceManager();
@@ -87,13 +118,7 @@ public class CpuMemoryDaoJDOImpl implements CpuMemoryDAO {
 		return cpuDTO;
 	}
 
-	/**
-	 * 
-	 * Create new Alert object in Datastore.<br>
-	 * 
-	 * @param cpuDTO
-	 * @return Alert Monitor object.
-	 */
+	
 	private CpuMemory addCpu(CpuDto cpuDTO, SystemDto sysDto) {
 
 		PersistenceManager pm = PMF.get().getPersistenceManager();

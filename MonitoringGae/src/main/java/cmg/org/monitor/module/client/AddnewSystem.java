@@ -105,7 +105,10 @@ public class AddnewSystem implements EntryPoint {
 					system.setUrl(txtURL.getText().toString());
 					system.setActive(isActive(listActive.getValue(listActive.getSelectedIndex())));
 					system.setProtocol(listProtocol.getValue(listProtocol.getSelectedIndex()));
+					system.setRemoteUrl(txtRemote.getText());
 					sendData(system,txtURL.getText());
+					
+					
 				}
 								
 			}

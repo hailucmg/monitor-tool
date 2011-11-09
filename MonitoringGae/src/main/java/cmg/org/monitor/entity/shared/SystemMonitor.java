@@ -48,6 +48,9 @@ public class SystemMonitor implements Model, IsSerializable {
 	private List<CpuMemory> cpuMems = new ArrayList<CpuMemory>();
 	
 	@Persistent
+	private String remoteUrl;
+	
+	@Persistent
 	private String code;
 	
 	@Persistent
@@ -214,11 +217,19 @@ public class SystemMonitor implements Model, IsSerializable {
 
         return this.services.get(index);
     }
+	
+	public String getRemoteUrl() {
+		return remoteUrl;
+	}
+
+	public void setRemoteUrl(String remoteUrl) {
+		this.remoteUrl = remoteUrl;
+	}
 
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
 	public String getUrl() {
 		return url;
 	}

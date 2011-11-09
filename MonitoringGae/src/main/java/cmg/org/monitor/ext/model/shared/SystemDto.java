@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.Set;
 
 /**
- * 
+ * The 'detailed' Data Transfer Object for the SystemMonitor class
  * @author lamphan
- * @version 1.0 The 'detailed' Data Transfer Object for the SystemMonitor class
+ * @version 1.0 
  * 
  */
 @SuppressWarnings("serial")

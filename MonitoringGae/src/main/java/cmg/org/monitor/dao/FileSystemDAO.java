@@ -1,7 +1,5 @@
 package cmg.org.monitor.dao;
 
-import java.util.Date;
-
 import cmg.org.monitor.entity.shared.FileSystem;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 

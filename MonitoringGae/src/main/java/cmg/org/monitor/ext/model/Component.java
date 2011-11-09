@@ -18,16 +18,29 @@ import java.io.Serializable;
 public class Component implements Serializable {
 
 
-    /** DOCUMENT ME! */
+    /** Default UUID value */
     static final long serialVersionUID = 1436363632L;
 
+    /** Default UUID value */
     private String componentId;
+    
+    /** Default UUID value */
     private String name;
+    
+    /** Default UUID value */
     private String error;
+    
+    /** Default UUID value */
     private String sysDate;
-    private String discription;
+    
+    /** Default UUID value */
+    private String description;
+    
+    /** Default UUID value */
     private String reference;
-    private long projectId;
+    
+    /** Default UUID value */
+    private String projectId;
 
 
     /**
@@ -42,7 +55,7 @@ public class Component implements Serializable {
         sb.append(", Name = " + name);
         sb.append(", Error = " + error);
         sb.append(", Sysdate = " + sysDate);
-        sb.append(", Description = " + discription);
+        sb.append(", Description = " + description);
         sb.append(", Reference = " + reference);
         sb.append(", ProjectId = " + projectId);
         sb.append("]");
@@ -73,8 +86,8 @@ public class Component implements Serializable {
      *
      * @return  DOCUMENT ME!
      */
-    public String getDiscription() {
-        return discription;
+    public String getDescription() {
+        return description;
     }
 
     /**
@@ -83,7 +96,7 @@ public class Component implements Serializable {
      * @param  discription  DOCUMENT ME!
      */
     public void setDiscription(String discription) {
-        this.discription = discription;
+        this.description = discription;
     }
 
     /**
@@ -141,7 +154,7 @@ public class Component implements Serializable {
      *
      * @return  DOCUMENT ME!
      */
-    public long getProjectId() {
+    public String getProjectId() {
         return projectId;
     }
 
@@ -150,7 +163,7 @@ public class Component implements Serializable {
      *
      * @param  projectId  DOCUMENT ME!
      */
-    public void setProjectId(long projectId) {
+    public void setProjectId(String projectId) {
         this.projectId = projectId;
     }
 
