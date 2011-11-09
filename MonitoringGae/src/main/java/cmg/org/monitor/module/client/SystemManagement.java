@@ -35,8 +35,9 @@ public class SystemManagement implements EntryPoint {
 					myTable = new Table();
 					RootPanel.get("dataTableSystem").add(myTable);
 					init();
+					
+					
 					History.addValueChangeHandler(new ValueChangeHandler<String>() {
-						
 						@Override
 						public void onValueChange(ValueChangeEvent<String> event) {
 							// TODO Auto-generated method stub
