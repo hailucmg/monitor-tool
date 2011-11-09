@@ -1,7 +1,8 @@
 package cmg.org.monitor.module.client;
 
+import java.util.regex.MatchResult;
+
 import cmg.org.monitor.entity.shared.SystemMonitor;
-import cmg.org.monitor.util.shared.Ultility;
 
 
 import com.google.gwt.core.client.EntryPoint;
@@ -10,6 +11,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
@@ -24,16 +26,45 @@ import com.google.gwt.user.client.ui.TextBox;
 
 public class AddnewSystem implements EntryPoint {
 	AddnewSystemServiceAsync addSystemSA = GWT.create(AddnewSystemService.class);
+	ListBox listGroup;
 	@Override
 	public void onModuleLoad() {
+		addSystemSA.groups(new AsyncCallback<String[]>() {
+			
+			@Override
+			public void onSuccess(String[] result) {
+				// TODO Auto-generated method stub
+				listGroup = new ListBox();
+				listGroup.setWidth("198px");
+				listGroup.setHeight("28px");
+				for(int i = 0; i<result.length;i++){
+					listGroup.addItem(result[i]);	
+				}
+				listGroup.setSelectedIndex(0);
+				RootPanel.get("group").add(listGroup);
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				Window.alert(caught.toString());
+				
+			}
+		});
 		// TODO Auto-generated method stub
 		final TextBox txtName = new TextBox();
 		txtName.addStyleName("inp-form");
 		RootPanel.get("name").add(txtName);
 		
+	
+		
 		final TextBox txtURL = new TextBox();
 		txtURL.addStyleName("inp-form");
 		RootPanel.get("url").add(txtURL);
+		
+		final TextBox txtIP = new TextBox();
+		txtIP.addStyleName("inp-form");
+		RootPanel.get("myIP").add(txtIP);
 		
 		final TextBox txtRemote = new TextBox();
 		txtRemote.addStyleName("inp-form");
@@ -55,12 +86,7 @@ public class AddnewSystem implements EntryPoint {
 		listProtocol.addItem("SMTP");
 		RootPanel.get("protocol").add(listProtocol);
 		
-		ListBox listGroup = new ListBox();
-		listGroup.setWidth("198px");
-		listGroup.setHeight("28px");
-		listGroup.setSelectedIndex(0);
-		listGroup.addItem("hanoi@c-mg.com");
-		RootPanel.get("group").add(listGroup);
+		
 		
 		final Label lbhide = new Label();
 		lbhide.setText("");
@@ -89,26 +115,36 @@ public class AddnewSystem implements EntryPoint {
 			@Override
 			public void onClick(ClickEvent event) {
 				// TODO Auto-generated method stub
-				
-				String msg = validateName(txtName.getText().toString()) + validateURL(txtURL.getText().toString()) 
-							+ validateRemoteURL(txtRemote.getText().toString());
-				if(!msg.trim().equals("")){
-					lbhide.setText(msg);
+				String validateName = validateName(txtName.getText());
+				String validateURL = validateURL(txtURL.getText());
+				String validateIp = validateIP(txtIP.getText());
+				String validateRemoteURL = validateRemoteURL(txtRemote.getText());
+				if(validateName!=""){
+					lbhide.setText(validateName);
 					return;
-				}else{
+				}else if(validateURL!=""){
+					lbhide.setText(validateURL);
+					return;
+				}else if(validateIp!=""){
+					lbhide.setText(validateIp);
+					return;
+				}else if(validateRemoteURL!=""){
+					lbhide.setText(validateRemoteURL);
+					return;
+				}
+				else{
 					
-						lbhide.setText("running");
-					
+					lbhide.setText("running");
 					//clear(DOM.getElementById("URL"));
 					SystemMonitor system = new SystemMonitor();
 					system.setName(txtName.getText().toString());
 					system.setUrl(txtURL.getText().toString());
 					system.setActive(isActive(listActive.getValue(listActive.getSelectedIndex())));
 					system.setProtocol(listProtocol.getValue(listProtocol.getSelectedIndex()));
+					system.setGroupEmail(listGroup.getItemText(listGroup.getSelectedIndex()));
+					system.setIp(txtIP.getText());
 					system.setRemoteUrl(txtRemote.getText());
 					sendData(system,txtURL.getText());
-					
-					
 				}
 								
 			}
@@ -148,17 +184,20 @@ public class AddnewSystem implements EntryPoint {
 		private String validateName(String name){
 			String msg = "";
 			if(name==null || name.trim().length() == 0){
-				msg+="System Name can not be blank ";
+				msg="System Name can not be blank ";
+			}else if(name.contains("$") || name.contains("%")||name.contains("*")){
+				msg="name is not validate";
 			}
+			
 			return msg;
 		}
 		// validate URL
 		private String validateURL(String url){
 			String msg = "";
 			if(url==null || url.trim().length()==0){
-				msg+="URL can not be blank ";
-			
-				return msg;
+				msg="URL can not be blank ";
+			}else if(url.length()<3){
+				msg+="URL is not validate";
 			}
 			
 			return msg;
@@ -169,11 +208,23 @@ public class AddnewSystem implements EntryPoint {
 			String msg = "";
 			if(remoteUrl == null || remoteUrl.trim().length() == 0){
 				msg += "Remote url can not be blank ";
-				return msg;
+			}else if(remoteUrl.length() < 3){
+				msg+="Remote url is not validate";
 			}
 			return msg;
 		}
 		
+		
+		private String validateIP(String ip){
+			String msg ="";
+			String patternStr = "^([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}$";
+			RegExp regExp = RegExp.compile(patternStr);
+			boolean matchFound = regExp.test(ip);
+			if(matchFound == false){
+				msg = "ip is not validate";
+			}
+			return msg;
+		}
 		public static void clear(Element parent) {
 			Element firstChild;
 			while((firstChild = DOM.getFirstChild(parent)) != null) {
