@@ -11,10 +11,19 @@ public class CPUObject implements Serializable {
 	/** Default UUID value */
 	private static final long serialVersionUID = 1L;
 
+	/** Archive for used amount of memory value */
 	private String usedCPU;
+	
+	/** Archive UUID value */
 	private String idleCPU;
+	
+	/** Default UUID value */
 	private String vendor;
+	
+	/** Default UUID value */
 	private String model;
+	
+	/** Default UUID value */
 	private int totalCPUs;
 
 	/**

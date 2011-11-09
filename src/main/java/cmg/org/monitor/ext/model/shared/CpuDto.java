@@ -63,11 +63,7 @@ public class CpuDto implements Serializable
 	 */
 	protected boolean totalCpuModified = false;
 
-	/** 
-	 * This attribute maps to the column project_id in the cpu table.
-	 */
-	protected long projectId;
-
+	
 	/** 
 	 * This attribute represents whether the attribute projectId has been modified since being read from the database.
 	 */
@@ -321,27 +317,6 @@ public class CpuDto implements Serializable
 		return totalCpuModified;
 	}
 
-	/**
-	 * Method 'getProjectId'
-	 * 
-	 * @return long
-	 */
-	public long getProjectId()
-	{
-		return projectId;
-	}
-
-	/**
-	 * Method 'setProjectId'
-	 * 
-	 * @param projectId
-	 */
-	public void setProjectId(long projectId)
-	{
-		this.projectId = projectId;
-		this.projectIdModified = true;
-	}
-
 	/** 
 	 * Sets the value of projectIdModified
 	 */
@@ -413,7 +388,7 @@ public class CpuDto implements Serializable
 		ret.append( ", vendor=" + vendor );
 		ret.append( ", model=" + model );
 		ret.append( ", totalCpu=" + totalCpu );
-		ret.append( ", projectId=" + projectId );
+		
 		ret.append( ", timeStamp=" + timeStamp );
 		return ret.toString();
 	}

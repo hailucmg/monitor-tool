@@ -24,11 +24,10 @@ public class GlobalScheduler extends HttpServlet {
 	/** Count value */
 	public static long boCounter = 0;
 
-	/** The Log. */
+	/** The log of application */
 	private static final Logger logger = Logger.getLogger(GlobalScheduler.class
 			.getName());
 
-	// @Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		doPost(req, resp);

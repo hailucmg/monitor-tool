@@ -64,7 +64,7 @@ public class AlertDaoJDOImpl implements AlertDao {
 
 			// Begin a jdo transation
 			pm.currentTransaction().begin();
-			existSystemDTO = getSystemByAddress("www.c-mg.com");
+			existSystemDTO = getSystem(sysDto.getId());
 			alertEntity = new AlertMonitor(alertDTO);
 
 			// Check a system existence
@@ -121,8 +121,7 @@ public class AlertDaoJDOImpl implements AlertDao {
 	}
 
 	@SuppressWarnings("unchecked")
-	public SystemDto getSystemByAddress(String address)
-			throws MonitorException {
+	public SystemDto getSystemByAddress(String address) throws MonitorException {
 
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		SystemMonitor oneResult = null, detached = null;

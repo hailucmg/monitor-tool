@@ -201,8 +201,8 @@ public class Appforyourdomain {
 			String[] id=new String[2];
 			id[0]= "admin_monitor%40c-mg.vn";
 			id[1]="monitor.globe%40c-mg.vn";
-			String[] user = client.listUser("admin",id);
-			System.out.println(user[0].toString());
+			//String[] user = client.listUser("admin",id);
+			//System.out.println(user[0].toString());
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
