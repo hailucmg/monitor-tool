@@ -61,8 +61,8 @@ public interface SystemMonitorDAO {
 	
 	public boolean addnewSystem(SystemMonitor system) throws Exception;
 	
-	public boolean editSystembyID(String id, String newName, String newAddress, String protocol, String group,
-			boolean isActive) throws Exception;
+	public boolean editSystembyID(String id, String newName, String newAddress, String protocol, String group,String ip,
+			String remoteURL,boolean isActive) throws Exception;
 	
 	public boolean deleteSystembyID(String id) throws Exception;
 	
@@ -72,6 +72,8 @@ public interface SystemMonitorDAO {
 	public String getIPbyURL(String url) throws Exception;
 	
 	public String createCode() throws Exception;
+	
+	public String[] groups() throws Exception;
 	
 	Date getLastestTimeStamp(SystemMonitor system, String className);
 	
