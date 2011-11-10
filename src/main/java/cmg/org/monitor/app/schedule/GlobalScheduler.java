@@ -27,13 +27,14 @@ public class GlobalScheduler extends HttpServlet {
 	/** The log of application */
 	private static final Logger logger = Logger.getLogger(GlobalScheduler.class
 			.getName());
-
+	
+	
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		doPost(req, resp);
 	}
 
-	@Override
+	
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException {
 
@@ -49,27 +50,29 @@ public class GlobalScheduler extends HttpServlet {
 	 * The method is executed by cron job task.
 	 */
 	public void doSchedule() throws MonitorException {
-		MonitorService monitorService = null;
+		MonitorService monitorService = new MonitorService();
 		try {
 
 			long start = System.currentTimeMillis();
 			if (logger.isLoggable(Level.CONFIG)) {
 				logger.log(Level.ALL, "Start scheduled monitoring ...");
 			} // if
-			monitorService = new MonitorService();
-
+			 
+			
 			// Initial monitor scheduled
 			monitorService.monitor();
+			
 			if (logger.isLoggable(Level.CONFIG)) {
 				logger.log(Level.ALL, "Scheduled monitoring completed!");
 			} // if
 			long end = System.currentTimeMillis();
 			long time = end - start;
 			boCounter++;
+			logger.log(Level.WARNING, "Send mail ok....!");
 			logger.info("Time executed: " + time + " ms" + ", email task: " // EmailTimely.emailCounter
 					+ " times, business object: " + boCounter + " times");
 		} catch (Exception ex) {
-			logger.log(Level.SEVERE, ex.getLocalizedMessage());
+			logger.log(Level.SEVERE, ex.getMessage());
 		}
 
 	}
