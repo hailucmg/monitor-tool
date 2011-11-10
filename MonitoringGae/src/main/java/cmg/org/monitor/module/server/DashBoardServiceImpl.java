@@ -6,7 +6,9 @@ import java.util.logging.Logger;
 import cmg.org.monitor.dao.SystemMonitorDAO;
 import cmg.org.monitor.dao.impl.SystemMonitorDaoJDOImpl;
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.module.client.DashBoardService;
+import cmg.org.monitor.services.MonitorLoginService;
 import cmg.org.monitor.services.MonitorService;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -31,6 +33,11 @@ public class DashBoardServiceImpl extends RemoteServiceServlet implements DashBo
 			logger.log(Level.SEVERE, ex.getCause().getMessage());
 		}
 		return list;
+	}
+
+	@Override
+	public UserLoginDto getUserLogin() {
+		return MonitorLoginService.getUserLogin();
 	}
 	
 }

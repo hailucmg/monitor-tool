@@ -19,7 +19,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 @SuppressWarnings("serial")
 @PersistenceCapable
-public class CpuMemory implements Model, IsSerializable {
+public class CpuMemory implements Model {
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)

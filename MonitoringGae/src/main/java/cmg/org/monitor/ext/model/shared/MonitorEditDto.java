@@ -1,7 +1,6 @@
-package cmg.org.monitor.ext.model.shared;
+	package cmg.org.monitor.ext.model.shared;
 
 import java.io.Serializable;
-import java.util.List;
 
 @SuppressWarnings("serial")
 public class MonitorEditDto implements Serializable{

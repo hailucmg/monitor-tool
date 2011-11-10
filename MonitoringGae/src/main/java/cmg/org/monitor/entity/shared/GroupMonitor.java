@@ -6,8 +6,6 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
  * @author admin
  *
@@ -15,7 +13,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 @SuppressWarnings("serial")
 @PersistenceCapable
-public class GroupMonitor implements Model, IsSerializable {
+public class GroupMonitor implements Model {
 	
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)

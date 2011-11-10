@@ -1,5 +1,6 @@
 package cmg.org.monitor.entity.shared;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.jdo.annotations.Extension;
@@ -9,8 +10,6 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
  * Model/entity representation of a network.
  * @author lamphan
@@ -19,7 +18,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 @SuppressWarnings("serial")
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-public class ServiceMonitor implements Model, IsSerializable {
+public class ServiceMonitor implements Model {
 	
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)

@@ -60,7 +60,7 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 		} finally {
 			pm.close();
 		}
-		
+
 		// Return DTO object
 		return sysDto;
 	}
@@ -90,8 +90,9 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 			pm.close();
 		}
 	}
-	
-	public void updateSystemByFileSystem(SystemDto aSystemDTO, FileSystem anFileSystemEntity) {
+
+	public void updateSystemByFileSystem(SystemDto aSystemDTO,
+			FileSystem anFileSystemEntity) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		String name = aSystemDTO.getName();
 		String address = aSystemDTO.getUrl();
@@ -107,7 +108,7 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 			sysMonitor.setUrl(address);
 			sysMonitor.setIp(ip);
 			sysMonitor.addFileSystem(anFileSystemEntity);
-			
+
 			pm.makePersistent(sysMonitor);
 			pm.currentTransaction().commit();
 		} catch (Exception ex) {
@@ -169,13 +170,14 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 						cpuMem = (cmDao.getLastestCpuMemory(listReturn[i], 1) == null) ? null
 								: cmDao.getLastestCpuMemory(listReturn[i], 1)[0];
 						listReturn[i].setLastCpuMemory(cpuMem);
-						listReturn[i].setHealthStatus(sysDao.getCurrentHealthStatus(listReturn[i]));
+						listReturn[i].setHealthStatus(sysDao
+								.getCurrentHealthStatus(listReturn[i]));
 					} catch (Exception e) {
 						// TODO: handle exception
 						throw e;
-						
+
 					}
-					
+
 				}
 			}
 		} catch (Exception ex) {
@@ -228,35 +230,36 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 			pm.close();
 		}
 	}
-	
+
 	@Override
-	public SystemMonitor getSystembyID(String id) throws Exception{
+	public SystemMonitor getSystembyID(String id) throws Exception {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		SystemMonitor system;
-		try{
-			system = pm.getObjectById(SystemMonitor.class,id);
-		}catch (Exception e) {
+		try {
+			system = pm.getObjectById(SystemMonitor.class, id);
+		} catch (Exception e) {
 			throw e;
-			
-		}finally{
+
+		} finally {
 			pm.close();
 		}
 		return system;
-		
+
 	}
+
 	@Override
 	public boolean addnewSystem(SystemMonitor system) throws Exception {
 		// TODO Auto-generated method stub
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		boolean check = false;
-		try{
-			//system.setCode(Ultility.createSID(pm));
+		try {
+			// system.setCode(Ultility.createSID(pm));
 			pm.makePersistent(system);
 			logger.info(MonitorConstant.DONE_MESSAGE);
 			check = true;
-		}catch (Exception e) {
+		} catch (Exception e) {
 			throw e;
-		}finally {
+		} finally {
 			// TODO: handle exception
 			pm.close();
 		}
@@ -264,14 +267,16 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 	}
 
 	@Override
-	public boolean editSystembyID(String id, String newName, String newAddress, String protocol, String group,
-			 String ip,String remoteURL,boolean isActive) throws Exception {
+	public boolean editSystembyID(String id, String newName, String newAddress,
+			String protocol, String group, String ip, String remoteURL,
+			boolean isActive) throws Exception {
 		// TODO Auto-generated method stub
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		SystemMonitor system;
-		boolean check =false;
-		try{
-			system = pm.getObjectById(SystemMonitor.class,id);;
+		boolean check = false;
+		try {
+			system = pm.getObjectById(SystemMonitor.class, id);
+			;
 			pm.currentTransaction().begin();
 			system.setName(newName);
 			system.setUrl(newAddress);
@@ -283,12 +288,12 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 			pm.makePersistent(system);
 			pm.currentTransaction().commit();
 			check = true;
-		}catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 			pm.currentTransaction().rollback();
-			
-		}finally{
-			pm.close();		
+
+		} finally {
+			pm.close();
 		}
 		return check;
 	}
@@ -297,10 +302,9 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 	public boolean deleteSystembyID(String id) throws Exception {
 		// TODO Auto-generated method stub
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		SystemMonitor system = pm.getObjectById(SystemMonitor.class,id);
+		SystemMonitor system = pm.getObjectById(SystemMonitor.class, id);
 		boolean check = false;
-		try
-		{
+		try {
 			boolean delele = true;
 			pm.currentTransaction().begin();
 			system.setDeleted(delele);
@@ -308,10 +312,10 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 			pm.makePersistent(system);
 			pm.currentTransaction().commit();
 			check = true;
-		}catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
-			throw e;	
-		}finally{
+			throw e;
+		} finally {
 			pm.close();
 		}
 		return check;
@@ -321,28 +325,28 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 	public boolean deleteListSystembyID(String[] ids) throws Exception {
 		// TODO Auto-generated method stub
 		boolean delete = true;
-		for(int i=0;i<ids.length;i++){
-			 PersistenceManager pm = PMF.get().getPersistenceManager();
-			 SystemMonitor system = pm.getObjectById(SystemMonitor.class,ids[i]);
-			try
-			{
+		for (int i = 0; i < ids.length; i++) {
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+			SystemMonitor system = pm
+					.getObjectById(SystemMonitor.class, ids[i]);
+			try {
 				pm.currentTransaction().begin();
 				system.setDeleted(delete);
 				system.setActive(false);
 				pm.makePersistent(system);
 				pm.currentTransaction().commit();
-			}catch (Exception e) {
+			} catch (Exception e) {
 				pm.currentTransaction().rollback();
-				return false;	
+				return false;
 			}
 			pm.close();
 		}
-		
+
 		return true;
 	}
-	
+
 	@Override
-	public String getIPbyURL(String url) throws Exception{
+	public String getIPbyURL(String url) throws Exception {
 		String ip = null;
 		try {
 			ip = Ultility.getIpbyUrl(url);
@@ -351,23 +355,64 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 			throw e;
 		}
 		return ip;
-		
+
 	}
-	
+
 	@Override
-	public String createCode() throws Exception{
-		String code=null;
+	public String createCode() throws Exception {
+		String code = null;
 		try {
-			code = Ultility.createSID();
+			code = createSID();
 		} catch (Exception e) {
 			// TODO: handle exception
 			throw e;
 		}
-		
+
 		return code;
-		
+
 	}
-	
+
+	public String createSID() throws Exception {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		String SID = null;
+		String[] names = null;
+		List<String> list;
+		Query q = pm.newQuery("select name from "
+				+ SystemMonitor.class.getName());
+		try {
+
+			list = (List<String>) q.execute();
+			if (list.size() == 0) {
+				SID = "S001";
+			} else {
+				names = new String[list.size()];
+				for (int i = 0; i < list.size(); i++) {
+					names[i] = list.get(i);
+				}
+				if (names.length > 0 && names.length < 9) {
+					int number = names.length + 1;
+					SID = "S00" + number;
+				} else if (names.length > 9 && names.length < 98) {
+					int number = names.length + 1;
+					SID = "S0" + number;
+				} else if (names.length > 98 && names.length < 998) {
+					int number = names.length + 1;
+					SID = "S" + number;
+
+				}
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw e;
+		} finally {
+			q.closeAll();
+			pm.close();
+		}
+
+		return SID;
+	}
+
 	@Override
 	public Date getLastestTimeStamp(SystemMonitor system, String className) {
 		Date time = null;
@@ -393,20 +438,20 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 		ServiceMonitorDAO smDAO = new ServiceMonitorDaoJDOImpl();
 		CpuMemoryDAO cmDAO = new CpuMemoryDaoJDOImpl();
 		FileSystemDAO fsDAO = new FileSystemDaoJDOImpl();
-		
+
 		boolean checkService = false;
 		boolean checkCpuMemory = false;
 		boolean checkFileSystem = true;
-		
+
 		try {
-			CpuMemory cm = (cmDAO.getLastestCpuMemory(system, 1) == null)
-					         ? null
-					        		 :cmDAO.getLastestCpuMemory(system, 1)[0];
+			CpuMemory cm = (cmDAO.getLastestCpuMemory(system, 1) == null) ? null
+					: cmDAO.getLastestCpuMemory(system, 1)[0];
 			if (cm != null) {
-				checkCpuMemory = (cm.getPercentMemoryUsage() < 90) && (cm.getCpuUsage() < 90);
+				checkCpuMemory = (cm.getPercentMemoryUsage() < 90)
+						&& (cm.getCpuUsage() < 90);
 			}
 			checkService = smDAO.checkStatusAllService(system);
-			
+
 			FileSystem[] listFs = fsDAO.listLastestFileSystem(system);
 			if (listFs != null) {
 				for (FileSystem fs : listFs) {
@@ -419,12 +464,10 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-			
-		return system.getStatus() && system.isActive()
-				 ?  (checkCpuMemory && checkFileSystem && checkService 
-						 ? "smile"
-								 : "bored")
-				  : "dead";
+
+		return system.getStatus() && system.isActive() ? (checkCpuMemory
+				&& checkFileSystem && checkService ? "smile" : "bored")
+				: "dead";
 	}
 
 	@Override
@@ -432,7 +475,7 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 		// TODO Auto-generated method stub
 		String[] groups = null;
 		try {
-			groups=Ultility.listGroup();
+			groups = Ultility.listGroup();
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

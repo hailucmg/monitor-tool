@@ -7,7 +7,9 @@ package cmg.org.monitor.module.server;
 import cmg.org.monitor.dao.impl.SystemMonitorDaoJDOImpl;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorEditDto;
+import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.module.client.EditSystemService;
+import cmg.org.monitor.services.MonitorLoginService;
 
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -19,6 +21,10 @@ public class EditSystemServiceImpl extends RemoteServiceServlet implements EditS
 	 */
 	private static final long serialVersionUID = 1L;
 
+	@Override
+	public UserLoginDto getUserLogin() {
+		return MonitorLoginService.getUserLogin();
+	}
 	@Override
 	public MonitorEditDto getSystembyID(String id) throws Exception{
 		// TODO Auto-generated method stub
