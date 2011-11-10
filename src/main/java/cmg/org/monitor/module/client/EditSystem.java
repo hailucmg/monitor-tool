@@ -159,7 +159,37 @@ public class EditSystem implements EntryPoint {
 
 							lblhide = new Label();
 							RootPanel.get("label").add(lblhide);
-
+							
+							DOM.getElementById("labelHead").setInnerHTML("<h1>System Information</h>");
+							
+							Label labelName = new Label();
+							labelName.setText("Name");
+							RootPanel.get("labelName").add(labelName);
+							
+							Label labelurl = new Label();
+							labelurl.setText("URL");
+							RootPanel.get("labelurl").add(labelurl);
+							
+							Label labelip = new Label();
+							labelip.setText("IP");
+							RootPanel.get("labelip").add(labelip);
+							
+							Label labelremoteurl = new Label();
+							labelremoteurl.setText("Remote-URL");
+							RootPanel.get("labelremoteurl").add(labelremoteurl);
+							
+							Label labelactive = new Label();
+							labelactive.setText("Active");
+							RootPanel.get("labelactive").add(labelactive);
+							
+							Label labelprotocol = new Label();
+							labelprotocol.setText("Protocol");
+							RootPanel.get("labelprotocol").add(labelprotocol);
+							
+							Label labelmailgroup = new Label();
+							labelmailgroup.setText("Mail-group");
+							RootPanel.get("labelmailgroup").add(labelmailgroup);
+							
 							bttEdit = new Button();
 							bttEdit.addStyleName("form-edit");
 							RootPanel.get("button").add(bttEdit);
@@ -175,6 +205,8 @@ public class EditSystem implements EntryPoint {
 							bttEdit.addClickHandler(edithandler);
 							MyHandlerReset resetHandler = new MyHandlerReset();
 							bttReset.addClickHandler(resetHandler);
+							MyHandlerBack backHandler = new MyHandlerBack();
+							bttBack.addClickHandler(backHandler);
 						} else {
 							clear(DOM.getElementById("content-table"));
 							DOM.getElementById("page-heading").setInnerHTML(

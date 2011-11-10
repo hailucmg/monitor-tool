@@ -156,7 +156,42 @@ public class AddnewSystem implements EntryPoint {
 		Button bttBack = new Button();
 		bttBack.addStyleName("form-back");
 		RootPanel.get("button").add(bttBack);
-
+		
+		final Label lbhName = new Label();
+		lbhName.setText("Name");
+		RootPanel.get("labelname").add(lbhName);
+		
+		final Label labelurl = new Label();
+		labelurl.setText("URL");
+		RootPanel.get("labelurl").add(labelurl);
+		
+		final Label labelip = new Label();
+		labelip.setText("IP");
+		RootPanel.get("labelip").add(labelip);
+		
+		final Label lableremoteurl = new Label();
+		lableremoteurl.setText("Remote-URL");
+		RootPanel.get("lableremoteurl").add(lableremoteurl);
+		
+		final Label labelactive = new Label();
+		labelactive.setText("Active");
+		RootPanel.get("labelactive").add(labelactive);
+		
+		final Label labelprotocol = new Label();
+		labelprotocol.setText("Protocol");
+		RootPanel.get("labelprotocol").add(labelprotocol);
+		
+		final Label labelmailgroup = new Label();
+		labelmailgroup.setText("Protocol");
+		RootPanel.get("labelmailgroup").add(labelmailgroup);
+		
+		final Label labeladdnew = new Label();
+		labeladdnew.setText("Add new System");
+		labeladdnew.setStyleName("");
+		RootPanel.get("labeladdnew").add(labeladdnew);
+		
+		//DOM.getElementById("step-holder").setInnerHTML(HTMLControl.getStepHolder());
+		
 		class MyHandler implements ClickHandler, KeyUpHandler {
 
 			@Override
