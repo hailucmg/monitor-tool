@@ -3,8 +3,6 @@ package cmg.org.monitor.ext.model.shared;
 
 import java.io.Serializable;
 
-import java.util.*;
-
 /**
  * Please enter a short description for this class.
  *

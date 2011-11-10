@@ -3,10 +3,10 @@ package cmg.org.monitor.module.server;
 import java.util.HashMap;
 import java.util.Map;
 
-
-
 import cmg.org.monitor.ext.model.shared.UserDto;
+import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.module.client.UserManagementService;
+import cmg.org.monitor.services.MonitorLoginService;
 import cmg.org.monitor.util.shared.Ultility;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -18,6 +18,10 @@ public class UserManagementServiceImpl  extends RemoteServiceServlet implements 
 	 */
 	private static final long serialVersionUID = 1L;
 
+	@Override
+	public UserLoginDto getUserLogin() {
+		return MonitorLoginService.getUserLogin();
+	}
 	@Override
 	public Map<String, UserDto> listUser() throws Exception {
 		// TODO Auto-generated method stub
@@ -54,8 +58,6 @@ public class UserManagementServiceImpl  extends RemoteServiceServlet implements 
 			}
 			
 		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
 		}
 		return list;
 	}

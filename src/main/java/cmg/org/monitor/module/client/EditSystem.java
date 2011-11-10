@@ -1,19 +1,21 @@
 package cmg.org.monitor.module.client;
 
 import cmg.org.monitor.ext.model.shared.MonitorEditDto;
+import cmg.org.monitor.ext.model.shared.UserLoginDto;
+import cmg.org.monitor.util.shared.HTMLControl;
+import cmg.org.monitor.util.shared.MonitorConstant;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.ResetButton;
@@ -38,8 +40,61 @@ public class EditSystem implements EntryPoint {
 
 	@Override
 	public void onModuleLoad() {
-		// TODO Auto-generated method stub
-
+		editService.getUserLogin(new AsyncCallback<UserLoginDto>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				setVisibleLoadingImage(false);
+				initMessage("Server error. ", HTMLControl.HTML_EDIT_NAME,
+						"Try again. ", HTMLControl.RED_MESSAGE);
+				setVisibleMessage(true, HTMLControl.RED_MESSAGE);
+			}
+			@Override
+			public void onSuccess(UserLoginDto result) {
+				setVisibleLoadingImage(false);
+				if (result != null) {
+					if (result.isLogin()) {
+						RootPanel.get("menuContent").add(
+								HTMLControl.getMenuHTML(
+										HTMLControl.SYSTEM_MANAGEMENT_PAGE,
+										result.getRole()));
+						RootPanel.get("nav-right")
+								.add(HTMLControl.getLogoutHTML(result
+										.getLogoutUrl()));
+						if (result.getRole() == MonitorConstant.ROLE_GUEST) {
+							initMessage(
+									"Hello "
+											+ result.getNickName()
+											+ ". You might not have permission to use Monitor System. ",
+									result.getLogoutUrl(),
+									"Login with another account.",
+									HTMLControl.YELLOW_MESSAGE);
+							setVisibleMessage(true, HTMLControl.YELLOW_MESSAGE);
+						} else {
+							initMessage(
+									"Wellcome to Monitor System, "
+											+ result.getNickName()
+											+ ". If have any question. ",
+									HTMLControl.HTML_ABOUT_NAME, "Contact Us.",
+									HTMLControl.GREEN_MESSAGE);
+							setVisibleMessage(true, HTMLControl.GREEN_MESSAGE);
+							init();
+						}
+					} else {
+						initMessage("Must login to use Monitor System. ", result.getLoginUrl(),
+								"Login. ", HTMLControl.RED_MESSAGE);
+						setVisibleMessage(true, HTMLControl.RED_MESSAGE);
+					}
+				} else {
+					initMessage("Server error. ", HTMLControl.HTML_EDIT_NAME,
+							"Try again. ", HTMLControl.RED_MESSAGE);
+					setVisibleMessage(true, HTMLControl.RED_MESSAGE);
+				}
+			}
+		});
+		
+	}
+	
+	void init() {
 		editService.getSystembyID(
 				Window.Location.getParameter("id").toString(),
 				new AsyncCallback<MonitorEditDto>() {
@@ -137,7 +192,25 @@ public class EditSystem implements EntryPoint {
 
 				});
 	}
-	
+
+	void setVisibleLoadingImage(boolean b) {
+		RootPanel.get("img-loading").setVisible(b);
+	}
+
+	void setVisibleMessage(boolean b, int type) {
+		RootPanel.get("message-" + HTMLControl.getColor(type)).setVisible(b);
+	}
+
+	/*
+	 * Show message with content
+	 */
+	void initMessage(String message, String url, String titleUrl, int type) {
+		RootPanel.get("content-" + HTMLControl.getColor(type)).clear();
+		RootPanel.get("content-" + HTMLControl.getColor(type)).add(
+				new HTML(message
+						+ ((url.trim().length() == 0) ? "" : ("  <a href=\""
+								+ url + "\">" + titleUrl + "</a>")), true));
+	}
 	class MyHandlerBack implements ClickHandler {
 
 		@Override
@@ -145,8 +218,9 @@ public class EditSystem implements EntryPoint {
 			// TODO Auto-generated method stub
 			Window.Location.assign("SystemManagment.html");
 		}
-		
+
 	}
+
 	class MyHandlerReset implements ClickHandler {
 
 		@Override
@@ -171,9 +245,8 @@ public class EditSystem implements EntryPoint {
 
 	}
 
-	class MyHandlerEdit implements ClickHandler{
+	class MyHandlerEdit implements ClickHandler {
 
-	
 		@Override
 		public void onClick(ClickEvent event) {
 			// TODO Auto-generated method stub

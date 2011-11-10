@@ -4,6 +4,7 @@ import cmg.org.monitor.entity.shared.CpuMemory;
 import cmg.org.monitor.entity.shared.FileSystem;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
@@ -54,7 +55,7 @@ public class SystemDetail implements EntryPoint {
 	private PieChart pieFileSystem;
 
 	private AbsolutePanel panelSystemInfo;
-	
+
 	private AreaChart achCpu;
 
 	private AreaChart achMemory;
@@ -86,6 +87,64 @@ public class SystemDetail implements EntryPoint {
 
 	@Override
 	public void onModuleLoad() {
+		sysDetailSv.getUserLogin(new AsyncCallback<UserLoginDto>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				setVisibleLoadingImage(false);
+				initMessage("Server error. ", HTMLControl.HTML_DASHBOARD_NAME,
+						"Try again. ", HTMLControl.RED_MESSAGE);
+				setVisibleMessage(true, HTMLControl.RED_MESSAGE);
+			}
+
+			@Override
+			public void onSuccess(UserLoginDto result) {
+				setVisibleLoadingImage(false);
+				if (result != null) {
+					if (result.isLogin()) {
+						RootPanel.get("menuContent").add(
+								HTMLControl.getMenuHTML(
+										HTMLControl.DASHBOARD_PAGE,
+										result.getRole()));
+						RootPanel.get("nav-right")
+								.add(HTMLControl.getLogoutHTML(result
+										.getLogoutUrl()));
+						if (result.getRole() == MonitorConstant.ROLE_GUEST) {
+							initMessage(
+									"Hello "
+											+ result.getNickName()
+											+ ". You might not have permission to use Monitor System. ",
+									result.getLogoutUrl(),
+									"Login with another account.",
+									HTMLControl.YELLOW_MESSAGE);
+							setVisibleMessage(true, HTMLControl.YELLOW_MESSAGE);
+						} else {
+							initMessage(
+									"Wellcome to Monitor System, "
+											+ result.getNickName()
+											+ ". If have any question. ",
+									HTMLControl.HTML_ABOUT_NAME, "Contact Us.",
+									HTMLControl.GREEN_MESSAGE);
+							setVisibleMessage(true, HTMLControl.GREEN_MESSAGE);
+							init();
+						}
+					} else {
+						initMessage("Must login to use Monitor System. ",
+								result.getLoginUrl(), "Login. ",
+								HTMLControl.RED_MESSAGE);
+						setVisibleMessage(true, HTMLControl.RED_MESSAGE);
+					}
+				} else {
+					initMessage("Server error. ",
+							HTMLControl.HTML_DASHBOARD_NAME, "Try again. ",
+							HTMLControl.RED_MESSAGE);
+					setVisibleMessage(true, HTMLControl.RED_MESSAGE);
+				}
+			}
+		});
+
+	}
+
+	void init() {
 		sysID = Window.Location.getParameter("sid");
 		try {
 			sysDetailSv.validSystemId(sysID, new AsyncCallback<Boolean>() {
@@ -101,7 +160,7 @@ public class SystemDetail implements EntryPoint {
 						Runnable onLoadCallback = new Runnable() {
 							@Override
 							public void run() {
-								init(History.getToken());
+								initContent(History.getToken());
 								History.addValueChangeHandler(new ValueChangeHandler<String>() {
 									@Override
 									public void onValueChange(
@@ -110,7 +169,7 @@ public class SystemDetail implements EntryPoint {
 												.toLowerCase();
 										changePapeHeading(hash);
 										changeStepHolder(hash);
-										init(hash);
+										initContent(hash);
 									}
 								});
 							}
@@ -124,10 +183,10 @@ public class SystemDetail implements EntryPoint {
 								AreaChart.PACKAGE, PieChart.PACKAGE,
 								AnnotatedTimeLine.PACKAGE);
 					} else {
-						showRedirectCountMessage("Invalid system ID, redirect to Dashboard",
-								HTMLControl.HTML_DASHBOARD_NAME, 
-								"Redirect now.", 
-								HTMLControl.RED_MESSAGE);
+						showRedirectCountMessage(
+								"Invalid system ID, redirect to Dashboard",
+								HTMLControl.HTML_DASHBOARD_NAME,
+								"Redirect now.", HTMLControl.RED_MESSAGE);
 					}
 				}
 
@@ -142,65 +201,65 @@ public class SystemDetail implements EntryPoint {
 
 	}
 
-	void init(String hash) {
+	void initContent(String hash) {
 		flexTableContent.clear();
 		cancelTimer();
 		int view = getViewIndex(hash);
 		setVisibleLoadingImage(false);
 		initFlexTableContent(view);
-		
+
 		if (view == HTMLControl.VIEW_STATISTIC) {
 			initSystemStatistic();
 		} else {
 			initSystemDetails();
 		}
 	}
-	
+
 	void initSystemStatistic() {
 		timerLoadStatistic = new Timer() {
-			
+
 			@Override
 			public void run() {
-				sysDetailSv.listCpuMemoryHistory(sysID, new AsyncCallback<CpuMemory[]>() {
-					
-					@Override
-					public void onSuccess(CpuMemory[] result) {
-						if (result != null) {
-							drawSystemStatistic(result);
-						} else {
-							//
-						}
-					}
-					
-					@Override
-					public void onFailure(Throwable caught) {
-						caught.printStackTrace();						
-					}
-				});
+				sysDetailSv.listCpuMemoryHistory(sysID,
+						new AsyncCallback<CpuMemory[]>() {
+
+							@Override
+							public void onSuccess(CpuMemory[] result) {
+								if (result != null) {
+									drawSystemStatistic(result);
+								} else {
+									//
+								}
+							}
+
+							@Override
+							public void onFailure(Throwable caught) {
+								caught.printStackTrace();
+							}
+						});
 			}
 		};
 		timerLoadStatistic.run();
 		timerLoadStatistic.scheduleRepeating(MonitorConstant.REFRESH_RATE);
 	}
-	
+
 	void drawSystemStatistic(CpuMemory[] list) {
 		DataTable data = DataTable.create();
 		data.addColumn(ColumnType.DATETIME, "Date");
-	    data.addColumn(ColumnType.NUMBER, "Memory Usage");
-	    data.addColumn(ColumnType.STRING, "title1");
-	    data.addColumn(ColumnType.STRING, "text1");
-	    data.addColumn(ColumnType.NUMBER, "CPU Usage");
-	    data.addColumn(ColumnType.STRING, "title2");
-	    data.addColumn(ColumnType.STRING, "text2");
-	    data.addRows(list.length);
-	    for (int i = 0; i < list.length; i++) {
-	    	data.setValue(i, 0, list[i].getTimeStamp());
-	        data.setValue(i, 1, list[i].getPercentMemoryUsage());
-	        data.setValue(i, 4, list[i].getCpuUsage());
-	    }
+		data.addColumn(ColumnType.NUMBER, "Memory Usage");
+		data.addColumn(ColumnType.STRING, "title1");
+		data.addColumn(ColumnType.STRING, "text1");
+		data.addColumn(ColumnType.NUMBER, "CPU Usage");
+		data.addColumn(ColumnType.STRING, "title2");
+		data.addColumn(ColumnType.STRING, "text2");
+		data.addRows(list.length);
+		for (int i = 0; i < list.length; i++) {
+			data.setValue(i, 0, list[i].getTimeStamp());
+			data.setValue(i, 1, list[i].getPercentMemoryUsage());
+			data.setValue(i, 4, list[i].getCpuUsage());
+		}
 		atlStatistic.draw(data, createAnnotatedTimeLineOptions());
 	}
-	
 
 	void initSystemDetails() {
 		timerLoadSystemDetails = new Timer() {
@@ -215,7 +274,7 @@ public class SystemDetail implements EntryPoint {
 								if (result != null) {
 									drawSystemDetails(result);
 								} else {
-									
+
 								}
 							}
 
@@ -243,7 +302,7 @@ public class SystemDetail implements EntryPoint {
 			pieFileSystem = new PieChart();
 			tblFileSystem = new Table();
 			panelSystemInfo = new AbsolutePanel();
-			
+
 			flexTableContent.setCellPadding(3);
 			flexTableContent.setCellSpacing(0);
 			flexTableContent.getFlexCellFormatter().setColSpan(0, 0, 2);
@@ -329,7 +388,7 @@ public class SystemDetail implements EntryPoint {
 	}
 
 	/**
-	 * @param message 
+	 * @param message
 	 * @param url
 	 * @param titleUrl
 	 * @param type
@@ -388,8 +447,9 @@ public class SystemDetail implements EntryPoint {
 	void setVisibleLoadingImage(boolean b) {
 		RootPanel.get("img-loading").setVisible(b);
 	}
+
 	void drawSystemDetails(SystemMonitor sys) {
-		
+
 		panelSystemInfo.clear();
 		panelSystemInfo.add(HTMLControl.getSystemInfo(sys));
 
@@ -401,13 +461,15 @@ public class SystemDetail implements EntryPoint {
 	}
 
 	void drawCpuMemoryInfo(SystemMonitor sys) {
-		CpuMemory cm = sys.getLastCpuMemory() == null ? null : sys.getLastCpuMemory();
+		CpuMemory cm = sys.getLastCpuMemory() == null ? null : sys
+				.getLastCpuMemory();
 		// Gauge CPU Usage
 		if (cm != null) {
-			ggCpu.draw(
-					createGaugeDataTable("CPU",cm.getCpuUsage()) , createGaugeOptions());
+			ggCpu.draw(createGaugeDataTable("CPU", cm.getCpuUsage()),
+					createGaugeOptions());
 			ggMemory.draw(
-					createGaugeDataTable("Memory", cm.getPercentMemoryUsage()), createGaugeOptions());
+					createGaugeDataTable("Memory", cm.getPercentMemoryUsage()),
+					createGaugeOptions());
 		}
 		// Gauge Memory Usage
 		;
@@ -435,9 +497,11 @@ public class SystemDetail implements EntryPoint {
 			}
 			achCpu.draw(createAreaChartDataTable("CPU Usage", listCpuUsage),
 					createAreaChartOptions(100, 0));
-			achMemory.draw(
-					createAreaChartDataTable("Memory Usage", listMemoryUsage),
-					createAreaChartOptions(listCpuMemory[0].getTotalMemory(), 0));
+			achMemory
+					.draw(createAreaChartDataTable("Memory Usage",
+							listMemoryUsage),
+							createAreaChartOptions(
+									listCpuMemory[0].getTotalMemory(), 0));
 		}
 	}
 

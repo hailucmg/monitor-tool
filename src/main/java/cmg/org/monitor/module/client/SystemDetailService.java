@@ -2,6 +2,7 @@ package cmg.org.monitor.module.client;
 
 import cmg.org.monitor.entity.shared.CpuMemory;
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.ext.model.shared.UserLoginDto;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -13,4 +14,6 @@ public interface SystemDetailService extends RemoteService {
 	boolean validSystemId(String sysID);
 	
 	CpuMemory[] listCpuMemoryHistory(String sysID);
+	
+	UserLoginDto getUserLogin();
 }

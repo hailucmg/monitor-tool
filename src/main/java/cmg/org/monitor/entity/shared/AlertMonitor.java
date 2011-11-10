@@ -9,7 +9,6 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.AlertDto;
 
 /**
@@ -17,7 +16,12 @@ import cmg.org.monitor.ext.model.shared.AlertDto;
  * @version 1.0
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-public class AlertMonitor {
+public class AlertMonitor implements Model {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)

@@ -12,4 +12,8 @@ public final class MonitorConstant {
 	public static final String ADMIN_EMAIL = "monitor@c-mg.vn";
 	
 	public static final String ADMIN_PASSWORD = "31102011";
+	
+	public static final int ROLE_ADMIN = 0x001;
+	public static final int ROLE_NORMAL_USER = 0x002;
+	public static final int ROLE_GUEST = 0x003;
 }

@@ -1,10 +1,7 @@
 package cmg.org.monitor.module.client;
 
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
-
-import cmg.org.monitor.dao.impl.FileSystemDaoJDOImpl;
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
@@ -13,7 +10,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -45,15 +41,64 @@ public class DashBoard implements EntryPoint {
 
 	@Override
 	public void onModuleLoad() {
-		// Create a callback to be called when the visualization API
-		// has been loaded.
+		dashboardSv.getUserLogin(new AsyncCallback<UserLoginDto>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				setVisibleLoadingImage(false);
+				initMessage("Server error. ", HTMLControl.HTML_DASHBOARD_NAME,
+						"Try again. ", HTMLControl.RED_MESSAGE);
+				setVisibleMessage(true, HTMLControl.RED_MESSAGE);
+			}
+			@Override
+			public void onSuccess(UserLoginDto result) {
+				setVisibleLoadingImage(false);
+				if (result != null) {
+					if (result.isLogin()) {
+						RootPanel.get("menuContent").add(
+								HTMLControl.getMenuHTML(
+										HTMLControl.DASHBOARD_PAGE,
+										result.getRole()));
+						RootPanel.get("nav-right")
+								.add(HTMLControl.getLogoutHTML(result
+										.getLogoutUrl()));
+						if (result.getRole() == MonitorConstant.ROLE_GUEST) {
+							initMessage(
+									"Hello "
+											+ result.getNickName()
+											+ ". You might not have permission to use Monitor System. ",
+									result.getLogoutUrl(),
+									"Login with another account.",
+									HTMLControl.YELLOW_MESSAGE);
+							setVisibleMessage(true, HTMLControl.YELLOW_MESSAGE);
+						} else {
+							initMessage(
+									"Wellcome to Monitor System, "
+											+ result.getNickName()
+											+ ". If have any question. ",
+									HTMLControl.HTML_ABOUT_NAME, "Contact Us.",
+									HTMLControl.GREEN_MESSAGE);
+							setVisibleMessage(true, HTMLControl.GREEN_MESSAGE);
+							init();
+						}
+					} else {
+						initMessage("Must login to use Monitor System. ", result.getLoginUrl(),
+								"Login. ", HTMLControl.RED_MESSAGE);
+						setVisibleMessage(true, HTMLControl.RED_MESSAGE);
+					}
+				} else {
+					initMessage("Server error. ", HTMLControl.HTML_DASHBOARD_NAME,
+							"Try again. ", HTMLControl.RED_MESSAGE);
+					setVisibleMessage(true, HTMLControl.RED_MESSAGE);
+				}
+			}
+		});
+	}
+
+	void init() {
 		Runnable onLoadCallback = new Runnable() {
 			@Override
 			public void run() {
-				/* Window.alert(Boolean.toString(Pattern.matches("^([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}$"
-						 			, "123.123.12.23")));*/
-				 
-				 
+
 				// Create table
 				tableListSystem = new Table();
 				// Create options and datatable of table list system

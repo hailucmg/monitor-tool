@@ -11,8 +11,6 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import cmg.org.monitor.ext.model.shared.AlertDto;
-import cmg.org.monitor.ext.model.shared.FileSystemDto;
 import cmg.org.monitor.ext.model.shared.FileSystemDto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -24,7 +22,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 @SuppressWarnings("serial")
 @PersistenceCapable
-public class FileSystem implements Model, IsSerializable {
+public class FileSystem implements Model {
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	@Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")

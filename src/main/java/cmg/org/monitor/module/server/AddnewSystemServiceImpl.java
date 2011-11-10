@@ -2,7 +2,9 @@ package cmg.org.monitor.module.server;
 
 import cmg.org.monitor.dao.impl.SystemMonitorDaoJDOImpl;
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.module.client.AddnewSystemService;
+import cmg.org.monitor.services.MonitorLoginService;
 
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -15,6 +17,10 @@ public class AddnewSystemServiceImpl extends RemoteServiceServlet implements
 	 */
 	private static final long serialVersionUID = 1L;
 
+	@Override
+	public UserLoginDto getUserLogin() {
+		return MonitorLoginService.getUserLogin();
+	}
 	@Override
 	public String addSystem(SystemMonitor system, String url) throws Exception {
 		// TODO Auto-generated method stub

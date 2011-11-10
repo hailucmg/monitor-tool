@@ -15,7 +15,9 @@ import cmg.org.monitor.dao.impl.ServiceMonitorDaoJDOImpl;
 import cmg.org.monitor.dao.impl.SystemMonitorDaoJDOImpl;
 import cmg.org.monitor.entity.shared.CpuMemory;
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.module.client.SystemDetailService;
+import cmg.org.monitor.services.MonitorLoginService;
 
 public class SystemDetailServiceImpl extends RemoteServiceServlet implements SystemDetailService {
 
@@ -32,6 +34,10 @@ public class SystemDetailServiceImpl extends RemoteServiceServlet implements Sys
 	private static final Logger logger = Logger.getLogger(SystemDetailServiceImpl.class
 			.getCanonicalName());
 	
+	@Override
+	public UserLoginDto getUserLogin() {
+		return MonitorLoginService.getUserLogin();
+	}
 	public SystemMonitor getLastestDataMonitor(String sysID) {		
 		SystemMonitor sys = null;
 		try {

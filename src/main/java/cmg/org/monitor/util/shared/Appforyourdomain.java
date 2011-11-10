@@ -15,7 +15,6 @@ import com.google.gdata.data.appsforyourdomain.AppsForYourDomainException;
 import com.google.gdata.data.appsforyourdomain.generic.GenericEntry;
 import com.google.gdata.data.appsforyourdomain.generic.GenericFeed;
 import com.google.gdata.util.ServiceException;
-import com.google.protos.cloud.sql.Client;
 
 public class Appforyourdomain {
 
@@ -217,7 +216,7 @@ public class Appforyourdomain {
 		return listUser;
 	}
 
-/*
+
 	public static void main(String[] arg) throws Exception {
 		String[] list = null;
 
@@ -281,5 +280,5 @@ public class Appforyourdomain {
 
 		}
 
-	}*/
+	}
 }

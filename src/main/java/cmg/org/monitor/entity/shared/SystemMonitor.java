@@ -1,11 +1,11 @@
 
 package cmg.org.monitor.entity.shared;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 
 import javax.jdo.annotations.Element;
 import javax.jdo.annotations.Extension;
@@ -18,8 +18,6 @@ import javax.jdo.annotations.PrimaryKey;
 
 import cmg.org.monitor.ext.model.shared.SystemDto;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
  * @author lamphan
  * @version 1.0
@@ -27,7 +25,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 @SuppressWarnings("serial")
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-public class SystemMonitor implements Model, IsSerializable {
+public class SystemMonitor implements Model {
 
 	@Persistent(mappedBy = "systemMonitor")
 	@Element(dependent = "true")
