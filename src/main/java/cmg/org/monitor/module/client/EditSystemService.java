@@ -1,6 +1,5 @@
 package cmg.org.monitor.module.client;
 
-import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorEditDto;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
 
