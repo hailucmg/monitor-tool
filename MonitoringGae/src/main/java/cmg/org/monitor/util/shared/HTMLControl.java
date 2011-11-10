@@ -74,7 +74,7 @@ public class HTMLControl {
 					+ "'><b>");
 			temp.append("Administration");
 			temp.append("</b></a><div class='select_sub");
-			temp.append((page == SYSTEM_MANAGEMENT_PAGE) ? " show" : "");
+			temp.append((page == SYSTEM_MANAGEMENT_PAGE || page == USER_MANAGEMENT_PAGE) ? " show" : "");
 			temp.append("'><ul class='sub'>");
 			temp.append("<li");
 			temp.append((page == SYSTEM_MANAGEMENT_PAGE) ? " class='sub_show'"
