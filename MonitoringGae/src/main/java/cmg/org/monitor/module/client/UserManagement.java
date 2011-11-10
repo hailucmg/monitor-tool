@@ -90,7 +90,7 @@ public class UserManagement implements EntryPoint {
 		
 	}
 	
-	@SuppressWarnings("unused")
+	
 	private void drawTable(Map<String, UserDto> listUser){
 		myTable.draw(createData(listUser), option());
 		

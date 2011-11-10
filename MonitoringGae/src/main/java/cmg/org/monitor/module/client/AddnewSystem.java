@@ -104,6 +104,7 @@ public class AddnewSystem implements EntryPoint {
 		bttBack.addStyleName("form-back");
 		RootPanel.get("button").add(bttBack);
 	
+		
 		class MyHandler implements ClickHandler, KeyUpHandler{
 
 			@Override
@@ -115,6 +116,7 @@ public class AddnewSystem implements EntryPoint {
 			@Override
 			public void onClick(ClickEvent event) {
 				// TODO Auto-generated method stub
+				
 				String validateName = validateName(txtName.getText());
 				String validateURL = validateURL(txtURL.getText());
 				String validateIp = validateIP(txtIP.getText());
@@ -167,8 +169,39 @@ public class AddnewSystem implements EntryPoint {
 			}
 		}
 		
+		class myReset implements ClickHandler, KeyUpHandler{
+
+			@Override
+			public void onKeyUp(KeyUpEvent event) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				txtName.setText("");
+				txtIP.setText("");
+				txtRemote.setText("");
+				txtURL.setText("");
+			}
+			
+		}
+		class myBack implements ClickHandler{
+
+			@Override
+			public void onClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				Window.Location.assign("SystemManagement.html");
+			}
+			
+		}
 		MyHandler handler = new MyHandler();
 		bttCreate.addClickHandler(handler);
+		myReset resetHandler = new myReset();
+		bttReset.addClickHandler(resetHandler);
+		myBack backHandler = new myBack();
+		bttBack.addClickHandler(backHandler);
 		
 	}
 		//get boolean isActive by String
