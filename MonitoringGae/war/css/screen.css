@@ -948,7 +948,7 @@ font-family: Tahoma;
 #nav-right	{
 	float: right;
 	position: relative;
-	width: 225px;
+	width: 100px;
 	z-index: 0;
 	}
 #nav-right a	{
