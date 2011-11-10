@@ -2,7 +2,11 @@
 <!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.4.0//EN" "http://google-web-toolkit.googlecode.com/svn/tags/2.4.0/distro-source/core/src/gwt-module.dtd">
 <module rename-to="monitorusermanagement">
 	<inherits name="com.google.gwt.user.User" />
-	<inherits name="cmg.org.monitor.ext.model.MonitorDto"/>
+	<inherits name="cmg.org.monitor.entity.Entity" />
+	<inherits name='cmg.org.monitor.ext.model.MonitorDto' />
+<inherits name="com.google.gwt.i18n.I18N"/>
+	<inherits name='cmg.org.monitor.util.MonitorUtil' />
+
 	<inherits name="com.google.gwt.visualization.Visualization" />
 	<source path="client" />
 	
