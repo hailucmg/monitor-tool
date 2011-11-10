@@ -97,7 +97,6 @@ public class SystemManagement implements EntryPoint {
 					@Override
 					public void onValueChange(ValueChangeEvent<String> event) {
 						// TODO Auto-generated method stub
-						
 						if ( Window
 								.confirm("do you want to delete?") == false) {
 							Window.Location.assign("SystemManagement.html");
@@ -121,7 +120,6 @@ public class SystemManagement implements EntryPoint {
 
 										}
 									}
-
 									@Override
 									public void onFailure(Throwable caught) {
 										// TODO Auto-generated method stub
