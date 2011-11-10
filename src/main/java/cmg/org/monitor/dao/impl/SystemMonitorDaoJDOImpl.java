@@ -155,8 +155,7 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 		SystemMonitorDAO sysDao = new SystemMonitorDaoJDOImpl();
 		List<SystemMonitor> listData = null;
 		SystemMonitor[] listReturn = null;
-		CpuMemory cpuMem = null;
-
+		CpuMemory cpuMem = new CpuMemory();
 		Query query = pm.newQuery(SystemMonitor.class);
 		query.setFilter("isDeleted == isDeletedPara");
 		query.declareParameters("boolean isDeletedPara");
@@ -166,10 +165,17 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 				listReturn = new SystemMonitor[listData.size()];
 				for (int i = 0; i < listData.size(); i++) {
 					listReturn[i] = listData.get(i);
-					cpuMem = (cmDao.getLastestCpuMemory(listReturn[i], 1) == null) ? null
-							: cmDao.getLastestCpuMemory(listReturn[i], 1)[0];
-					listReturn[i].setLastCpuMemory(cpuMem);
-					listReturn[i].setHealthStatus(sysDao.getCurrentHealthStatus(listReturn[i]));
+					try {
+						cpuMem = (cmDao.getLastestCpuMemory(listReturn[i], 1) == null) ? null
+								: cmDao.getLastestCpuMemory(listReturn[i], 1)[0];
+						listReturn[i].setLastCpuMemory(cpuMem);
+						listReturn[i].setHealthStatus(sysDao.getCurrentHealthStatus(listReturn[i]));
+					} catch (Exception e) {
+						// TODO: handle exception
+						throw e;
+						
+					}
+					
 				}
 			}
 		} catch (Exception ex) {
