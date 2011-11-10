@@ -8,15 +8,25 @@
  */
 package cmg.org.monitor.ext.util;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import cmg.org.monitor.common.Constant;
 import cmg.org.monitor.dao.AlertDao;
@@ -52,6 +62,12 @@ import cmg.org.monitor.services.email.MailService;
  */
 public class URLMonitor {
 
+	/** Alert name */
+	public static String ALERT_NAME = " alert report ";
+
+	/** Declare email address */
+	public static String EMAIL_ADMINISTRATOR = "lam.phan@c-mg.com";
+	
 	/** Time format value */
 	private static String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss.S";
 
@@ -263,7 +279,7 @@ public class URLMonitor {
 
 				// Gets CPU from Cpu memory for 3 times, if this values are
 				// greater
-				// than 90% Then send alert
+				// than 90% then send alert
 				try {
 					boolean cpuCritical = true;
 					List<CpuUsageDto> cpuList = new ArrayList<CpuUsageDto>();
@@ -408,22 +424,66 @@ public class URLMonitor {
 			AlertDao alert = new AlertDaoJDOImpl();
 			AlertDto alertDTO = new AlertDto();
 
+			// Send alert email to email group
+			service.sendAlertMail(sysDto, message);
+			
 			alertDTO.setBasicInfo(
 					"The monitor system don't know url or some error happen at "
 							+ sysDto.getName(), message, new Date());
 
 			// Create an alert
 			alertDTO = alert.updateAlert(alertDTO, sysDto);
-
-			// Send alert email to email group
-			service.sendAlertMail(sysDto, message);
-
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Cannot send alert about error"
 					+ " of component " + ", error: " + e.getMessage());
 		}
 	}
 
+	/**
+	 * Send alert email function with parameters<br>.
+	 * 
+	 * @param systemDto Data transfer object.
+	 * @throws AddressException
+	 * @throws MessagingException
+	 * @throws UnsupportedEncodingException
+	 */
+	public void sendAlertMail(Component component, SystemDto systemDto) throws AddressException,
+			MessagingException, UnsupportedEncodingException {
+		Properties props = new Properties();
+		Session session = Session.getDefaultInstance(props, null);
+		String msgBody = component.getError();
+
+		try {
+			
+			Message msg = new MimeMessage(session);
+			msg.setFrom(new InternetAddress(EMAIL_ADMINISTRATOR,
+					systemDto.getName()+" Monitor system"));
+			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
+					systemDto.getGroupEmail(), "Cmg monitor email"));
+			msg.setSubject(systemDto.getName() + ALERT_NAME);
+			msg.setText(msgBody);
+			Transport.send(msg);
+		
+			// log any exception and throw it's reason
+		} catch (AddressException ae) {
+			logger.warning("Address exception occurrence due to :"
+					+ ae.getCause().getMessage());
+			throw new AddressException(ae.getCause().getMessage());
+		} catch (MessagingException me) {
+			logger.warning("Messaging exception occurrence due to :"
+					+ me.getCause().getMessage());
+			throw new MessagingException(me.getCause().getMessage());
+		} catch (UnsupportedEncodingException uee) {
+			logger.warning("Unsupported encoding exception due to :"
+					+ uee.getCause().getMessage());
+			throw new UnsupportedEncodingException(uee.getCause().getMessage());
+
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, e.getCause().getMessage());
+		}
+
+	}
+	
 	/**
 	 * The overridden toString method.
 	 * 
