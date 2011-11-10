@@ -4,6 +4,8 @@
 	<inherits name="com.google.gwt.user.User" />
 	<inherits name='cmg.org.monitor.ext.model.MonitorDto'/>
 	<inherits name="cmg.org.monitor.entity.Entity"/>
+	<inherits name='cmg.org.monitor.util.MonitorUtil'/>
+	<inherits name="com.google.gwt.i18n.I18N"/>
 	<source path="client" />
 	<entry-point
 		class="cmg.org.monitor.module.client.EditSystem" />
