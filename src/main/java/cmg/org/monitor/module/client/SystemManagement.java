@@ -35,14 +35,13 @@ public class SystemManagement implements EntryPoint {
 					myTable = new Table();
 					RootPanel.get("dataTableSystem").add(myTable);
 					init();
-					
-					
 					History.addValueChangeHandler(new ValueChangeHandler<String>() {
 						@Override
 						public void onValueChange(ValueChangeEvent<String> event) {
 							// TODO Auto-generated method stub
 							boolean check = Window.confirm("do you want to delete?");
 							if(check==false){
+								Window.Location.assign("SystemManagement.html");
 								return;
 							}
 							String id = event.getValue().toString();
@@ -96,7 +95,7 @@ public class SystemManagement implements EntryPoint {
 			@Override
 			public void onFailure(Throwable caught) {
 				// TODO Auto-generated method stub
-				Window.alert("cannot connect to server,please try again");
+				Window.alert("can not connect to server,please try again");
 				caught.printStackTrace();
 			}
 		});
