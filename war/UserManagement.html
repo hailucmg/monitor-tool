@@ -128,8 +128,7 @@
 			<!-- start logo -->
 			<div id="logo">
 				<a href=""><img src="images/logo/c-mg_logo.png" width="210"
-					height="80" alt="" />
-				</a>
+					height="80" alt="" /> </a>
 			</div>
 			<!-- end logo -->
 
@@ -170,105 +169,13 @@
 		<div class="nav-outer">
 
 			<!-- start nav-right -->
-			<div id="nav-right">
-
-				<div class="nav-divider">&nbsp;</div>
-				<div class="showhide-account">
-					<img src="images/shared/nav/nav_myaccount.gif" width="93"
-						height="14" alt="" />
-				</div>
-				<div class="nav-divider">&nbsp;</div>
-				<a href="" id="logout"><img
-					src="images/shared/nav/nav_logout.gif" width="64" height="14"
-					alt="" />
-				</a>
-				<div class="clear">&nbsp;</div>
-
-				<!--  start account-content -->
-				<div class="account-content">
-					<div class="account-drop-inner">
-						<a href="" id="acc-settings">Settings</a>
-						<div class="clear">&nbsp;</div>
-						<div class="acc-line">&nbsp;</div>
-						<a href="" id="acc-details">Personal details </a>
-						<div class="clear">&nbsp;</div>
-						<div class="acc-line">&nbsp;</div>
-						<a href="" id="acc-project">Project details</a>
-						<div class="clear">&nbsp;</div>
-						<div class="acc-line">&nbsp;</div>
-						<a href="" id="acc-inbox">Inbox</a>
-						<div class="clear">&nbsp;</div>
-						<div class="acc-line">&nbsp;</div>
-						<a href="" id="acc-stats">Statistics</a>
-					</div>
-				</div>
-				<!--  end account-content -->
-
-			</div>
+			<div id="nav-right"></div>
 			<!-- end nav-right -->
 
 
 			<!--  start nav -->
 			<div class="nav">
-				<div class="table">
-
-					<ul class="select">
-						<li><a href="Dashboard.html"><b>Dashboard</b>
-							<!--[if IE 7]><!-->
-						</a>
-						<!--<![endif]--> <!--[if lte IE 6]><table><tr><td><![endif]-->
-							<div class="select_sub">
-								<ul class="sub">
-									<li><a href="#nogo"></a>
-									</li>
-								</ul>
-							</div> <!--[if lte IE 6]></td></tr></table></a><![endif]--></li>
-					</ul>
-					<div class="nav-divider">&nbsp;</div>
-					<ul class="current">
-						<li><a href="SystemManagement.html"><b>Administration</b>
-							<!--[if IE 7]><!-->
-						</a>
-						<!--<![endif]--> <!--[if lte IE 6]><table><tr><td><![endif]-->
-							<div class="select_sub show">
-								<ul class="sub">
-									<li class="sub_show"><a href="SystemManagement.html">System Management</a>
-									</li>
-									<li><a href="UserManagement.html">User Management</a>
-									</li>
-								</ul>
-							</div> <!--[if lte IE 6]></td></tr></table></a><![endif]--></li>
-					</ul>
-					<div class="nav-divider">&nbsp;</div>
-					<ul class="select">
-						<li><a href="About.html"><b>About</b>
-							<!--[if IE 7]><!-->
-						</a>
-						<!--<![endif]--> <!--[if lte IE 6]><table><tr><td><![endif]-->
-							<div class="select_sub">
-								<ul class="sub">
-									<li><a href="#nogo"></a>
-									</li>
-								</ul>
-							</div> <!--[if lte IE 6]></td></tr></table></a><![endif]--></li>
-					</ul>
-
-					<div class="nav-divider">&nbsp;</div>
-
-					<ul class="select">
-						<li><a href="Help.html"><b>Help</b>
-							<!--[if IE 7]><!-->
-						</a>
-						<!--<![endif]--> <!--[if lte IE 6]><table><tr><td><![endif]-->
-							<div class="select_sub">
-								<ul class="sub">
-									<li><a href="#nogo"></a>
-									</li>
-								</ul>
-							</div> <!--[if lte IE 6]></td></tr></table></a><![endif]--></li>
-					</ul>
-					<div class="clear"></div>
-				</div>
+				<div class="table" id="menuContent"></div>
 				<div class="clear"></div>
 			</div>
 			<!--  start nav -->
@@ -311,8 +218,57 @@
 									<div class="step-dark-left">
 										<a href="c-mg.vn">User Management</a>
 									</div>
-									</div>
-									<div id="dataTableUser"></div>
+								</div>
+								<div id="dataTableUser"></div>
+							</div>
+							<!--  start message-red -->
+							<div id="message-red" style="display: none;">
+								<table border="0" width="100%" cellpadding="0" cellspacing="0">
+									<tr>
+										<td class="red-left"><div id="content-red"></div></td>
+										<td class="red-right"><a class="close-red"><img
+												src="images/table/icon_close_red.gif" alt="" /></a></td>
+									</tr>
+								</table>
+							</div>
+							<!--  end message-red -->
+							<!--  start message-yellow -->
+							<div id="message-yellow" style="display: none;">
+								<table border="0" width="100%" cellpadding="0" cellspacing="0">
+									<tr>
+										<td class="yellow-left"><div id="content-yellow"></div></td>
+										<td class="yellow-right"><a class="close-yellow"><img
+												src="images/table/icon_close_yellow.gif" alt="" /></a></td>
+									</tr>
+								</table>
+							</div>
+							<!--  end message-yellow -->
+
+							<!--  start message-blue -->
+							<div id="message-blue" style="display: none;">
+								<table border="0" width="100%" cellpadding="0" cellspacing="0">
+									<tr>
+										<td class="blue-left"><div id="content-blue"></div></td>
+										<td class="blue-right"><a class="close-blue"><img
+												src="images/table/icon_close_blue.gif" alt="" /></a></td>
+									</tr>
+								</table>
+							</div>
+							<!--  end message-blue -->
+
+							<!--  start message-green -->
+							<div id="message-green" style="display: none;">
+								<table border="0" width="100%" cellpadding="0" cellspacing="0">
+									<tr>
+										<td class="green-left"><div id="content-green"></div></td>
+										<td class="green-right"><a class="close-green"><img
+												src="images/table/icon_close_green.gif" alt="" /></a></td>
+									</tr>
+								</table>
+							</div>
+							<!--  end message-green -->
+							<div id="img-loading">
+								<img src="images/icon/loading11.gif" />
 							</div>
 							<!--  end table-content  -->
 							<div class="clear"></div>
