@@ -20,7 +20,7 @@ public class Ultility {
 					checking = false;
 				}
 			}
-			if (checking = true) {
+			if (checking == true) {
 				String[] temp1 = Ultility.listUser();
 				String[] users = new String[temp1.length];
 				for (int k = 0; k < temp1.length; k++) {
