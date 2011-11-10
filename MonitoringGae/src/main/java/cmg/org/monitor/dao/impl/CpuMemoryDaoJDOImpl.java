@@ -30,7 +30,7 @@ public class CpuMemoryDaoJDOImpl implements CpuMemoryDAO {
 
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		CpuMemory[] cpuMem = null;
-		List<CpuMemory> list = null;
+		List<CpuMemory> list = new ArrayList<CpuMemory>();
 		Query query = pm.newQuery(CpuMemory.class);
 		query.setFilter("systemMonitor == sys");
 		query.declareParameters("SystemMonitor sys");
