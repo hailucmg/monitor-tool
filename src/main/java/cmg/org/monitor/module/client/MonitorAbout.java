@@ -19,6 +19,7 @@ public class MonitorAbout implements EntryPoint {
 		aboutSv.getUserLogin(new AsyncCallback<UserLoginDto>() {
 			@Override
 			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
 				setVisibleLoadingImage(false);
 				initMessage("Server error. ", HTMLControl.HTML_ABOUT_NAME,
 						"Try again. ", HTMLControl.RED_MESSAGE);
@@ -35,7 +36,7 @@ public class MonitorAbout implements EntryPoint {
 										result.getRole()));
 						RootPanel.get("nav-right")
 								.add(HTMLControl.getLogoutHTML(result
-										.getLogoutUrl()));
+										.getLogoutUrl(),result.getEmail()));
 						if (result.getRole() == MonitorConstant.ROLE_GUEST) {
 							initMessage(
 									"Hello "

@@ -60,8 +60,9 @@ public class DashBoard implements EntryPoint {
 										result.getRole()));
 						RootPanel.get("nav-right")
 								.add(HTMLControl.getLogoutHTML(result
-										.getLogoutUrl()));
+										.getLogoutUrl(),result.getEmail()));
 						if (result.getRole() == MonitorConstant.ROLE_GUEST) {
+							RootPanel.get("page-heading").add(new HTML("<h1>Login</h1>"));
 							initMessage(
 									"Hello "
 											+ result.getNickName()
@@ -71,6 +72,7 @@ public class DashBoard implements EntryPoint {
 									HTMLControl.YELLOW_MESSAGE);
 							setVisibleMessage(true, HTMLControl.YELLOW_MESSAGE);
 						} else {
+							RootPanel.get("page-heading").add(new HTML("<h1>Dashboard</h1>"));
 							initMessage(
 									"Wellcome to Monitor System, "
 											+ result.getNickName()
@@ -81,6 +83,7 @@ public class DashBoard implements EntryPoint {
 							init();
 						}
 					} else {
+						RootPanel.get("page-heading").add(new HTML("<h1>Login</h1>"));
 						initMessage("Must login to use Monitor System. ", result.getLoginUrl(),
 								"Login. ", HTMLControl.RED_MESSAGE);
 						setVisibleMessage(true, HTMLControl.RED_MESSAGE);
@@ -103,6 +106,8 @@ public class DashBoard implements EntryPoint {
 				tableListSystem = new Table();
 				// Create options and datatable of table list system
 				createOptionsTableListSystem();
+				RootPanel.get("statusMes").add(new HTML("<h3>Latest status of systems (update in every 30 minutes)</h3>"));
+				
 				// Add table to div id 'tableListSystem'
 				RootPanel.get("tableListSystem").add(tableListSystem);
 				// Create Timer object which auto refresh data table list system
@@ -136,7 +141,7 @@ public class DashBoard implements EntryPoint {
 		dashboardSv.listSystems(new AsyncCallback<SystemMonitor[]>() {
 			@Override
 			public void onFailure(Throwable caught) {
-				initMessage("Server error. ", "DashBoard.html", "Try again.",
+				initMessage("Server error. ", HTMLControl.HTML_DASHBOARD_NAME, "Try again.",
 						HTMLControl.RED_MESSAGE);
 				setVisibleMessage(true, HTMLControl.RED_MESSAGE);
 				setVisibleLoadingImage(true);

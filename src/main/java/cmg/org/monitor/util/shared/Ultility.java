@@ -6,7 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Ultility {
-	
+	public static void main(String[] args) {
+		try {
+			System.out.println(Integer.toString(getSystemRole("luhonghai@c-mg.vn")));
+		} catch (Exception ex) {
+			
+		}
+	}
 	public static int getSystemRole(String userId) throws Exception {
 		int member = MonitorConstant.ROLE_GUEST;
 		if (userId.contains("@c-mg")) {
@@ -14,8 +20,9 @@ public class Ultility {
 			String[] temp = Ultility.listAdmin();
 			String[] admins = new String[temp.length];
 			for (int i = 0; i < temp.length; i++) {
-				admins[i] = temp[i].split(":")[0];
-				if (admins[i].equals(userId)) {
+				admins[0] = temp[i].split(":")[0];
+				System.out.println(admins[0].toString());
+				if (admins[0].trim().toString().toLowerCase().equals(userId.toLowerCase())) {
 					member = MonitorConstant.ROLE_ADMIN;
 					checking = false;
 				}
@@ -24,14 +31,15 @@ public class Ultility {
 				String[] temp1 = Ultility.listUser();
 				String[] users = new String[temp1.length];
 				for (int k = 0; k < temp1.length; k++) {
-					users[k] = temp1[k].split(":")[0];
-					if (users[k].equals(userId)) {
+					users[0] = temp1[k].split(":")[0];
+					if (users[0].toLowerCase().equals(userId.toLowerCase())) {
 						member = MonitorConstant.ROLE_NORMAL_USER;
 					}
 				}
 
 			}
 		}
+		
 		return member;
 
 	}

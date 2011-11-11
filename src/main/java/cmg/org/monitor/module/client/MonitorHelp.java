@@ -36,7 +36,7 @@ public class MonitorHelp implements EntryPoint {
 										result.getRole()));
 						RootPanel.get("nav-right")
 								.add(HTMLControl.getLogoutHTML(result
-										.getLogoutUrl()));
+										.getLogoutUrl(),result.getEmail()));
 						if (result.getRole() == MonitorConstant.ROLE_GUEST) {
 							initMessage(
 									"Hello "

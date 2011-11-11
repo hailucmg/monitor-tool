@@ -48,11 +48,14 @@ public class HTMLControl {
 		return new HTML(temp.toString());
 	}
 
-	public static HTML getLogoutHTML(String url) {
+	public static HTML getLogoutHTML(String url, String username) {
 		StringBuffer temp = new StringBuffer();
+		
 		temp.append("<a href='");
 		temp.append(url);
 		temp.append("' id='logout'><img src='images/shared/nav/nav_logout.gif' width='64' height='14' /></a>");
+		temp.append("<div class='showhide-account'><span>"+ username + "</span>");
+		temp.append("</div>");
 		return new HTML(temp.toString());
 	}
 
