@@ -1,5 +1,27 @@
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee                http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
+<!--start  monitorabout -->
+<servlet>
+    <servlet-name>monitorabout</servlet-name>
+    <servlet-class>cmg.org.monitor.module.server.MonitorAboutServiceImpl</servlet-class>
+</servlet>
+  
+<servlet-mapping>
+    <servlet-name>monitorabout</servlet-name>
+    <url-pattern>/monitorabout/MonitorAbout</url-pattern>
+</servlet-mapping>
+<!--end  monitorabout -->
+<!--start  monitorhelp -->
+<servlet>
+    <servlet-name>monitorhelp</servlet-name>
+    <servlet-class>cmg.org.monitor.module.server.MonitorHelpServiceImpl</servlet-class>
+</servlet>
+  
+<servlet-mapping>
+    <servlet-name>monitorhelp</servlet-name>
+    <url-pattern>/monitorhelp/MonitorHelp</url-pattern>
+</servlet-mapping>
+<!--end  monitorhelp -->
 <!--start  SystemDetail -->
 <servlet>
     <servlet-name>systemdetail</servlet-name>
