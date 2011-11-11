@@ -6,13 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Ultility {
-	public static void main(String[] args) {
-		try {
-			System.out.println(Integer.toString(getSystemRole("luhonghai@c-mg.vn")));
-		} catch (Exception ex) {
-			
-		}
-	}
+	
+
 	public static int getSystemRole(String userId) throws Exception {
 		int member = MonitorConstant.ROLE_GUEST;
 		if (userId.contains("@c-mg")) {
@@ -21,8 +16,8 @@ public class Ultility {
 			String[] admins = new String[temp.length];
 			for (int i = 0; i < temp.length; i++) {
 				admins[0] = temp[i].split(":")[0];
-				System.out.println(admins[0].toString());
-				if (admins[0].trim().toString().toLowerCase().equals(userId.toLowerCase())) {
+				if (admins[0].trim().toString().toLowerCase()
+						.equals(userId.toLowerCase())) {
 					member = MonitorConstant.ROLE_ADMIN;
 					checking = false;
 				}
@@ -39,7 +34,7 @@ public class Ultility {
 
 			}
 		}
-		
+
 		return member;
 
 	}
@@ -98,11 +93,20 @@ public class Ultility {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
+		for(int a = 0 ; a < list.size();a++){
+			for(int b = 1 ; b <list.size();b++){
+				if(list.get(a).split(":")[0].equals(list.get(b).split(":")[0])){
+					String newUser = list.get(a).toString()+","+ list.get(b).split(":")[1];
+					list.add(a, newUser);
+					list.remove(b);	
+				}
+			}
+		}
 		allUser = new String[list.size()];
 		for (int j = 0; j < list.size(); j++) {
 			allUser[j] = list.get(j);
-
 		}
+		
 		return allUser;
 	}
 
@@ -125,5 +129,4 @@ public class Ultility {
 		return ip;
 	}
 
-	
 }

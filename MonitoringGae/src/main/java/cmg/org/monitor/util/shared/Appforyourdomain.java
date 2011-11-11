@@ -5,9 +5,7 @@ package cmg.org.monitor.util.shared;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import com.google.gdata.client.appsforyourdomain.AppsGroupsService;
 import com.google.gdata.client.appsforyourdomain.UserService;
@@ -217,7 +215,7 @@ public class Appforyourdomain {
 	}
 
 
-	public static void main(String[] arg) throws Exception {
+	/*public static void main(String[] arg) throws Exception {
 		String[] list = null;
 
 		Appforyourdomain client = new Appforyourdomain("monitor@c-mg.vn",
@@ -280,5 +278,5 @@ public class Appforyourdomain {
 
 		}
 
-	}
+	}*/
 }
