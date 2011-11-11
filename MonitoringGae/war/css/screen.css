@@ -948,12 +948,12 @@ font-family: Tahoma;
 #nav-right	{
 	float: right;
 	position: relative;
-	width: 100px;
+	width: 400px;
 	z-index: 0;
 	}
 #nav-right a	{
 	display: block;
-	float: left;
+	float: right;
 	margin: 0px 0 0 0;
 	}
 .account-content	{
@@ -972,11 +972,14 @@ font-family: Tahoma;
 	width: 140px;
 	}
 .showhide-account	{
+	float:right;
 	cursor: pointer;
-	display: block;
-	float: left;
-	margin: 10px 5px 0 5px;
+	color:white;
+	font-weight:bold;
+	font-size:13px;
+	margin: 16px 5px 0 5px;
 	}
+	
 .account-drop-inner a	{
 	color: #fff;
 	font-size: 12px;
