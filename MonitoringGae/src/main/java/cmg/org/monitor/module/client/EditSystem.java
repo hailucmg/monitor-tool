@@ -59,7 +59,7 @@ public class EditSystem implements EntryPoint {
 										result.getRole()));
 						RootPanel.get("nav-right")
 								.add(HTMLControl.getLogoutHTML(result
-										.getLogoutUrl()));
+										.getLogoutUrl(), result.getEmail()));
 						if (result.getRole() == MonitorConstant.ROLE_GUEST) {
 							initMessage(
 									"Hello "
@@ -248,7 +248,7 @@ public class EditSystem implements EntryPoint {
 		@Override
 		public void onClick(ClickEvent event) {
 			// TODO Auto-generated method stub
-			Window.Location.assign("SystemManagment.html");
+			Window.Location.assign(HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME);
 		}
 
 	}
@@ -307,9 +307,9 @@ public class EditSystem implements EntryPoint {
 				}
 				lblhide.setText("running");
 				editService.editSystembyID(system.getId(), txtName.getText(),
-						txtURL.getText(), listgroup.getItemText(listgroup
-								.getSelectedIndex()), listprotocol
-								.getItemText(listprotocol.getSelectedIndex()),
+						txtURL.getText(),listprotocol
+						.getItemText(listprotocol.getSelectedIndex()), listgroup.getItemText(listgroup
+								.getSelectedIndex()), 
 						txtIP.getText(), txtRemoteURL.getText(), isactive,
 						new AsyncCallback<Boolean>() {
 
@@ -318,6 +318,7 @@ public class EditSystem implements EntryPoint {
 								// TODO Auto-generated method stub
 								if (result == true) {
 									lblhide.setText("done");
+									Window.Location.replace(Window.Location.getHost()+"\\"+HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME);
 								} else {
 									lblhide.setText("database connect error");
 								}

@@ -49,7 +49,7 @@ public class SystemManagement implements EntryPoint {
 										result.getRole()));
 						RootPanel.get("nav-right")
 								.add(HTMLControl.getLogoutHTML(result
-										.getLogoutUrl()));
+										.getLogoutUrl(), result.getEmail()));
 						if (result.getRole() == MonitorConstant.ROLE_GUEST) {
 							initMessage(
 									"Hello "
@@ -99,7 +99,7 @@ public class SystemManagement implements EntryPoint {
 						// TODO Auto-generated method stub
 						if ( Window
 								.confirm("do you want to delete?") == false) {
-							Window.Location.assign("SystemManagement.html");
+							Window.Location.assign(HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME);
 							return;
 						}
 						String id = event.getValue().toString();
@@ -217,10 +217,10 @@ public class SystemManagement implements EntryPoint {
 			data.setValue(
 					i,
 					6,
-					"<a href=\"EditSystem.html?id="
+					"<a href=\""+HTMLControl.HTML_EDIT_NAME+"?id="
 							+ listSystem[i].getId()
 							+ " \" title=\"Edit\" class=\"icon-1 info-tooltip\"></a>"
-							+ "<a href=\"SystemManagement.html#"
+							+ "<a href=\""+HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME+"#"
 							+ listSystem[i].getId()
 							+ " \" title=\"Delete\" class=\"icon-2 info-tooltip\"></a>");
 		}

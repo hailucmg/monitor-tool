@@ -15,6 +15,7 @@ import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTML;
@@ -28,7 +29,7 @@ public class AddnewSystem implements EntryPoint {
 	AddnewSystemServiceAsync addSystemSA = GWT
 			.create(AddnewSystemService.class);
 	ListBox listGroup;
-
+	private final static String currentHost = Window.Location.getHost();
 	@Override
 	public void onModuleLoad() {
 		addSystemSA.getUserLogin(new AsyncCallback<UserLoginDto>() {
@@ -50,7 +51,7 @@ public class AddnewSystem implements EntryPoint {
 										result.getRole()));
 						RootPanel.get("nav-right")
 								.add(HTMLControl.getLogoutHTML(result
-										.getLogoutUrl()));
+										.getLogoutUrl(), result.getEmail()));
 						if (result.getRole() == MonitorConstant.ROLE_GUEST) {
 							initMessage(
 									"Hello "
@@ -248,6 +249,7 @@ public class AddnewSystem implements EntryPoint {
 					public void onSuccess(String result) {
 						// TODO Auto-generated method stub
 						lbhide.setText(result);
+						Window.Location.replace(Window.Location.getHost()+"\\"+HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME);
 					}
 
 					@Override
@@ -279,11 +281,9 @@ public class AddnewSystem implements EntryPoint {
 
 		}
 		class myBack implements ClickHandler {
-
 			@Override
-			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
-				Window.Location.assign("SystemManagement.html");
+			public void onClick(ClickEvent event) {				
+				Window.Location.replace(currentHost + "/" + HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME);				
 			}
 
 		}
