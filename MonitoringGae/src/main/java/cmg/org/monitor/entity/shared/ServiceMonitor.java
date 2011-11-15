@@ -1,6 +1,5 @@
 package cmg.org.monitor.entity.shared;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import javax.jdo.annotations.Extension;
@@ -10,8 +9,11 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import cmg.org.monitor.ext.model.shared.ServiceDto;
+
 /**
  * Model/entity representation of a network.
+ * 
  * @author lamphan
  * 
  */
@@ -19,7 +21,7 @@ import javax.jdo.annotations.PrimaryKey;
 @SuppressWarnings("serial")
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
 public class ServiceMonitor implements Model {
-	
+
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	@Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
@@ -42,14 +44,75 @@ public class ServiceMonitor implements Model {
 
 	@Persistent
 	private Date timeStamp;
-	
+
 	@Persistent
 	private SystemMonitor systemMonitor;
+
 	/**
 	 * Default constructor.<br>
 	 */
 	public ServiceMonitor() {
-		
+
+	}
+
+	/**
+	 * Constructor with parameters.
+	 * 
+	 * @param serviceDto
+	 */
+	public ServiceMonitor(ServiceDto serviceDto) {
+
+		this();
+		this.setBasicInfo(serviceDto.getName(), serviceDto.getSysDate(),
+				serviceDto.getPing(), serviceDto.isStatus(),
+				serviceDto.getDescription(), serviceDto.getTimeStamp());
+	}
+
+	/**
+	 * update existing alert object based on System DTO id
+	 * 
+	 * @param serviceDTO
+	 */
+	public void updateFromDTO(ServiceDto serviceDTO) {
+		this.name = serviceDTO.getName();
+		this.systemDate = serviceDTO.getSysDate();
+		this.ping = serviceDTO.getPing();
+		this.status = serviceDTO.isStatus();
+		this.description = serviceDTO.getDescription();
+		this.timeStamp = serviceDTO.getTimeStamp();
+
+	}
+
+	/**
+	 * Method 'setBasicInfo' set basic class properties.<br>
+	 * 
+	 * @param name
+	 * @param systemDate
+	 * @param ping
+	 * @param status
+	 * @param description
+	 * @param timeStamp
+	 */
+	public void setBasicInfo(String name, Date systemDate, int ping,
+			boolean status, String description, Date timeStamp) {
+
+		this.name = name;
+		this.systemDate = systemDate;
+		this.ping = ping;
+		this.status = status;
+		this.description = description;
+		this.timeStamp = timeStamp;
+	}
+
+	/**
+	 * @return Data Transfer object
+	 */
+	public ServiceDto toDTO() {
+		ServiceDto serviceDTO = new ServiceDto(this.getName(),
+				this.getStatus(), this.getPing(), this.getSystemDate(),
+				this.getDescription(), this.getTimeStamp());
+		serviceDTO.setId(this.getId());
+		return serviceDTO;
 	}
 
 	public ServiceMonitor(String name, Date systemDate, int ping,
@@ -65,11 +128,10 @@ public class ServiceMonitor implements Model {
 	}
 
 	@Override
-    public String getId() {
-        return encodedKey;
-    }
-	
-	
+	public String getId() {
+		return encodedKey;
+	}
+
 	public String getName() {
 		return name;
 	}

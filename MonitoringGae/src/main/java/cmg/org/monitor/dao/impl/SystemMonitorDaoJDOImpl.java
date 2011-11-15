@@ -14,6 +14,7 @@ import cmg.org.monitor.dao.SystemMonitorDAO;
 import cmg.org.monitor.entity.shared.AlertMonitor;
 import cmg.org.monitor.entity.shared.CpuMemory;
 import cmg.org.monitor.entity.shared.FileSystem;
+import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.SystemDto;
 import cmg.org.monitor.util.shared.MonitorConstant;
@@ -23,6 +24,33 @@ import cmg.org.monitor.util.shared.Ultility;
 public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 	private static final Logger logger = Logger
 			.getLogger(SystemMonitorDaoJDOImpl.class.getCanonicalName());
+	
+	public void updateSystemByService(SystemDto aSystemDTO, ServiceMonitor anServiceEntity) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		String name = aSystemDTO.getName();
+		String address = aSystemDTO.getUrl();
+		String ip = aSystemDTO.getIp();
+		SystemMonitor sysMonitor = new SystemMonitor();
+		try {
+			pm.currentTransaction().begin();
+
+			// We have to look it up first,
+			sysMonitor = pm.getObjectById(SystemMonitor.class,
+					aSystemDTO.getId());
+			sysMonitor.setName(name);
+			sysMonitor.setUrl(address);
+			sysMonitor.setIp(ip);
+			sysMonitor.addService(anServiceEntity);
+			pm.makePersistent(sysMonitor);
+			pm.currentTransaction().commit();
+		} catch (Exception ex) {
+			pm.currentTransaction().rollback();
+			throw new RuntimeException(ex);
+		} finally {
+			pm.close();
+		}
+	}
+	
 
 	public void addSystem(SystemMonitor system) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
