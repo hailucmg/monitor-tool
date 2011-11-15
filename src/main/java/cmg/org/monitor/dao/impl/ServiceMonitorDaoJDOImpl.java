@@ -2,6 +2,7 @@ package cmg.org.monitor.dao.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
@@ -12,11 +13,98 @@ import cmg.org.monitor.dao.SystemMonitorDAO;
 import cmg.org.monitor.entity.shared.FileSystem;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.exception.MonitorException;
+import cmg.org.monitor.ext.model.shared.ServiceDto;
+import cmg.org.monitor.ext.model.shared.SystemDto;
 import cmg.org.monitor.util.shared.PMF;
 
 public class ServiceMonitorDaoJDOImpl implements ServiceMonitorDAO {
 	private static final Logger logger = Logger
 			.getLogger(ServiceMonitorDaoJDOImpl.class.getCanonicalName());
+	private static SystemMonitorDAO systemDao = new SystemMonitorDaoJDOImpl();
+	
+	
+	/**
+	 * @param serviceDTO
+	 * @return
+	 */
+	public ServiceDto updateServiceEntity(ServiceDto serviceDTO, SystemDto sysDto) throws MonitorException {
+		if (serviceDTO.getId() == null) {
+
+			// Create new case
+			ServiceMonitor newServiceEntity = addService(serviceDTO, sysDto);
+			return newServiceEntity.toDTO();
+		}
+
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		ServiceMonitor systemEntity = null;
+		try {
+			systemEntity = pm.getObjectById(ServiceMonitor.class, serviceDTO.getId());
+			systemEntity.updateFromDTO(serviceDTO);
+			pm.makePersistent(systemEntity);
+		} finally {
+			pm.close();
+		}
+		return serviceDTO;
+	}
+
+	/**
+	 * 
+	 * Create new Alert object in Datastore.<br>
+	 * 
+	 * @param serviceDTO
+	 * @return Alert Monitor object.
+	 */
+	private ServiceMonitor addService(ServiceDto serviceDTO, SystemDto sysDto) {
+
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		ServiceMonitor serviceEntity = null;
+		SystemMonitor existSysEntity = null;
+
+		try {
+
+			// Begin a jdo transation
+			pm.currentTransaction().begin();
+			existSysEntity = systemDao.getSystembyID(sysDto.getId());
+			
+			// Check a system existence
+			if (existSysEntity != null) {
+				//systemDao.updateSystemByService(sysDto, serviceEntity);
+				serviceEntity = new ServiceMonitor(serviceDTO);
+				existSysEntity.addService(serviceEntity);
+				pm.makePersistent(existSysEntity);
+			}
+			// Do commit a transaction
+			pm.currentTransaction().commit();
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, e.fillInStackTrace().getMessage());
+			pm.currentTransaction().rollback();
+			throw new RuntimeException(e);
+
+		} finally {
+			pm.close();
+		}
+		return serviceEntity;
+	}
+
+	public ServiceDto getService(String id) {
+
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		ServiceMonitor dsAlert = null, detached = null;
+
+		try {
+			dsAlert = pm.getObjectById(ServiceMonitor.class, id);
+			detached = pm.detachCopy(dsAlert);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, e.fillInStackTrace().getMessage());
+		} finally {
+			pm.close();
+		}
+
+		return detached.toDTO();
+	}
+	
+	
 	@Override
 	public void addServiceMonitor(SystemMonitor system, ServiceMonitor serviceMonitor) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();

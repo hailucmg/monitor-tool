@@ -1,15 +1,15 @@
 package cmg.org.monitor.services;
 
-import java.util.logging.Logger;
-
 import cmg.org.monitor.dao.SystemMonitorDAO;
 import cmg.org.monitor.dao.impl.SystemMonitorDaoJDOImpl;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 
 
+/**
+ * @author admin
+ * @deprecated
+ */
 public class SystemService {
-	private static final Logger logger = Logger.getLogger(SystemService.class
-			.getCanonicalName());
 	private static SystemMonitorDAO systemMonDao =  new SystemMonitorDaoJDOImpl();
 
 	public SystemService() {

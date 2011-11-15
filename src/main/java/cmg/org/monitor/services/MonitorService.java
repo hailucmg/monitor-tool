@@ -16,11 +16,13 @@ import cmg.org.monitor.ext.model.shared.SystemDto;
 import cmg.org.monitor.ext.util.URLMonitor;
 
 public class MonitorService {
-
-	private final String RUNNING = "running";
-	private final String FAILED = "failed";
-	private static String MONITOR_URL = "https://ukpensionsint.bp.com/content/cmg_monitor.html";
-	private static String MONITOR_URL_TEST = "http://c-mg.vn:81/bpg/content/monitortest.html";
+	/** Show status of monitor */
+	private static String RUNNING = "running";
+	
+	/** Show status of monitor */
+	private static String FAILED = "failed";
+	
+	/** Default monitor logger */
 	private static final Logger logger = Logger.getLogger(MonitorService.class
 			.getCanonicalName());
 
@@ -36,7 +38,6 @@ public class MonitorService {
 		List<URLPageObject> objList = new ArrayList<URLPageObject>();
 
 		// Gets system time
-		// List<Node> nodes = nodeService.getNodes();
 		logger.info("Begin monitoring... ");
 
 		SystemMonitorDAO systemDao = new SystemMonitorDaoJDOImpl();
@@ -48,11 +49,8 @@ public class MonitorService {
 			}
 		URLMonitor urlMonitor = null;
 		Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
-		// for (Node node : nodes) {
+		@SuppressWarnings("unused")
 		int errorCount = 0;
-
-		// boolean projRunning = false;
-		// projs = projService.getProjects(node.getNode_id());
 
 		// Initializes monitor object list
 		URLPageObject obj = null;
@@ -64,14 +62,14 @@ public class MonitorService {
 			if (!aSysDto.getIsActive()) {
 				logger.info("The system " + aSysDto.getName()
 						+ " is existed but is not active. "
-						+ "The monitor skips this project now");
+						+ "The monitor skips this system now");
 				continueCount++;
 
 				continue;
 			}
 			logger.info("Project url: " + aSysDto.getUrl());
-			logger.info("Project name: " + aSysDto.getName());
-
+			logger.info("System name: " + aSysDto.getName());
+			logger.info("Number of system are monitoring : " + continueCount);
 			// Initiates monitor and do task
 			String running = "";
 			try {

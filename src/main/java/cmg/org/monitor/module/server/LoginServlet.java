@@ -10,16 +10,15 @@ import javax.servlet.http.HttpServletResponse;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
-import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
 public class LoginServlet extends HttpServlet {
 
-	/**
-	 * 
-	 */
+	/** Default UUID value. */
 	private static final long serialVersionUID = 1L;
+	
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(LoginServlet.class
 			.getCanonicalName());
 
@@ -46,7 +45,7 @@ public class LoginServlet extends HttpServlet {
 	
 	private void validLogin(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		UserService userService = UserServiceFactory.getUserService();
-		User user = userService.getCurrentUser();
+		// User user = userService.getCurrentUser();
 		try {
 			if (userService.isUserLoggedIn()) {
 				resp.sendRedirect(resp.encodeRedirectURL(HTMLControl.HTML_DASHBOARD_NAME));

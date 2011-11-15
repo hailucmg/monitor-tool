@@ -14,6 +14,9 @@ import java.io.Serializable;
 public class CpuUsageDto implements Serializable {
 
     //~ Instance fields --------------------------------------------------------
+	
+	/** Default UUID value */
+	private static final long serialVersionUID = 1L;
 
     /** This attribute maps to the column cpu_usage_id in the cpuusage table. */
     protected long cpuUsageId;

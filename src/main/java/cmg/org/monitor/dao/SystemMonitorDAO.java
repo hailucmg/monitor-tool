@@ -6,12 +6,26 @@ import java.util.List;
 import cmg.org.monitor.entity.shared.AlertMonitor;
 import cmg.org.monitor.entity.shared.CpuMemory;
 import cmg.org.monitor.entity.shared.FileSystem;
+import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.SystemDto;
 
 public interface SystemMonitorDAO {
 	
+	/**
+	 * Update system entity by passing Service.<br>
+	 * 
+	 * @param aSystemDTO 
+	 * @param anServiceEntity
+	 */
+	public void updateSystemByService(SystemDto aSystemDTO, ServiceMonitor anServiceEntity) ;
+	
+	/**
+	 * @param aSystemDTO
+	 * @param anFileSystemEntity
+	 */
 	public void updateSystemByFileSystem(SystemDto aSystemDTO, FileSystem anFileSystemEntity) ;
+	
 	/**
 	 * @param id
 	 * @return

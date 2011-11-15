@@ -5,7 +5,6 @@ import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.module.client.SystemManagementService;
 import cmg.org.monitor.services.MonitorLoginService;
-import cmg.org.monitor.services.SystemService;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
