@@ -33,6 +33,20 @@ body	{
 	margin-bottom: 0;
 	margin-left: 8px;
 	}
+	#version {
+	padding: 80px 10px 0 0;
+	font-weight:bold;	
+	font-style:italic;
+	color:white;
+	font-size:11px;
+	float: right;
+	text-align: right;
+	width: 100px;
+	height:10px;
+}
+#version span {
+	text-align: right;
+}
 	
 #logo	a	{
 	display: block;
@@ -66,7 +80,7 @@ body	{
 	margin: 0 auto 0 auto;
 	max-width: 1260px;
 	min-width: 780px;
-	padding: 35px 0px 30px 0px;
+	padding: 20px 0px 30px 0px;
 	}
 #content-inner	{
 	color: #333;
@@ -328,9 +342,9 @@ h3	{
 a.icon-1	{
 	background: url(../images/table/table_icon_1.gif) no-repeat;
 	display: block;
-	float: left;
 	height: 24px;
-	margin: 0 8px 0 0;
+	margin-left: auto;
+	margin-right: auto;
 	width: 24px;
 	}
 a:hover.icon-1	{
@@ -339,9 +353,9 @@ a:hover.icon-1	{
 a.icon-2	{
 	background: url(../images/table/table_icon_2.gif) no-repeat;
 	display: block;
-	float: left;
 	height: 24px;
-	margin: 0 8px 0 0;
+	margin-left: auto;
+	margin-right: auto;
 	width: 24px;
 	}
 a:hover.icon-2	{
@@ -1063,7 +1077,6 @@ Copyright (c) 2005-2007 Stu Nicholls. All rights reserved. This stylesheet and t
 	padding: 0;
 	}
 .nav .select a	{
-	background: url(../images/shared/nav/pro_line_0.gif);
 	color: #fff;
 	display: block;
 	float: left;
@@ -1158,13 +1171,11 @@ Copyright (c) 2005-2007 Stu Nicholls. All rights reserved. This stylesheet and t
 	white-space: nowrap;
 	}
 .nav .current .sub li.sub_show a	{
-	background: url(../images/shared/nav/menus/back_1.gif);
 	color: #94b52c;
 	cursor: default;
 	}
 .nav .select :hover .sub li a:hover, 
 .nav .current .sub li a:hover	{
-	background: url(../images/shared/nav/menus/back_1.gif);
 	color: #94b52c;
 	visibility: visible;
 	}
@@ -1670,4 +1681,6 @@ a:hover.back-login	{
 .submit-login:hover	{
 	background: url(../images/login/submit_login.gif) no-repeat 0 -29px;
 	}
+	
+
  
