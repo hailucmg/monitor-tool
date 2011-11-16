@@ -79,22 +79,24 @@ public class SystemDetail extends AncestorEntryPoint {
 									flexTableContent);
 							initContent();
 						} else {
-							showErrorMessage(HTMLControl.ERROR_SYSTEM_ID,
+							showMessage("Invalid System ID. ",
 									HTMLControl.HTML_DASHBOARD_NAME,
-									"Goto Dashboard. ");
+									"Goto Dashboard. ",
+									HTMLControl.RED_MESSAGE, true);
 						}
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
-						showErrorMessage(HTMLControl.ERROR_NORMAL,
+						showMessage("Oops! Error.",
 								HTMLControl.HTML_DASHBOARD_NAME,
-								"Goto Dashboard. ");
+								"Goto Dashboard. ", HTMLControl.RED_MESSAGE,
+								true);
 					}
 				});
 			} catch (Exception e) {
-				showErrorMessage(HTMLControl.ERROR_NORMAL,
-						HTMLControl.HTML_DASHBOARD_NAME, "Goto Dashboard. ");
+				showMessage("Oops! Error.", HTMLControl.HTML_DASHBOARD_NAME,
+						"Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
 			}
 		}
 
@@ -120,18 +122,22 @@ public class SystemDetail extends AncestorEntryPoint {
 							@Override
 							public void onSuccess(CpuMemory[] result) {
 								setVisibleLoadingImage(false);
-								setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+								setVisibleWidget(HTMLControl.ID_BODY_CONTENT,
+										true);
 								if (result != null) {
 									drawSystemStatistic(result);
 								} else {
-									initMessage("No statistic found. ","", "", HTMLControl.YELLOW_MESSAGE);
-									setVisibleMessage(true, HTMLControl.YELLOW_MESSAGE);
+									showMessage("No statistic found. ", "", "",
+											HTMLControl.YELLOW_MESSAGE, true);
 								}
 							}
 
 							@Override
 							public void onFailure(Throwable caught) {
-								
+								showMessage("Server error! ",
+										HTMLControl.HTML_DASHBOARD_NAME,
+										"Goto Dashboard. ",
+										HTMLControl.RED_MESSAGE, true);
 							}
 						});
 			}
@@ -170,7 +176,8 @@ public class SystemDetail extends AncestorEntryPoint {
 							public void onSuccess(SystemMonitor result) {
 								if (result != null) {
 									setVisibleLoadingImage(false);
-									setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+									setVisibleWidget(
+											HTMLControl.ID_BODY_CONTENT, true);
 									drawSystemDetails(result);
 								} else {
 
@@ -179,7 +186,10 @@ public class SystemDetail extends AncestorEntryPoint {
 
 							@Override
 							public void onFailure(Throwable caught) {
-								caught.printStackTrace();
+								showMessage("Server error! ",
+										HTMLControl.HTML_DASHBOARD_NAME,
+										"Goto Dashboard. ",
+										HTMLControl.RED_MESSAGE, true);
 							}
 						});
 			}

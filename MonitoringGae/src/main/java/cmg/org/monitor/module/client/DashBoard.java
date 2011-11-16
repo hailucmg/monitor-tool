@@ -47,9 +47,8 @@ public class DashBoard extends AncestorEntryPoint {
 			@Override
 			public void onFailure(Throwable caught) {
 				showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
-				initMessage("Server error. ", HTMLControl.HTML_DASHBOARD_NAME,
-						"Try again.", HTMLControl.RED_MESSAGE);
-				setVisibleMessage(true, HTMLControl.RED_MESSAGE);
+				showMessage("Server error. ", HTMLControl.HTML_DASHBOARD_NAME,
+						"Try again.", HTMLControl.RED_MESSAGE, true);			
 			}
 
 			@Override
@@ -111,13 +110,12 @@ public class DashBoard extends AncestorEntryPoint {
 			// draw table
 			tableListSystem.draw(dataListSystem, opsTableListSystem);
 		} else {
-			initMessage(
+			showMessage(
 					"No system found. ",
 					(role == MonitorConstant.ROLE_ADMIN) ? HTMLControl.HTML_ADD_NEW_SYSTEM_NAME
 							: "",
 					(role == MonitorConstant.ROLE_ADMIN) ? "Add new system."
-							: "", HTMLControl.RED_MESSAGE);
-			setVisibleMessage(true, HTMLControl.RED_MESSAGE);
+							: "", HTMLControl.RED_MESSAGE, true);
 			showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
 			setVisibleLoadingImage(false);
 		}

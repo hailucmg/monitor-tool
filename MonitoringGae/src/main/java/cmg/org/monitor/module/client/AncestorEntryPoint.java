@@ -28,8 +28,8 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 
 	private static int count = 0;
 
-	protected Timer timerMess;
-	protected Timer timerReload;
+	protected static Timer timerMess;
+	protected static Timer timerReload;
 
 	protected String hash;
 
@@ -39,7 +39,7 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 	protected static final MonitorGwtServiceAsync monitorGwtSv = GWT
 			.create(MonitorGwtService.class);
 
-	protected String currentUrl;
+	protected static String currentUrl;
 
 	protected int role = MonitorConstant.ROLE_GUEST;
 
@@ -85,15 +85,10 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 			timerReload = null;
 		}
 		setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
-		if (currentPage != HTMLControl.PAGE_DASHBOARD
-				&& currentPage != HTMLControl.PAGE_SYSTEM_STATISTIC) {
-			setVisibleWidget(HTMLControl.ID_MESSAGE_YELLOW, false);
-		}
-		if (currentPage != HTMLControl.PAGE_SYSTEM_MANAGEMENT) {
-			setVisibleWidget(HTMLControl.ID_MESSAGE_RED, false);
-			setVisibleWidget(HTMLControl.ID_MESSAGE_BLUE, false);
-		}
-		
+		setVisibleWidget(HTMLControl.ID_MESSAGE_YELLOW, false);
+		setVisibleWidget(HTMLControl.ID_MESSAGE_RED, false);
+		setVisibleWidget(HTMLControl.ID_MESSAGE_BLUE, false);
+
 	}
 
 	protected void visibleMessage() {
@@ -120,7 +115,7 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 		setVisibleWidget(HTMLControl.ID_STEP_HOLDER, true);
 	}
 
-	protected void setVisibleWidget(String id, boolean b) {
+	protected static void setVisibleWidget(String id, boolean b) {
 		RootPanel.get(id).setVisible(b);
 	}
 
@@ -146,33 +141,7 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 			if (isLogin) {
 				clearTimer();
 				setVisibleLoadingImage(true);
-				if (currentPage == HTMLControl.PAGE_DELETE_SYSTEM
-						&& isReadyDelete) {
-					isReadyDelete = false;
-					String sid = HTMLControl.getSystemId(History.getToken());
-					Window.Location.replace(HTMLControl
-							.trimHashPart(Window.Location
-									.getHref())
-							+ HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME);
-					monitorGwtSv.deleteSystem(sid,
-							new AsyncCallback<Boolean>() {
-								@Override
-								public void onSuccess(Boolean result) {
-									isReadyDelete = true;
-									initForm();
-								}
-
-								@Override
-								public void onFailure(Throwable caught) {
-									isReadyDelete = true;	
-									initForm();
-								}
-							});
-				} else {
-					if (isReadyDelete) {
-						initForm();
-					}
-				}
+				initForm();
 			} else {
 				doLogin();
 			}
@@ -193,9 +162,8 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 		monitorGwtSv.getUserLogin(new AsyncCallback<UserLoginDto>() {
 			@Override
 			public void onFailure(Throwable caught) {
-				initMessage("Server error. ", HTMLControl.HTML_DASHBOARD_NAME,
-						"Try again. ", HTMLControl.RED_MESSAGE);
-				setVisibleMessage(true, HTMLControl.RED_MESSAGE);
+				showMessage("Server error. ", HTMLControl.HTML_DASHBOARD_NAME,
+						"Try again. ", HTMLControl.RED_MESSAGE, true);
 			}
 
 			@Override
@@ -208,65 +176,44 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 								.getLogoutHTML(result.getLogoutUrl(),
 										result.getEmail()));
 						if (result.getRole() == MonitorConstant.ROLE_GUEST) {
-							initMessage(
+							showMessage(
 									"Hello "
 											+ result.getNickName()
 											+ ". You might not have permission to use Monitor System. ",
 									result.getLogoutUrl(),
 									"Login with another account.",
-									HTMLControl.YELLOW_MESSAGE);
-							setVisibleMessage(true, HTMLControl.YELLOW_MESSAGE);
+									HTMLControl.YELLOW_MESSAGE, true);
 						} else {
-							initMessage(
-									"Wellcome to Health Monitoring System. If have any question ",
+							showMessage(
+									"Welcome to Health Monitoring System. If have any question ",
 									HTMLControl.HTML_ABOUT_NAME, "Contact Us.",
-									HTMLControl.GREEN_MESSAGE);
-							setVisibleMessage(true, HTMLControl.GREEN_MESSAGE);
+									HTMLControl.GREEN_MESSAGE, true);
 							isLogin = true;
 							role = result.getRole();
 							changeMenu(currentPage, role);
 							init();
 						}
 					} else {
-						addWidget(HTMLControl.ID_LOGIN_FORM, HTMLControl
-								.getLoginHTML(result.getLoginUrl()));
-						initMessage("Must login to use Monitor System. ",
+						addWidget(HTMLControl.ID_LOGIN_FORM,
+								HTMLControl.getLoginHTML(result.getLoginUrl()));
+						showMessage("Must login to use Health Monitoring System. ",
 								result.getLoginUrl(), "Login. ",
-								HTMLControl.RED_MESSAGE);
-						setVisibleMessage(true, HTMLControl.RED_MESSAGE);
+								HTMLControl.RED_MESSAGE, true);
 					}
 				} else {
-					initMessage("Server error. ",
+					showMessage("Server error. ",
 							HTMLControl.HTML_DASHBOARD_NAME, "Try again. ",
-							HTMLControl.RED_MESSAGE);
-					setVisibleMessage(true, HTMLControl.RED_MESSAGE);
+							HTMLControl.RED_MESSAGE, true);
 				}
 			}
 		});
 	}
 
-	protected void showErrorMessage(int type, String desPage, String title) {
-		String mes = "";
-		switch (type) {
-		case HTMLControl.ERROR_SYSTEM_ID:
-			mes = "Invalid system ID. ";
-			break;
-		case HTMLControl.ERROR_NORMAL:
-		default:
-			mes = "Oops! Error. ";
-			break;
-		}
-		initMessage(mes, desPage, title, HTMLControl.RED_MESSAGE);
-		setVisibleMessage(true, HTMLControl.RED_MESSAGE);
-	}
-
 	protected abstract void init();
 
-	public static native void redirect(String url)/*-{
-		$wnd.location = url;
-	}-*/;
+	
 
-	void showRedirectCountMessage(final String mes, final String url,
+	protected static void showRedirectCountMessage(final String mes, final String url,
 			final String titleUrl, final int typeMessage) {
 		count = MonitorConstant.REDIRECT_WAIT_TIME / 1000;
 		if (timerMess != null) {
@@ -277,8 +224,8 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 		timerMess = new Timer() {
 			@Override
 			public void run() {
-				initMessage(mes + " in " + HTMLControl.getStringTime(--count),
-						url, titleUrl, typeMessage);
+				showMessage(mes + " in " + HTMLControl.getStringTime(--count),
+						url, titleUrl, typeMessage, false);
 				if (count <= 0) {
 					setVisibleMessage(false, typeMessage);
 					Window.Location.replace(currentUrl + url);
@@ -291,23 +238,22 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 		timerMess.scheduleRepeating(1000);
 	}
 
-	protected void showReloadCountMessage(final int typeMessage) {
+	protected static void showReloadCountMessage(final int typeMessage) {
 		count = MonitorConstant.REFRESH_RATE / 1000;
 		if (timerMess != null) {
 			setVisibleMessage(false, typeMessage);
 			timerMess.cancel();
 		}
-		initMessage(
+		showMessage(
 				"Latest status of systems. Update in "
 						+ HTMLControl.getStringTime(count),
-				"#dashboard/reload", "Reload now.", typeMessage);
-		setVisibleMessage(true, typeMessage);
+				"#dashboard/reload", "Reload now.", typeMessage, true);
 		timerMess = new Timer() {
 			@Override
 			public void run() {
-				initMessage("Latest status of systems. Update in "
+				showMessage("Latest status of systems. Update in "
 						+ HTMLControl.getStringTime(--count),
-						"#dashboard/reload", "Reload now.", typeMessage);
+						"#dashboard/reload", "Reload now.", typeMessage, false);
 				if (count <= 0) {
 					setVisibleMessage(false, typeMessage);
 					Window.Location.replace(Window.Location.getHref()
@@ -320,33 +266,38 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 		timerMess.scheduleRepeating(1000);
 	}
 
-	protected void addWidget(String id, Widget w) {
+	protected static void addWidget(String id, Widget w) {
 		RootPanel.get(id).clear();
 		RootPanel.get(id).add(w);
 	}
 
-	protected void setVisibleLoadingImage(boolean b) {
-		isOnload = b;
+	protected static void setVisibleLoadingImage(boolean b) {
 		RootPanel.get("img-loading").setVisible(b);
 	}
 
-	protected void setVisibleMessage(boolean b, int type) {
+	protected static void setVisibleMessage(boolean b, int type) {
 		RootPanel.get("message-" + HTMLControl.getColor(type)).setVisible(b);
 	}
 
-	protected void initMessage(String message, String url, String titleUrl,
-			int type) {
-		RootPanel.get("content-" + HTMLControl.getColor(type)).clear();
-		RootPanel.get("content-" + HTMLControl.getColor(type)).add(
-				new HTML(message
-						+ ((url.trim().length() == 0) ? "" : ("  <a href=\""
-								+ url + "\">" + titleUrl + "</a>")), true));
-	}
-
-	protected void clear(Element parent) {
+	protected static void clear(Element parent) {		
 		Element firstChild;
+
 		while ((firstChild = DOM.getFirstChild(parent)) != null) {
 			DOM.removeChild(parent, firstChild);
+		}
+	}
+	
+	protected static void showMessage(String message, String url, String titleUrl,
+			int type, boolean isVisible) {
+		clear(DOM.getElementById("content-" + HTMLControl.getColor(type)));
+		DOM.getElementById("content-" + HTMLControl.getColor(type))
+		.setInnerHTML(
+				message
+						+ ((url.trim().length() == 0) ? ""
+								: ("  <a href=\"" + url + "\">"
+										+ titleUrl + "</a>")));
+		if (isVisible) {
+			setVisibleMessage(isVisible, type);
 		}
 	}
 }

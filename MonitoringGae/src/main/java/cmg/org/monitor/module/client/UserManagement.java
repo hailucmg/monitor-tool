@@ -35,15 +35,19 @@ public class UserManagement extends AncestorEntryPoint {
 					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
 					drawTable(result);					
 				} else {
-					showErrorMessage(HTMLControl.ERROR_NORMAL,
-							HTMLControl.HTML_DASHBOARD_NAME, "Goto Dashboard. ");
+					showMessage("Oops! Error.",
+							HTMLControl.HTML_DASHBOARD_NAME,
+							"Goto Dashboard. ",
+							HTMLControl.RED_MESSAGE, true);
 				}
 			}
 
 			@Override
 			public void onFailure(Throwable caught) {
-				showErrorMessage(HTMLControl.ERROR_NORMAL,
-						HTMLControl.HTML_DASHBOARD_NAME, "Goto Dashboard. ");
+				showMessage("Oops! Error.",
+						HTMLControl.HTML_DASHBOARD_NAME,
+						"Goto Dashboard. ",
+						HTMLControl.RED_MESSAGE, true);
 			}
 		});
 	}

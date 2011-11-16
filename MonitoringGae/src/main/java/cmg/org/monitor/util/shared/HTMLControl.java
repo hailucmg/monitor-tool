@@ -174,7 +174,7 @@ public class HTMLControl {
 			temp.append((page == PAGE_USER_MANAGEMENT) ? " class='sub_show'"
 					: "");
 			temp.append("><a href='" + HTML_USER_MANAGEMENT_NAME
-					+ "'>User Listing</a></li></ul></div></li></ul>");
+					+ "'>User List</a></li></ul></div></li></ul>");
 
 		}
 		// About Menu
@@ -304,7 +304,7 @@ public class HTMLControl {
 		}
 		if (page == PAGE_USER_MANAGEMENT) {
 			temp.append("<a href=\"" + HTML_USER_MANAGEMENT_NAME
-					+ "\">User Listing</a> ");
+					+ "\">User List</a> ");
 		}
 		temp.append("</h1>");
 		return new HTML(temp.toString());

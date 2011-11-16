@@ -3,9 +3,15 @@ package cmg.org.monitor.module.client;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.util.shared.HTMLControl;
 
-import com.google.gwt.user.client.History;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
@@ -15,19 +21,60 @@ import com.google.gwt.visualization.client.visualizations.Table;
 import com.google.gwt.visualization.client.visualizations.Table.Options;
 
 public class SystemManagement extends AncestorEntryPoint {
-	SystemMonitor[] listSystem;
+	static SystemMonitor[] listSystem;
 	static private Table tableListSystem;
-
+	static DialogBox dialogBox;
+	
 	protected void init() {
-		if (currentPage == HTMLControl.PAGE_SYSTEM_MANAGEMENT) {
+		SystemManagement.exportStaticMethod();
+		if (currentPage == HTMLControl.PAGE_SYSTEM_MANAGEMENT) {		
 			tableListSystem = new Table();
 			addWidget(HTMLControl.ID_BODY_CONTENT, tableListSystem);
 			initContent();
-
 		}
 	}
+	
+	public static native void exportStaticMethod() /*-{
+	$wnd.showConfirmDialogBox =
+	$entry(@cmg.org.monitor.module.client.SystemManagement::showConfirmDialogBox(Ljava/lang/String;Ljava/lang/String;))
+	}-*/;
+	
+	static void showConfirmDialogBox(final String code,final String id) {	
+		dialogBox = new DialogBox();
+		dialogBox.setText("Confirm delete");
+		dialogBox.setAnimationEnabled(true);	
+		final Button closeButton = new Button("Cancel");
+		final Button okButton = new Button("Ok");
+		closeButton.getElement().setId("closeButton");
+		VerticalPanel dialogVPanel = new VerticalPanel();
+		dialogVPanel.addStyleName("dialogVPanel");
+		dialogVPanel.add(new HTML("<h3>Do you want to delete System ID "+code+"</h3>"));
+		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
+		FlexTable table = new FlexTable();
+		table.setCellPadding(10);
+		table.setCellSpacing(10);
+		table.setWidget(0, 0, okButton);
+		table.setWidget(0, 1, closeButton);
+		dialogVPanel.add(table);
+		okButton.addClickHandler(new ClickHandler() {			
+			@Override
+			public void onClick(ClickEvent event) {				
+				setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
+				setVisibleLoadingImage(true);
+				deleteSystem(id);
+			}
+		});
+		closeButton.addClickHandler(new ClickHandler() {			
+			@Override
+			public void onClick(ClickEvent event) {
+				dialogBox.hide();				
+			}
+		});
+		dialogBox.setWidget(dialogVPanel);
+		dialogBox.center();
+	}
 
-	private void initContent() {
+	private static void initContent() {			
 		monitorGwtSv.listSystem(false, new AsyncCallback<SystemMonitor[]>() {
 			@Override
 			public void onSuccess(SystemMonitor[] result) {
@@ -35,13 +82,11 @@ public class SystemManagement extends AncestorEntryPoint {
 				if (result != null) {
 					setVisibleLoadingImage(false);
 					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
-					isReadyDelete = true;
 					drawTable(result);
 				} else {
-					initMessage("No system found. ",
+					showMessage("No system found. ",
 							HTMLControl.HTML_ADD_NEW_SYSTEM_NAME,
-							"Add new system.", HTMLControl.RED_MESSAGE);
-					setVisibleMessage(true, HTMLControl.RED_MESSAGE);
+							"Add new system.", HTMLControl.RED_MESSAGE, true);
 					setVisibleLoadingImage(false);
 				}
 			}
@@ -49,24 +94,46 @@ public class SystemManagement extends AncestorEntryPoint {
 			@Override
 			public void onFailure(Throwable caught) {
 				showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
-				initMessage("Server error. ", HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
-						"Try again.", HTMLControl.RED_MESSAGE);
-				setVisibleMessage(true, HTMLControl.RED_MESSAGE);	
+				showMessage("Server error. ",
+						HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME, "Try again.",
+						HTMLControl.RED_MESSAGE, true);
 			}
 		});
 
 	}
 
-	void drawTable(SystemMonitor[] result) {
+	public static void deleteSystem(String sysID) {
+		setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
+		monitorGwtSv.deleteSystem(sysID, new AsyncCallback<Boolean>() {
+			@Override
+			public void onSuccess(Boolean result) {
+				showMessage("System deleted sucessfully.", "", "",
+						HTMLControl.BLUE_MESSAGE, true);
+				dialogBox.hide();
+				initContent();				
+			}
+
+			@Override
+			public void onFailure(Throwable caught) {
+				showMessage("Cannot delete this system.", "", "",
+						HTMLControl.RED_MESSAGE, true);
+				dialogBox.hide();
+			}
+		});
+
+	}
+
+	
+
+	static void drawTable(SystemMonitor[] result) {
 		if (result != null) {
 			tableListSystem.draw(createDataListSystem(result),
 					createOptionsTableListSystem());
 
 		} else {
-			initMessage("No system found. ",
+			showMessage("No system found. ",
 					HTMLControl.HTML_ADD_NEW_SYSTEM_NAME, "Add new system.",
-					HTMLControl.RED_MESSAGE);
-			setVisibleMessage(true, HTMLControl.RED_MESSAGE);
+					HTMLControl.RED_MESSAGE, true);
 			showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
 		}
 	}
@@ -74,7 +141,7 @@ public class SystemManagement extends AncestorEntryPoint {
 	/*
 	 * Create options of table list system
 	 */
-	Options createOptionsTableListSystem() {
+	static Options createOptionsTableListSystem() {
 		Options ops = Options.create();
 		ops.setAllowHtml(true);
 		ops.setShowRowNumber(true);
@@ -84,7 +151,7 @@ public class SystemManagement extends AncestorEntryPoint {
 	/*
 	 * Create data table list system without value
 	 */
-	AbstractDataTable createDataListSystem(SystemMonitor[] result) {
+	static AbstractDataTable createDataListSystem(SystemMonitor[] result) {
 		// create object data table
 		DataTable dataListSystem = DataTable.create();
 		// add all columns
@@ -131,7 +198,9 @@ public class SystemManagement extends AncestorEntryPoint {
 					.setValue(
 							i,
 							8,
-							"<a onClick=\"javascript:deleteSystem('"+result[i].getId()+"','"+result[i].getCode()+"');\" title=\"Delete\" class=\"icon-2 info-tooltip\"></a>");
+							"<a onClick=\"javascript:showConfirmDialogBox('"+result[i].getCode()+"','"
+									+ result[i].getId()
+									+ "');\" title=\"Delete\" class=\"icon-2 info-tooltip\"></a>");
 		}
 
 		com.google.gwt.visualization.client.formatters.BarFormat.Options ops = com.google.gwt.visualization.client.formatters.BarFormat.Options
