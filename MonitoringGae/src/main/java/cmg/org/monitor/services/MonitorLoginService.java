@@ -1,10 +1,8 @@
 package cmg.org.monitor.services;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
-import cmg.org.monitor.module.server.DashBoardServiceImpl;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 import cmg.org.monitor.util.shared.Ultility;
@@ -14,14 +12,14 @@ import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
 public class MonitorLoginService {
-	private static final Logger logger = Logger.getLogger(DashBoardServiceImpl.class
+	private static final Logger logger = Logger.getLogger(MonitorLoginService.class
 			.getCanonicalName());
 	private static  UserService userService = UserServiceFactory
 			.getUserService();
 	public static UserLoginDto getUserLogin() {
-		UserLoginDto userLogin = new UserLoginDto(false);
-		userLogin.setLogoutUrl(userService.createLogoutURL(HTMLControl.HTML_DASHBOARD_NAME, MonitorConstant.DOMAIN));
-		userLogin.setLoginUrl(userService.createLoginURL(HTMLControl.HTML_DASHBOARD_NAME, MonitorConstant.DOMAIN));
+		UserLoginDto userLogin = new UserLoginDto();
+		userLogin.setLogoutUrl(userService.createLogoutURL(HTMLControl.LOGIN_SERVLET_NAME, MonitorConstant.DOMAIN));
+		userLogin.setLoginUrl(userService.createLoginURL(HTMLControl.HTML_INDEX_NAME, MonitorConstant.DOMAIN));		
 		try {
 			User user = userService.getCurrentUser();
 			if (user != null) {
@@ -34,7 +32,7 @@ public class MonitorLoginService {
 			}
 
 		} catch (Exception ex) {
-			logger.log(Level.SEVERE, ex.getCause().getMessage());
+			//logger.log(Level.SEVERE, ex.getCause().getMessage());
 		}
 		return userLogin;
 	}
