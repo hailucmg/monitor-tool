@@ -14,7 +14,6 @@ import cmg.org.monitor.dao.SystemMonitorDAO;
 import cmg.org.monitor.entity.shared.AlertMonitor;
 import cmg.org.monitor.entity.shared.CpuMemory;
 import cmg.org.monitor.entity.shared.FileSystem;
-import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.SystemDto;
 import cmg.org.monitor.util.shared.MonitorConstant;
@@ -25,32 +24,30 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 	private static final Logger logger = Logger
 			.getLogger(SystemMonitorDaoJDOImpl.class.getCanonicalName());
 	
-	public void updateSystemByService(SystemDto aSystemDTO, ServiceMonitor anServiceEntity) {
+	@Override
+	public String[] remoteURLs() throws Exception {
+		// TODO Auto-generated method stub
+		String[] remoteURLs=null;
+		List<String> list;
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		String name = aSystemDTO.getName();
-		String address = aSystemDTO.getUrl();
-		String ip = aSystemDTO.getIp();
-		SystemMonitor sysMonitor = new SystemMonitor();
+		Query q = pm.newQuery("select remoteUrl from "
+				+ SystemMonitor.class.getName());
 		try {
-			pm.currentTransaction().begin();
-
-			// We have to look it up first,
-			sysMonitor = pm.getObjectById(SystemMonitor.class,
-					aSystemDTO.getId());
-			sysMonitor.setName(name);
-			sysMonitor.setUrl(address);
-			sysMonitor.setIp(ip);
-			sysMonitor.addService(anServiceEntity);
-			pm.makePersistent(sysMonitor);
-			pm.currentTransaction().commit();
-		} catch (Exception ex) {
-			pm.currentTransaction().rollback();
-			throw new RuntimeException(ex);
+			list = (List<String>) q.execute();
+			if(list!=null || list.size()>0){
+				remoteURLs = new String[list.size()];
+				for(int i = 0;i<list.size();i++){
+					remoteURLs[i]=list.get(i);
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
 		} finally {
+			q.closeAll();
 			pm.close();
 		}
+		return remoteURLs;
 	}
-	
 
 	public void addSystem(SystemMonitor system) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
@@ -420,10 +417,10 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 				if (names.length > 0 && names.length < 9) {
 					int number = names.length + 1;
 					SID = "S00" + number;
-				} else if (names.length > 9 && names.length < 98) {
+				} else if (names.length >= 9 && names.length < 98) {
 					int number = names.length + 1;
 					SID = "S0" + number;
-				} else if (names.length > 98 && names.length < 998) {
+				} else if (names.length >= 98 && names.length < 998) {
 					int number = names.length + 1;
 					SID = "S" + number;
 
