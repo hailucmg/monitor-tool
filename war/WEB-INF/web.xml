@@ -1,38 +1,13 @@
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee                http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
-<!--start  monitorabout -->
-<servlet>
-    <servlet-name>monitorabout</servlet-name>
-    <servlet-class>cmg.org.monitor.module.server.MonitorAboutServiceImpl</servlet-class>
-</servlet>
-  
-<servlet-mapping>
-    <servlet-name>monitorabout</servlet-name>
-    <url-pattern>/monitorabout/MonitorAbout</url-pattern>
-</servlet-mapping>
-<!--end  monitorabout -->
-<!--start  monitorhelp -->
-<servlet>
-    <servlet-name>monitorhelp</servlet-name>
-    <servlet-class>cmg.org.monitor.module.server.MonitorHelpServiceImpl</servlet-class>
-</servlet>
-  
-<servlet-mapping>
-    <servlet-name>monitorhelp</servlet-name>
-    <url-pattern>/monitorhelp/MonitorHelp</url-pattern>
-</servlet-mapping>
-<!--end  monitorhelp -->
-<!--start  SystemDetail -->
-<servlet>
-    <servlet-name>systemdetail</servlet-name>
-    <servlet-class>cmg.org.monitor.module.server.SystemDetailServiceImpl</servlet-class>
-</servlet>
-  
-<servlet-mapping>
-    <servlet-name>systemdetail</servlet-name>
-    <url-pattern>/systemdetail/systemdetail</url-pattern>
-</servlet-mapping>
-<!--end  SystemDetail -->
+ <servlet>
+    <servlet-name>MonitorGwtService</servlet-name>
+    <servlet-class>cmg.org.monitor.module.server.MonitorGwtServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>MonitorGwtService</servlet-name>
+    <url-pattern>/index/MonitorGwtService</url-pattern>
+  </servlet-mapping>
 
 <!-- Application Servlets -->
   <servlet>
@@ -42,57 +17,6 @@
   <servlet-mapping>
     <servlet-name>schedule</servlet-name>
     <url-pattern>/monitoringgae/job</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
-	<servlet-name>dashboard</servlet-name>
-	<servlet-class>cmg.org.monitor.module.server.DashBoardServiceImpl</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>dashboard</servlet-name>
-    <url-pattern>/dashboard/dashboard</url-pattern>
-  </servlet-mapping>
-  
-
-  <servlet>
-    <servlet-name>SystemManagementServlet</servlet-name>
-    <servlet-class>cmg.org.monitor.module.server.SystemManagementServiceImpl</servlet-class>
-  </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>SystemManagementServlet</servlet-name>
-    <url-pattern>/monitorsystemmanagement/SystemManagement</url-pattern>
-  </servlet-mapping>
-  
-  
-   <servlet>
-    <servlet-name>AddSystemServlet</servlet-name>
-    <servlet-class>cmg.org.monitor.module.server.AddnewSystemServiceImpl</servlet-class>
-  </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>AddSystemServlet</servlet-name>
-    <url-pattern>/monitoraddnewsystem/AddSystem</url-pattern>
-  </servlet-mapping>
-  
-     <servlet>
-    <servlet-name>EditSystemServlet</servlet-name>
-    <servlet-class>cmg.org.monitor.module.server.EditSystemServiceImpl</servlet-class>
-  </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>EditSystemServlet</servlet-name>
-    <url-pattern>/monitoreditsystem/EditSystem</url-pattern>
-  </servlet-mapping>
-
-      <servlet>
-    <servlet-name>UserManagement</servlet-name>
-    <servlet-class>cmg.org.monitor.module.server.UserManagementServiceImpl</servlet-class>
-  </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>UserManagement</servlet-name>
-    <url-pattern>/monitorusermanagement/usermanagement</url-pattern>
   </servlet-mapping>
   <servlet>
     <servlet-name>LoginServlet</servlet-name>
