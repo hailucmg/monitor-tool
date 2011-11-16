@@ -275,8 +275,10 @@ public class AddnewSystem extends AncestorEntryPoint {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				showErrorMessage(HTMLControl.ERROR_NORMAL,
-						HTMLControl.HTML_DASHBOARD_NAME, "Goto Dashboard. ");
+				showMessage("Oops! Error.",
+						HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
+						"Goto System Management. ",
+						HTMLControl.RED_MESSAGE, true);
 			}
 		});
 
@@ -285,7 +287,6 @@ public class AddnewSystem extends AncestorEntryPoint {
 
 		@Override
 		public void onClick(ClickEvent event) {
-			// TODO Auto-generated method stub
 			String validateName = validateName(txtName.getText());
 			String validateURL = validateURL(txtURL.getText());
 			String validateIp = validateIP(txtIP.getText());
@@ -345,22 +346,25 @@ public class AddnewSystem extends AncestorEntryPoint {
 					new AsyncCallback<String>() {
 						@Override
 						public void onSuccess(String result) {
-							// TODO Auto-generated method stub
 							panelAdding.setVisible(false);
 							if (result
 									.equals("Remote-URL is existing")) {
 								panelValidateRemoteURLServer.setVisible(true);
 							} else if(result.equals("done")) {
-								Window.alert("System added sucessfully. ");
-								//Window.Location.replace(HTMLControl.trimHashPart(Window.Location.getHref())+ HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME);
+								showMessage("System added sucessfully. ",
+										HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
+										"View system list. ",
+										HTMLControl.BLUE_MESSAGE, true);								
 							}
 
 						}
 
 						@Override
 						public void onFailure(Throwable caught) {
-							showErrorMessage(HTMLControl.ERROR_NORMAL,
-									HTMLControl.HTML_DASHBOARD_NAME, "Goto Dashboard. ");
+							showMessage("Oops! Error.",
+									HTMLControl.HTML_DASHBOARD_NAME,
+									"Goto Dashboard. ",
+									HTMLControl.RED_MESSAGE, true);
 						}
 					});
 		}
@@ -369,7 +373,6 @@ public class AddnewSystem extends AncestorEntryPoint {
 	class myReset implements ClickHandler {
 		@Override
 		public void onClick(ClickEvent event) {
-			// TODO Auto-generated method stub
 			txtName.setText("");
 			txtIP.setText("");
 			txtRemote.setText("");

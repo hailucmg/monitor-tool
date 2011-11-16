@@ -60,23 +60,27 @@ public class EditSystem extends AncestorEntryPoint {
 							addWidget(HTMLControl.ID_BODY_CONTENT, tableForm);
 							initFlexTable(sysID);
 						} else {
-							showErrorMessage(HTMLControl.ERROR_SYSTEM_ID,
+							showMessage("Invalid System ID.",
 									HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
-									"Goto System Management. ");
+									"Goto System Management. ",
+									HTMLControl.RED_MESSAGE, true);
+
 						}
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
-						showErrorMessage(HTMLControl.ERROR_NORMAL,
+						showMessage("Oops! Error.",
 								HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
-								"Goto System Management. ");
+								"Goto System Management. ",
+								HTMLControl.RED_MESSAGE, true);
 					}
 				});
 			} catch (Exception e) {
-				showErrorMessage(HTMLControl.ERROR_NORMAL,
+				showMessage("Oops! Error.",
 						HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
-						"Goto System Management. ");
+						"Goto System Management. ",
+						HTMLControl.RED_MESSAGE, true);
 			}
 		}
 	}
@@ -86,7 +90,7 @@ public class EditSystem extends AncestorEntryPoint {
 			@Override
 			public void onSuccess(MonitorEditDto result) {
 				if (result != null) {
-					system = result;					
+					system = result;
 					tableForm.setCellPadding(3);
 					tableForm.setCellSpacing(3);
 					tableForm.getFlexCellFormatter().setWidth(0, 0, "100px");
@@ -245,9 +249,10 @@ public class EditSystem extends AncestorEntryPoint {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				showErrorMessage(HTMLControl.ERROR_NORMAL,
+				showMessage("Oops! Error.",
 						HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
-						"Goto System Management. ");
+						"Goto System Management. ",
+						HTMLControl.RED_MESSAGE, true);
 			}
 
 		});
@@ -277,7 +282,6 @@ public class EditSystem extends AncestorEntryPoint {
 			}
 		});
 		bttBack.addClickHandler(new ClickHandler() {
-
 			@Override
 			public void onClick(ClickEvent event) {
 				Window.Location.replace(HTMLControl
@@ -325,45 +329,50 @@ public class EditSystem extends AncestorEntryPoint {
 					return;
 				}
 				panelAdding.setVisible(true);
-				monitorGwtSv.editSystembyID(system, txtName.getText(),
-						txtURL.getText(), listProtocol.getItemText(listProtocol
-								.getSelectedIndex()), listGroup
-								.getItemText(listGroup.getSelectedIndex()),
-						txtIP.getText(), txtRemote.getText(),
-						isActive(listActive.getItemText(listActive
-								.getSelectedIndex())),
-						new AsyncCallback<String>() {
+				monitorGwtSv.editSystembyID(system, txtName.getText(), txtURL
+						.getText(), listProtocol.getItemText(listProtocol
+						.getSelectedIndex()), listGroup.getItemText(listGroup
+						.getSelectedIndex()), txtIP.getText(), txtRemote
+						.getText(), isActive(listActive.getItemText(listActive
+						.getSelectedIndex())), new AsyncCallback<String>() {
 
-							@Override
-							public void onSuccess(String result) {
-								panelAdding.setVisible(false);
-								if (result != null) {
-									if (result
-											.equals("Remote URL is exitsting")) {
-										panelValidateIP.setVisible(false);
-										panelValidateName.setVisible(false);
-										panelValidateRemoteURL
-												.setVisible(false);
-										panelValidateURL.setVisible(false);
-										panelValidateRemoteURLServer
-												.setVisible(true);
-									} else if (result
-											.equals("config database error")) {
-										Window.alert(result);
-									} else if (result.equals("done")) {
-										Window.alert("System updated successfully. ");
-										//Window.Location.replace(HTMLControl.trimHashPart(Window.Location.getHref())+ HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME);
-									}
-								} else {
-									Window.alert("null?");
-								}
+					@Override
+					public void onSuccess(String result) {
+						panelAdding.setVisible(false);
+						if (result != null) {
+							if (result.equals("Remote URL is exitsting")) {
+								panelValidateIP.setVisible(false);
+								panelValidateName.setVisible(false);
+								panelValidateRemoteURL.setVisible(false);
+								panelValidateURL.setVisible(false);
+								panelValidateRemoteURLServer.setVisible(true);
+							} else if (result.equals("config database error")) {
+								showMessage("Server error! ",
+										HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
+										"Goto System Management. ",
+										HTMLControl.RED_MESSAGE, true);
+							} else if (result.equals("done")) {
+								showMessage("System edited sucessfully. ",
+										HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
+										"View system list. ",
+										HTMLControl.BLUE_MESSAGE, true);
 							}
+						}  else {
+							showMessage("Server error! ",
+									HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
+									"Goto System Management. ",
+									HTMLControl.RED_MESSAGE, true);
+						}
+					}
 
-							@Override
-							public void onFailure(Throwable caught) {
-								Window.alert("connect to server false");
-							}
-						});
+					@Override
+					public void onFailure(Throwable caught) {
+						showMessage("Server error! ",
+								HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
+								"Goto System Management. ",
+								HTMLControl.RED_MESSAGE, true);
+					}
+				});
 
 			}
 		});
