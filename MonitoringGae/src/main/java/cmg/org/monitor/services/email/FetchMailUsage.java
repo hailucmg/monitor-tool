@@ -59,17 +59,15 @@ public class FetchMailUsage {
     	                String disposition = bodyPart.getDisposition();
     	                if ((disposition != null)
     	                        && (disposition.equals(BodyPart.ATTACHMENT))) {
-    	                    System.out.println("Mail have some attachment : ");
+    	                   
     	                    DataHandler handler = bodyPart.getDataHandler();
-    	                    System.out.println("file name : "
-    	                        + handler.getName());
+    	                 
     	                } else {
     	                    content = bodyPart.getContent().toString();
     	                }
     	            }
     	        } else if (content instanceof Part) {
     	            // text/html
-    	            System.out.println(content.toString());
     	        } else {
     	            webContent = content.toString();
     	            long curTime = message[i].getSentDate().getTime();
