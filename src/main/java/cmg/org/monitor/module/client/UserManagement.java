@@ -5,129 +5,45 @@ import java.util.Map;
 import java.util.Set;
 
 import cmg.org.monitor.ext.model.shared.UserDto;
-import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.util.shared.HTMLControl;
-import cmg.org.monitor.util.shared.MonitorConstant;
 
-import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
-import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.visualizations.Table;
 import com.google.gwt.visualization.client.visualizations.Table.Options;
 
-public class UserManagement implements EntryPoint {
-	UserManagementServiceAsync userService = GWT
-			.create(UserManagementService.class);
+public class UserManagement extends AncestorEntryPoint {
 	static private Table myTable;
 
-	@Override
-	public void onModuleLoad() {
-		userService.getUserLogin(new AsyncCallback<UserLoginDto>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				setVisibleLoadingImage(false);
-				initMessage("Server error. ", HTMLControl.HTML_USER_MANAGEMENT_NAME,
-						"Try again. ", HTMLControl.RED_MESSAGE);
-				setVisibleMessage(true, HTMLControl.RED_MESSAGE);
-			}
-			@Override
-			public void onSuccess(UserLoginDto result) {
-				setVisibleLoadingImage(false);
-				if (result != null) {
-					if (result.isLogin()) {
-						RootPanel.get("menuContent").add(
-								HTMLControl.getMenuHTML(
-										HTMLControl.USER_MANAGEMENT_PAGE,
-										result.getRole()));
-						RootPanel.get("nav-right")
-								.add(HTMLControl.getLogoutHTML(result
-										.getLogoutUrl(),result.getEmail()));
-						if (result.getRole() == MonitorConstant.ROLE_GUEST) {
-							initMessage(
-									"Hello "
-											+ result.getNickName()
-											+ ". You might not have permission to use Monitor System. ",
-									result.getLogoutUrl(),
-									"Login with another account.",
-									HTMLControl.YELLOW_MESSAGE);
-							setVisibleMessage(true, HTMLControl.YELLOW_MESSAGE);
-						} else {
-							initMessage(
-									"Wellcome to Monitor System, "
-											+ result.getNickName()
-											+ ". If have any question. ",
-									HTMLControl.HTML_ABOUT_NAME, "Contact Us.",
-									HTMLControl.GREEN_MESSAGE);
-							setVisibleMessage(true, HTMLControl.GREEN_MESSAGE);
-							init();
-						}
-					} else {
-						initMessage("Must login to use Monitor System. ", result.getLoginUrl(),
-								"Login. ", HTMLControl.RED_MESSAGE);
-						setVisibleMessage(true, HTMLControl.RED_MESSAGE);
-					}
-				} else {
-					initMessage("Server error. ", HTMLControl.HTML_USER_MANAGEMENT_NAME,
-							"Try again. ", HTMLControl.RED_MESSAGE);
-					setVisibleMessage(true, HTMLControl.RED_MESSAGE);
-				}
-			}
-		});
-	}
-
-	void init() {
-		Runnable onLoadCallback = new Runnable() {
-
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				myTable = new Table();
-				RootPanel.get("dataTableUser").add(myTable);
-				initContent();
-			}
-		};
-		VisualizationUtils.loadVisualizationApi(onLoadCallback, Table.PACKAGE);
-	}
-
-	void setVisibleLoadingImage(boolean b) {
-		RootPanel.get("img-loading").setVisible(b);
-	}
-
-	void setVisibleMessage(boolean b, int type) {
-		RootPanel.get("message-" + HTMLControl.getColor(type)).setVisible(b);
-	}
-
-	/*
-	 * Show message with content
-	 */
-	void initMessage(String message, String url, String titleUrl, int type) {
-		RootPanel.get("content-" + HTMLControl.getColor(type)).clear();
-		RootPanel.get("content-" + HTMLControl.getColor(type)).add(
-				new HTML(message
-						+ ((url.trim().length() == 0) ? "" : ("  <a href=\""
-								+ url + "\">" + titleUrl + "</a>")), true));
+	protected void init() {
+		if (currentPage == HTMLControl.PAGE_USER_MANAGEMENT) {
+			myTable = new Table();
+			addWidget(HTMLControl.ID_BODY_CONTENT, myTable);
+			initContent();
+		}
 	}
 
 	private void initContent() {
-		userService.listUser(new AsyncCallback<Map<String, UserDto>>() {
+		monitorGwtSv.listUser(new AsyncCallback<Map<String, UserDto>>() {
 
 			@Override
 			public void onSuccess(Map<String, UserDto> result) {
-				// TODO Auto-generated method stub
-				drawTable(result);
+				if (result != null) {
+					setVisibleLoadingImage(false);
+					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+					drawTable(result);					
+				} else {
+					showErrorMessage(HTMLControl.ERROR_NORMAL,
+							HTMLControl.HTML_DASHBOARD_NAME, "Goto Dashboard. ");
+				}
 			}
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
-				Window.alert(caught.toString());
+				showErrorMessage(HTMLControl.ERROR_NORMAL,
+						HTMLControl.HTML_DASHBOARD_NAME, "Goto Dashboard. ");
 			}
 		});
 	}

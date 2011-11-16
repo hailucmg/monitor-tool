@@ -1,237 +1,151 @@
 package cmg.org.monitor.module.client;
 
 import cmg.org.monitor.entity.shared.SystemMonitor;
-import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.util.shared.HTMLControl;
-import cmg.org.monitor.util.shared.MonitorConstant;
 
-import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
-import com.google.gwt.visualization.client.VisualizationUtils;
+import com.google.gwt.visualization.client.formatters.BarFormat;
+import com.google.gwt.visualization.client.formatters.BarFormat.Color;
 import com.google.gwt.visualization.client.visualizations.Table;
 import com.google.gwt.visualization.client.visualizations.Table.Options;
 
-public class SystemManagement implements EntryPoint {
-	SystemManagementServiceAsync systemMSA = GWT
-			.create(SystemManagementService.class);
+public class SystemManagement extends AncestorEntryPoint {
 	SystemMonitor[] listSystem;
-	static private Table myTable;
+	static private Table tableListSystem;
 
-	@Override
-	public void onModuleLoad() {
-		systemMSA.getUserLogin(new AsyncCallback<UserLoginDto>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				setVisibleLoadingImage(false);
-				initMessage("Server error. ", HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
-						"Try again. ", HTMLControl.RED_MESSAGE);
-				setVisibleMessage(true, HTMLControl.RED_MESSAGE);
-			}
-			@Override
-			public void onSuccess(UserLoginDto result) {
-				setVisibleLoadingImage(false);
-				if (result != null) {
-					if (result.isLogin()) {
-						RootPanel.get("menuContent").add(
-								HTMLControl.getMenuHTML(
-										HTMLControl.SYSTEM_MANAGEMENT_PAGE,
-										result.getRole()));
-						RootPanel.get("nav-right")
-								.add(HTMLControl.getLogoutHTML(result
-										.getLogoutUrl(), result.getEmail()));
-						if (result.getRole() == MonitorConstant.ROLE_GUEST) {
-							initMessage(
-									"Hello "
-											+ result.getNickName()
-											+ ". You might not have permission to use Monitor System. ",
-									result.getLogoutUrl(),
-									"Login with another account.",
-									HTMLControl.YELLOW_MESSAGE);
-							setVisibleMessage(true, HTMLControl.YELLOW_MESSAGE);
-						} else {
-							initMessage(
-									"Wellcome to Monitor System, "
-											+ result.getNickName()
-											+ ". If have any question. ",
-									HTMLControl.HTML_ABOUT_NAME, "Contact Us.",
-									HTMLControl.GREEN_MESSAGE);
-							setVisibleMessage(true, HTMLControl.GREEN_MESSAGE);
-							init();
-						}
-					} else {
-						initMessage("Must login to use Monitor System. ", result.getLoginUrl(),
-								"Login. ", HTMLControl.RED_MESSAGE);
-						setVisibleMessage(true, HTMLControl.RED_MESSAGE);
-					}
-				} else {
-					initMessage("Server error. ", HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
-							"Try again. ", HTMLControl.RED_MESSAGE);
-					setVisibleMessage(true, HTMLControl.RED_MESSAGE);
-				}
-			}
-		});
+	protected void init() {
+		if (currentPage == HTMLControl.PAGE_SYSTEM_MANAGEMENT) {
+			tableListSystem = new Table();
+			addWidget(HTMLControl.ID_BODY_CONTENT, tableListSystem);
+			initContent();
 
-	}
-	
-	void init() {
-		Runnable onLoadCallback = new Runnable() {
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-
-				myTable = new Table();
-				RootPanel.get("dataTableSystem").add(myTable);
-				initContent();
-				History.addValueChangeHandler(new ValueChangeHandler<String>() {
-					@Override
-					public void onValueChange(ValueChangeEvent<String> event) {
-						// TODO Auto-generated method stub
-						if ( Window
-								.confirm("do you want to delete?") == false) {
-							Window.Location.assign(HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME);
-							return;
-						}
-						String id = event.getValue().toString();
-
-						systemMSA.deleteSystem(id,
-								new AsyncCallback<Boolean>() {
-
-									@Override
-									public void onSuccess(Boolean result) {
-										// TODO Auto-s method stub
-										if (result) {
-											try {
-												initContent();
-											} catch (Exception e) {
-												// TODO: handle exception
-												e.printStackTrace();
-											}
-
-										}
-									}
-									@Override
-									public void onFailure(Throwable caught) {
-										// TODO Auto-generated method stub
-										DOM.getElementById("page-heading")
-												.setInnerHTML(
-														"can not connect to server"
-																+ caught.getMessage());
-									}
-								});
-					}
-				});
-			}
-		};
-		VisualizationUtils.loadVisualizationApi(onLoadCallback, Table.PACKAGE);
-	}
-
-	void setVisibleMessage(boolean b, int type) {
-		RootPanel.get("message-" + HTMLControl.getColor(type)).setVisible(b);
-	}
-
-	/*
-	 * Show message with content
-	 */
-	void initMessage(String message, String url, String titleUrl, int type) {
-		RootPanel.get("content-" + HTMLControl.getColor(type)).clear();
-		RootPanel.get("content-" + HTMLControl.getColor(type)).add(
-				new HTML(message
-						+ ((url.trim().length() == 0) ? "" : ("  <a href=\""
-								+ url + "\">" + titleUrl + "</a>")), true));
+		}
 	}
 
 	private void initContent() {
-		systemMSA.listSystem(false, new AsyncCallback<SystemMonitor[]>() {
-
+		monitorGwtSv.listSystem(false, new AsyncCallback<SystemMonitor[]>() {
 			@Override
 			public void onSuccess(SystemMonitor[] result) {
-				// TODO Auto-generated method stub
+				listSystem = result;
 				if (result != null) {
 					setVisibleLoadingImage(false);
+					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+					isReadyDelete = true;
 					drawTable(result);
-
 				} else {
+					initMessage("No system found. ",
+							HTMLControl.HTML_ADD_NEW_SYSTEM_NAME,
+							"Add new system.", HTMLControl.RED_MESSAGE);
+					setVisibleMessage(true, HTMLControl.RED_MESSAGE);
 					setVisibleLoadingImage(false);
-					DOM.getElementById("dataTableSystem").setInnerHTML(
-							"<h1>no system</h1>");
 				}
 			}
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
-				Window.alert("can not connect to server,please try again");
-				caught.printStackTrace();
+				showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
+				initMessage("Server error. ", HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
+						"Try again.", HTMLControl.RED_MESSAGE);
+				setVisibleMessage(true, HTMLControl.RED_MESSAGE);	
 			}
 		});
 
 	}
 
-	private Options createOption() {
-		Options myOption = Options.create();
-		myOption.setAllowHtml(true);
-		myOption.setShowRowNumber(true);
-		return myOption;
+	void drawTable(SystemMonitor[] result) {
+		if (result != null) {
+			tableListSystem.draw(createDataListSystem(result),
+					createOptionsTableListSystem());
+
+		} else {
+			initMessage("No system found. ",
+					HTMLControl.HTML_ADD_NEW_SYSTEM_NAME, "Add new system.",
+					HTMLControl.RED_MESSAGE);
+			setVisibleMessage(true, HTMLControl.RED_MESSAGE);
+			showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
+		}
 	}
 
-	private AbstractDataTable createData(SystemMonitor[] listSystem) {
-		DataTable data = DataTable.create();
-		data.addColumn(ColumnType.STRING, "SID");
-		data.addColumn(ColumnType.STRING, "Name");
-		data.addColumn(ColumnType.STRING, "URL");
-		data.addColumn(ColumnType.STRING, "IP");
-		data.addColumn(ColumnType.STRING, "Monitor Status");
-		data.addColumn(ColumnType.STRING, "System Health Status");
-		data.addColumn(ColumnType.STRING, "Action");
-		data.addRows(listSystem.length);
-		for (int i = 0; i < listSystem.length; i++) {
-			data.setValue(i, 0, (listSystem[i].getCode() == null) ? "N/A"
-					: listSystem[i].getCode().toString());
-			data.setValue(i, 1, listSystem[i].getName().toString());
-			data.setValue(i, 2, listSystem[i].getUrl().toString());
-			data.setValue(i, 3, (listSystem[i].getIp() == null) ? "N/A"
-					: listSystem[i].getIp());
-			data.setValue(
+	/*
+	 * Create options of table list system
+	 */
+	Options createOptionsTableListSystem() {
+		Options ops = Options.create();
+		ops.setAllowHtml(true);
+		ops.setShowRowNumber(true);
+		return ops;
+	}
+
+	/*
+	 * Create data table list system without value
+	 */
+	AbstractDataTable createDataListSystem(SystemMonitor[] result) {
+		// create object data table
+		DataTable dataListSystem = DataTable.create();
+		// add all columns
+		dataListSystem.addColumn(ColumnType.STRING, "SID");
+		dataListSystem.addColumn(ColumnType.STRING, "System");
+		dataListSystem.addColumn(ColumnType.STRING, "URL");
+		dataListSystem.addColumn(ColumnType.STRING, "IP");
+		dataListSystem.addColumn(ColumnType.NUMBER, "CPU Usage (%)");
+		dataListSystem.addColumn(ColumnType.NUMBER, "Memory Usage (%)");
+		dataListSystem.addColumn(ColumnType.STRING, "Health Status");
+		dataListSystem.addColumn(ColumnType.STRING, "Monitor Status");
+		dataListSystem.addColumn(ColumnType.STRING, "Delete");
+		dataListSystem.addRows(result.length);
+		for (int i = 0; i < result.length; i++) {
+			dataListSystem.setValue(
+					i,
+					0,
+					HTMLControl.getLinkEditSystem(result[i].getId(),
+							result[i].getCode()));
+			dataListSystem.setValue(i, 1, (result[i].getName() == null) ? "N/A"
+					: result[i].getName());
+			dataListSystem.setValue(i, 2, (result[i].getUrl() == null) ? "N/A"
+					: result[i].getUrl());
+			dataListSystem.setValue(i, 3, (result[i].getIp() == null) ? "N/A"
+					: result[i].getIp());
+			dataListSystem.setValue(
 					i,
 					4,
-					"<img src=\"images/icon/"
-							+ Boolean.toString(listSystem[i].isActive())
-							+ "_icon.png\" />");
-			data.setValue(
+					(result[i].getLastCpuMemory() == null) ? 0 : (result[i]
+							.isActive() && result[i].getStatus() ? result[i]
+							.getLastCpuMemory().getCpuUsage() : 0));
+			dataListSystem.setValue(
 					i,
 					5,
-					"<img src=\"images/icon/"
-							+ Boolean.toString(listSystem[i].getStatus())
-							+ "_icon.png\" />");
-			data.setValue(
-					i,
-					6,
-					"<a href=\""+HTMLControl.HTML_EDIT_NAME+"?id="
-							+ listSystem[i].getId()
-							+ " \" title=\"Edit\" class=\"icon-1 info-tooltip\"></a>"
-							+ "<a href=\""+HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME+"#"
-							+ listSystem[i].getId()
-							+ " \" title=\"Delete\" class=\"icon-2 info-tooltip\"></a>");
+					(result[i].getLastCpuMemory() == null) ? 0 : (result[i]
+							.isActive() && result[i].getStatus() ? result[i]
+							.getLastCpuMemory().getPercentMemoryUsage() : 0));
+			dataListSystem
+					.setValue(i, 6, HTMLControl.getHTMLStatusImage(result[i]
+							.getHealthStatus()));
+			dataListSystem.setValue(i, 7,
+					HTMLControl.getHTMLActiveImage(result[i].isActive()));
+			dataListSystem
+					.setValue(
+							i,
+							8,
+							"<a onClick=\"javascript:deleteSystem('"+result[i].getId()+"','"+result[i].getCode()+"');\" title=\"Delete\" class=\"icon-2 info-tooltip\"></a>");
 		}
-		return data;
+
+		com.google.gwt.visualization.client.formatters.BarFormat.Options ops = com.google.gwt.visualization.client.formatters.BarFormat.Options
+				.create();
+		ops.setColorPositive(Color.RED);
+		ops.setColorNegative(Color.RED);
+		ops.setMax(100);
+		ops.setMin(0);
+		ops.setWidth(200);
+		BarFormat bf = BarFormat.create(ops);
+		bf.format(dataListSystem, 4);
+		bf.format(dataListSystem, 5);
+		return dataListSystem;
+
 	}
 
-	private void drawTable(SystemMonitor[] list) {
-		myTable.draw(createData(list), createOption());
-	}
-
-	void setVisibleLoadingImage(boolean b) {
-		RootPanel.get("img-loading").setVisible(b);
-	}
 }

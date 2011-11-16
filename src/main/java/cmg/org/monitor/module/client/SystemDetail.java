@@ -4,32 +4,23 @@ import cmg.org.monitor.entity.shared.CpuMemory;
 import cmg.org.monitor.entity.shared.FileSystem;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
-import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
-import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.LegendPosition;
 import com.google.gwt.visualization.client.Selection;
-import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.events.SelectHandler;
 import com.google.gwt.visualization.client.formatters.ColorFormat;
 import com.google.gwt.visualization.client.visualizations.AnnotatedTimeLine;
@@ -38,7 +29,7 @@ import com.google.gwt.visualization.client.visualizations.Gauge;
 import com.google.gwt.visualization.client.visualizations.PieChart;
 import com.google.gwt.visualization.client.visualizations.Table;
 
-public class SystemDetail implements EntryPoint {
+public class SystemDetail extends AncestorEntryPoint {
 	//
 	private FlexTable flexTableContent;
 
@@ -62,13 +53,6 @@ public class SystemDetail implements EntryPoint {
 
 	private AnnotatedTimeLine atlStatistic;
 
-	private Timer timerLoadSystemDetails;
-
-	private Timer timerLoadStatistic;
-
-	private SystemDetailServiceAsync sysDetailSv = GWT
-			.create(SystemDetailService.class);
-
 	private String sysID;
 
 	private FileSystem[] listFileSystem;
@@ -81,166 +65,79 @@ public class SystemDetail implements EntryPoint {
 	private boolean isShowFileSystem = true;
 	private boolean isShowCpuMemory = true;
 
-	private int count;
-
-	private Timer timerMess;
-
-	@Override
-	public void onModuleLoad() {
-		sysDetailSv.getUserLogin(new AsyncCallback<UserLoginDto>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				setVisibleLoadingImage(false);
-				initMessage("Server error. ", HTMLControl.HTML_DASHBOARD_NAME,
-						"Try again. ", HTMLControl.RED_MESSAGE);
-				setVisibleMessage(true, HTMLControl.RED_MESSAGE);
-			}
-
-			@Override
-			public void onSuccess(UserLoginDto result) {
-				setVisibleLoadingImage(false);
-				if (result != null) {
-					if (result.isLogin()) {
-						RootPanel.get("menuContent").add(
-								HTMLControl.getMenuHTML(
-										HTMLControl.DASHBOARD_PAGE,
-										result.getRole()));
-						RootPanel.get("nav-right")
-								.add(HTMLControl.getLogoutHTML(result
-										.getLogoutUrl(),result.getEmail()));
-						if (result.getRole() == MonitorConstant.ROLE_GUEST) {
-							initMessage(
-									"Hello "
-											+ result.getNickName()
-											+ ". You might not have permission to use Monitor System. ",
-									result.getLogoutUrl(),
-									"Login with another account.",
-									HTMLControl.YELLOW_MESSAGE);
-							setVisibleMessage(true, HTMLControl.YELLOW_MESSAGE);
+	protected void init() {
+		if (currentPage == HTMLControl.PAGE_SYSTEM_DETAIL
+				|| currentPage == HTMLControl.PAGE_SYSTEM_STATISTIC) {
+			sysID = HTMLControl.getSystemId(History.getToken());
+			try {
+				monitorGwtSv.validSystemId(sysID, new AsyncCallback<Boolean>() {
+					@Override
+					public void onSuccess(Boolean result) {
+						if (result) {
+							flexTableContent = new FlexTable();
+							addWidget(HTMLControl.ID_BODY_CONTENT,
+									flexTableContent);
+							initContent();
 						} else {
-							initMessage(
-									"Wellcome to Monitor System, "
-											+ result.getNickName()
-											+ ". If have any question. ",
-									HTMLControl.HTML_ABOUT_NAME, "Contact Us.",
-									HTMLControl.GREEN_MESSAGE);
-							setVisibleMessage(true, HTMLControl.GREEN_MESSAGE);
-							init();
+							showErrorMessage(HTMLControl.ERROR_SYSTEM_ID,
+									HTMLControl.HTML_DASHBOARD_NAME,
+									"Goto Dashboard. ");
 						}
-					} else {
-						initMessage("Must login to use Monitor System. ",
-								result.getLoginUrl(), "Login. ",
-								HTMLControl.RED_MESSAGE);
-						setVisibleMessage(true, HTMLControl.RED_MESSAGE);
 					}
-				} else {
-					initMessage("Server error. ",
-							HTMLControl.HTML_DASHBOARD_NAME, "Try again. ",
-							HTMLControl.RED_MESSAGE);
-					setVisibleMessage(true, HTMLControl.RED_MESSAGE);
-				}
-			}
-		});
 
-	}
-
-	void init() {
-		sysID = Window.Location.getParameter("sid");
-		try {
-			sysDetailSv.validSystemId(sysID, new AsyncCallback<Boolean>() {
-
-				@Override
-				public void onSuccess(Boolean result) {
-					if (result) {
-						changePapeHeading(History.getToken());
-						changeStepHolder(History.getToken());
-						flexTableContent = new FlexTable();
-						RootPanel.get("systemContent").add(flexTableContent);
-
-						Runnable onLoadCallback = new Runnable() {
-							@Override
-							public void run() {
-								initContent(History.getToken());
-								History.addValueChangeHandler(new ValueChangeHandler<String>() {
-									@Override
-									public void onValueChange(
-											ValueChangeEvent<String> event) {
-										String hash = event.getValue().trim()
-												.toLowerCase();
-										changePapeHeading(hash);
-										changeStepHolder(hash);
-										initContent(hash);
-									}
-								});
-							}
-						};
-						// Load the visualization api, passing the
-						// onLoadCallback to
-						// be called
-						// when loading is done.
-						VisualizationUtils.loadVisualizationApi(onLoadCallback,
-								Table.PACKAGE, Gauge.PACKAGE,
-								AreaChart.PACKAGE, PieChart.PACKAGE,
-								AnnotatedTimeLine.PACKAGE);
-					} else {
-						showRedirectCountMessage(
-								"Invalid system ID, redirect to Dashboard",
+					@Override
+					public void onFailure(Throwable caught) {
+						showErrorMessage(HTMLControl.ERROR_NORMAL,
 								HTMLControl.HTML_DASHBOARD_NAME,
-								"Redirect now.", HTMLControl.RED_MESSAGE);
+								"Goto Dashboard. ");
 					}
-				}
-
-				@Override
-				public void onFailure(Throwable caught) {
-					Window.alert("Server error!!! \n" + caught.getMessage());
-				}
-			});
-		} catch (Exception e) {
-			e.printStackTrace();
+				});
+			} catch (Exception e) {
+				showErrorMessage(HTMLControl.ERROR_NORMAL,
+						HTMLControl.HTML_DASHBOARD_NAME, "Goto Dashboard. ");
+			}
 		}
 
 	}
 
-	void initContent(String hash) {
-		flexTableContent.clear();
-		cancelTimer();
-		int view = getViewIndex(hash);
-		setVisibleLoadingImage(false);
-		initFlexTableContent(view);
+	void initContent() {
+		initFlexTableContent();
 
-		if (view == HTMLControl.VIEW_STATISTIC) {
+		if (currentPage == HTMLControl.PAGE_SYSTEM_STATISTIC) {
 			initSystemStatistic();
-		} else {
+		} else if (currentPage == HTMLControl.PAGE_SYSTEM_DETAIL) {
 			initSystemDetails();
 		}
 	}
 
 	void initSystemStatistic() {
-		timerLoadStatistic = new Timer() {
-
+		timerReload = new Timer() {
 			@Override
 			public void run() {
-				sysDetailSv.listCpuMemoryHistory(sysID,
+				monitorGwtSv.listCpuMemoryHistory(sysID,
 						new AsyncCallback<CpuMemory[]>() {
 
 							@Override
 							public void onSuccess(CpuMemory[] result) {
+								setVisibleLoadingImage(false);
+								setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
 								if (result != null) {
 									drawSystemStatistic(result);
 								} else {
-									//
+									initMessage("No statistic found. ","", "", HTMLControl.YELLOW_MESSAGE);
+									setVisibleMessage(true, HTMLControl.YELLOW_MESSAGE);
 								}
 							}
 
 							@Override
 							public void onFailure(Throwable caught) {
-								caught.printStackTrace();
+								
 							}
 						});
 			}
 		};
-		timerLoadStatistic.run();
-		timerLoadStatistic.scheduleRepeating(MonitorConstant.REFRESH_RATE);
+		timerReload.run();
+		timerReload.scheduleRepeating(MonitorConstant.REFRESH_RATE);
 	}
 
 	void drawSystemStatistic(CpuMemory[] list) {
@@ -262,16 +159,18 @@ public class SystemDetail implements EntryPoint {
 	}
 
 	void initSystemDetails() {
-		timerLoadSystemDetails = new Timer() {
+		timerReload = new Timer() {
 
 			@Override
 			public void run() {
-				sysDetailSv.getLastestDataMonitor(sysID,
+				monitorGwtSv.getLastestDataMonitor(sysID,
 						new AsyncCallback<SystemMonitor>() {
 
 							@Override
 							public void onSuccess(SystemMonitor result) {
 								if (result != null) {
+									setVisibleLoadingImage(false);
+									setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
 									drawSystemDetails(result);
 								} else {
 
@@ -285,15 +184,15 @@ public class SystemDetail implements EntryPoint {
 						});
 			}
 		};
-		timerLoadSystemDetails.run();
-		timerLoadSystemDetails.scheduleRepeating(MonitorConstant.REFRESH_RATE);
+		timerReload.run();
+		timerReload.scheduleRepeating(MonitorConstant.REFRESH_RATE);
 	}
 
-	void initFlexTableContent(int view) {
-		if (view == HTMLControl.VIEW_STATISTIC) {
+	void initFlexTableContent() {
+		if (currentPage == HTMLControl.PAGE_SYSTEM_STATISTIC) {
 			atlStatistic = new AnnotatedTimeLine("1000px", "600px");
 			flexTableContent.setWidget(0, 0, atlStatistic);
-		} else {
+		} else if (currentPage == HTMLControl.PAGE_SYSTEM_DETAIL) {
 			tblService = new Table();
 			ggCpu = new Gauge();
 			ggMemory = new Gauge();
@@ -372,58 +271,11 @@ public class SystemDetail implements EntryPoint {
 							}
 						}
 					} catch (Exception ex) {
-						ex.printStackTrace();
 					}
 				}
 			});
 
 		}
-	}
-
-	/*
-	 * Set visible message box
-	 */
-	void setVisibleMessage(boolean b, int type) {
-		RootPanel.get("message-" + HTMLControl.getColor(type)).setVisible(b);
-	}
-
-	/**
-	 * @param message
-	 * @param url
-	 * @param titleUrl
-	 * @param type
-	 */
-	void initMessage(String message, String url, String titleUrl, int type) {
-		RootPanel.get("content-" + HTMLControl.getColor(type)).clear();
-		RootPanel.get("content-" + HTMLControl.getColor(type)).add(
-				new HTML(message
-						+ ((url.trim().length() == 0) ? "" : ("  <a href=\""
-								+ url + "\">" + titleUrl + "</a>")), true));
-	}
-
-	void showRedirectCountMessage(final String mes, final String url,
-			final String titleUrl, final int typeMessage) {
-		count = MonitorConstant.REDIRECT_WAIT_TIME / 1000;
-		if (timerMess != null) {
-			setVisibleMessage(false, typeMessage);
-			timerMess.cancel();
-		}
-
-		timerMess = new Timer() {
-			@Override
-			public void run() {
-				initMessage(mes + " in " + HTMLControl.getStringTime(--count),
-						url, titleUrl, typeMessage);
-				if (count <= 0) {
-					setVisibleMessage(false, typeMessage);
-					this.cancel();
-					Window.Location.assign(HTMLControl.HTML_DASHBOARD_NAME);
-				}
-			}
-		};
-		timerMess.run();
-		setVisibleMessage(true, typeMessage);
-		timerMess.scheduleRepeating(1000);
 	}
 
 	private SelectHandler createSelectHandler(final Table tbl) {
@@ -442,10 +294,6 @@ public class SystemDetail implements EntryPoint {
 				}
 			}
 		};
-	}
-
-	void setVisibleLoadingImage(boolean b) {
-		RootPanel.get("img-loading").setVisible(b);
 	}
 
 	void drawSystemDetails(SystemMonitor sys) {
@@ -624,17 +472,6 @@ public class SystemDetail implements EntryPoint {
 		return data;
 	}
 
-	void cancelTimer() {
-		if (timerLoadSystemDetails != null) {
-			timerLoadSystemDetails.cancel();
-			timerLoadSystemDetails = null;
-		}
-		if (timerLoadStatistic != null) {
-			timerLoadStatistic.cancel();
-			timerLoadStatistic = null;
-		}
-	}
-
 	Gauge.Options createGaugeOptions() {
 		Gauge.Options ops = Gauge.Options.create();
 		ops.setGaugeRange(0, 100);
@@ -672,27 +509,4 @@ public class SystemDetail implements EntryPoint {
 		ops.setDisplayAnnotations(true);
 		return ops;
 	}
-
-	private int getViewIndex(String hash) {
-		if (hash.equals("statistic")) {
-			return HTMLControl.VIEW_STATISTIC;
-		} else {
-			Window.Location.replace(HTMLControl.trimHashPart(Window.Location
-					.getHref()) + "#details");
-			return HTMLControl.VIEW_DETAILS;
-		}
-	}
-
-	void changePapeHeading(String hash) {
-		RootPanel.get("page-heading").clear();
-		RootPanel.get("page-heading").add(
-				HTMLControl.getPageHeading(getViewIndex(hash)));
-	}
-
-	void changeStepHolder(String hash) {
-		RootPanel.get("step-holder").clear();
-		RootPanel.get("step-holder").add(
-				HTMLControl.getStepHolder(getViewIndex(hash)));
-	}
-
 }
