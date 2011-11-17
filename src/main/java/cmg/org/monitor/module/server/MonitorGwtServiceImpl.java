@@ -147,8 +147,14 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 					if (remoteURL.toLowerCase().equals(
 							remoteURLs[i].toLowerCase())) {
 						b = "Remote URL is exitsting";
-						break;
+						return b;
 					}
+				}
+				if (!systemDAO.editSystembyID(system.getId(), newName,
+						newAddress, protocol, group, ip, remoteURL, isActive)) {
+					b = "config database error";
+				} else {
+					b = "done";
 				}
 			}
 		} catch (Exception e) {
