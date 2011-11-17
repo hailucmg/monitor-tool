@@ -42,9 +42,12 @@ public class SystemManagement extends AncestorEntryPoint {
 	static void showConfirmDialogBox(final String code,final String id) {	
 		dialogBox = new DialogBox();
 		dialogBox.setText("Confirm delete");
-		dialogBox.setAnimationEnabled(true);	
+		dialogBox.setAnimationEnabled(true);
+		dialogBox.setStyleName("color: #333");
 		final Button closeButton = new Button("Cancel");
+		closeButton.setStyleName("background: url(../images/forms/form_back.png) no-repeat");
 		final Button okButton = new Button("Ok");
+		okButton.setStyleName("background: url(../images/forms/form_submit.gif) no-repeat");
 		closeButton.getElement().setId("closeButton");
 		VerticalPanel dialogVPanel = new VerticalPanel();
 		dialogVPanel.addStyleName("dialogVPanel");
@@ -159,8 +162,6 @@ public class SystemManagement extends AncestorEntryPoint {
 		dataListSystem.addColumn(ColumnType.STRING, "System");
 		dataListSystem.addColumn(ColumnType.STRING, "URL");
 		dataListSystem.addColumn(ColumnType.STRING, "IP");
-		dataListSystem.addColumn(ColumnType.NUMBER, "CPU Usage (%)");
-		dataListSystem.addColumn(ColumnType.NUMBER, "Memory Usage (%)");
 		dataListSystem.addColumn(ColumnType.STRING, "Health Status");
 		dataListSystem.addColumn(ColumnType.STRING, "Monitor Status");
 		dataListSystem.addColumn(ColumnType.STRING, "Delete");
@@ -177,27 +178,15 @@ public class SystemManagement extends AncestorEntryPoint {
 					: result[i].getUrl());
 			dataListSystem.setValue(i, 3, (result[i].getIp() == null) ? "N/A"
 					: result[i].getIp());
-			dataListSystem.setValue(
-					i,
-					4,
-					(result[i].getLastCpuMemory() == null) ? 0 : (result[i]
-							.isActive() && result[i].getStatus() ? result[i]
-							.getLastCpuMemory().getCpuUsage() : 0));
-			dataListSystem.setValue(
-					i,
-					5,
-					(result[i].getLastCpuMemory() == null) ? 0 : (result[i]
-							.isActive() && result[i].getStatus() ? result[i]
-							.getLastCpuMemory().getPercentMemoryUsage() : 0));
 			dataListSystem
-					.setValue(i, 6, HTMLControl.getHTMLStatusImage(result[i]
+					.setValue(i, 4, HTMLControl.getHTMLStatusImage(result[i]
 							.getHealthStatus()));
-			dataListSystem.setValue(i, 7,
+			dataListSystem.setValue(i, 5,
 					HTMLControl.getHTMLActiveImage(result[i].isActive()));
 			dataListSystem
 					.setValue(
 							i,
-							8,
+							6,
 							"<a onClick=\"javascript:showConfirmDialogBox('"+result[i].getCode()+"','"
 									+ result[i].getId()
 									+ "');\" title=\"Delete\" class=\"icon-2 info-tooltip\"></a>");
