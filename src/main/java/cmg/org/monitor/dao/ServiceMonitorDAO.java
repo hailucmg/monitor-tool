@@ -3,6 +3,7 @@ package cmg.org.monitor.dao;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.exception.MonitorException;
+import cmg.org.monitor.ext.model.shared.JVMMemoryDto;
 import cmg.org.monitor.ext.model.shared.ServiceDto;
 import cmg.org.monitor.ext.model.shared.SystemDto;
 
@@ -21,7 +22,7 @@ public interface ServiceMonitorDAO {
 	 * 
 	 * @return ServiceDto service transfer object.
 	 */
-	public ServiceDto updateServiceEntity( ServiceDto serDto, SystemDto sysDto) throws MonitorException;
+	public ServiceDto updateServiceEntity( ServiceDto serDto, SystemDto sysDto, JVMMemoryDto jvmDto) throws MonitorException;
 	
 	void addServiceMonitor(SystemMonitor system, ServiceMonitor serviceMonitor);
 	

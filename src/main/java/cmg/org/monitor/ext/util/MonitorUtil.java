@@ -22,6 +22,39 @@ public class MonitorUtil {
 	
 	private static final Logger logger = Logger.getLogger(MonitorUtil.class.getCanonicalName());
 	
+	
+	/**
+     * Returns a map that contains a pair feeMemory, totalMemory, ... and their
+     * values
+     *
+     * @param   inputStr  the string that contains the pair key/value
+     *
+     * @return  a map that contains the pair key/value
+     */
+    public static Map<String, Long> getMemoryJVM(String inputStr) {
+        Map<String, Long> map = new HashMap<String, Long>(10);
+        if (inputStr != null) {
+            Pattern pattern = Pattern.compile(
+                    Constant.PATTERN_MEMORY_JVM_KEY_VALUE);
+            Matcher matcher = pattern.matcher(inputStr);
+            while (matcher.find()) {
+                String key = matcher.group(2);
+                String value = matcher.group(5);
+                if ((key != null) && (value != null)) {
+                    long lValue = -1;
+                    try {
+                        lValue = Long.parseLong(value);
+                    } catch (Exception e) {
+                        lValue = -1;
+                    } // try-catch
+                    map.put(key, new Long(lValue));
+                }
+            } // if
+        } // if
+
+        return map;
+    }
+	
 	/**
      * Get interval value of ping command
      *
@@ -67,6 +100,7 @@ public class MonitorUtil {
             Matcher matcher = pattern.matcher(inputStr);
             if (matcher.find()) {
                 String key = matcher.group(2);
+                
                 String value = matcher.group(5);
                 if ((key != null) && (value != null)) {
                     long lValue = -1;

@@ -11,9 +11,11 @@ import javax.jdo.Query;
 import cmg.org.monitor.dao.ServiceMonitorDAO;
 import cmg.org.monitor.dao.SystemMonitorDAO;
 import cmg.org.monitor.entity.shared.FileSystem;
+import cmg.org.monitor.entity.shared.JVMMemory;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.exception.MonitorException;
+import cmg.org.monitor.ext.model.shared.JVMMemoryDto;
 import cmg.org.monitor.ext.model.shared.ServiceDto;
 import cmg.org.monitor.ext.model.shared.SystemDto;
 import cmg.org.monitor.util.shared.PMF;
@@ -23,16 +25,11 @@ public class ServiceMonitorDaoJDOImpl implements ServiceMonitorDAO {
 			.getLogger(ServiceMonitorDaoJDOImpl.class.getCanonicalName());
 	private static SystemMonitorDAO systemDao = new SystemMonitorDaoJDOImpl();
 	
-	
-	/**
-	 * @param serviceDTO
-	 * @return
-	 */
-	public ServiceDto updateServiceEntity(ServiceDto serviceDTO, SystemDto sysDto) throws MonitorException {
+	public ServiceDto updateServiceEntity(ServiceDto serviceDTO, SystemDto sysDto, JVMMemoryDto jvmDto) throws MonitorException {
 		if (serviceDTO.getId() == null) {
 
 			// Create new case
-			ServiceMonitor newServiceEntity = addService(serviceDTO, sysDto);
+			ServiceMonitor newServiceEntity = addService(serviceDTO, sysDto, jvmDto);
 			return newServiceEntity.toDTO();
 		}
 
@@ -48,44 +45,7 @@ public class ServiceMonitorDaoJDOImpl implements ServiceMonitorDAO {
 		return serviceDTO;
 	}
 
-	/**
-	 * 
-	 * Create new Alert object in Datastore.<br>
-	 * 
-	 * @param serviceDTO
-	 * @return Alert Monitor object.
-	 */
-	private ServiceMonitor addService(ServiceDto serviceDTO, SystemDto sysDto) {
-
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-		ServiceMonitor serviceEntity = null;
-		SystemMonitor existSysEntity = null;
-
-		try {
-
-			// Begin a jdo transation
-			pm.currentTransaction().begin();
-			existSysEntity = systemDao.getSystembyID(sysDto.getId());
-			
-			// Check a system existence
-			if (existSysEntity != null) {
-				//systemDao.updateSystemByService(sysDto, serviceEntity);
-				serviceEntity = new ServiceMonitor(serviceDTO);
-				existSysEntity.addService(serviceEntity);
-				pm.makePersistent(existSysEntity);
-			}
-			// Do commit a transaction
-			pm.currentTransaction().commit();
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, e.fillInStackTrace().getMessage());
-			pm.currentTransaction().rollback();
-			throw new RuntimeException(e);
-
-		} finally {
-			pm.close();
-		}
-		return serviceEntity;
-	}
+	
 
 	public ServiceDto getService(String id) {
 
@@ -155,6 +115,7 @@ public class ServiceMonitorDaoJDOImpl implements ServiceMonitorDAO {
 		
 		try {
 			list = (List<ServiceMonitor>) query.execute(system, time);
+			
 			if (list.size() > 0) {
 				listSm = new ServiceMonitor[list.size()];
 				for (int i = 0; i < list.size(); i++) {
@@ -169,5 +130,47 @@ public class ServiceMonitorDaoJDOImpl implements ServiceMonitorDAO {
 			pm.close();
 		}
 		return listSm;
+	}
+	
+	/**
+	 * Create new Alert object in JDO Datastore.<br>
+	 * 
+	 * @param serviceDTO service data transfer object.
+	 * @param sysDto System data transfer object.
+	 * @return Service Monitor object.
+	 */
+	private ServiceMonitor addService(ServiceDto serviceDTO, SystemDto sysDto, JVMMemoryDto jvmDto) {
+
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		ServiceMonitor serviceEntity = null;
+		SystemMonitor existSysEntity = null;
+		JVMMemory jvmEntity = null;
+		try {
+
+			// Begin a jdo transation
+			pm.currentTransaction().begin();
+			existSysEntity = systemDao.getSystembyID(sysDto.getId());
+			
+			// Check a system existence
+			if (existSysEntity != null) {
+				serviceEntity = new ServiceMonitor(serviceDTO);
+				jvmEntity = new JVMMemory(jvmDto);
+				
+				existSysEntity.addService(serviceEntity);
+				existSysEntity.addJVMMemory(jvmEntity);
+				existSysEntity.setStatus(true);
+				pm.makePersistent(existSysEntity);
+			}
+			// Do commit a transaction
+			pm.currentTransaction().commit();
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, e.fillInStackTrace().getMessage());
+			pm.currentTransaction().rollback();
+			throw new RuntimeException(e);
+
+		} finally {
+			pm.close();
+		}
+		return serviceEntity;
 	}
 }

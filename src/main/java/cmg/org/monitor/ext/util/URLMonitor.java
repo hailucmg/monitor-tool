@@ -13,8 +13,11 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -46,6 +49,7 @@ import cmg.org.monitor.ext.model.shared.AlertDto;
 import cmg.org.monitor.ext.model.shared.CpuDto;
 import cmg.org.monitor.ext.model.shared.CpuUsageDto;
 import cmg.org.monitor.ext.model.shared.FileSystemDto;
+import cmg.org.monitor.ext.model.shared.JVMMemoryDto;
 import cmg.org.monitor.ext.model.shared.ServiceDto;
 import cmg.org.monitor.ext.model.shared.SystemDto;
 import cmg.org.monitor.ext.util.HttpUtils.Page;
@@ -102,6 +106,7 @@ public class URLMonitor {
 	 */
 	public URLPageObject generateInfo(SystemDto systemDto)
 			throws MonitorException {
+
 		URLPageObject obj = null;
 		try {
 			SimpleDateFormat dateFormat = new SimpleDateFormat(TIME_FORMAT);
@@ -117,17 +122,24 @@ public class URLMonitor {
 			// Checks the URL to monitor
 			List<String> list = new ArrayList<String>();
 			Pattern pattern = Pattern.compile(Constant.PATTERN_COMPONENT);
-
+			
 			// Processes page
 			Page page = null;
 			boolean isError = false;
+			String webContent = null;
 			try {
-				message = "Retrieves website content from "
-						+ systemDto.getUrl();
-				logger.info("Retrieves website content from ");
-
-				page = HttpUtils.retrievePage(systemDto.getRemoteUrl().trim());
-
+				
+				//if (Constant.USER_PROTOCOL.equals(systemDto.getProtocol())) {
+//					webContent = FetchMailUsage.fetchSMTPEmail();
+					//page = HttpUtils.retrievePage("http://c-mg.vn:81/bpg/content/cmg_mail.html");
+					
+				//} else {
+					message = "Retrieves website content from "
+							+ systemDto.getUrl();
+					logger.info("Retrieves website content from ");
+					page = HttpUtils.retrievePage(systemDto.getRemoteUrl().trim());
+					webContent = page.getContent();
+				// }
 				// log the message
 				message = "The website has been retrieved, content type: "
 						+ page.getContentType();
@@ -182,11 +194,10 @@ public class URLMonitor {
 				sendUnknownAlerts(systemDto, message);
 				logger.info(message);
 			}
-
-			String webContent = page.getContent();
+			
 			String item = null;
 			Matcher matcher = pattern.matcher(webContent);
-
+			
 			// Checks if existing any string that match with the pattern
 			while (matcher.find()) {
 				item = StringUtils.getValueInTDTag(matcher.group().replace("%",
@@ -194,8 +205,44 @@ public class URLMonitor {
 
 				// Adds to the list
 				list.add(item);
-			} // while
-
+			} 
+			
+			
+//			Pattern pattern1 = Pattern.compile(Constant.PATTERN_MEMORY_TOTAL);
+//			Matcher matcher1 = pattern1.matcher(webContent);
+//			
+//			// Checks if existing any string that match with the pattern
+//			while (matcher1.find()) {
+//				item = StringUtils.getValueInStrongTag(matcher1.group().replace("%",
+//						"Perc"));
+//
+//				// Adds to the list
+//				list.add(item);
+//			} 
+			
+			
+			
+			
+			
+			Map<String, Long> jvmMap = MonitorUtil.getMemoryJVM(webContent);
+			JVMMemoryDto jvmMemDto = new JVMMemoryDto();
+			
+			Set<Map.Entry<String, Long> > jvmEntry = jvmMap.entrySet();
+			Iterator<Map.Entry<String, Long> >  jvmIter = jvmEntry.iterator();
+		    while (jvmIter.hasNext()) {
+		    	
+		        Map.Entry<String, Long> pairs = (Map.Entry<String, Long>)jvmIter.next();
+		        if (pairs.getKey().equals("Free Memory")) 
+		        	jvmMemDto.setFreeMemory(pairs.getValue());
+		        if (pairs.getKey().equals("Total Memory")) 
+		        	jvmMemDto.setTotalMemory(pairs.getValue());
+		        if (pairs.getKey().equals("Max Memory")) 
+		        	jvmMemDto.setMaxMemory(pairs.getValue());
+		        if (pairs.getKey().equals("Memory Used")) 
+		        	jvmMemDto.setUsedMemory(pairs.getValue());
+		        jvmIter.remove(); // avoids a ConcurrentModificationException
+		    }
+			
 			// Checks if the list contain any items
 			int ioc = 0;
 			Component component = null;
@@ -216,7 +263,7 @@ public class URLMonitor {
 				component.setError(errorStr);
 				component.setDiscription(list.get(ioc + 3));
 				component.setProjectId(systemDto.getId());
-
+				
 				// Checks if the component is error and send alert email
 				if (!errorStr.equals(Constant.COMPONENT_NONE_STRING)) {
 
@@ -244,7 +291,6 @@ public class URLMonitor {
 			CpuDto cpuObj = worker.getCPUMonitor(webContent);
 
 			// System memory Monitor
-			// MemoryObject memObj = worker.getMemObjectMonitor(webContent);
 			CpuMemoryDAO cpuDao = new CpuMemoryDaoJDOImpl();
 			if (cpuObj != null) {
 
@@ -266,7 +312,7 @@ public class URLMonitor {
 				component.setName(compId);
 				component.setError(error);
 				component.setSysDate(dateFormat.format(currentDate));
-
+				
 				if (cpuPerc >= Constant.CPU_LEVEL_HISTORY_UPDATE) {
 					// if (cpuPerc >= 0) {
 					try {
@@ -275,9 +321,27 @@ public class URLMonitor {
 					} catch (Exception e) {
 						logger.log(
 								Level.SEVERE,
-								"Cannot update alert for CPU, error: "
+								"Cannot update a CPU, error: "
 										+ e.getMessage());
 					}
+				} else {
+					try {
+						
+						// Set default cpu object
+						cpuObj.setCpuName("");
+						cpuObj.setCpuUsage(0);
+						cpuObj.setTimeStamp(new Date());
+						cpuObj.setVendor("");
+						cpuObj.setModel("");
+						cpuDao.updateCpu(cpuObj, systemDto);
+						error = "CPU: " + cpuUsage;
+					} catch (Exception e) {
+						logger.log(
+								Level.SEVERE,
+								"Cannot update default CPU, error: "
+										+ e.getMessage());
+					}
+					
 				}
 				logger.info("CPU: " + cpuObj);
 				obj.setCpu(cpuObj);
@@ -331,6 +395,24 @@ public class URLMonitor {
 			// >>>>>>> File system Monitor <<<<<<<<<
 			List<FileSystemDto> fileSystems = worker.getDFMonitor(webContent);
 			currentDate = new Timestamp(System.currentTimeMillis());
+			FileSystemDAO fileSystemDao = new FileSystemDaoJDOImpl();
+			if (fileSystems.size()==0) {
+				FileSystemDto fileDto = new FileSystemDto();
+				try {
+					fileDto.setName("Default File System");
+					fileDto.setSize(1L);
+					fileDto.setTimeStamp(new Date());
+					fileDto.setType("Non defined");
+					fileDto.setUsed(1L);
+					
+					// Do update
+					fileSystemDao.updateFileSystem(fileDto, systemDto);
+				} catch (Exception e) {
+					logger.info("Cannot update data for FileSystem, error: "
+							+ e.getMessage());
+				}
+			}			
+			
 			for (FileSystemDto fileDto : fileSystems) {
 				String used = String.valueOf(fileDto.getUsed());
 				double percUsed = 50.0;
@@ -355,8 +437,8 @@ public class URLMonitor {
 				component.setName(compId);
 				component.setError(error);
 				component.setSysDate(dateFormat.format(currentDate));
-
-				// Constant.DF_LEVEL_HISTORY_UPDATE
+				
+				// Check used value
 				if (percUsed > Constant.DF_LEVEL_HISTORY_UPDATE) {
 					// Alert
 					error = "Error with Filesystem " + fileDto.getName()
@@ -366,25 +448,25 @@ public class URLMonitor {
 					// Send alert
 					sendAlerts(component, compId);
 					try {
-						FileSystemDAO fileSystemDao = new FileSystemDaoJDOImpl();
-
 						// Do update
 						fileSystemDao.updateFileSystem(fileDto, systemDto);
 					} catch (Exception e) {
 						logger.info("Cannot update data for Filesystem, error: "
 								+ e.getMessage());
 					}
-				}
+				} 
 				logger.info("DF: " + fileDto);
 			}
-
+			
+			
 			// >>>>>> Service Monitor process <<<<<<
 			if ((components != null) && (components.size() > 0)) {
 				ServiceMonitorDAO serviceDao = new ServiceMonitorDaoJDOImpl();
 
 				String ping = null;
 				ServiceDto serviceDto = null;
-
+				Date now = new Date();
+				
 				// Loop over array list to get 'ServiceMonitor' type
 				for (Component comp : components) {
 					serviceDto = new ServiceDto();
@@ -400,11 +482,11 @@ public class URLMonitor {
 						serviceDto.setSysDate(Ultility.isValidFormat(comp
 								.getSysDate()));
 						serviceDto.setStatus(true);
-						serviceDto.setTimeStamp(new Date());
+						serviceDto.setTimeStamp(now);
 					}
-
+					
 					// Do update to JDO entity
-					serviceDao.updateServiceEntity(serviceDto, systemDto);
+					serviceDao.updateServiceEntity(serviceDto, systemDto, jvmMemDto);
 				}
 			}
 			return obj;

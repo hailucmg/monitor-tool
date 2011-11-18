@@ -124,18 +124,19 @@ public class CpuMemoryDaoJDOImpl implements CpuMemoryDAO {
 
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		CpuMemory cpuEntity = null;
-		SystemDto existSystemDTO = null;
+		SystemMonitor existedSystemEntity = null;
 		try {
 
 			// Begin a jdo transation
 			pm.currentTransaction().begin();
-			existSystemDTO = systemDao.getSystemEntity(sysDto.getId());
-			cpuEntity = new CpuMemory(cpuDTO);
-
+			existedSystemEntity = systemDao.getSystembyID(sysDto.getId());
+			
 			// Check a system existence
-			if (existSystemDTO != null)
-				systemDao.updateSystemByCpu(sysDto, cpuEntity);
-
+			if (existedSystemEntity != null) {
+				cpuEntity = new CpuMemory(cpuDTO);
+				existedSystemEntity.addCpuMemory(cpuEntity);
+				pm.makePersistent(existedSystemEntity);
+			}
 			// Do commit a transaction
 			pm.currentTransaction().commit();
 		} catch (Exception e) {
