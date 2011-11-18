@@ -42,4 +42,8 @@ public interface MonitorGwtService extends RemoteService {
 	boolean deleteListSystem(String[] ids) throws Exception;
 
 	Map<String, UserDto> listUser() throws Exception;
+	
+	String getAboutContent();
+	
+	String getHelpContent();
 }

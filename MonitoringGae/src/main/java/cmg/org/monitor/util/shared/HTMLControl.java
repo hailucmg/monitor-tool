@@ -9,7 +9,7 @@ public class HTMLControl {
 	public static final String LOGIN_SERVLET_NAME = "login";
 
 	public static final String HTML_INDEX_NAME = "Index.html";
-	
+
 	public static final String HTML_DASHBOARD_NAME = "#dashboard";
 	public static final String HTML_SYSTEM_DETAIL_NAME = "#dashboard/system/detail";
 	public static final String HTML_SYSTEM_STATISTIC_NAME = "#dashboard/system/statistic";
@@ -59,6 +59,25 @@ public class HTMLControl {
 			+ " style=\"display: block; margin-left: auto; margin-right: auto\"/>";
 
 	public static final String HTML_ARROW_IMAGE = "<img src=\"images/icon/right_arrow.png\" />";
+
+	public static String getAboutContent() {
+		StringBuffer tmp = new StringBuffer();
+		// tmp.append("<img src=\"images/logo/c-mg_logo.png\" width=\"210\" height=\"80\" style='margin:10px'>");
+		tmp.append("<h3 style='font-size:24px'>" + MonitorConstant.PROJECT_NAME
+				+ "</h3>");
+		tmp.append("<h3>Version " + MonitorConstant.VERSION + "</h3>");
+		tmp.append("<h3>Released on: " + MonitorConstant.RELEASED_ON + "</h3>");
+		tmp.append("<h3>Support contact: ");
+		tmp.append("<a href='mailto:monitor@c-mg.com'>monitor@c-mg.com</a>");
+		tmp.append(" / <a href='mailto:monitor@c-mg.vn'>monitor@c-mg.vn</a></h3>");
+		return tmp.toString();
+	}
+
+	public static String getHelpContent() {
+		StringBuffer tmp = new StringBuffer();
+		tmp.append("<h3>Help-page is in progress</h3>");
+		return tmp.toString();
+	}
 
 	public static String getSystemId(String hash) {
 		return hash.substring(hash.lastIndexOf("/") + 1, hash.length());
@@ -126,9 +145,10 @@ public class HTMLControl {
 		temp.append("</div>");
 		return new HTML(temp.toString());
 	}
-	
+
 	public static HTML getLoginHTML(String url) {
-		StringBuffer temp = new StringBuffer();temp.append("<a href='");
+		StringBuffer temp = new StringBuffer();
+		temp.append("<a href='");
 		temp.append(url);
 		temp.append("' id='logout'><img src='images/shared/nav/nav_login.gif' width='64' height='14' /></a>");
 		return new HTML(temp.toString());
@@ -276,6 +296,7 @@ public class HTMLControl {
 	public static HTML getPageHeading(int page) {
 		StringBuffer temp = new StringBuffer();
 		temp.append("<h1>");
+
 		if (page == PAGE_DASHBOARD || page == PAGE_SYSTEM_STATISTIC
 				|| page == PAGE_SYSTEM_DETAIL) {
 			temp.append("<a href=\"" + HTML_DASHBOARD_NAME
@@ -305,6 +326,14 @@ public class HTMLControl {
 		if (page == PAGE_USER_MANAGEMENT) {
 			temp.append("<a href=\"" + HTML_USER_MANAGEMENT_NAME
 					+ "\">User List</a> ");
+		}
+		if (page == PAGE_ABOUT) {
+			temp.append("<a href=\"" + HTML_ABOUT_NAME
+					+ "\">About Us</a> ");
+		}
+		if (page == PAGE_HELP) {
+			temp.append("<a href=\"" + HTML_HELP_NAME
+					+ "\">Help Content</a> ");
 		}
 		temp.append("</h1>");
 		return new HTML(temp.toString());
