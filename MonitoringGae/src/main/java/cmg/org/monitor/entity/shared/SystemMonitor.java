@@ -1,7 +1,6 @@
 
 package cmg.org.monitor.entity.shared;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -38,6 +37,9 @@ public class SystemMonitor implements Model {
 
 	@Persistent(mappedBy = "systemMonitor")
 	private List<ServiceMonitor> services = new ArrayList<ServiceMonitor>();
+	
+	@Persistent(mappedBy = "systemMonitor")
+	private List<JVMMemory> jvmMemory = new ArrayList<JVMMemory>();
 
 	@Persistent(mappedBy = "systemMonitor")
 	private List<FileSystem> fileSystems = new ArrayList<FileSystem>();
@@ -93,6 +95,8 @@ public class SystemMonitor implements Model {
 	@NotPersistent
 	private
 	ServiceMonitor[] lastestServiceMonitors;
+	
+	
 	
 	/**
 	 * Default constructor.<br>
@@ -151,6 +155,32 @@ public class SystemMonitor implements Model {
 	@Override
     public String getId() {
         return encodedKey;
+    }
+	
+	
+	
+	/**
+	 * Get list of object
+	 * @return List of JVMMemory object
+	 */
+	public List<JVMMemory> getJvmMemory() {
+		return jvmMemory;
+	}
+
+	/**
+	 * @param jvmMemory
+	 */
+	public void setJvmMemory(List<JVMMemory> jvmMemory) {
+		this.jvmMemory = jvmMemory;
+	}
+
+	/**
+	 * Add a Service to list.<br>
+	 * @param jvmEntity
+	 */
+	public void addJVMMemory(JVMMemory jvmEntity) {
+		jvmEntity.setSystemMonitor(this);
+        this.jvmMemory.add(jvmEntity);
     }
 	
 	/**

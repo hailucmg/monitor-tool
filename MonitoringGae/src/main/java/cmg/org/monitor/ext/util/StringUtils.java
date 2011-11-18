@@ -79,7 +79,7 @@ public class StringUtils {
      *
      * @return  a string
      */
-    public static String join(Collection collection, String seperator) {
+    public static String join(Collection<?> collection, String seperator) {
         if (null == collection) {
             return null;
         }
@@ -140,6 +140,32 @@ public class StringUtils {
             }
 
             return inputStr.replaceAll("(<p>|</p>)", "");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return null;
+        }
+    }
+    
+    /**
+     * Returns the value between pair code.
+     *
+     * <p>
+     * </p>
+     *
+     * <p>tags</p>
+     *
+     * @param   inputStr  the input string
+     *
+     * @return  new string without tags
+     */
+    public static String getValueInStrongTag(String inputStr) {
+        try {
+            if (inputStr == null) {
+                return null;
+            }
+
+            return inputStr.replaceAll("(<strong>|</strong>)", "");
         } catch (Exception ex) {
             ex.printStackTrace();
 

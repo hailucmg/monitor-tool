@@ -49,28 +49,31 @@ public class FileSystemDaoJDOImpl implements FileSystemDAO {
 
 	/**
 	 * 
-	 * Create new Alert object in Datastore.<br>
+	 * Create new FileSystem object in Datastore.<br>
 	 * 
 	 * @param fileSysDTO
-	 * @return Alert Monitor object.
+	 * @return FileSystem object.
 	 */
 	private FileSystem addFileSystem(FileSystemDto fileSysDTO, SystemDto sysDto) {
 
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		FileSystem alertEntity = null;
-		SystemDto existSystemDTO = null;
+		FileSystem fileEntity = null;
+		SystemMonitor existSystemEntity = null;
 
 		try {
 
 			// Begin a jdo transation
 			pm.currentTransaction().begin();
-			existSystemDTO = getSystem(sysDto.getId());
-			alertEntity = new FileSystem(fileSysDTO);
+			existSystemEntity = systemDao.getSystembyID(sysDto.getId());
+			
 
 			// Check a system existence
-			if (existSystemDTO != null)
-				systemDao.updateSystemByFileSystem(sysDto, alertEntity);
-
+			if (existSystemEntity != null) {
+				fileEntity = new FileSystem(fileSysDTO);
+				
+				existSystemEntity.addFileSystem(fileEntity);
+				pm.makePersistent(existSystemEntity);
+			}
 			// Do commit a transaction
 			pm.currentTransaction().commit();
 		} catch (Exception e) {
@@ -81,7 +84,7 @@ public class FileSystemDaoJDOImpl implements FileSystemDAO {
 		} finally {
 			pm.close();
 		}
-		return alertEntity;
+		return fileEntity;
 	}
 
 	public SystemDto getSystem(String id) {

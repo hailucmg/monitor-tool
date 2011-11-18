@@ -10,8 +10,6 @@ import javax.jdo.annotations.PrimaryKey;
 
 import cmg.org.monitor.ext.model.shared.CpuDto;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
  * @author lamphan
  * @version 1.0

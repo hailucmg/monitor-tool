@@ -11,7 +11,13 @@ package cmg.org.monitor.common;
 public interface Constant {
 
     //~ Static fields/initializers ---------------------------------------------
-
+	
+	/** User input protocol . */
+	public static String USER_PROTOCOL = "SMTP";
+	
+	/** Error description. */
+	public static String ERROR = "ERROR";
+	
     /** Encoding iso 8859_1. */
     public static String ENCODING_ISO_8859_1 = "ISO-8859-1";
 
@@ -115,12 +121,20 @@ public interface Constant {
     public static String PATTERN_MEMORY_KEY_VALUE =
         "((freeMemory|totalMemory|maxMemory|memoryUsed)((&nbsp;|\\s)*)([0-9]+))";
 
+    /** The string describe the pattern of name of JVM memory values. */
+    public static String PATTERN_MEMORY_JVM_KEY_VALUE =
+    		"((Free Memory|Total Memory|Max Memory|Memory Used)((&nbsp;|\\s)*)([0-9]+))";
+    
     /** The string describe the pattern of values of memory values. */
     public static String PATTERN_MEMORY_VALUE = "([0-9]+)";
 
     /** The number that decides how many numbers following the dot. */
     public static int NUMBER_ROUND_PLACE = 4;
 
+    /** The string describe the pattern of pair name/value of memory. */
+    public static String PATTERN_MEMORY_TOTAL =
+        "(([0-9]*)(of)+([0-9]*)(MB used))";
+    
     /**
      * The number of days that decides how many days the history's records be
      * remained.
