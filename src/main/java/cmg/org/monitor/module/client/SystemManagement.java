@@ -5,7 +5,6 @@ import cmg.org.monitor.util.shared.HTMLControl;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -45,12 +44,12 @@ public class SystemManagement extends AncestorEntryPoint {
 		dialogBox.setAnimationEnabled(true);
 		dialogBox.setStyleName("color: #333");
 		final Button closeButton = new Button("Cancel");
-		closeButton.setStyleName("background: url(../images/forms/form_back.png) no-repeat");
+		closeButton.addStyleName("form-back");
 		final Button okButton = new Button("Ok");
-		okButton.setStyleName("background: url(../images/forms/form_submit.gif) no-repeat");
+		okButton.setStyleName("form-submit");
 		closeButton.getElement().setId("closeButton");
 		VerticalPanel dialogVPanel = new VerticalPanel();
-		dialogVPanel.addStyleName("dialogVPanel");
+		dialogVPanel.addStyleName("loginbox");
 		dialogVPanel.add(new HTML("<h3>Do you want to delete System ID "+code+"</h3>"));
 		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
 		FlexTable table = new FlexTable();
