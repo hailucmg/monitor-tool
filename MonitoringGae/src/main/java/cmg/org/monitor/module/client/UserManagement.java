@@ -85,6 +85,7 @@ public class UserManagement extends AncestorEntryPoint {
 		Options option = Options.create();
 		option.setAllowHtml(true);
 		option.setShowRowNumber(true);
+		option.setSortColumn(0);
 		return option;
 
 	}

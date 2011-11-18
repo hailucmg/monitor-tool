@@ -46,7 +46,7 @@ public class SystemManagement extends AncestorEntryPoint {
 		final Button closeButton = new Button("Cancel");
 		closeButton.addStyleName("form-back");
 		final Button okButton = new Button("Ok");
-		okButton.setStyleName("form-submit");
+		okButton.addStyleName("form-submit");
 		closeButton.getElement().setId("closeButton");
 		VerticalPanel dialogVPanel = new VerticalPanel();
 		dialogVPanel.addStyleName("loginbox");
