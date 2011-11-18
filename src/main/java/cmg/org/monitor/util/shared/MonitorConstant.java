@@ -1,7 +1,10 @@
 package cmg.org.monitor.util.shared;
 
 public final class MonitorConstant {
+	public static final String PROJECT_NAME = "CMG Health Monitor System";
 	public static final String VERSION = "1.0";
+	public static final String RELEASED_ON = "01/11/2011";
+	
 	
 	public static final String DONE_MESSAGE = "Add a system successfully";	
 	// time to refresh data for all module

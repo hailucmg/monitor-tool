@@ -22,6 +22,7 @@ import cmg.org.monitor.ext.model.shared.UserDto;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.module.client.MonitorGwtService;
 import cmg.org.monitor.services.MonitorLoginService;
+import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.Ultility;
 
 public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
@@ -278,5 +279,15 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		} catch (Exception e) {
 		}
 		return list;
+	}
+
+	@Override
+	public String getAboutContent() {
+		return HTMLControl.getAboutContent();
+	}
+
+	@Override
+	public String getHelpContent() {
+		return HTMLControl.getHelpContent();
 	}
 }

@@ -141,7 +141,9 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 			if (isLogin) {
 				clearTimer();
 				setVisibleLoadingImage(true);
-				initForm();
+				changeMenu(currentPage, role);
+				visibleMessage();
+				init();
 			} else {
 				doLogin();
 			}
@@ -152,11 +154,6 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 		}
 	}
 
-	protected void initForm() {
-		changeMenu(currentPage, role);
-		visibleMessage();
-		init();
-	}
 
 	protected void doLogin() {
 		monitorGwtSv.getUserLogin(new AsyncCallback<UserLoginDto>() {
@@ -196,7 +193,8 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 					} else {
 						addWidget(HTMLControl.ID_LOGIN_FORM,
 								HTMLControl.getLoginHTML(result.getLoginUrl()));
-						showMessage("Must login to use Health Monitoring System. ",
+						showMessage(
+								"Must login to use Health Monitoring System. ",
 								result.getLoginUrl(), "Login. ",
 								HTMLControl.RED_MESSAGE, true);
 					}
@@ -211,10 +209,8 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 
 	protected abstract void init();
 
-	
-
-	protected static void showRedirectCountMessage(final String mes, final String url,
-			final String titleUrl, final int typeMessage) {
+	protected static void showRedirectCountMessage(final String mes,
+			final String url, final String titleUrl, final int typeMessage) {
 		count = MonitorConstant.REDIRECT_WAIT_TIME / 1000;
 		if (timerMess != null) {
 			setVisibleMessage(false, typeMessage);
@@ -279,23 +275,23 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 		RootPanel.get("message-" + HTMLControl.getColor(type)).setVisible(b);
 	}
 
-	protected static void clear(Element parent) {		
+	protected static void clear(Element parent) {
 		Element firstChild;
 
 		while ((firstChild = DOM.getFirstChild(parent)) != null) {
 			DOM.removeChild(parent, firstChild);
 		}
 	}
-	
-	protected static void showMessage(String message, String url, String titleUrl,
-			int type, boolean isVisible) {
+
+	protected static void showMessage(String message, String url,
+			String titleUrl, int type, boolean isVisible) {
 		clear(DOM.getElementById("content-" + HTMLControl.getColor(type)));
 		DOM.getElementById("content-" + HTMLControl.getColor(type))
-		.setInnerHTML(
-				message
-						+ ((url.trim().length() == 0) ? ""
-								: ("  <a href=\"" + url + "\">"
-										+ titleUrl + "</a>")));
+				.setInnerHTML(
+						message
+								+ ((url.trim().length() == 0) ? ""
+										: ("  <a href=\"" + url + "\">"
+												+ titleUrl + "</a>")));
 		if (isVisible) {
 			setVisibleMessage(isVisible, type);
 		}

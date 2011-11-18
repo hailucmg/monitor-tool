@@ -44,4 +44,8 @@ public interface MonitorGwtServiceAsync {
 
 	void groups(AsyncCallback<String[]> callback);
 
+	void getAboutContent(AsyncCallback<String> callback);
+
+	void getHelpContent(AsyncCallback<String> callback);
+
 }
