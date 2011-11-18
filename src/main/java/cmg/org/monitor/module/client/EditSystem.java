@@ -122,7 +122,7 @@ public class EditSystem extends AncestorEntryPoint {
 					labelprotocol.setText("Protocol");
 
 					labelmailgroup = new Label();
-					labelmailgroup.setText("Mail-group");
+					labelmailgroup.setText("Notification mail group");
 
 					txtName = new TextBox();
 					txtName.addStyleName("inp-form");
