@@ -1,32 +1,79 @@
 package cmg.org.monitor.util.shared;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.Properties;
+
 public final class MonitorConstant {
-	public static final String PROJECT_NAME = "CMG Health Monitor System";
-	public static final String VERSION = "1.0";
-	public static final String RELEASED_ON = "01/11/2011";
-	
-	
-	public static final String DONE_MESSAGE = "Add a system successfully";	
+	public static final String PROJECT_NAME = MonitorConstant.property()[3];
+	public static final String VERSION = MonitorConstant.property()[4];
+	public static final String RELEASED_ON = MonitorConstant.property()[5];
+
+	public static final String DONE_MESSAGE = MonitorConstant.property()[6];
 	// time to refresh data for all module
-	public static final int REFRESH_RATE = 1800000;
+	public static final int REFRESH_RATE = Integer.parseInt(MonitorConstant.property()[7]);
+
+	public static final int REDIRECT_WAIT_TIME = Integer.parseInt(MonitorConstant.property()[8]);
+
+	/**
+	 * return domain
+	 */
+	public static final String DOMAIN = MonitorConstant.property()[0];
+
+	/**
+	 * return admin email
+	 */
+	public static final String ADMIN_EMAIL = MonitorConstant.property()[1];
+
+	/**
+	 * return admin password
+	 */
+	public static final String ADMIN_PASSWORD = MonitorConstant.property()[2];
+
+	/**
+	 * 
+	 */
+	public static final int ROLE_ADMIN = Integer.parseInt(MonitorConstant.property()[9]);
+	/**
+	 * 
+	 */
+	public static final int ROLE_NORMAL_USER = Integer.parseInt(MonitorConstant.property()[10]);
+	/**
+	 * 
+	 */
+	public static final int ROLE_GUEST = Integer.parseInt(MonitorConstant.property()[11]);
 	
-	public static final int REDIRECT_WAIT_TIME = 5000;
 	
-	public static final String DOMAIN = "c-mg.vn";
+	/**
+	 * @return all property for domain
+	 */
+	public static String[] property() {
+		String[] pro = new String[12];
+		File file = new File("war/WEB-INF/config-MonitorConstant.xml");
+		FileInputStream fileInput;
+		try {
+			fileInput = new FileInputStream(file);
+			Properties properties = new Properties();
+			properties.loadFromXML(fileInput);
+			fileInput.close();
+			pro[0] = properties.getProperty("DOMAIN");
+			pro[1] = properties.getProperty("ADMIN_EMAIL");
+			pro[2] = properties.getProperty("ADMIN_PASSWORD");
+			pro[3] = properties.getProperty("PROJECT_NAME");
+			pro[4] = properties.getProperty("VERSION");
+			pro[5] = properties.getProperty("RELEASED_ON");
+			pro[6] = properties.getProperty("DONE_MESSAGE");
+			pro[7] = properties.getProperty("REFRESH_RATE");
+			pro[8] = properties.getProperty("REDIRECT_WAIT_TIME");
+			pro[9] = properties.getProperty("ROLE_ADMIN");
+			pro[10] = properties.getProperty("ROLE_NORMAL_USER");
+			pro[11] = properties.getProperty("ROLE_GUEST");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return pro;
+	}
 	
-	public static final String ADMIN_EMAIL = "monitor@c-mg.vn";
-	
-	public static final String ADMIN_PASSWORD = "31102011";
-	
-	public static final int ROLE_ADMIN = 0x001;
-	public static final int ROLE_NORMAL_USER = 0x002;
-	public static final int ROLE_GUEST = 0x003;
-	
-	/// Information google sites content
-	public static final String SITES_USERNAME = "hai.lu@c-mg.com";
-	public static final String SITES_PASSWORD = "123hurricane";
-	public static final String SITES_CONTENT_FEED_URL = "https://sites.google.com/feeds/content/c-mg.com/monitor-tool/";
-	public static final String SITES_APP_NAME = "cmg-monitor-tool";
-	public static final String SITES_HELP_CONTENT_ID = "76479283222030903";
-	public static final String SITES_ABOUT_CONTENT_ID = "1702220121101760304";
+
 }
