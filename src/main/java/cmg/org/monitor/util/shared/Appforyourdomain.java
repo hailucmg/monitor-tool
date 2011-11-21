@@ -53,7 +53,7 @@ public class Appforyourdomain {
 
 	/**
 	 * 
-	 * @return
+	 * @return all group
 	 */
 	public String[] listGroup() {
 		String[] listGroup = null;
@@ -89,7 +89,7 @@ public class Appforyourdomain {
 
 	/**
 	 * 
-	 * @return
+	 * @return all id of group
 	 */
 	public String[] listGroupID() {
 		String[] listGroupID = null;
@@ -126,13 +126,13 @@ public class Appforyourdomain {
 	 * 
 	 * @param filter
 	 * @param listGroupID
-	 * @return
+	 * @return all admin
 	 * @throws AppsForYourDomainException
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 * @throws ServiceException
 	 */
-	
+
 	public String[] listAdmin(String[] listGroupID)
 			throws AppsForYourDomainException, MalformedURLException,
 			IOException, ServiceException {
@@ -162,13 +162,17 @@ public class Appforyourdomain {
 		}
 
 		listUser = members.toString().trim().split(",");
-		for(int i = 0;i<listUser.length;i++){
-			listUser[i]= listUser[i]+":"+group;
+		for (int i = 0; i < listUser.length; i++) {
+			listUser[i] = listUser[i] + ":" + group;
 		}
 		return listUser;
 	}
 
-	
+	/**
+	 * @param listGroupID
+	 * @return all user
+	 * @throws Exception
+	 */
 	public String[] listUser(String listGroupID) throws Exception {
 		String[] listUser = null;
 		String id;
@@ -192,8 +196,8 @@ public class Appforyourdomain {
 					}
 				}
 				listUser = members.toString().trim().split(",");
-				for(int i = 0;i<listUser.length;i++){
-					listUser[i]= listUser[i]+":"+group;
+				for (int i = 0; i < listUser.length; i++) {
+					listUser[i] = listUser[i] + ":" + group;
 				}
 			} catch (AppsForYourDomainException e) {
 				// TODO Auto-generated catch block
@@ -214,69 +218,43 @@ public class Appforyourdomain {
 		return listUser;
 	}
 
-
-	/*public static void main(String[] arg) throws Exception {
-		String[] list = null;
-
-		Appforyourdomain client = new Appforyourdomain("monitor@c-mg.vn",
-				"31102011", "c-mg.vn");
-		String temp = "https://apps-apis.google.com/a/feeds/group/2.0/c-mg.vn/admin_monitor%40c-mg.vn";
-		String value = temp.substring(temp.lastIndexOf("/") + 1, temp.length());
-		System.out.print(temp.lastIndexOf("/") + " " + temp.length() + " "
-				+ value);
-		String test = value.substring(value.lastIndexOf("%") +1, value.length());
-		System.out.println(test);
-		String[] test1 = value.split("%");
-		for(int i = 0;i<test1.length;i++){
-			System.out.println(test1[i]);
-		}
-		try {
-
-			list = client.listGroup();
-			for (int i = 0; i < list.length; i++) {
-				System.out.println(list[i]);
-			}
-			String[] id = client.listGroupID();
-			for (int j = 0; j < id.length; j++) {
-				System.out.println(id[j]);
-			}
-			
-			List<String> member = new ArrayList<String>();
-			
-			String[] admin = client.listAdmin(id);
-			
-			for(int k = 0 ;k<id.length;k++){
-				if(client.listUser(id[k])!=null){
-					String[] user = client.listUser(id[k]);
-					for(int b = 0;b < user.length;b++){
-						member.add(user[b]);
-					}
-				}
-		}
-			String[] normal= new String[member.size()];
-			for(int b = 0; b<member.size();b++){
-				normal[b] = member.get(b);
-			}
-			List<String> allMember = new ArrayList<String>();
-			
-			for(int s = 0;s < admin.length;s++){
-				allMember.add(admin[s]);
-			}
-			for(int n = 0 ;n < admin.length;n++){
-				for(int m = 0; m<normal.length;m++){
-					if(admin[n].split(":")[0]!=normal[m].split(":")[0]){
-						allMember.add(normal[m]);
-					}
-				}
-			}
-			for(int y=0;y<allMember.size();y++){
-				System.out.println(allMember.get(y));
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-
-		}
-
-	}*/
+	/*
+	 * public static void main(String[] arg) throws Exception { String[] list =
+	 * null;
+	 * 
+	 * Appforyourdomain client = new Appforyourdomain("monitor@c-mg.vn",
+	 * "31102011", "c-mg.vn"); String temp =
+	 * "https://apps-apis.google.com/a/feeds/group/2.0/c-mg.vn/admin_monitor%40c-mg.vn"
+	 * ; String value = temp.substring(temp.lastIndexOf("/") + 1,
+	 * temp.length()); System.out.print(temp.lastIndexOf("/") + " " +
+	 * temp.length() + " " + value); String test =
+	 * value.substring(value.lastIndexOf("%") +1, value.length());
+	 * System.out.println(test); String[] test1 = value.split("%"); for(int i =
+	 * 0;i<test1.length;i++){ System.out.println(test1[i]); } try {
+	 * 
+	 * list = client.listGroup(); for (int i = 0; i < list.length; i++) {
+	 * System.out.println(list[i]); } String[] id = client.listGroupID(); for
+	 * (int j = 0; j < id.length; j++) { System.out.println(id[j]); }
+	 * 
+	 * List<String> member = new ArrayList<String>();
+	 * 
+	 * String[] admin = client.listAdmin(id);
+	 * 
+	 * for(int k = 0 ;k<id.length;k++){ if(client.listUser(id[k])!=null){
+	 * String[] user = client.listUser(id[k]); for(int b = 0;b <
+	 * user.length;b++){ member.add(user[b]); } } } String[] normal= new
+	 * String[member.size()]; for(int b = 0; b<member.size();b++){ normal[b] =
+	 * member.get(b); } List<String> allMember = new ArrayList<String>();
+	 * 
+	 * for(int s = 0;s < admin.length;s++){ allMember.add(admin[s]); } for(int n
+	 * = 0 ;n < admin.length;n++){ for(int m = 0; m<normal.length;m++){
+	 * if(admin[n].split(":")[0]!=normal[m].split(":")[0]){
+	 * allMember.add(normal[m]); } } } for(int y=0;y<allMember.size();y++){
+	 * System.out.println(allMember.get(y)); } } catch (Exception e) { // TODO:
+	 * handle exception e.printStackTrace();
+	 * 
+	 * }
+	 * 
+	 * }
+	 */
 }
