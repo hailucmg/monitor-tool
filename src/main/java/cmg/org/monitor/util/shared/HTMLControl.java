@@ -70,6 +70,7 @@ public class HTMLControl {
 		tmp.append("<h3>Support contact: ");
 		tmp.append("<a href='mailto:monitor@c-mg.com'>monitor@c-mg.com</a>");
 		tmp.append(" / <a href='mailto:monitor@c-mg.vn'>monitor@c-mg.vn</a></h3>");
+		tmp.append("<h3>Find out more about us: <a href=\"http://www.c-mg.com\">www.c-mg.com</a></h3>");
 		return tmp.toString();
 	}
 

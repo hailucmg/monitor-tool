@@ -57,6 +57,7 @@ public class SystemManagement extends AncestorEntryPoint {
 		table.setWidget(0, 0, okButton);
 		table.setWidget(0, 1, closeButton);
 		dialogVPanel.add(table);
+		dialogVPanel.setStyleName("dialog-delete");
 		okButton.addClickHandler(new ClickHandler() {			
 			@Override
 			public void onClick(ClickEvent event) {				
