@@ -1,8 +1,11 @@
 package cmg.org.monitor.util.shared;
 
 public final class MonitorConstant {
+	
 	public static final String PROJECT_NAME = "CMG Health Monitor System";
+	
 	public static final String VERSION = "1.0";
+	
 	public static final String RELEASED_ON = "01/11/2011";
 	
 	
@@ -24,10 +27,15 @@ public final class MonitorConstant {
 	
 	/// Information google sites content
 	public static final String SITES_USERNAME = "hai.lu@c-mg.com";
+	
 	public static final String SITES_PASSWORD = "123hurricane";
+	
 	public static final String SITES_CONTENT_FEED_URL = "https://sites.google.com/feeds/content/c-mg.com/monitor-tool/";
+	
 	public static final String SITES_APP_NAME = "cmg-monitor-tool";
+	
 	public static final String SITES_HELP_CONTENT_ID = "76479283222030903";
+	
 	public static final String SITES_ABOUT_CONTENT_ID = "1702220121101760304";
 
 
