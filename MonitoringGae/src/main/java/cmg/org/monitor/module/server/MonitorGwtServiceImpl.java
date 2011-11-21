@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-
 import cmg.org.monitor.dao.CpuMemoryDAO;
 import cmg.org.monitor.dao.FileSystemDAO;
 import cmg.org.monitor.dao.ServiceMonitorDAO;
@@ -22,8 +20,11 @@ import cmg.org.monitor.ext.model.shared.UserDto;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.module.client.MonitorGwtService;
 import cmg.org.monitor.services.MonitorLoginService;
-import cmg.org.monitor.util.shared.HTMLControl;
+import cmg.org.monitor.services.SitesHelper;
+import cmg.org.monitor.util.shared.MonitorConstant;
 import cmg.org.monitor.util.shared.Ultility;
+
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		MonitorGwtService {
@@ -36,19 +37,13 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	private static final Logger logger = Logger
 			.getLogger(MonitorGwtServiceImpl.class.getCanonicalName());
 
-	SystemMonitorDAO sysDAO = new SystemMonitorDaoJDOImpl();
-	CpuMemoryDAO cmDAO = new CpuMemoryDaoJDOImpl();
-	FileSystemDAO fsDAO = new FileSystemDaoJDOImpl();
-	ServiceMonitorDAO smDAO = new ServiceMonitorDaoJDOImpl();
-
 	@Override
 	public String addSystem(SystemMonitor system, String url) throws Exception {
-		// TODO Auto-generated method stub
 		String callback = null;
-		boolean check= true;
+		boolean check = true;
 		SystemMonitorDaoJDOImpl systemDAO = new SystemMonitorDaoJDOImpl();
 		try {
-			
+
 			String remoteURL = system.getRemoteUrl();
 			String[] remoteURLs = systemDAO.remoteURLs();
 			for (int i = 0; i < remoteURLs.length; i++) {
@@ -56,10 +51,10 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 					callback = "Remote-URL is existing";
 					check = false;
 					break;
-					
+
 				}
 			}
-			if(check){
+			if (check) {
 				system.setCode(systemDAO.createCode());
 				if (systemDAO.addnewSystem(system)) {
 					callback = "done";
@@ -67,7 +62,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 					callback = "wrong to config jar or database";
 				}
 			}
-			
+
 		} catch (Exception e) {
 			// TODO: handle exception
 			callback = e.toString();
@@ -78,6 +73,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public String[] groups() throws Exception {
+		SystemMonitorDAO sysDAO = new SystemMonitorDaoJDOImpl();
 		String[] list = null;
 		try {
 			list = sysDAO.groups();
@@ -89,6 +85,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public SystemMonitor[] listSystems() {
+		SystemMonitorDAO sysDAO = new SystemMonitorDaoJDOImpl();
 		SystemMonitor[] list = null;
 		try {
 			list = sysDAO.listSystems(false);
@@ -100,6 +97,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public MonitorEditDto getSystembyID(String id) throws Exception {
+		SystemMonitorDAO sysDAO = new SystemMonitorDaoJDOImpl();
 		MonitorEditDto monitorEdit = new MonitorEditDto();
 		String[] groups;
 		try {
@@ -171,6 +169,10 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	}
 
 	public SystemMonitor getLastestDataMonitor(String sysID) {
+		SystemMonitorDAO sysDAO = new SystemMonitorDaoJDOImpl();
+		FileSystemDAO fsDAO = new FileSystemDaoJDOImpl();
+		ServiceMonitorDAO smDAO = new ServiceMonitorDaoJDOImpl();
+		CpuMemoryDAO cmDAO = new CpuMemoryDaoJDOImpl();
 		SystemMonitor sys = null;
 		try {
 			sys = sysDAO.getSystembyID(sysID);
@@ -190,6 +192,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public boolean validSystemId(String sysID) {
+		SystemMonitorDAO sysDAO = new SystemMonitorDaoJDOImpl();
 		boolean b = true;
 		try {
 			b = sysDAO.getSystembyID(sysID) != null;
@@ -202,6 +205,8 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public CpuMemory[] listCpuMemoryHistory(String sysID) {
+		SystemMonitorDAO sysDAO = new SystemMonitorDaoJDOImpl();
+		CpuMemoryDAO cmDAO = new CpuMemoryDaoJDOImpl();
 		CpuMemory[] list = null;
 		SystemMonitor sys = null;
 		try {
@@ -215,6 +220,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public SystemMonitor[] listSystem(boolean isDeleted) throws Exception {
+		SystemMonitorDAO sysDAO = new SystemMonitorDaoJDOImpl();
 		SystemMonitor[] list = null;
 		try {
 			list = sysDAO.listSystems(false);
@@ -233,6 +239,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public boolean deleteSystem(String id) throws Exception {
+		SystemMonitorDAO sysDAO = new SystemMonitorDaoJDOImpl();
 		boolean check = sysDAO.deleteSystembyID(id);
 		return check;
 	}
@@ -283,11 +290,13 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public String getAboutContent() {
-		return HTMLControl.getAboutContent();
+		SitesHelper sh = new SitesHelper();
+		return sh.getSiteEntryContent(MonitorConstant.SITES_ABOUT_CONTENT_ID);
 	}
 
 	@Override
 	public String getHelpContent() {
-		return HTMLControl.getHelpContent();
+		SitesHelper sh = new SitesHelper();
+		return sh.getSiteEntryContent(MonitorConstant.SITES_HELP_CONTENT_ID);
 	}
 }

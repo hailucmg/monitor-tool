@@ -176,7 +176,7 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 							showMessage(
 									"Hello "
 											+ result.getNickName()
-											+ ". You might not have permission to use Monitor System. ",
+											+ ". You might not have permission to use Health Monitoring System. ",
 									result.getLogoutUrl(),
 									"Login with another account.",
 									HTMLControl.YELLOW_MESSAGE, true);
