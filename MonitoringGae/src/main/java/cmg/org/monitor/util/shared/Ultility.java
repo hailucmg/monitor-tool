@@ -29,13 +29,7 @@ public class Ultility {
     public static final String DIGIT_PATTERN = "\\d+";
     
 	
-	public static void main(String[] args) {
-		try {
-			System.out.println(Integer.toString(getSystemRole("luhonghai@c-mg.vn")));
-		} catch (Exception ex) {
-			
-		}
-	}
+
 	
 	/**
 	 * Extract digit number from a string value
@@ -79,6 +73,11 @@ public class Ultility {
         }
     }
 	
+	/**
+	 * @param userId
+	 * @return role of user
+	 * @throws Exception
+	 */
 	public static int getSystemRole(String userId) throws Exception {
 		int member = MonitorConstant.ROLE_GUEST;
 		if (userId.contains("@c-mg")) {
@@ -110,6 +109,10 @@ public class Ultility {
 
 	}
 
+	/**
+	 * @return all group in your domain
+	 * @throws Exception
+	 */
 	public static String[] listGroup() throws Exception {
 		Appforyourdomain client = new Appforyourdomain(
 				MonitorConstant.ADMIN_EMAIL, MonitorConstant.ADMIN_PASSWORD,
@@ -126,6 +129,10 @@ public class Ultility {
 
 	}
 
+	/**
+	 * @return all admin in domain
+	 * @throws Exception
+	 */
 	public static String[] listAdmin() throws Exception {
 		Appforyourdomain client = new Appforyourdomain(
 				MonitorConstant.ADMIN_EMAIL, MonitorConstant.ADMIN_PASSWORD,
@@ -142,6 +149,10 @@ public class Ultility {
 
 	}
 
+	/**
+	 * @return all normal user in domain
+	 * @throws Exception
+	 */
 	public static String[] listUser() throws Exception {
 		Appforyourdomain client = new Appforyourdomain(
 				MonitorConstant.ADMIN_EMAIL, MonitorConstant.ADMIN_PASSWORD,
@@ -181,6 +192,11 @@ public class Ultility {
 		return allUser;
 	}
 
+	/**
+	 * @param url
+	 * @return ip 
+	 * @throws Exception
+	 */
 	public static String getIpbyUrl(String url) throws Exception {
 		String ip = "";
 		try {
