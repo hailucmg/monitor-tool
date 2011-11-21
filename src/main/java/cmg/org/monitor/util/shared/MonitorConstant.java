@@ -45,10 +45,36 @@ public final class MonitorConstant {
 	
 	
 	/**
+	 * 
+	 */
+	public static final String SITES_USERNAME =  MonitorConstant.property()[12];
+	/**
+	 * 
+	 */
+	public static final String SITES_PASSWORD = MonitorConstant.property()[13];
+	/**
+	 * 
+	 */
+	public static final String SITES_CONTENT_FEED_URL = MonitorConstant.property()[14];
+	/**
+	 * 
+	 */
+	public static final String SITES_APP_NAME = MonitorConstant.property()[15];
+	/**
+	 * 
+	 */
+	public static final String SITES_HELP_CONTENT_ID = MonitorConstant.property()[16];
+	/**
+	 * 
+	 */
+	public static final String SITES_ABOUT_CONTENT_ID = MonitorConstant.property()[17];
+
+	
+	/**
 	 * @return all property for domain
 	 */
 	public static String[] property() {
-		String[] pro = new String[12];
+		String[] pro = new String[18];
 		File file = new File("war/WEB-INF/config-MonitorConstant.xml");
 		FileInputStream fileInput;
 		try {
@@ -68,6 +94,12 @@ public final class MonitorConstant {
 			pro[9] = properties.getProperty("ROLE_ADMIN");
 			pro[10] = properties.getProperty("ROLE_NORMAL_USER");
 			pro[11] = properties.getProperty("ROLE_GUEST");
+			pro[12] = properties.getProperty("SITES_USERNAME");
+			pro[13] = properties.getProperty("SITES_PASSWORD");
+			pro[14] = properties.getProperty("SITES_CONTENT_FEED_URL");
+			pro[15] = properties.getProperty("SITES_APP_NAME");
+			pro[16] = properties.getProperty("SITES_HELP_CONTENT_ID");
+			pro[17] = properties.getProperty("SITES_ABOUT_CONTENT_ID");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -75,5 +107,12 @@ public final class MonitorConstant {
 		return pro;
 	}
 	
+/*	public static void main(String[] arg){
+		String[] pro1 = MonitorConstant.property();
+		for(int i = 0; i < pro1.length;i++){
+			System.out.println(pro1[i]);
+		}
+	}*/
+
 
 }
