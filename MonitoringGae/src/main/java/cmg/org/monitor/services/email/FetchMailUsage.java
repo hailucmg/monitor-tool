@@ -13,7 +13,6 @@ import javax.mail.Session;
 import javax.mail.Store;
 
 import cmg.org.monitor.common.Constant;
-import cmg.org.monitor.exception.MonitorException;
 import cmg.org.monitor.ext.util.URLMonitor;
 
 public class FetchMailUsage {
