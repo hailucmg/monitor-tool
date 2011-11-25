@@ -581,6 +581,8 @@ public class AddnewSystem extends AncestorEntryPoint {
 				txtRemote.setEnabled(true);
 				checkSMTP = false;
 				panelValidateEmail.setVisible(false);
+				txtEmail.setText("");
+				txtEmailPass.setText("");
 			}
 		}
 		
