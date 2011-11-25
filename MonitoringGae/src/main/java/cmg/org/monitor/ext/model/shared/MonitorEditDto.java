@@ -22,6 +22,22 @@ public class MonitorEditDto implements Serializable{
 	
 	String remoteURl;
 	
+	String email;
+	
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getPasswordEmail() {
+		return passwordEmail;
+	}
+	public void setPasswordEmail(String passwordEmail) {
+		this.passwordEmail = passwordEmail;
+	}
+	String passwordEmail;
+	
 	public String getRemoteURl() {
 		return remoteURl;
 	}
