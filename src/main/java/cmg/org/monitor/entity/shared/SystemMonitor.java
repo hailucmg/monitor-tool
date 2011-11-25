@@ -77,6 +77,28 @@ public class SystemMonitor implements Model {
 	@Persistent
 	private String groupEmail;
 	
+	@Persistent
+	private String email;
+	
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getEmailPassword() {
+		return emailPassword;
+	}
+
+	public void setEmailPassword(String emailPassword) {
+		this.emailPassword = emailPassword;
+	}
+
+	@Persistent
+	private String emailPassword;
+	
 	@NotPersistent
 	private
 	CpuMemory lastCpuMemory;
