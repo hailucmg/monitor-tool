@@ -38,5 +38,13 @@ public class UserDto implements Serializable{
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
+	@Override
+	public String toString(){
+		return getUsername();
+			
+	}
+	 public int compareByName(UserDto c) {
+	        int x = username.trim().compareTo(c.getUsername().trim());
+	        return x;
+	 }
 }
