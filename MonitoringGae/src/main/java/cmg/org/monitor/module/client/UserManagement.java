@@ -1,5 +1,6 @@
 package cmg.org.monitor.module.client;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -62,11 +63,14 @@ public class UserManagement extends AncestorEntryPoint {
 		data.addRows(listUser.size());
 		Set set = listUser.entrySet();
 		Iterator iter = set.iterator();
-		int i = 0;
+		ArrayList<UserDto> user = new ArrayList<UserDto>();
+	
+		//int i = 0;
 		while (iter.hasNext()) {
 			Map.Entry entry = (Map.Entry) iter.next();
 			UserDto u = (UserDto) entry.getValue();
-			String permission = "N/A";
+			user.add(u);
+		/*	String permission = "N/A";
 			if (u.getGroup().contains("admin")) {
 				permission = "Admin";
 			} else if (u.getGroup().startsWith("monitor")) {
@@ -76,17 +80,46 @@ public class UserManagement extends AncestorEntryPoint {
 			data.setValue(i, 1, u.getEmail());
 			data.setValue(i, 2, u.getGroup());
 			data.setValue(i, 3, permission);
-			i++;
+			i++;*/
+		}
+		
+		ArrayList<UserDto> sortUser = sortByname(user);
+		for(int j = 0; j < sortUser.size();j++){
+			String permission = "N/A";
+			if (sortUser.get(j).getGroup().contains("admin")) {
+				permission = "Admin";
+			} else if (sortUser.get(j).getGroup().startsWith("monitor")) {
+				permission = "Normal user";
+			}
+			System.out.println(sortUser.get(j).getUsername());
+			data.setValue(j, 0, sortUser.get(j).getUsername());
+			data.setValue(j, 1, sortUser.get(j).getEmail());
+			data.setValue(j, 2, sortUser.get(j).getGroup());
+			data.setValue(j, 3, permission);
 		}
 		return data;
 	}
 
+	 public ArrayList<UserDto> sortByname(ArrayList<UserDto> user) {
+	       for (int i = 1; i < user.size(); i++) {
+	           int j;
+	           UserDto val = user.get(i);
+	           for (j = i-1; j > -1; j--) {
+	        	   UserDto temp = user.get(j);
+	                   if (temp.compareByName(val) <= 0) {
+	                          break;
+	                   }
+	                   user.set(j+1, temp);
+	            }
+	           user.set(j+1, val);
+	       }
+	       return user;
+	     }
+	
 	private Options option() {
 		Options option = Options.create();
 		option.setAllowHtml(true);
 		option.setShowRowNumber(true);
-		option.setSortAscending(true);
-		option.setSortColumn(0);
 		return option;
 
 	}
