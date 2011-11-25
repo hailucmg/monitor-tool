@@ -110,6 +110,8 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			monitorEdit.setUrl(system.getUrl());
 			monitorEdit.setName(system.getName());
 			monitorEdit.setRemoteURl(system.getRemoteUrl());
+			monitorEdit.setEmail(system.getEmail());
+			monitorEdit.setPasswordEmail(system.getEmailPassword());
 			groups = sysDAO.groups();
 			monitorEdit.setGroups(groups);
 			for (int i = 0; i < groups.length; i++) {
