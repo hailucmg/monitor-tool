@@ -286,7 +286,9 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			}
 
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
+		
 		return list;
 	}
 
