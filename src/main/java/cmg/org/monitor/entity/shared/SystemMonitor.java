@@ -118,7 +118,9 @@ public class SystemMonitor implements Model {
 	private
 	ServiceMonitor[] lastestServiceMonitors;
 	
-	
+	@NotPersistent
+	private
+	JVMMemory lastestJvm;
 	
 	/**
 	 * Default constructor.<br>
@@ -391,6 +393,14 @@ public class SystemMonitor implements Model {
 
 	public void setLastestServiceMonitors(ServiceMonitor[] lastestServiceMonitors) {
 		this.lastestServiceMonitors = lastestServiceMonitors;
+	}
+
+	public JVMMemory getLastestJvm() {
+		return lastestJvm;
+	}
+
+	public void setLastestJvm(JVMMemory lastestJvm) {
+		this.lastestJvm = lastestJvm;
 	}
 	
 }
