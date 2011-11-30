@@ -29,6 +29,45 @@ public class Ultility {
     public static final String DIGIT_PATTERN = "\\d+";
     
 	
+    
+    /**
+	 * @return all normal user in domain
+	 * @throws Exception
+	 */
+	public static String[] listUser(String groupId) throws Exception {
+		Appforyourdomain client = new Appforyourdomain(
+				MonitorConstant.ADMIN_EMAIL, MonitorConstant.ADMIN_PASSWORD,
+				MonitorConstant.DOMAIN);
+		List<String> list = new ArrayList<String>();
+		String[] users = null;
+		String[] allUser = null;
+		try {
+			users = client.listUser(groupId);
+			if (users != null) {
+				for (int j = 0; j < users.length; j++) {
+					list.add(users[j].toString());
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		for(int a = 0 ; a < list.size();a++){
+			for(int b = 1 ; b <list.size();b++){
+				if(list.get(a).split(":")[0].equals(list.get(b).split(":")[0])){
+					String newUser = list.get(a).toString()+","+ list.get(b).split(":")[1];
+					list.add(a, newUser);
+					list.remove(b);	
+				}
+			}
+		}
+		allUser = new String[list.size()];
+		for (int j = 0; j < list.size(); j++) {
+			allUser[j] = list.get(j);
+		}
+		
+		return allUser;
+	}
 
 	
 	/**

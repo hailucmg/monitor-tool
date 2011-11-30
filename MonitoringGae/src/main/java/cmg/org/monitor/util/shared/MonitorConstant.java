@@ -18,6 +18,7 @@ public final class MonitorConstant {
 	public static final String DOMAIN = "c-mg.vn";
 
 	public static final String ADMIN_EMAIL = "monitor@c-mg.vn";
+	public static final String ADMIN_EMAIL_ID = "monitor";
 
 	public static final String ADMIN_PASSWORD = "31102011";
 	

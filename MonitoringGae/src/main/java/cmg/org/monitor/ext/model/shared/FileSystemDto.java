@@ -17,6 +17,9 @@ public class FileSystemDto implements Serializable {
 	private Long size;
 	private Long used;
 	private String type;
+	private String mount;
+	private Long available;
+	private Integer percentUsed;
 	private Date timeStamp;
 
 	/**
@@ -81,6 +84,32 @@ public class FileSystemDto implements Serializable {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getMount() {
+		return mount;
+	}
+
+	public void setMount(String mount) {
+		this.mount = mount;
+	}
+	
+	public Long getAvailable() {
+		return available;
+	}
+
+	public void setAvailable(Long available) {
+		this.available = available;
+	}
+	
+	
+
+	public Integer getPercentUsed() {
+		return percentUsed;
+	}
+
+	public void setPercentUsed(Integer percentUsed) {
+		this.percentUsed = percentUsed;
 	}
 
 	public Date getTimeStamp() {

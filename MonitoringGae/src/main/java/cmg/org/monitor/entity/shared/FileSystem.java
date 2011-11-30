@@ -13,7 +13,6 @@ import javax.jdo.annotations.PrimaryKey;
 
 import cmg.org.monitor.ext.model.shared.FileSystemDto;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * @author admin

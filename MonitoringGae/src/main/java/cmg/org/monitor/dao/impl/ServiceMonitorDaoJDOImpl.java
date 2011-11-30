@@ -158,7 +158,7 @@ public class ServiceMonitorDaoJDOImpl implements ServiceMonitorDAO {
 				
 				existSysEntity.addService(serviceEntity);
 				existSysEntity.addJVMMemory(jvmEntity);
-				existSysEntity.setStatus(true);
+				existSysEntity.setStatus(sysDto.getSystemStatus());
 				pm.makePersistent(existSysEntity);
 			}
 			// Do commit a transaction

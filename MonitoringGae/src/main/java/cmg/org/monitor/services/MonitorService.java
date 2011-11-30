@@ -62,7 +62,7 @@ public class MonitorService {
 			if (!aSysDto.getIsActive()) {
 				logger.info("The system " + aSysDto.getName()
 						+ " is existed but is not active. "
-						+ "The monitor skips this system now");
+						+ " The monitor skips this system now");
 				continueCount++;
 
 				continue;
@@ -85,7 +85,8 @@ public class MonitorService {
 			} catch (MonitorException me) {
 				logger.log(Level.SEVERE, me.getCause().getMessage());
 				throw me;
-				
+			} catch(Exception e) {
+				logger.log(Level.SEVERE, e.getMessage());
 			}
 			if (running.equals(FAILED)) {
 				errorCount++;

@@ -105,7 +105,7 @@ public interface Constant {
     public static int CPU_LEVEL_HISTORY_UPDATE = 90;
 
     /** The value level will be updated into database for history of DF. */
-    public static int DF_LEVEL_HISTORY_UPDATE = 95;
+    public static double DF_LEVEL_HISTORY_UPDATE = 95;
 
     /** The value level will be updated into database for history of RAM. */
     public static int RAM_LEVEL_HISTORY_UPDATE = 5;

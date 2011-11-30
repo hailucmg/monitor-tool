@@ -448,7 +448,6 @@ public abstract class HttpUtils {
 //                    }
 //                }
                 
-                
                 // setup the connection
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod(mMethod);
@@ -482,7 +481,7 @@ public abstract class HttpUtils {
                         connection_content = getConnectionContent(connection);
                     }
                 }
-
+                
                 // construct a new result page from the connection result
                 page = new Page(connection_content,
                         connection.getHeaderFields(),
