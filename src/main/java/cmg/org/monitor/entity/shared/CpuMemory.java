@@ -24,6 +24,10 @@ public class CpuMemory implements Model {
 	@Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
 	private String encodedKey;
 
+	
+	@Persistent
+	private String typeMemory;
+	
 	@Persistent
 	private double totalMemory;
 
@@ -147,6 +151,14 @@ public class CpuMemory implements Model {
 	@Override
 	public String getId() {
 		return encodedKey;
+	}
+	
+	public String getTypeMemory() {
+		return typeMemory;
+	}
+
+	public void setTypeMemory(String typeMemory) {
+		this.typeMemory = typeMemory;
 	}
 
 	public double getTotalMemory() {

@@ -19,7 +19,7 @@ public class SitesHelper {
 		String temp = "";		
 		SitesService service = new SitesService(MonitorConstant.SITES_APP_NAME);		
 		try {
-			service.setUserCredentials(MonitorConstant.SITES_USERNAME, MonitorConstant.SITES_PASSWORD);
+			//service.setUserCredentials();
 			ContentFeed contentFeed = service.getFeed(new URL(MonitorConstant.SITES_CONTENT_FEED_URL),
 					ContentFeed.class);
 			for (WebPageEntry entry : contentFeed.getEntries(WebPageEntry.class)) {

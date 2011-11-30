@@ -90,23 +90,19 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 		return sysDto;
 	}
 
-	public void updateSystem(SystemDto aSystemDTO, AlertMonitor anAlertEntity) {
+	public void updateSystem(SystemDto systemDto, AlertMonitor anAlertEntity) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		String name = aSystemDTO.getName();
-		String address = aSystemDTO.getUrl();
-		String ip = aSystemDTO.getIp();
-		SystemMonitor sysMonitor = new SystemMonitor();
+		SystemMonitor systemEntity = new SystemMonitor();
 		try {
 			pm.currentTransaction().begin();
 
 			// We have to look it up first,
-			sysMonitor = pm.getObjectById(SystemMonitor.class,
-					aSystemDTO.getId());
-			sysMonitor.setName(name);
-			sysMonitor.setUrl(address);
-			sysMonitor.setIp(ip);
-			sysMonitor.getAlerts().add(anAlertEntity);
-			pm.makePersistent(sysMonitor);
+			systemEntity = pm.getObjectById(SystemMonitor.class,
+					systemDto.getId());
+			systemEntity.setName(systemDto.getName());
+			systemEntity.setStatus(systemDto.getSystemStatus());
+			systemEntity.getAlerts().add(anAlertEntity);
+			pm.makePersistent(systemEntity);
 			pm.currentTransaction().commit();
 		} catch (Exception ex) {
 			pm.currentTransaction().rollback();
@@ -480,6 +476,10 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 			FileSystem[] listFs = fsDAO.listLastestFileSystem(system);
 			if (listFs != null) {
 				for (FileSystem fs : listFs) {
+					if (fs.getSize() == 0) {
+						fs.setSize(1l);
+					}	
+						
 					if (fs.getPercentUsage() >= 90) {
 						checkFileSystem = false;
 						break;
