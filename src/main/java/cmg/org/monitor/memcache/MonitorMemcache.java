@@ -43,7 +43,7 @@ public class MonitorMemcache {
 	 *            memcache
 	 */
 	public static void putSystemMonitorStore(
-			ArrayList<SystemMonitorStore> smsList) {
+			ArrayList<SystemMonitorStore> smsList){
 		if (smsList != null) {
 			int count = getCount() + 1;
 			// Store count
