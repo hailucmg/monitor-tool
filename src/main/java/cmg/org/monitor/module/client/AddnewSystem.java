@@ -54,7 +54,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 	private static FlexTable tableForm;
 	AbsolutePanel panelValidateRemoteURLServer;
 	AbsolutePanel panelValidateEmail;
-	boolean checkSMTP = false;
+	/*boolean checkSMTP = false;*/
 	@Override
 	protected void init() {
 		if (currentPage == HTMLControl.PAGE_ADD_SYSTEM) {
@@ -290,7 +290,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 								"<div class=\"error-left\"></div><div class=\"error-inner\">It is exists</div>"));
 				panelValidateRemoteURLServer.setVisible(false);
 				
-				panelLabelEmail = new AbsolutePanel();
+				/*panelLabelEmail = new AbsolutePanel();
 				labelEmail = new Label("Email Address");
 				panelLabelEmail.add(labelEmail);
 				panelLabelEmail.setVisible(false);
@@ -310,15 +310,15 @@ public class AddnewSystem extends AncestorEntryPoint {
 				txtEmailPass.addStyleName("inp-form");
 				panelTxtEmailPassword = new AbsolutePanel();
 				panelTxtEmailPassword.add(txtEmailPass);
-				panelTxtEmailPassword.setVisible(false);
+				panelTxtEmailPassword.setVisible(false);*/
 
 				MyHandler handler = new MyHandler();
 				bttCreate.addClickHandler(handler);
 				myReset resetHandler = new myReset();
 				bttReset.addClickHandler(resetHandler);
 				myBack backHandler = new myBack();
-				myProtocol protocolHandler = new myProtocol();
-				listProtocol.addClickHandler(protocolHandler);
+				/*myProtocol protocolHandler = new myProtocol();*/
+				/*listProtocol.addClickHandler(protocolHandler);*/
 				bttBack.addClickHandler(backHandler);
 				tableForm.setWidget(0, 0, labelName);
 				tableForm.setWidget(0, 1, txtName);
@@ -376,14 +376,14 @@ public class AddnewSystem extends AncestorEntryPoint {
 			String validateURL = validateURL(txtURL.getText());
 			String validateIp = validateIP(txtIP.getText());
 			String validateRemoteURL = validateRemoteURL(txtRemote.getText());
-			String validateEmail = validateEmail(txtEmail.getText());
+			//String validateEmail = validateEmail(txtEmail.getText());
 			panelValidateEmail.setVisible(false);
 			panelValidateName.setVisible(false);
 			panelValidateRemoteURL.setVisible(false);
 			panelValidateIP.setVisible(false);
 			panelValidateRemoteURL.setVisible(false);
 			panelValidateRemoteURLServer.setVisible(false);
-			if(checkSMTP == false){
+			/*if(checkSMTP == false){*/
 				if (validateName != "") {
 					panelValidateName.setVisible(true);
 					panelValidateURL.setVisible(false);
@@ -431,7 +431,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 				system.setRemoteUrl(txtRemote.getText());
 				panelAdding.setVisible(true);
 				sendData(system, txtURL.getText());	
-			}if(checkSMTP == true){
+	/*		}if(checkSMTP == true){
 				if (validateName != "") {
 					panelValidateName.setVisible(true);
 					panelValidateURL.setVisible(false);
@@ -482,7 +482,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 				system.setEmailPassword(txtEmailPass.getText());
 				panelAdding.setVisible(true);
 				sendData(system, txtURL.getText());	
-			}
+			}*/
 			
 		}
 
@@ -535,7 +535,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 			panelLabelEmailPassword.setVisible(false);
 			panelTxtEmailPassword.setVisible(false);
 			txtRemote.setEnabled(true);
-			checkSMTP = false;
+			//checkSMTP = false;
 			panelValidateEmail.setVisible(false);
 			panelValidateRemoteURL.setVisible(false);
 			panelValidateIP.setVisible(false);
@@ -560,7 +560,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 	 * @author NDC
 	 *
 	 */
-	class myProtocol implements ClickHandler{
+	/*class myProtocol implements ClickHandler{
 
 		@Override
 		public void onClick(ClickEvent event) {
@@ -586,6 +586,6 @@ public class AddnewSystem extends AncestorEntryPoint {
 			}
 		}
 		
-	}
+	}*/
 
 }
