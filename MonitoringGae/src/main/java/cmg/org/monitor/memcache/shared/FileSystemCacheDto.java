@@ -3,10 +3,9 @@ package cmg.org.monitor.memcache.shared;
 import java.io.Serializable;
 import java.util.Date;
 
-public class FileSystemDto implements Serializable  {
-	/**
-	 * 
-	 */
+public class FileSystemCacheDto implements Serializable  {
+	
+	/** Default serial UUID */
 	private static final long serialVersionUID = 1L;
 
 	private String name;
@@ -17,13 +16,19 @@ public class FileSystemDto implements Serializable  {
 
 	private String type;
 	
+	private String mount;
+	
+	private Long available;
+	
+	private Integer percentUsed;
+	
 	private Date timeStamp;
 
-	public FileSystemDto() {
+	public FileSystemCacheDto() {
 		
 	}
 	
-	public FileSystemDto(String name, long size, long used, String type,
+	public FileSystemCacheDto(String name, long size, long used, String type,
 			Date timeStamp) {
 		super();
 		this.setName(name);
@@ -31,6 +36,32 @@ public class FileSystemDto implements Serializable  {
 		this.setUsed(used);
 		this.setType(type);
 		this.setTimeStamp(timeStamp);
+	}
+
+	
+	
+	public String getMount() {
+		return mount;
+	}
+
+	public void setMount(String mount) {
+		this.mount = mount;
+	}
+
+	public Long getAvailable() {
+		return available;
+	}
+
+	public void setAvailable(Long available) {
+		this.available = available;
+	}
+
+	public Integer getPercentUsed() {
+		return percentUsed;
+	}
+
+	public void setPercentUsed(Integer percentUsed) {
+		this.percentUsed = percentUsed;
 	}
 
 	public String getName() {

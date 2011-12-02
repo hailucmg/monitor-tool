@@ -17,6 +17,7 @@ public class Key implements Serializable {
 	protected static final int SYSTEM_MONITOR_STORE = 0x006;
 	protected static final int COUNT_STORE = 0x007;
 	protected static final int FLAG_STORE = 0x008;
+	protected static final int CPU_STORE = 0x009;
 	
 	private int type;
 	

@@ -19,13 +19,15 @@ public class ServiceMonitorDto implements Serializable  {
 	private boolean status;
 
 	private String description;
+	
+	private String error;
 
 	private Date timeStamp;
 
 	
 	
 	public ServiceMonitorDto(String name, Date systemDate, int ping,
-			boolean status, String description, Date timeStamp) {
+			boolean status, String description, Date timeStamp, String error) {
 		super();
 		this.name = name;
 		this.setSystemDate(systemDate);
@@ -33,7 +35,29 @@ public class ServiceMonitorDto implements Serializable  {
 		this.setStatus(status);
 		this.setDescription(description);
 		this.setTimeStamp(timeStamp);
+		this.setError(error);
 	}
+
+	
+	
+	public ServiceMonitorDto() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+
+
+	public String getError() {
+		return error;
+	}
+
+
+
+	public void setError(String error) {
+		this.error = error;
+	}
+
+
 
 	public String getName() {
 		return name;
