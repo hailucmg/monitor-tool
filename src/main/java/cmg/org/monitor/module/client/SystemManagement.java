@@ -198,6 +198,7 @@ public class SystemManagement extends AncestorEntryPoint {
 		ops.setMax(100);
 		ops.setMin(0);
 		ops.setWidth(200);
+		
 		BarFormat bf = BarFormat.create(ops);
 		bf.format(dataListSystem, 4);
 		bf.format(dataListSystem, 5);
