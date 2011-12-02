@@ -416,12 +416,15 @@ public class HTMLControl {
 	}
 
 	public static String convertMemoryToString(double value) {
+		value = value / 1024;
 		String temp = null;
 		if (value >= 1024 * 1024) {
 			temp = NumberFormat.getFormat("#.0").format(value / (1024 * 1024))
 					+ " GB";
 		} else if (value >= 1024) {
 			temp = NumberFormat.getFormat("#.0").format(value / 1024) + " MB";
+		} else {
+			temp = NumberFormat.getFormat("#.0").format(value) + " KB";
 		}
 		return temp;
 	}

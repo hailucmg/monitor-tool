@@ -7,10 +7,12 @@ import java.util.logging.Logger;
 
 import cmg.org.monitor.dao.CpuMemoryDAO;
 import cmg.org.monitor.dao.FileSystemDAO;
+import cmg.org.monitor.dao.JVMMemoryDAO;
 import cmg.org.monitor.dao.ServiceMonitorDAO;
 import cmg.org.monitor.dao.SystemMonitorDAO;
 import cmg.org.monitor.dao.impl.CpuMemoryDaoJDOImpl;
 import cmg.org.monitor.dao.impl.FileSystemDaoJDOImpl;
+import cmg.org.monitor.dao.impl.JVMMemoryDaoJDOImpl;
 import cmg.org.monitor.dao.impl.ServiceMonitorDaoJDOImpl;
 import cmg.org.monitor.dao.impl.SystemMonitorDaoJDOImpl;
 import cmg.org.monitor.entity.shared.CpuMemory;
@@ -175,6 +177,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		FileSystemDAO fsDAO = new FileSystemDaoJDOImpl();
 		ServiceMonitorDAO smDAO = new ServiceMonitorDaoJDOImpl();
 		CpuMemoryDAO cmDAO = new CpuMemoryDaoJDOImpl();
+		JVMMemoryDAO jvmDAO = new JVMMemoryDaoJDOImpl();
 		SystemMonitor sys = null;
 		try {
 			sys = sysDAO.getSystembyID(sysID);
@@ -185,6 +188,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 				sys.setLastestServiceMonitors(smDAO.listLastestService(sys));
 				sys.setListHistoryCpuMemory(cmDAO.getLastestCpuMemory(sys, 20));
 				sys.setHealthStatus(sysDAO.getCurrentHealthStatus(sys));
+				sys.setLastestJvm(jvmDAO.getLastestJvm(sys));
 			}
 		} catch (Exception ex) {
 			// logger.log(Level.SEVERE, ex.getCause().getMessage());

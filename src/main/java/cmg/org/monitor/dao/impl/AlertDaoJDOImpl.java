@@ -14,6 +14,7 @@ import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.exception.MonitorException;
 import cmg.org.monitor.ext.model.shared.AlertDto;
 import cmg.org.monitor.ext.model.shared.SystemDto;
+import cmg.org.monitor.memcache.SystemMonitorStore;
 import cmg.org.monitor.util.shared.PMF;
 
 public class AlertDaoJDOImpl implements AlertDao {
@@ -28,7 +29,6 @@ public class AlertDaoJDOImpl implements AlertDao {
 	 */
 	public AlertDto updateAlert(AlertDto alertDTO, SystemDto sysDto) {
 		if (alertDTO.getId() == null) {
-
 			// Create new case
 			AlertMonitor newAlert = addAlert(alertDTO, sysDto);
 			return newAlert.toDTO();

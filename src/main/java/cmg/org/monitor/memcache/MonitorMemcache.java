@@ -90,7 +90,7 @@ public class MonitorMemcache {
 					getCount()));
 			if (obj == null) {
 				sysList = readSystemFromJdo();
-			} else {
+			} else {				
 				sysList = (ArrayList<SystemMonitorDto>) obj;
 			}
 		}
@@ -123,11 +123,13 @@ public class MonitorMemcache {
 					sysDto.setStatus(sys.getStatus());
 					sysDto.setUrl(sys.getUrl());
 					list.add(sysDto);
-				}
+				}				
 			}
 		} catch (Exception ex) {
 			// do nothing
 		}
+		//
+		changeFlag(false);
 		return list;
 	}
 
@@ -186,14 +188,13 @@ public class MonitorMemcache {
 	 */
 	protected static boolean isFlagChange() {
 		boolean b = true;
-		if (get(Key.create(Key.COUNT_STORE)) == null) {
+		if (get(Key.create(Key.FLAG_STORE)) == null) {
 			b = true;
 		} else {
 			try {
 				b = Boolean.parseBoolean(get(Key.create(Key.FLAG_STORE))
 						.toString());
 			} catch (Exception ex) {
-				// do nothing
 			}
 		}
 		return b;
