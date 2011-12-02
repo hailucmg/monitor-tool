@@ -3,53 +3,43 @@ package cmg.org.monitor.memcache.shared;
 import java.io.Serializable;
 import java.util.Date;
 
-public class CpuMemoryDto implements Serializable  {
+public class CpuDTO implements Serializable  {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private double totalMemory;
-
-	private double usedMemory;
-
-	private int cpuUsage;
-
 	private int totalCpu;
 
+	private int cpuUsage;
+	
 	private String vendor;
 
 	private String model;
 
 	private Date timeStamp;
+	
+	
 
-	public CpuMemoryDto(double totalMemory, double usedMemory, int cpuUsage,
+	/**
+	 * 
+	 */
+	public CpuDTO() {
+		
+	}
+
+
+
+	public CpuDTO(double totalMemory, double usedMemory, int cpuUsage,
 			int totalCpu, String vendor, String model, Date timeStamp) {
 		super();
-		this.setTotalMemory(totalMemory);
-		this.setUsedMemory(usedMemory);
+
 		this.setCpuUsage(cpuUsage);
 		this.setTotalCpu(totalCpu);
 		this.setVendor(vendor);
 		this.setModel(model);
 		this.setTimeStamp(timeStamp);
-	}
-
-	public double getTotalMemory() {
-		return totalMemory;
-	}
-
-	public void setTotalMemory(double totalMemory) {
-		this.totalMemory = totalMemory;
-	}
-
-	public double getUsedMemory() {
-		return usedMemory;
-	}
-
-	public void setUsedMemory(double usedMemory) {
-		this.usedMemory = usedMemory;
 	}
 
 	public int getCpuUsage() {

@@ -3,54 +3,69 @@ package cmg.org.monitor.memcache;
 import java.util.ArrayList;
 
 import cmg.org.monitor.memcache.shared.AlertMonitorDto;
-import cmg.org.monitor.memcache.shared.CpuMemoryDto;
-import cmg.org.monitor.memcache.shared.FileSystemDto;
+import cmg.org.monitor.memcache.shared.CpuDTO;
+import cmg.org.monitor.memcache.shared.FileSystemCacheDto;
 import cmg.org.monitor.memcache.shared.JvmDto;
+import cmg.org.monitor.memcache.shared.MemoryDto;
 import cmg.org.monitor.memcache.shared.ServiceMonitorDto;
 import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 
-public class SystemMonitorStore {	
+public class SystemMonitorStore {
+
 	/**
-	 *  Store information of CPU & Memory
+	 * Store information of CPU & Memory
 	 */
-	private CpuMemoryDto cpuMem;
-	
+	private CpuDTO cpu;
+
 	/**
-	 *  Store information of JVM
+	 * Store information of JVM
 	 */
 	private JvmDto jvm;
-	
+
 	/**
-	 *  Store information of all File system
+	 * Store information of all File system
 	 */
-	private ArrayList<FileSystemDto> fileSysList = new ArrayList<FileSystemDto>();
-	
+	private ArrayList<MemoryDto> memory = new ArrayList<MemoryDto>();
+
 	/**
-	 *  Store information of alert
+	 * Store information of all File system
+	 */
+	private ArrayList<FileSystemCacheDto> fileSysList = new ArrayList<FileSystemCacheDto>();
+
+	/**
+	 * Store information of alert
 	 */
 	private AlertMonitorDto alert;
-	
+
 	/**
-	 *  Store information of all service
+	 * Store information of all service
 	 */
 	private ArrayList<ServiceMonitorDto> serviceMonitorList = new ArrayList<ServiceMonitorDto>();
-	
+
 	private SystemMonitorDto sysMonitor;
 
 	private SystemMonitorStore() {
 		// unused
 	}
-	
+
+	public CpuDTO getCpu() {
+		return cpu;
+	}
+
+	public void setCpu(CpuDTO cpu) {
+		this.cpu = cpu;
+	}
+
+	public ArrayList<MemoryDto> getMemory() {
+		return memory;
+	}
+
+	public void setMemory(ArrayList<MemoryDto> memory) {
+		this.memory = memory;
+	}
+
 	protected static SystemMonitorStore create() {
 		return new SystemMonitorStore();
-	}
-
-	protected CpuMemoryDto getCpuMem() {
-		return cpuMem;
-	}
-
-	public void setCpuMem(CpuMemoryDto cpuMem) {
-		this.cpuMem = cpuMem;
 	}
 
 	protected JvmDto getJvm() {
@@ -61,11 +76,11 @@ public class SystemMonitorStore {
 		this.jvm = jvm;
 	}
 
-	protected ArrayList<FileSystemDto> getFileSysList() {
+	protected ArrayList<FileSystemCacheDto> getFileSysList() {
 		return fileSysList;
 	}
 
-	public void setFileSysList(ArrayList<FileSystemDto> fileSysList) {
+	public void setFileSysList(ArrayList<FileSystemCacheDto> fileSysList) {
 		this.fileSysList = fileSysList;
 	}
 
@@ -81,7 +96,8 @@ public class SystemMonitorStore {
 		return serviceMonitorList;
 	}
 
-	public void setServiceMonitorList(ArrayList<ServiceMonitorDto> serviceMonitorList) {
+	public void setServiceMonitorList(
+			ArrayList<ServiceMonitorDto> serviceMonitorList) {
 		this.serviceMonitorList = serviceMonitorList;
 	}
 
@@ -92,5 +108,5 @@ public class SystemMonitorStore {
 	public void setSysMonitor(SystemMonitorDto sysMonitor) {
 		this.sysMonitor = sysMonitor;
 	}
-	
+
 }

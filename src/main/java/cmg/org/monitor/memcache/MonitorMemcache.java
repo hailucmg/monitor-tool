@@ -5,11 +5,6 @@ import java.util.ArrayList;
 import cmg.org.monitor.dao.SystemMonitorDAO;
 import cmg.org.monitor.dao.impl.SystemMonitorDaoJDOImpl;
 import cmg.org.monitor.entity.shared.SystemMonitor;
-import cmg.org.monitor.memcache.shared.AlertMonitorDto;
-import cmg.org.monitor.memcache.shared.CpuMemoryDto;
-import cmg.org.monitor.memcache.shared.FileSystemDto;
-import cmg.org.monitor.memcache.shared.JvmDto;
-import cmg.org.monitor.memcache.shared.ServiceMonitorDto;
 import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 
 import com.google.appengine.api.memcache.MemcacheService;
@@ -61,7 +56,10 @@ public class MonitorMemcache {
 				put(Key.create(Key.ALERT_STORE, count, sid), sms.getAlert());
 				// Store CPU & memory information
 				put(Key.create(Key.CPU_MEMORY_STORE, count, sid),
-						sms.getCpuMem());
+						sms.getMemory());
+				
+				put(Key.create(Key.CPU_STORE, count, sid),
+						sms.getCpu());
 				// Store File system list information
 				put(Key.create(Key.FILE_SYSTEM_STORE, count, sid),
 						sms.getFileSysList());
