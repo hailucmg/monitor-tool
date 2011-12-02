@@ -40,8 +40,7 @@ public class MemcacheTest {
 	}
 	@Test
 	public void test() {
-		MonitorMemcache.changeFlag(false);
-		 System.out.print(MonitorMemcache.isFlagChange());
+		System.out.println("#flag: " + MonitorMemcache.isFlagChange());
 		SystemMonitorDAO sysDao = new SystemMonitorDaoJDOImpl();
 		SystemMonitor[] sysList = null;
 		try {
@@ -56,9 +55,13 @@ public class MemcacheTest {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+		System.out.println("#flag: " + MonitorMemcache.isFlagChange());
 		String sid = "";
+		
 		ArrayList<SystemMonitorStore> list = MonitorMemcache
 				.getSystemMonitorStore();
+		MonitorMemcache.changeFlag(false);
+		System.out.println("#flag: " + MonitorMemcache.isFlagChange());
 		ArrayList<SystemMonitorStore> listTemp = new ArrayList<SystemMonitorStore>();
 		System.out.println("Count: " +  MonitorMemcache.getCount());
 		if (list != null) {

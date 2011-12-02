@@ -2,6 +2,7 @@ package cmg.org.monitor.module.client;
 
 import cmg.org.monitor.entity.shared.CpuMemory;
 import cmg.org.monitor.entity.shared.FileSystem;
+import cmg.org.monitor.entity.shared.JVMMemory;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.util.shared.HTMLControl;
@@ -44,6 +45,8 @@ public class SystemDetail extends AncestorEntryPoint {
 	private Table tblFileSystem;
 
 	private PieChart pieFileSystem;
+	
+	private PieChart pieJvm;
 
 	private AbsolutePanel panelSystemInfo;
 
@@ -209,6 +212,7 @@ public class SystemDetail extends AncestorEntryPoint {
 			achCpu = new AreaChart();
 			achMemory = new AreaChart();
 			pieFileSystem = new PieChart();
+			pieJvm = new PieChart();
 			tblFileSystem = new Table();
 			panelSystemInfo = new AbsolutePanel();
 
@@ -236,7 +240,7 @@ public class SystemDetail extends AncestorEntryPoint {
 					.setWidget(4, 0, HTMLControl.getColorTitle(
 							"CPU & Memory Information", true));
 
-			flexTableContent.setWidget(1, 0, panelSystemInfo);
+			flexTableContent.setWidget(1, 0, pieJvm);
 			flexTableContent.setWidget(1, 1, tblService);
 			flexTableContent.setWidget(3, 0, pieFileSystem);
 			flexTableContent.setWidget(3, 1, tblFileSystem);
@@ -257,6 +261,7 @@ public class SystemDetail extends AncestorEntryPoint {
 								isShowService = !isShowService;
 								tblService.setVisible(isShowService);
 								panelSystemInfo.setVisible(isShowService);
+								pieJvm.setVisible(isShowService);
 								flexTableContent.setWidget(0, 0, HTMLControl
 										.getColorTitle("Service Information",
 												isShowService));
@@ -316,6 +321,17 @@ public class SystemDetail extends AncestorEntryPoint {
 		drawServiceInfo(sys);
 
 		drawFileSystemInfo(sys);
+		
+		drawJvmInfo(sys);
+	}
+	
+	void drawJvmInfo(SystemMonitor sys) {
+		JVMMemory jvm = sys.getLastestJvm();
+		if (jvm != null) {
+			pieJvm.draw(createDataTableJvm(jvm),
+					createPieChartOptions("Java Visual Memory (" + HTMLControl.convertMemoryToString(jvm.getTotalMemory())
+												+ " of " + HTMLControl.convertMemoryToString(jvm.getMaxMemory()) + ")"));
+		}
 	}
 
 	void drawCpuMemoryInfo(SystemMonitor sys) {
@@ -401,6 +417,18 @@ public class SystemDetail extends AncestorEntryPoint {
 		ops.setLegend(LegendPosition.BOTTOM);
 
 		return ops;
+	}
+	
+	AbstractDataTable createDataTableJvm(JVMMemory jvm) {
+		DataTable data = DataTable.create();
+		data.addColumn(ColumnType.STRING, "Task");
+		data.addColumn(ColumnType.NUMBER, "Memory");
+		data.addRows(2);
+		data.setValue(0, 0, "Free Space");
+		data.setValue(0, 1, jvm.getFreeMemory());
+		data.setValue(1, 0, "Used Space");
+		data.setValue(1, 1, jvm.getUsedMemory());
+		return data;
 	}
 
 	AbstractDataTable createDataTableListFileSystem(FileSystem[] list) {
