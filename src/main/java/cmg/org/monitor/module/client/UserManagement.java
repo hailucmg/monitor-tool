@@ -63,9 +63,7 @@ public class UserManagement extends AncestorEntryPoint {
 		data.addRows(listUser.size());
 		Set set = listUser.entrySet();
 		Iterator iter = set.iterator();
-		ArrayList<UserDto> user = new ArrayList<UserDto>();
-	
-		//int i = 0;
+		ArrayList<UserDto> user = new ArrayList<UserDto>();		
 		while (iter.hasNext()) {
 			Map.Entry entry = (Map.Entry) iter.next();
 			UserDto u = (UserDto) entry.getValue();
@@ -91,7 +89,6 @@ public class UserManagement extends AncestorEntryPoint {
 			} else if (sortUser.get(j).getGroup().startsWith("monitor")) {
 				permission = "Normal user";
 			}
-			System.out.println(sortUser.get(j).getUsername());
 			data.setValue(j, 0, sortUser.get(j).getUsername());
 			data.setValue(j, 1, sortUser.get(j).getEmail());
 			data.setValue(j, 2, sortUser.get(j).getGroup());
