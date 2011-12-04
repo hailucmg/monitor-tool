@@ -19,7 +19,7 @@ public class SitesHelper {
 		String temp = "";		
 		SitesService service = new SitesService(MonitorConstant.SITES_APP_NAME);		
 		try {
-			//service.setUserCredentials();
+			service.setUserCredentials(MonitorConstant.SITES_USERNAME, MonitorConstant.SITES_PASSWORD);
 			ContentFeed contentFeed = service.getFeed(new URL(MonitorConstant.SITES_CONTENT_FEED_URL),
 					ContentFeed.class);
 			for (WebPageEntry entry : contentFeed.getEntries(WebPageEntry.class)) {
@@ -54,7 +54,7 @@ public class SitesHelper {
 		
 	public static void main(String[] args) {
 		SitesHelper  s= new SitesHelper();
-		System.out.print(s.getSiteEntryContent(MonitorConstant.SITES_ABOUT_CONTENT_ID));
+		System.out.print(s.getSiteEntryContent(MonitorConstant.SITES_HELP_CONTENT_ID));
 	}
 	
 }
