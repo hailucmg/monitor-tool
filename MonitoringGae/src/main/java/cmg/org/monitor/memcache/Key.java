@@ -19,6 +19,8 @@ public class Key implements Serializable {
 	protected static final int FLAG_STORE = 0x008;
 	protected static final int CPU_STORE = 0x009;
 	
+	
+	
 	private int type;
 	
 	private int count;
@@ -38,6 +40,12 @@ public class Key implements Serializable {
 	protected static Key create(int type, int count) {
 		Key key = create(type);
 		key.count = count;
+		return key;
+	}
+	
+	protected static Key create(int type, String sid) {
+		Key key = create(type);
+		key.setSid(sid);
 		return key;
 	}
 	

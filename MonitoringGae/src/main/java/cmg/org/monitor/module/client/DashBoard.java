@@ -1,6 +1,9 @@
 package cmg.org.monitor.module.client;
 
+import java.util.ArrayList;
+
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
@@ -43,66 +46,59 @@ public class DashBoard extends AncestorEntryPoint {
 	 * Create callback to server via RPC
 	 */
 	void callBack() {
-		monitorGwtSv.listSystems(new AsyncCallback<SystemMonitor[]>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
-				showMessage("Server error. ", HTMLControl.HTML_DASHBOARD_NAME,
-						"Try again.", HTMLControl.RED_MESSAGE, true);			
-			}
+		monitorGwtSv
+				.listSystems(new AsyncCallback<ArrayList<SystemMonitorDto>>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+						showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
+						showMessage("Server error. ",
+								HTMLControl.HTML_DASHBOARD_NAME, "Try again.",
+								HTMLControl.RED_MESSAGE, true);
+					}
 
-			@Override
-			public void onSuccess(SystemMonitor[] result) {
-				showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
-				setVisibleLoadingImage(false);
-				setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
-				drawTable(result);
-			}
-		});
+					@Override
+					public void onSuccess(ArrayList<SystemMonitorDto> result) {
+						showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
+						setVisibleLoadingImage(false);
+						setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+						drawTable(result);
+					}
+				});
 	}
 
 	/*
 	 * Draw table ui with result callback from server via RPC
 	 */
-	void drawTable(SystemMonitor[] result) {
+	void drawTable(ArrayList<SystemMonitorDto> result) {
 		if (result != null) {
 			createDataListSystem();
-			dataListSystem.addRows(result.length);
-			for (int i = 0; i < result.length; i++) {
-				dataListSystem.setValue(i, 0, HTMLControl.getLinkSystemDetail(
-						result[i].getId(), result[i].getCode()));
+			dataListSystem.addRows(result.size());
+			SystemMonitorDto sys = null;
+			for (int i = 0; i < result.size(); i++) {
+				sys = result.get(i);
 				dataListSystem.setValue(
 						i,
-						1,
-						(result[i].getName() == null) ? "N/A" : result[i]
-								.getName());
-				dataListSystem.setValue(
-						i,
-						2,
-						(result[i].getUrl() == null) ? "N/A" : result[i]
-								.getUrl());
-				dataListSystem
-						.setValue(i, 3, (result[i].getIp() == null) ? "N/A"
-								: result[i].getIp());
-				dataListSystem.setValue(
-						i,
-						4,
-						(result[i].getLastCpuMemory() == null) ? 0
-								: (result[i].isActive()
-										&& result[i].getStatus() ? result[i]
-										.getLastCpuMemory().getCpuUsage() : 0));
-				dataListSystem.setValue(
-						i,
-						5,
-						(result[i].getLastCpuMemory() == null) ? 0
-								: (result[i].isActive()
-										&& result[i].getStatus() ? result[i]
-										.getLastCpuMemory()
-										.getPercentMemoryUsage() : 0));
-				dataListSystem.setValue(i, 6, HTMLControl
-						.getHTMLStatusImage(result[i].getHealthStatus()));
+						0,
+						HTMLControl.getLinkSystemDetail(sys.getId(),
+								sys.getCode()));
+				dataListSystem.setValue(i, 1, (sys.getName() == null) ? "N/A"
+						: sys.getName());
+				dataListSystem.setValue(i, 2, (sys.getUrl() == null) ? "N/A"
+						: sys.getUrl());
+				dataListSystem.setValue(i, 3, (sys.getIp() == null) ? "N/A"
+						: sys.getIp());
+				dataListSystem.setValue(i, 4, (sys.getLastestCpu() == null) ? 0
+						: (sys.isActive() && sys.isStatus() ? sys
+								.getLastestCpu().getCpuUsage() : 0));
+				dataListSystem.setValue(i, 5,
+						(sys.getLastestMemory() == null) ? 0 : (sys.isActive()
+								&& sys.isStatus() ? sys.getLastestMemory()
+								.getPercentUsage() : 0));
+				dataListSystem.setValue(i, 6,
+						HTMLControl.getHTMLStatusImage(sys.getHealthStatus()));
 				dataListSystem.setValue(i, 7,
-						HTMLControl.getHTMLActiveImage(result[i].isActive()));
+						HTMLControl.getHTMLActiveImage(sys.isActive()));
 			}
 			createFormatDataTableListSystem();
 			setVisibleMessage(false, HTMLControl.RED_MESSAGE);

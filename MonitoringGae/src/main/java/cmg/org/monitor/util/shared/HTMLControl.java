@@ -1,6 +1,6 @@
 package cmg.org.monitor.util.shared;
 
-import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.HTML;
@@ -124,7 +124,7 @@ public class HTMLControl {
 					.startsWith(HTML_EDIT_NAME));
 	}
 
-	public static HTML getSystemInfo(SystemMonitor sys) {
+	public static HTML getSystemInfo(SystemMonitorDto sys) {
 		StringBuffer temp = new StringBuffer();
 		temp.append("<h3>SID: " + sys.getCode() + "</h3>");
 		temp.append("<h3>Name: " + sys.getName() + "</h3>");

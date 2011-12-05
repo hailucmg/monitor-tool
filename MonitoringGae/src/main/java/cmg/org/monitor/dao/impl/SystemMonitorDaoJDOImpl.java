@@ -52,7 +52,6 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 	public void addSystem(SystemMonitor system) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try {
-
 			pm.makePersistent(system);
 			logger.info(MonitorConstant.DONE_MESSAGE);
 		} finally {
@@ -281,7 +280,6 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 		} catch (Exception e) {
 			throw e;
 		} finally {
-			// TODO: handle exception
 			pm.close();
 		}
 		return check;
@@ -321,7 +319,6 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 
 	@Override
 	public boolean deleteSystembyID(String id) throws Exception {
-		// TODO Auto-generated method stub
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		SystemMonitor system = pm.getObjectById(SystemMonitor.class, id);
 		boolean check = false;
@@ -334,7 +331,6 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 			pm.currentTransaction().commit();
 			check = true;
 		} catch (Exception e) {
-			// TODO: handle exception
 			throw e;
 		} finally {
 			pm.close();
@@ -388,9 +384,7 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 			// TODO: handle exception
 			throw e;
 		}
-
 		return code;
-
 	}
 
 	public String createSID() throws Exception {

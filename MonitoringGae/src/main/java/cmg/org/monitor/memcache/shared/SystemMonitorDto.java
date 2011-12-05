@@ -1,6 +1,7 @@
 package cmg.org.monitor.memcache.shared;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class SystemMonitorDto implements Serializable  {
 
@@ -32,6 +33,24 @@ public class SystemMonitorDto implements Serializable  {
 	private String groupEmail;
 
 	private String email;
+	
+	private String healthStatus;
+	
+	private JvmDto lastestJvm;
+	
+	private CpuDTO lastestCpu;
+	
+	private MemoryDto lastestMemory;
+	
+	private String[] groups;	
+	
+	private ArrayList<FileSystemCacheDto> fileSystems;
+	
+	private ArrayList<ServiceMonitorDto> services;
+	
+	private ArrayList<CpuDTO> cpuHistory;
+	
+	private ArrayList<ArrayList<MemoryDto>> memHistory;
 	
 	public SystemMonitorDto() {
 	}
@@ -148,6 +167,78 @@ public class SystemMonitorDto implements Serializable  {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getHealthStatus() {
+		return healthStatus;
+	}
+
+	public void setHealthStatus(String healthStatus) {
+		this.healthStatus = healthStatus;
+	}
+
+	public CpuDTO getLastestCpu() {
+		return lastestCpu;
+	}
+
+	public void setLastestCpu(CpuDTO lastestCpu) {
+		this.lastestCpu = lastestCpu;
+	}
+
+	public MemoryDto getLastestMemory() {
+		return lastestMemory;
+	}
+
+	public void setLastestMemory(MemoryDto lastestMemory) {
+		this.lastestMemory = lastestMemory;
+	}
+
+	public String[] getGroups() {
+		return groups;
+	}
+
+	public void setGroups(String[] groups) {
+		this.groups = groups;
+	}
+
+	public ArrayList<FileSystemCacheDto> getFileSystems() {
+		return fileSystems;
+	}
+
+	public void setFileSystems(ArrayList<FileSystemCacheDto> fileSystems) {
+		this.fileSystems = fileSystems;
+	}
+
+	public ArrayList<ServiceMonitorDto> getServices() {
+		return services;
+	}
+
+	public void setServices(ArrayList<ServiceMonitorDto> services) {
+		this.services = services;
+	}
+
+	public JvmDto getLastestJvm() {
+		return lastestJvm;
+	}
+
+	public void setLastestJvm(JvmDto lastestJvm) {
+		this.lastestJvm = lastestJvm;
+	}
+
+	public ArrayList<CpuDTO> getCpuHistory() {
+		return cpuHistory;
+	}
+
+	public void setCpuHistory(ArrayList<CpuDTO> cpuHistory) {
+		this.cpuHistory = cpuHistory;
+	}
+
+	public ArrayList<ArrayList<MemoryDto>> getMemHistory() {
+		return memHistory;
+	}
+
+	public void setMemHistory(ArrayList<ArrayList<MemoryDto>> memHistory) {
+		this.memHistory = memHistory;
 	}
 	
 }
