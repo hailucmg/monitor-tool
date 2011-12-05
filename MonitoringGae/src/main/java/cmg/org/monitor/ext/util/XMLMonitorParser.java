@@ -78,7 +78,7 @@ public class XMLMonitorParser {
 	 * @param xmlContent the content of xml.
 	 * @return components list of object 
 	 */
-	public List<Component> getDBComponent(String xmlContent) {
+	public List<Component> getServiceComponent(String xmlContent) {
 		List<Component> components = new ArrayList<Component>();
 		try {
 
@@ -101,7 +101,7 @@ public class XMLMonitorParser {
 					for (int i = 0; i < totalElements; i++) {
 					  element = (Element) elementList.item(i);
 					  component = new Component();
-				      component = xmlToComponent(component, element);
+				      component = xmlServiceComponent(component, element);
 				      components.add(component);
 					}
 				}
@@ -262,7 +262,7 @@ public class XMLMonitorParser {
 		return physicals;
 	}
 	
-	private Component xmlToComponent(Component component, Element element) {
+	private Component xmlServiceComponent(Component component, Element element) {
 		NodeList name = element.getElementsByTagName(NAME);
         if (name!= null && name.getLength() > 0) {
         	Element nameElement = (Element) name.item(0);

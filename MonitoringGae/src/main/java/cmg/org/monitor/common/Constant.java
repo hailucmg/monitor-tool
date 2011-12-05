@@ -12,6 +12,8 @@ public interface Constant {
 
     //~ Static fields/initializers ---------------------------------------------
 	
+	public static String DATE_EMAIL_FORMAT = "E, dd MMM yyyy HH:mm:ss Z";
+	
 	/** User input protocol . */
 	public static String USER_PROTOCOL = "SMTP";
 	
@@ -104,8 +106,14 @@ public interface Constant {
     /** The value level will be updated into database for history of CPU. */
     public static int CPU_LEVEL_HISTORY_UPDATE = 90;
 
+    /** The value level will be updated into database for jvm . */
+    public static int LEVEL_JVM_PERCENTAGE = 90;
+    
     /** The value level will be updated into database for history of DF. */
     public static double DF_LEVEL_HISTORY_UPDATE = 95;
+    
+    /** The value level will be updated into database for history of DF. */
+    public static double PING_LEVEL_RESPONSE = 500;
 
     /** The value level will be updated into database for history of RAM. */
     public static int RAM_LEVEL_HISTORY_UPDATE = 5;

@@ -7,11 +7,14 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Iterator;
 
+import cmg.org.monitor.exception.MonitorException;
+
 import com.google.gdata.client.appsforyourdomain.AppsGroupsService;
 import com.google.gdata.client.appsforyourdomain.UserService;
 import com.google.gdata.data.appsforyourdomain.AppsForYourDomainException;
 import com.google.gdata.data.appsforyourdomain.generic.GenericEntry;
 import com.google.gdata.data.appsforyourdomain.generic.GenericFeed;
+import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
 public class Appforyourdomain {
@@ -41,14 +44,20 @@ public class Appforyourdomain {
 	 * @throws Exception
 	 */
 	public Appforyourdomain(String adminEmail, String adminPassword,
-			String domain) throws Exception {
+			String domain) throws AuthenticationException {
 		this(domain);
 		// Configure all of the different Provisioning services
 		userService = new UserService(
 				"gdata-sample-AppsForYourDomain-UserService");
-		userService.setUserCredentials(adminEmail, adminPassword);
-		groupService = new AppsGroupsService(adminEmail, adminPassword, domain,
-				"gdata-sample-AppsForYourDomain-AppsGroupService");
+		try {
+			userService.setUserCredentials(adminEmail, adminPassword);
+			groupService = new AppsGroupsService(adminEmail, adminPassword, domain,
+					"gdata-sample-AppsForYourDomain-AppsGroupService");
+		} catch (AuthenticationException ae) {
+			
+			throw ae;
+		}
+		
 	}
 
 	/**
@@ -57,7 +66,7 @@ public class Appforyourdomain {
 	 * @return all user
 	 * @throws Exception
 	 */
-	public String[] listAllUser(String groupID) throws Exception {
+	public String[] listAllUser(String groupID) throws MonitorException, ServiceException, IOException {
 		String[] listUser = null;
 		String id;
 
@@ -66,35 +75,22 @@ public class Appforyourdomain {
 		String group = id.split("%")[0];
 		
 		GenericFeed groupsFeed;
-		try {
-			groupsFeed = groupService.retrieveAllMembers(id);
-			Iterator<GenericEntry> groupsEntryIterator = groupsFeed
-					.getEntries().iterator();
-			StringBuffer members = new StringBuffer();
-			while (groupsEntryIterator.hasNext()) {
-				members.append(groupsEntryIterator.next().getProperty(
-						AppsGroupsService.APPS_PROP_GROUP_MEMBER_ID));
-				if (groupsEntryIterator.hasNext()) {
-					members.append(",");
-				}
+		groupsFeed = groupService.retrieveAllMembers(id);
+		Iterator<GenericEntry> groupsEntryIterator = groupsFeed
+				.getEntries().iterator();
+		StringBuffer members = new StringBuffer();
+		while (groupsEntryIterator.hasNext()) {
+			members.append(groupsEntryIterator.next().getProperty(
+					AppsGroupsService.APPS_PROP_GROUP_MEMBER_ID));
+			if (groupsEntryIterator.hasNext()) {
+				members.append(",");
 			}
-			listUser = members.toString().trim().split(",");
-			for (int i = 0; i < listUser.length; i++) {
-				listUser[i] = listUser[i] + ":" + group;
-			}
-		} catch (AppsForYourDomainException e) {
-			// TODO Auto-generated catch block
-			throw e;
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			throw e;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			throw e;
-		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			throw e;
 		}
+		listUser = members.toString().trim().split(",");
+		for (int i = 0; i < listUser.length; i++) {
+			listUser[i] = listUser[i] + ":" + group;
+		}
+		
 		return listUser;
 	}
 	
