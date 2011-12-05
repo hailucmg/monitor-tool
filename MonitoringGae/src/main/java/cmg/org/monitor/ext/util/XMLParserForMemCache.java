@@ -16,7 +16,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import cmg.org.monitor.ext.model.Component;
-import cmg.org.monitor.ext.model.shared.CpuDto;
+import cmg.org.monitor.memcache.shared.CpuDTO;
 import cmg.org.monitor.memcache.shared.FileSystemCacheDto;
 import cmg.org.monitor.memcache.shared.JvmDto;
 import cmg.org.monitor.memcache.shared.MemoryDto;
@@ -151,11 +151,85 @@ public class XMLParserForMemCache {
 	}
 	
 	/**
+	 * Get every element of database and ldap tag
+	 * 1. Parse the xml content.
+	 * 2. Parse by database tag
+	 * 3. Parse it by ldap tag
+	 * @param xmlContent the content of xml.
+	 * @return components list of object 
+	 */
+	public List<Component> getComponent(String xmlContent) {
+		List<Component> components = new ArrayList<Component>();
+		try {
+
+			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory
+					.newInstance();
+			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+			InputSource is = new InputSource();
+			is.setCharacterStream(new StringReader(xmlContent));
+			Document doc = docBuilder.parse(is);
+
+			// normalize text representation
+			doc.getDocumentElement().normalize();
+			for (String item : COMPONENT_ITEMS) {
+				NodeList elementList = doc.getElementsByTagName(item);
+				int totalElements = elementList.getLength();
+				
+				Component component = null;
+				Element element = null;
+				if (totalElements > 0) {
+					for (int i = 0; i < totalElements; i++) {
+					  element = (Element) elementList.item(i);
+					  component = new Component();
+				      component = xmlToComponent(component, element);
+				      components.add(component);
+					}
+				}
+			}
+			
+		} catch (Throwable t) {
+			logger.info(t.getCause().getMessage());
+		}
+		return components;
+	}
+	
+	private Component xmlToComponent(Component component, Element element) {
+		NodeList name = element.getElementsByTagName(NAME);
+        if (name!= null && name.getLength() > 0) {
+        	Element nameElement = (Element) name.item(0);
+	        System.out.println("Name: " + getCharacterDataFromElement(nameElement));
+        	component.setComponentId(getCharacterDataFromElement(nameElement));
+        }
+        
+        NodeList value = element.getElementsByTagName(VALUE);
+        if (value!= null && value.getLength() > 0) {
+        	Element nameElement = (Element) value.item(0);
+	        System.out.println("Value: " + getCharacterDataFromElement(nameElement));
+        	component.setValueComponent(getCharacterDataFromElement(nameElement));
+        }
+        
+        NodeList error = element.getElementsByTagName(ERROR);
+        if (error!= null && error.getLength() > 0) {
+        	Element nameElement = (Element) error.item(0);
+	        System.out.println("Error: " + getCharacterDataFromElement(nameElement));
+        	component.setError(getCharacterDataFromElement(nameElement));
+        }
+        
+        NodeList ping = element.getElementsByTagName(PING);
+        if (ping!= null && ping.getLength() > 0) {
+        	Element nameElement = (Element) ping.item(0);
+	        System.out.println("Ping :" + getCharacterDataFromElement(nameElement));
+        	component.setPing(getCharacterDataFromElement(nameElement));
+        }
+        return component;
+	}
+	
+	/**
 	 * @param xmlContent
 	 * @return
 	 */
-	public List<CpuDto> getOriginalCPUForMem(String xmlContent) {
-		List<CpuDto> cpus = new ArrayList<CpuDto>();
+	public List<CpuDTO> getOriginalCPUForMem(String xmlContent) {
+		List<CpuDTO> cpus = new ArrayList<CpuDTO>();
 		try {
 
 			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory
@@ -171,12 +245,12 @@ public class XMLParserForMemCache {
 			NodeList elementList = doc.getElementsByTagName(CPU_ITEM);
 			int totalElements = elementList.getLength();
 			
-			CpuDto cpuDto = null;
+			CpuDTO cpuDto = null;
 			Element element = null;
 			if (totalElements > 0) {
 				for (int i = 0; i < totalElements; i++) {
 				  element = (Element) elementList.item(i);
-				  cpuDto = new CpuDto();
+				  cpuDto = new CpuDTO();
 			      cpuDto = toOriginalCPU(cpuDto, element);
 			      cpus.add(cpuDto);
 				}
@@ -324,7 +398,7 @@ public class XMLParserForMemCache {
 	
 	
 	
-	private CpuDto toOriginalCPU(CpuDto cpuDto, Element element) {
+	private CpuDTO toOriginalCPU(CpuDTO cpuDto, Element element) {
 		NodeList name = element.getElementsByTagName("usage");
         if (name!= null && name.getLength() > 0) {
         	Element nameElement = (Element) name.item(0);

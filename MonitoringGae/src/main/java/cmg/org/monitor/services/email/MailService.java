@@ -15,6 +15,7 @@ import cmg.org.monitor.dao.impl.AlertDaoJDOImpl;
 import cmg.org.monitor.exception.MonitorException;
 import cmg.org.monitor.ext.model.Component;
 import cmg.org.monitor.ext.model.shared.SystemDto;
+import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 import cmg.org.monitor.util.shared.Appforyourdomain;
 import cmg.org.monitor.util.shared.EmailDomainClientApps;
 import cmg.org.monitor.util.shared.MonitorConstant;
@@ -74,7 +75,7 @@ public class MailService {
 	 * @throws MessagingException
 	 * @throws UnsupportedEncodingException
 	 */
-	public void sendAlertMail(SystemDto systemDto, String messageError)
+	public void sendAlertMail(SystemMonitorDto systemDto, String messageError)
 			throws Exception, ServiceForbiddenException {
 		String emailID = null;
 		try {
@@ -120,7 +121,7 @@ public class MailService {
 	 * @throws UnsupportedEncodingException
 	 */
 	public void sendAlertMail(Component component, String message,
-			SystemDto systemDto) throws MonitorException, ServiceException,
+			SystemMonitorDto systemDto) throws MonitorException, ServiceException,
 			IOException {
 		String emailID = null;
 		try {
