@@ -2,6 +2,9 @@ package cmg.org.monitor.memcache;
 
 import java.util.ArrayList;
 
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
+
 import cmg.org.monitor.memcache.shared.AlertMonitorDto;
 import cmg.org.monitor.memcache.shared.CpuDTO;
 import cmg.org.monitor.memcache.shared.FileSystemCacheDto;
@@ -12,6 +15,9 @@ import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 
 public class SystemMonitorStore {
 
+	private static MemcacheService syncCache = MemcacheServiceFactory
+			.getMemcacheService("monitor_system");
+	
 	/**
 	 * Store information of CPU & Memory
 	 */
@@ -35,7 +41,7 @@ public class SystemMonitorStore {
 	/**
 	 * Store information of alert
 	 */
-	private AlertMonitorDto alert;
+	private ArrayList<AlertMonitorDto> alert = new ArrayList<AlertMonitorDto>();
 
 	/**
 	 * Store information of all service
@@ -48,6 +54,10 @@ public class SystemMonitorStore {
 		// unused
 	}
 
+//	public SystemMonitorDto getSystemById() {
+//		SystemMonitorDto systemDto = 
+//	}
+	
 	public CpuDTO getCpu() {
 		return cpu;
 	}
@@ -84,11 +94,11 @@ public class SystemMonitorStore {
 		this.fileSysList = fileSysList;
 	}
 
-	protected AlertMonitorDto getAlert() {
+	protected ArrayList<AlertMonitorDto> getAlert() {
 		return alert;
 	}
 
-	public void setAlert(AlertMonitorDto alert) {
+	public void setAlert(ArrayList<AlertMonitorDto> alert) {
 		this.alert = alert;
 	}
 
@@ -108,5 +118,6 @@ public class SystemMonitorStore {
 	public void setSysMonitor(SystemMonitorDto sysMonitor) {
 		this.sysMonitor = sysMonitor;
 	}
+	
 
 }

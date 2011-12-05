@@ -2,18 +2,16 @@ package cmg.org.monitor.services;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import cmg.org.monitor.dao.SystemMonitorDAO;
-import cmg.org.monitor.dao.impl.SystemMonitorDaoJDOImpl;
-import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.exception.MonitorException;
 import cmg.org.monitor.ext.model.URLPageObject;
-import cmg.org.monitor.ext.model.shared.SystemDto;
 import cmg.org.monitor.ext.util.URLMonitor;
+import cmg.org.monitor.memcache.MonitorMemcache;
+import cmg.org.monitor.memcache.SystemMonitorStore;
+import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 
 public class MonitorService {
 	/** Show status of monitor */
@@ -39,14 +37,10 @@ public class MonitorService {
 
 		// Gets system time
 		logger.info("Begin monitoring... ");
-
-		SystemMonitorDAO systemDao = new SystemMonitorDaoJDOImpl();
-		List<SystemMonitor> systems = new ArrayList<SystemMonitor>();
-		try {
-		   systems = Arrays.asList(systemDao.listSystems(false));
-		} catch(Exception me) { 
-			logger.log(Level.SEVERE, me.getCause().getMessage());
-			}
+		
+		List<SystemMonitorStore> systemMonitorCaches = (List<SystemMonitorStore>)MonitorMemcache.getSystemMonitorStore();
+		
+		
 		URLMonitor urlMonitor = null;
 		Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
 		@SuppressWarnings("unused")
@@ -55,11 +49,10 @@ public class MonitorService {
 		// Initializes monitor object list
 		URLPageObject obj = null;
 		int continueCount = 0;
-		SystemDto aSysDto;
-		for (SystemMonitor aSystem : systems) {
-			
-			aSysDto = aSystem.toDTO();
-			if (!aSysDto.getIsActive()) {
+		SystemMonitorDto aSysDto ;
+		for (SystemMonitorStore aSystem : systemMonitorCaches) {
+			aSysDto = aSystem.getSysMonitor();
+			if (!aSysDto.isActive()) {
 				logger.info("The system " + aSysDto.getName()
 						+ " is existed but is not active. "
 						+ " The monitor skips this system now");
@@ -77,8 +70,7 @@ public class MonitorService {
 				urlMonitor.setTimeStamp(timeStamp);
 				obj = urlMonitor.generateInfo(aSysDto);
 				running = (obj == null) ? FAILED : RUNNING;
-				logger.info("System '" + aSystem.getName() + "/" + "' is "
-						+ running);
+				
 
 				// Add systems to list
 				objList.add(obj);
