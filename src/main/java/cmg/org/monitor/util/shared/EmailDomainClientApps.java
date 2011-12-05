@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import cmg.org.monitor.exception.MonitorException;
 import cmg.org.monitor.services.email.MailService;
 
 import com.google.gdata.client.appsforyourdomain.migration.MailItemService;
@@ -17,6 +18,7 @@ import com.google.gdata.data.appsforyourdomain.migration.MailItemProperty;
 import com.google.gdata.data.appsforyourdomain.migration.Rfc822Msg;
 import com.google.gdata.data.batch.BatchStatus;
 import com.google.gdata.data.batch.BatchUtils;
+import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
 /**
@@ -89,7 +91,7 @@ public class EmailDomainClientApps {
    * @param destinationUser the destination user to whom mail should be migrated
    */
   public EmailDomainClientApps(String username, String password,
-      String domain, String destinationUser, String content) throws Exception, Throwable {
+      String domain, String destinationUser, String content) throws MonitorException, AuthenticationException {
 
     this.domain = domain;
     
@@ -101,7 +103,11 @@ public class EmailDomainClientApps {
 
     // Set up the mail item service.
     mailItemService = new MailItemService("exampleCo-exampleApp-1");
-    mailItemService.setUserCredentials(username + "@" + domain, password);
+    try {
+		mailItemService.setUserCredentials(username + "@" + domain, password);
+	} catch (AuthenticationException ae) {
+		throw ae;
+	}
 
     // Run the sample.
     doMail(content);
@@ -111,7 +117,7 @@ public class EmailDomainClientApps {
    * Main driver for the sample; migrates a batch feed of email messages
    * and prints the results.
    */
-  private void doMail(String rfcContent) throws Throwable {
+  private void doMail(String rfcContent) throws MonitorException {
     
       // Create labels for mail items to be inserted.
     List<String> labels = new ArrayList<String>();

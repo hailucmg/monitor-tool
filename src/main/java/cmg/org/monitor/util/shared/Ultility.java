@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import cmg.org.monitor.exception.MonitorException;
+
 public class Ultility {
 	
 	/** Represent standard date format */
@@ -28,7 +30,12 @@ public class Ultility {
     /** Represent digit pattern value */
     public static final String DIGIT_PATTERN = "\\d+";
     
-	
+	public static double percentageForJVM(double d1, double d2) throws MonitorException {
+		if (d2 == 0) 
+			throw  new MonitorException("do not divide by zero number");
+	  	double percent = Math.floor(d1/d2*100);
+		return percent;
+	}
     
     /**
 	 * @return all normal user in domain

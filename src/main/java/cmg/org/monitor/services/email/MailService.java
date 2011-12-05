@@ -1,6 +1,8 @@
 package cmg.org.monitor.services.email;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -8,13 +10,16 @@ import java.util.logging.Logger;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import cmg.org.monitor.common.Constant;
 import cmg.org.monitor.dao.impl.AlertDaoJDOImpl;
+import cmg.org.monitor.exception.MonitorException;
 import cmg.org.monitor.ext.model.Component;
 import cmg.org.monitor.ext.model.shared.SystemDto;
 import cmg.org.monitor.util.shared.Appforyourdomain;
 import cmg.org.monitor.util.shared.EmailDomainClientApps;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
+import com.google.gdata.util.ServiceException;
 import com.google.gdata.util.ServiceForbiddenException;
 
 /**
@@ -23,10 +28,8 @@ import com.google.gdata.util.ServiceForbiddenException;
  */
 public class MailService {
 
-	private static String rfcTxt = 
-			"Message-ID: <c8acb6980707161012i5d395392p5a6d8d14a8582613@mail."
+	private static String rfcTxt = "Message-ID: <c8acb6980707161012i5d395392p5a6d8d14a8582613@mail."
 			+ "gmail.com>\r\n"
-			+ "Date: Mon, 26 Dec 2011 10:12:26 -0700\r\n"
 			+ "From: \"System Monitor\" <lam.phan@c-mg.com>\r\n"
 			+ "To: \"Monitor Group\" <monitor.globe@c-mg.vn>\r\n"
 			+ "Subject: Subject \r\n"
@@ -34,8 +37,7 @@ public class MailService {
 			+ "Content-Type: text/plain; charset=ISO-8859-1; format=flowed\r\n"
 			+ "Content-Transfer-Encoding: 7bit\r\n"
 			+ "Content-Disposition: inline\r\n"
-			+ "Delivered-To: admin@domain.com\r\n"
-			+ "\r\n";
+			+ "Delivered-To: admin@domain.com\r\n" + "\r\n";
 
 	private static String firstRfcTxt = "Received: by 10.143.160.15 with HTTP;";
 
@@ -51,10 +53,15 @@ public class MailService {
 
 	public static String buildDateRfc() {
 		Date now = new Date();
+		SimpleDateFormat formatter = new SimpleDateFormat(
+				Constant.DATE_EMAIL_FORMAT);
 
+		String formatDateStr = formatter.format(now);
+
+		String sentDate = "Date: " + formatDateStr + "\r\n";
 		StringBuffer headerRfc = new StringBuffer();
-		headerRfc.append(firstRfcTxt).append(now.toString())
-				.append("(PDT)\r\n");
+		headerRfc.append(firstRfcTxt).append(formatDateStr).append("(PDT)\r\n")
+				.append(sentDate);
 		return headerRfc.toString();
 	}
 
@@ -68,8 +75,7 @@ public class MailService {
 	 * @throws UnsupportedEncodingException
 	 */
 	public void sendAlertMail(SystemDto systemDto, String messageError)
-			throws Exception, ServiceForbiddenException
-			 {
+			throws Exception, ServiceForbiddenException {
 		String emailID = null;
 		try {
 			Appforyourdomain client = new Appforyourdomain(
@@ -77,9 +83,9 @@ public class MailService {
 					MonitorConstant.ADMIN_PASSWORD, MonitorConstant.DOMAIN);
 			String emailGroup = systemDto.getGroupEmail();
 			String[] emailAddresses = client.listAllUser(emailGroup);
-			
-			String contentRtc ;
-			
+
+			String contentRtc;
+
 			for (String user : emailAddresses) {
 				for (int i = 0; i < user.length(); i++) {
 					if (user.charAt(i) == EMAIL_SYMBOL) {
@@ -87,20 +93,20 @@ public class MailService {
 						break;
 					}
 				}
-				contentRtc= buildDateRfc() + rfcTxt +
-						messageError +"\r\n";
-				
-				
+				contentRtc = buildDateRfc() + rfcTxt + messageError + "\r\n";
+
 				new EmailDomainClientApps(MonitorConstant.ADMIN_EMAIL_ID,
 						MonitorConstant.ADMIN_PASSWORD, MonitorConstant.DOMAIN,
 						emailID, contentRtc);
-				
+
 			}
 		} catch (ServiceForbiddenException sfe) {
-			logger.log(Level.SEVERE, "Email to :"+ emailID +" has error due to :" + sfe.getCause().getMessage());
+			logger.log(Level.SEVERE, "Email to :" + emailID
+					+ " has error due to :" + sfe.getCause().getMessage());
 			throw sfe;
-		} catch(Throwable t) {
-			logger.log(Level.SEVERE, "Email to :"+ emailID +" has exception due to :" + t.getCause().getMessage());
+		} catch (Throwable t) {
+			logger.log(Level.SEVERE, "Email to :" + emailID
+					+ " has exception due to :" + t.getCause().getMessage());
 		}
 	}
 
@@ -113,18 +119,18 @@ public class MailService {
 	 * @throws MessagingException
 	 * @throws UnsupportedEncodingException
 	 */
-	public void sendAlertMail(Component component, SystemDto systemDto)
-			throws ServiceForbiddenException
-			 {
+	public void sendAlertMail(Component component, String message,
+			SystemDto systemDto) throws MonitorException, ServiceException,
+			IOException {
 		String emailID = null;
 		try {
 			Appforyourdomain client = new Appforyourdomain(
 					MonitorConstant.ADMIN_EMAIL,
 					MonitorConstant.ADMIN_PASSWORD, MonitorConstant.DOMAIN);
 			String emailGroup = systemDto.getGroupEmail();
-			String[] emailAddresses = client.listAllUser(emailGroup);
-			
-			StringBuffer contentRtc = new StringBuffer();
+			String[] emailAddresses;
+			emailAddresses = client.listAllUser(emailGroup);
+
 			String contentEmail = null;
 			for (String user : emailAddresses) {
 				for (int i = 0; i < user.length(); i++) {
@@ -134,20 +140,27 @@ public class MailService {
 					}
 				}
 
-				contentRtc.append(buildDateRfc()).append(rfcTxt)
-						.append(component.getError());
-				contentEmail = contentRtc.toString();
-				
+				// Alert email with message
+				if (component == null)
+					contentEmail = buildDateRfc() + rfcTxt + message;
+				else
+					// Alert email with component
+					contentEmail = buildDateRfc() + rfcTxt
+							+ component.getError();
+
 				new EmailDomainClientApps(MonitorConstant.ADMIN_EMAIL_ID,
 						MonitorConstant.ADMIN_PASSWORD, MonitorConstant.DOMAIN,
 						emailID, contentEmail);
 			}
-		} catch (ServiceForbiddenException sfe) {
-			
-			logger.info(sfe.getCause().getMessage());
-			throw sfe;
-		} catch (Throwable e) {
-			logger.log(Level.SEVERE, e.getCause().getMessage());
+		} catch (ServiceException se) {
+			logger.log(Level.SEVERE, se.getCause().getMessage());
+			throw se;
+		} catch (IOException ioe) {
+			logger.log(Level.SEVERE, ioe.getCause().getMessage());
+			throw ioe;
+		} catch (MonitorException me) {
+			logger.log(Level.SEVERE, me.getCause().getMessage());
+			throw me;
 		}
 
 		// ---Old send mail---
