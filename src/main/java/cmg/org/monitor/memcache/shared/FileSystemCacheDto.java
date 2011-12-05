@@ -38,8 +38,6 @@ public class FileSystemCacheDto implements Serializable  {
 		this.setTimeStamp(timeStamp);
 	}
 
-	
-	
 	public String getMount() {
 		return mount;
 	}

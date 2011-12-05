@@ -1,6 +1,7 @@
 package cmg.org.monitor.module.client;
 
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 import cmg.org.monitor.util.shared.HTMLControl;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -418,7 +419,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 				panelValidateName.setVisible(false);
 				panelValidateURL.setVisible(false);
 				panelValidateEmail.setVisible(false);
-				SystemMonitor system = new SystemMonitor();
+				SystemMonitorDto system = new SystemMonitorDto();
 				system.setName(txtName.getText().toString());
 				system.setUrl(txtURL.getText().toString());
 				system.setActive(isActive(listActive.getValue(listActive
@@ -490,7 +491,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 		 * @param system
 		 * @param url
 		 */
-		private void sendData(SystemMonitor system, String url) {
+		private void sendData(SystemMonitorDto system, String url) {
 			monitorGwtSv.addSystem(system, url, new AsyncCallback<String>() {
 				@Override
 				public void onSuccess(String result) {

@@ -1,6 +1,8 @@
 package cmg.org.monitor.memcache.shared;
 
-public class MemoryDto {
+import java.io.Serializable;
+
+public class MemoryDto implements Serializable {
 	
 	/** This attribute maps to the column cpu_usage_id in the cpuusage table. */
 	protected String type;
@@ -22,6 +24,12 @@ public class MemoryDto {
 		this.usedMemory = usedMemory;
 	}
 
+	/**
+	 * @return
+	 */
+	public int getPercentUsage() {
+		return (int) ((usedMemory / totalMemory) * 100);
+	}
 
 
 	public String getType() {

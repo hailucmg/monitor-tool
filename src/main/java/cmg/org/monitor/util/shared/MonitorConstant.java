@@ -13,6 +13,8 @@ public final class MonitorConstant {
 	// time to refresh data for all module
 	public static final int REFRESH_RATE = 1800000;
 	
+	public static final int HISTORY_CPU_MEMORY_LENGTH = 50;
+	
 	public static final int REDIRECT_WAIT_TIME = 5000;
 	
 	public static final String DOMAIN = "c-mg.vn";

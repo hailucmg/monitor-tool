@@ -1,5 +1,6 @@
 package cmg.org.monitor.module.server;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -20,6 +21,8 @@ import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorEditDto;
 import cmg.org.monitor.ext.model.shared.UserDto;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
+import cmg.org.monitor.memcache.MonitorMemcache;
+import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 import cmg.org.monitor.module.client.MonitorGwtService;
 import cmg.org.monitor.services.MonitorLoginService;
 import cmg.org.monitor.services.SitesHelper;
@@ -40,33 +43,20 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			.getLogger(MonitorGwtServiceImpl.class.getCanonicalName());
 
 	@Override
-	public String addSystem(SystemMonitor system, String url) throws Exception {
+	public String addSystem(SystemMonitorDto system, String url) throws Exception {
 		String callback = null;
-		boolean check = true;
-		SystemMonitorDaoJDOImpl systemDAO = new SystemMonitorDaoJDOImpl();
 		try {
-
-			String remoteURL = system.getRemoteUrl();
-			String[] remoteURLs = systemDAO.remoteURLs();
-			for (int i = 0; i < remoteURLs.length; i++) {
-				if (remoteURL.toLowerCase().equals(remoteURLs[i].toLowerCase())) {
-					callback = "Remote-URL is existing";
-					check = false;
-					break;
-
-				}
-			}
-			if (check) {
-				system.setCode(systemDAO.createCode());
-				if (systemDAO.addnewSystem(system)) {
+			if (MonitorMemcache.checkRemoteUrl(system.getRemoteUrl())) {
+				callback = "Remote-URL is existing";
+			} else {
+				if (MonitorMemcache.createSystem(system)) {
 					callback = "done";
 				} else {
 					callback = "wrong to config jar or database";
-				}
+				}				
 			}
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			callback = e.toString();
 		}
 
@@ -84,87 +74,32 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		}
 		return list;
 	}
+	
 
 	@Override
-	public SystemMonitor[] listSystems() {
-		SystemMonitorDAO sysDAO = new SystemMonitorDaoJDOImpl();
-		SystemMonitor[] list = null;
-		try {
-			list = sysDAO.listSystems(false);
-		} catch (Exception ex) {
-			logger.log(Level.SEVERE, ex.getCause().getMessage());
-		}
-		return list;
+	public SystemMonitorDto getSystembyID(String id) throws Exception {
+		return MonitorMemcache.getSystemMonitorById(id);
 	}
 
 	@Override
-	public MonitorEditDto getSystembyID(String id) throws Exception {
-		SystemMonitorDAO sysDAO = new SystemMonitorDaoJDOImpl();
-		MonitorEditDto monitorEdit = new MonitorEditDto();
-		String[] groups;
+	public String editSystembyID(SystemMonitorDto system) throws Exception {
+		String callback = null;
 		try {
-			SystemMonitor system = sysDAO.getSystembyID(id);
-			monitorEdit.setId(system.getId());
-			monitorEdit.setActive(system.isActive());
-			monitorEdit.setGroup(system.getGroupEmail());
-			monitorEdit.setIp(system.getIp());
-			monitorEdit.setProtocol(system.getProtocol());
-			monitorEdit.setUrl(system.getUrl());
-			monitorEdit.setName(system.getName());
-			monitorEdit.setRemoteURl(system.getRemoteUrl());
-			monitorEdit.setEmail(system.getEmail());
-			monitorEdit.setPasswordEmail(system.getEmailPassword());
-			groups = sysDAO.groups();
-			monitorEdit.setGroups(groups);
-			for (int i = 0; i < groups.length; i++) {
-				if (groups[i].toString().equals(system.getGroupEmail())) {
-					monitorEdit.setSelect(i);
-				}
-			}
-		} catch (Exception e) {
-			throw e;
-		}
-		return monitorEdit;
-	}
-
-	@Override
-	public String editSystembyID(MonitorEditDto system, String newName,
-			String newAddress, String protocol, String group, String ip,
-			String remoteURL, boolean isActive) throws Exception {
-		String b = "";
-		boolean check = false;
-		try {
-			SystemMonitorDaoJDOImpl systemDAO = new SystemMonitorDaoJDOImpl();
-			if (system.getRemoteURl().equals(remoteURL)) {
-				if (!systemDAO.editSystembyID(system.getId(), newName,
-						newAddress, protocol, group, ip, remoteURL, isActive)) {
-					b = "config database error";
+			if (MonitorMemcache.checkRemoteUrl(system.getRemoteUrl())) {
+				callback = "Remote URL is exitsting";
+			} else {
+				if (MonitorMemcache.updateSystem(system)) {
+					callback = "done";
 				} else {
-					b = "done";
-				}
-				check = true;
+					callback = "config database error";
+				}				
 			}
-			if (!check) {
-				String[] remoteURLs = systemDAO.remoteURLs();
-				for (int i = 0; i < remoteURLs.length; i++) {
-					if (remoteURL.toLowerCase().equals(
-							remoteURLs[i].toLowerCase())) {
-						b = "Remote URL is exitsting";
-						return b;
-					}
-				}
-				if (!systemDAO.editSystembyID(system.getId(), newName,
-						newAddress, protocol, group, ip, remoteURL, isActive)) {
-					b = "config database error";
-				} else {
-					b = "done";
-				}
-			}
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, e.getCause().getMessage());
-		}
-		return b;
 
+		} catch (Exception e) {
+			callback = e.toString();
+		}
+
+		return callback;
 	}
 
 	@Override
@@ -172,76 +107,15 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		return MonitorLoginService.getUserLogin();
 	}
 
-	public SystemMonitor getLastestDataMonitor(String sysID) {
-		SystemMonitorDAO sysDAO = new SystemMonitorDaoJDOImpl();
-		FileSystemDAO fsDAO = new FileSystemDaoJDOImpl();
-		ServiceMonitorDAO smDAO = new ServiceMonitorDaoJDOImpl();
-		CpuMemoryDAO cmDAO = new CpuMemoryDaoJDOImpl();
-		JVMMemoryDAO jvmDAO = new JVMMemoryDaoJDOImpl();
-		SystemMonitor sys = null;
-		try {
-			sys = sysDAO.getSystembyID(sysID);
-			if (sys != null) {
-				sys.setLastCpuMemory(cmDAO.getLastestCpuMemory(sys, 1) == null ? null
-						: cmDAO.getLastestCpuMemory(sys, 1)[0]);
-				sys.setLastestFileSystems(fsDAO.listLastestFileSystem(sys));
-				sys.setLastestServiceMonitors(smDAO.listLastestService(sys));
-				sys.setListHistoryCpuMemory(cmDAO.getLastestCpuMemory(sys, 20));
-				sys.setHealthStatus(sysDAO.getCurrentHealthStatus(sys));
-				sys.setLastestJvm(jvmDAO.getLastestJvm(sys));
-			}
-		} catch (Exception ex) {
-			// logger.log(Level.SEVERE, ex.getCause().getMessage());
-		}
-		return sys;
+	public SystemMonitorDto getLastestDataMonitor(String sid) {
+		return MonitorMemcache.getLastestDataMonitor(sid);
 	}
 
 	@Override
 	public boolean validSystemId(String sysID) {
-		SystemMonitorDAO sysDAO = new SystemMonitorDaoJDOImpl();
-		boolean b = true;
-		try {
-			b = sysDAO.getSystembyID(sysID) != null;
-		} catch (Exception ex) {
-			b = false;
-			logger.log(Level.SEVERE, ex.getCause().getMessage());
-		}
-		return b;
+		return MonitorMemcache.checkSystemId(sysID);
 	}
 
-	@Override
-	public CpuMemory[] listCpuMemoryHistory(String sysID) {
-		SystemMonitorDAO sysDAO = new SystemMonitorDaoJDOImpl();
-		CpuMemoryDAO cmDAO = new CpuMemoryDaoJDOImpl();
-		CpuMemory[] list = null;
-		SystemMonitor sys = null;
-		try {
-			sys = sysDAO.getSystembyID(sysID);
-			list = cmDAO.getLastestCpuMemory(sys, 64800);
-		} catch (Exception ex) {
-			logger.log(Level.SEVERE, ex.getCause().getMessage());
-		}
-		return list;
-	}
-
-	@Override
-	public SystemMonitor[] listSystem(boolean isDeleted) throws Exception {
-		SystemMonitorDAO sysDAO = new SystemMonitorDaoJDOImpl();
-		SystemMonitor[] list = null;
-		try {
-			list = sysDAO.listSystems(false);
-		} catch (Exception ex) {
-			logger.log(Level.SEVERE, ex.getCause().getMessage());
-		}
-		return list;
-	}
-
-	@Override
-	public String editSystem(String id) throws Exception {
-		// TODO Auto-generated method stub
-		String html = "EditSystem.html?id=" + id;
-		return html;
-	}
 
 	@Override
 	public boolean deleteSystem(String id) throws Exception {
@@ -250,10 +124,6 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		return check;
 	}
 
-	@Override
-	public boolean deleteListSystem(String[] ids) throws Exception {
-		return false;
-	}
 
 	@Override
 	public Map<String, UserDto> listUser() throws Exception {
@@ -306,5 +176,10 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	public String getHelpContent() {
 		SitesHelper sh = new SitesHelper();
 		return sh.getSiteEntryContent(MonitorConstant.SITES_HELP_CONTENT_ID);
+	}
+
+	@Override
+	public ArrayList<SystemMonitorDto> listSystems() {
+		return MonitorMemcache.listSystemMonitorToUi();
 	}
 }
