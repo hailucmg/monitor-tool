@@ -548,8 +548,7 @@ public class URLMonitor {
 					error = "None";
 					String compId = systemDto.getName()
 							+ "_Filesystem_"
-							+ fileDto.getName().replace("\\", "")
-									.replace(":", "");
+							+ fileDto.getName().replace("\\", "").replace(":", "");
 
 					// Updates to component table
 					fullComponent = new Component();
