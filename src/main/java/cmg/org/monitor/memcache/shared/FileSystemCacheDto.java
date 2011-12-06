@@ -10,15 +10,15 @@ public class FileSystemCacheDto implements Serializable  {
 
 	private String name;
 
-	private long size;
+	private double size;
 
-	private long used;
+	private double used;
 
 	private String type;
 	
 	private String mount;
 	
-	private Long available;
+	private double available;
 	
 	private Integer percentUsed;
 	
@@ -46,11 +46,11 @@ public class FileSystemCacheDto implements Serializable  {
 		this.mount = mount;
 	}
 
-	public Long getAvailable() {
+	public double getAvailable() {
 		return available;
 	}
 
-	public void setAvailable(Long available) {
+	public void setAvailable(double available) {
 		this.available = available;
 	}
 
@@ -70,19 +70,19 @@ public class FileSystemCacheDto implements Serializable  {
 		this.name = name;
 	}
 
-	public long getSize() {
+	public double getSize() {
 		return size;
 	}
 
-	public void setSize(long size) {
+	public void setSize(double size) {
 		this.size = size;
 	}
 
-	public long getUsed() {
+	public double getUsed() {
 		return used;
 	}
 
-	public void setUsed(long used) {
+	public void setUsed(double used) {
 		this.used = used;
 	}
 
