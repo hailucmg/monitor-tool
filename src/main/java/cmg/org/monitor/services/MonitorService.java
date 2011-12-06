@@ -84,6 +84,7 @@ public class MonitorService {
 				errorCount++;
 			} // if
 		} // for
+		MonitorMemcache.increaseCount();
 		logger.info("Finished monitoring, object size: " + objList.size());
 
 		return objList;

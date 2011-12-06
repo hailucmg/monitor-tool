@@ -31,7 +31,7 @@ public class JvmDto implements Serializable  {
 	}
 
 	public int getPercentMemoryUsage() {
-		return (int) ((usedMemory / totalMemory) * 100);
+		return (int) (((totalMemory - freeMemory) / totalMemory) * 100);
 	}
 	
 	public double getFreeMemory() {

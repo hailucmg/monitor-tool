@@ -71,7 +71,7 @@ public class FileSystemCacheDto implements Serializable  {
 	}
 
 	public double getSize() {
-		return size;
+		return size * 1024;
 	}
 
 	public void setSize(double size) {
@@ -79,7 +79,7 @@ public class FileSystemCacheDto implements Serializable  {
 	}
 
 	public double getUsed() {
-		return used;
+		return used * 1024;
 	}
 
 	public void setUsed(double used) {
