@@ -207,11 +207,15 @@ public class MonitorMemcache {
 	public static boolean checkRemoteUrl(String url) {
 		boolean check = false;
 		ArrayList<SystemMonitorDto> list = listSystemMonitor();
-		for (SystemMonitorDto sys : list) {
-			if (sys.getRemoteUrl().toLowerCase().trim()
-					.equals(url.toLowerCase().trim())) {
-				check = true;
-				break;
+		if (list != null) {
+			if (list.size() > 0) {
+				for (SystemMonitorDto sys : list) {
+					if (sys.getRemoteUrl().toLowerCase().trim()
+							.equals(url.toLowerCase().trim())) {
+						check = true;
+						break;
+					}
+				}
 			}
 		}
 		return check;
