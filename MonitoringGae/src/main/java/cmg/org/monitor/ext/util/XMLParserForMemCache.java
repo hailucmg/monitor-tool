@@ -388,14 +388,10 @@ public class XMLParserForMemCache {
         if (ping!= null && ping.getLength() > 0) {
         	Element nameElement = (Element) ping.item(0);
 	        System.out.println("Ping :" + getCharacterDataFromElement(nameElement));
-        	component.setPing(Integer.parseInt(getCharacterDataFromElement(nameElement)));
+        	component.setPing(Integer.parseInt(Ultility.extractDigit(getCharacterDataFromElement(nameElement))));
         }
         return component;
 	}
-	
-	
-	
-	
 	
 	
 	private CpuDTO toOriginalCPU(CpuDTO cpuDto, Element element) {
@@ -435,26 +431,30 @@ public class XMLParserForMemCache {
         NodeList size = element.getElementsByTagName("size");
         if (size!= null && size.getLength() > 0) {
         	Element nameElement = (Element) size.item(0);
-	        fileDto.setSize(Long.parseLong(Ultility.extractDigit(getCharacterDataFromElement(nameElement))));
+        	String dStrSize =  Ultility.extractDigit(getCharacterDataFromElement(nameElement));
+        	double dSize = Ultility.convertKB(Double.parseDouble(dStrSize));
+	        fileDto.setSize(dSize);
         }
         
         NodeList used = element.getElementsByTagName("used");
         if (used!= null && used.getLength() > 0) {
         	Element nameElement = (Element) used.item(0);
-	        fileDto.setUsed(Long.parseLong(Ultility.extractDigit(getCharacterDataFromElement(nameElement))));
+        	String dStrSize =  Ultility.extractDigit(getCharacterDataFromElement(nameElement));
+        	double dSize = Ultility.convertKB(Double.parseDouble(dStrSize));
+	        fileDto.setUsed(dSize);
         }
         
         NodeList available = element.getElementsByTagName("available");
         if (available!= null && available.getLength() > 0) {
         	Element nameElement = (Element) available.item(0);
-	        fileDto.setAvailable(Long.parseLong(Ultility.extractDigit(getCharacterDataFromElement(nameElement))));
+        	String dStrSize =  Ultility.extractDigit(getCharacterDataFromElement(nameElement));
+        	double dSize = Ultility.convertKB(Double.parseDouble(dStrSize));
+	        fileDto.setAvailable(dSize);
         }
         
         NodeList percent = element.getElementsByTagName("percent_used");
         if (percent!= null && percent.getLength() > 0) {
         	Element nameElement = (Element) percent.item(0);
-	        
-        	
         	fileDto.setPercentUsed(Integer.parseInt(Ultility.extractDigit(getCharacterDataFromElement(nameElement))));
         }
         

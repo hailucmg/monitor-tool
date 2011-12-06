@@ -629,7 +629,7 @@ public class MonitorMemcache {
 	 * @param b
 	 *            true when an System Monitor JDO insert or update.
 	 */
-	protected static void changeFlag(boolean b) {
+	public static void changeFlag(boolean b) {
 		put(Key.create(Key.FLAG_STORE), b);
 	}
 

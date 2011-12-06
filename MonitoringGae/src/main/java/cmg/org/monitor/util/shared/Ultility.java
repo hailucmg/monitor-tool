@@ -36,6 +36,11 @@ public class Ultility {
 	  	double percent = Math.floor(d1/d2*100);
 		return percent;
 	}
+	
+	public static double convertKB(double gb)  {
+	  	double kb = (gb * 1024 ) * 1024;
+		return kb;
+	}
     
     /**
 	 * @return all normal user in domain
