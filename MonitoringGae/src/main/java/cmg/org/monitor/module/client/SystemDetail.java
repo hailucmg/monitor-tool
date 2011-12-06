@@ -114,7 +114,6 @@ public class SystemDetail extends AncestorEntryPoint {
 
 	void initContent() {
 		initFlexTableContent();
-
 		if (currentPage == HTMLControl.PAGE_SYSTEM_STATISTIC) {
 			initSystemStatistic();
 		} else if (currentPage == HTMLControl.PAGE_SYSTEM_DETAIL) {
@@ -168,7 +167,6 @@ public class SystemDetail extends AncestorEntryPoint {
 
 	void initSystemDetails() {
 		timerReload = new Timer() {
-
 			@Override
 			public void run() {
 				monitorGwtSv.getLastestDataMonitor(sysID,
@@ -333,7 +331,7 @@ public class SystemDetail extends AncestorEntryPoint {
 					createDataTableJvm(jvm),
 					createPieChartOptions("Java Visual Memory ("
 							+ HTMLControl.convertMemoryToString(jvm
-									.getTotalMemory())
+									.getUsedMemory())
 							+ " of "
 							+ HTMLControl.convertMemoryToString(jvm
 									.getMaxMemory()) + ")"));
@@ -350,12 +348,32 @@ public class SystemDetail extends AncestorEntryPoint {
 		MemoryDto mem = null;
 		if (cpuHistory != null) {
 			cpu = cpuHistory.get(0);
+			if (cpuHistory.size() < MonitorConstant.HISTORY_CPU_MEMORY_LENGTH) {
+				CpuDTO cpuTemp = null;
+				int cpuListSize = cpuHistory.size();
+				for (int i = 0; i < MonitorConstant.HISTORY_CPU_MEMORY_LENGTH
+						- cpuListSize; i++) {
+					cpuTemp = new CpuDTO();
+					cpuTemp.setCpuUsage(0);
+					cpuHistory.add(cpuTemp);
+				}
+			}
 		}
 		if (memHistory != null) {
-			memList = memHistory.get(0);
-			if (memList != null) {
-				mem = memList.get(0);
+			memList = new ArrayList<MemoryDto>();
+			for (ArrayList<MemoryDto> ramList : memHistory) {
+				memList.add(ramList.get(0));
 			}
+			if (memHistory.size() < MonitorConstant.HISTORY_CPU_MEMORY_LENGTH) {
+				MemoryDto memTemp = null;
+				for (int i = 0; i < MonitorConstant.HISTORY_CPU_MEMORY_LENGTH
+						- memHistory.size(); i++) {
+					memTemp = new MemoryDto();
+					memTemp.setUsedMemory(0);
+					memList.add(memTemp);
+				}
+			}
+			mem = memList.get(0);
 		}
 		// Gauge CPU Usage
 		if (cpu != null) {
@@ -372,50 +390,26 @@ public class SystemDetail extends AncestorEntryPoint {
 
 		// Area Chart CPU Usage & Memory Usage
 		if (cpuHistory != null) {
-			double[] listCpuUsage = new double[MonitorConstant.HISTORY_CPU_MEMORY_LENGTH];
-			if (cpuHistory.size() < MonitorConstant.HISTORY_CPU_MEMORY_LENGTH) {
-				for (int i = 0; i < MonitorConstant.HISTORY_CPU_MEMORY_LENGTH
-						- cpuHistory.size(); i++) {
-					listCpuUsage[i] = 0;
-				}
-				for (int i = 0; i < cpuHistory.size(); i++) {
-					listCpuUsage[MonitorConstant.HISTORY_CPU_MEMORY_LENGTH
-							- (i + 1)] = cpuHistory.get(i).getCpuUsage();
+			double[] listCpuUsage = new double[cpuHistory.size()];
 
-				}
-			} else {
-				for (int i = 0; i < cpuHistory.size(); i++) {
-					listCpuUsage[cpuHistory.size() - i - 1] = cpuHistory.get(i)
-							.getCpuUsage();
-				}
+			for (int i = 0; i < cpuHistory.size(); i++) {
+				listCpuUsage[cpuHistory.size() - i - 1] = cpuHistory.get(i)
+						.getCpuUsage();
 			}
+
 			achCpu.draw(createAreaChartDataTable("CPU Usage", listCpuUsage),
 					createAreaChartOptions(100, 0));
 
 		}
 		if (memList != null) {
-			double[] listMemoryUsage = new double[MonitorConstant.HISTORY_CPU_MEMORY_LENGTH];
-			if (memList.size() < MonitorConstant.HISTORY_CPU_MEMORY_LENGTH) {
-				for (int i = 0; i < MonitorConstant.HISTORY_CPU_MEMORY_LENGTH
-						- memList.size(); i++) {
-					listMemoryUsage[i] = 0;
-				}
-				for (int i = 0; i < memList.size(); i++) {
-					listMemoryUsage[MonitorConstant.HISTORY_CPU_MEMORY_LENGTH
-							- (i + 1)] = memList.get(i).getUsedMemory();
-
-				}
-			} else {
-				for (int i = 0; i < memList.size(); i++) {
-					listMemoryUsage[memList.size() - i - 1] = memList.get(i)
-							.getUsedMemory();
-				}
+			double[] listMemoryUsage = new double[memList.size()];
+			for (int i = 0; i < memList.size(); i++) {
+				listMemoryUsage[memList.size() - i - 1] = memList.get(i)
+						.getUsedMemory() / 1024;
 			}
-			achMemory
-					.draw(createAreaChartDataTable("Memory Usage",
-							listMemoryUsage),
-							createAreaChartOptions(
-									memList.get(0).getTotalMemory(), 0));
+			achMemory.draw(
+					createAreaChartDataTable("Memory Usage", listMemoryUsage),
+					createAreaChartOptions(memList.get(0).getTotalMemory() / 1024, 0));
 		}
 
 	}
@@ -467,7 +461,7 @@ public class SystemDetail extends AncestorEntryPoint {
 		data.setValue(0, 0, "Free Space");
 		data.setValue(0, 1, jvm.getFreeMemory());
 		data.setValue(1, 0, "Used Space");
-		data.setValue(1, 1, jvm.getUsedMemory());
+		data.setValue(1, 1, jvm.getTotalMemory() - jvm.getFreeMemory());
 		return data;
 	}
 
@@ -570,6 +564,7 @@ public class SystemDetail extends AncestorEntryPoint {
 		ops.setHeight(200);
 		ops.setMax(max);
 		ops.setMin(min);
+		ops.setPointSize(0);
 		ops.setShowCategories(false);
 		ops.setStacked(false);
 		return ops;

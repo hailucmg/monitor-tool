@@ -97,37 +97,29 @@ public class MonitorMemcache {
 		if (smsList != null) {
 			// check system monitor status
 			try {
-				ArrayList<SystemMonitorStore> temp = getSystemMonitorStore();
-				if (temp != null) {
-					if (smsList.size() == temp.size()) {
-						SystemMonitorDAO sysDao = new SystemMonitorDaoJDOImpl();
-						SystemMonitor sysJdo = null;
-						SystemMonitorDto sysIn = null;
-						SystemMonitorDto sysOn = null;
-						for (int i = 0; i < smsList.size(); i++) {
-							sysIn = smsList.get(i).getSysMonitor();
-							sysOn = temp.get(i).getSysMonitor();
-							// check Id
-							if (sysIn.getId().equals(sysOn.getId())) {
-								// if status changed. update JDO
-								if (sysIn.isStatus() != sysOn.isStatus()) {
-									sysJdo = sysDao
-											.getSystembyID(sysIn.getId());
-									sysJdo.setStatus(sysIn.isStatus());
-									sysDao.updateSystem(sysJdo);
-									changeFlag(true);
-								}
-							}
+				SystemMonitorDAO sysDao = new SystemMonitorDaoJDOImpl();
+				SystemMonitor sysJdo = null;
+				SystemMonitorDto sysIn = null;
+				SystemMonitorDto sysOn = null;
+				for (int i = 0; i < smsList.size(); i++) {
+					sysIn = smsList.get(i).getSysMonitor();
+					sysOn = getSystemById(sysIn.getId());
+					if (sysOn != null) {
+						if (sysIn.isStatus() != sysOn.isStatus()) {
+							sysJdo = sysDao.getSystembyID(sysIn.getId());
+							sysJdo.setStatus(sysIn.isStatus());
+							sysDao.updateSystem(sysJdo);
+							changeFlag(true);
 						}
 					}
 				}
+
 			} catch (Exception ex) {
 				// do nothing
 			}
 
 			int count = getCount() + 1;
-			// Store count
-			setCount(count);
+			
 			ArrayList<SystemMonitorDto> sysList = new ArrayList<SystemMonitorDto>();
 			SystemMonitorDto sys = null;
 			for (SystemMonitorStore sms : smsList) {
@@ -176,6 +168,8 @@ public class MonitorMemcache {
 			sys.setMemHistory(listMemory(sid,
 					MonitorConstant.HISTORY_CPU_MEMORY_LENGTH));
 			sys.setLastestJvm(getJvm(sid));
+			sys.setServices(listService(sid));
+			sys.setFileSystems(listFileSystem(sid));
 		}
 		return sys;
 	}
@@ -308,7 +302,7 @@ public class MonitorMemcache {
 	 *            The ID of system monitor
 	 * @return List of services
 	 */
-	protected static ArrayList<ServiceMonitorDto> listService(String sid) {
+	public static ArrayList<ServiceMonitorDto> listService(String sid) {
 		ArrayList<ServiceMonitorDto> list = null;
 		Object obj = get(Key.create(Key.SERVICE_STORE, getCount(), sid));
 		if (obj != null) {
@@ -324,7 +318,7 @@ public class MonitorMemcache {
 	 *            number of result which want to get
 	 * @return List of Cpu information. return null if no Memory info found
 	 */
-	protected static ArrayList<ArrayList<MemoryDto>> listMemory(String sid,
+	public static ArrayList<ArrayList<MemoryDto>> listMemory(String sid,
 			int numberOfResult) {
 		ArrayList<ArrayList<MemoryDto>> list = null;
 		int count = getCount();
@@ -348,7 +342,7 @@ public class MonitorMemcache {
 	/**
 	 * @return Memory Information. return null if no Memory information found
 	 */
-	protected static ArrayList<MemoryDto> getMemories(String sid) {
+	public static ArrayList<MemoryDto> getMemories(String sid) {
 		return getMemories(sid, getCount());
 	}
 
@@ -357,7 +351,7 @@ public class MonitorMemcache {
 	 *            The count number of key store.
 	 * @return Memory Information. return null if no Memory information found
 	 */
-	protected static ArrayList<MemoryDto> getMemories(String sid, int count) {
+	public static ArrayList<MemoryDto> getMemories(String sid, int count) {
 		ArrayList<MemoryDto> list = null;
 		Object obj = get(Key.create(Key.CPU_MEMORY_STORE, count, sid));
 		if (obj != null) {
@@ -373,7 +367,7 @@ public class MonitorMemcache {
 	 *            number of result which want to get
 	 * @return List of Cpu information. return null if no Cpu info found
 	 */
-	protected static ArrayList<CpuDTO> listCpu(String sid, int numberOfResult) {
+	public static ArrayList<CpuDTO> listCpu(String sid, int numberOfResult) {
 		ArrayList<CpuDTO> list = null;
 		int count = getCount();
 		Object obj = get(Key.create(Key.CPU_STORE, count, sid));
@@ -397,7 +391,7 @@ public class MonitorMemcache {
 	/**
 	 * @return CPU Information. return null if no CPU information found
 	 */
-	protected static CpuDTO getCpu(String sid) {
+	public static CpuDTO getCpu(String sid) {
 		return getCpu(sid, getCount());
 	}
 
@@ -406,7 +400,7 @@ public class MonitorMemcache {
 	 *            The count number of key store.
 	 * @return CPU Information. return null if no CPU information found
 	 */
-	protected static CpuDTO getCpu(String sid, int count) {
+	public static CpuDTO getCpu(String sid, int count) {
 		CpuDTO cpu = null;
 		Object obj = get(Key.create(Key.CPU_STORE, count, sid));
 		if (obj != null) {
@@ -423,7 +417,7 @@ public class MonitorMemcache {
 	 * @return All system monitor information. Return null if no system found
 	 *         Get SystemMonitor by this Id.
 	 */
-	protected static SystemMonitorDto getSystemById(String sid) {
+	public static SystemMonitorDto getSystemById(String sid) {
 		SystemMonitorDto sys = null;
 		ArrayList<SystemMonitorDto> list = listSystemMonitor();
 		if (list != null) {
@@ -440,7 +434,7 @@ public class MonitorMemcache {
 	/**
 	 * @return list of file system. Store all informations of file system
 	 */
-	protected static ArrayList<FileSystemCacheDto> listFileSystem(String sid) {
+	public static ArrayList<FileSystemCacheDto> listFileSystem(String sid) {
 		ArrayList<FileSystemCacheDto> list = null;
 		Object obj = get(Key.create(Key.FILE_SYSTEM_STORE, getCount(), sid));
 		if (obj != null) {
@@ -454,7 +448,7 @@ public class MonitorMemcache {
 	/**
 	 * @return Java virtual memory information. from memcahe
 	 */
-	protected static JvmDto getJvm(String sid) {
+	public static JvmDto getJvm(String sid) {
 		JvmDto jvm = null;
 		Object obj = get(Key.create(Key.JVM_STORE, getCount(), sid));
 		if (obj != null) {
@@ -470,7 +464,7 @@ public class MonitorMemcache {
 	 *         JDO add new one or JDO update system information Return null if
 	 *         no system found.
 	 */
-	protected static ArrayList<SystemMonitorDto> listSystemMonitor() {
+	public static ArrayList<SystemMonitorDto> listSystemMonitor() {
 		ArrayList<SystemMonitorDto> sysList = null;
 		if (isFlagChange()) {
 			sysList = readSystemFromJdo();
@@ -495,7 +489,7 @@ public class MonitorMemcache {
 	 *         is false or ping is higer than 500ms return "smile" if all status
 	 *         are good
 	 */
-	protected static String getCurrentHealthStatus(String sid) {
+	public static String getCurrentHealthStatus(String sid) {
 		String status = "dead";
 		boolean checkService = true;
 		boolean checkCpu = true;
@@ -551,7 +545,7 @@ public class MonitorMemcache {
 	/**
 	 * @return the list of system monitor read from JDO. Null if no system found
 	 */
-	private static ArrayList<SystemMonitorDto> readSystemFromJdo() {
+	public static ArrayList<SystemMonitorDto> readSystemFromJdo() {
 		ArrayList<SystemMonitorDto> list = null;
 		try {
 			SystemMonitorDAO sysDao = new SystemMonitorDaoJDOImpl();
@@ -587,7 +581,7 @@ public class MonitorMemcache {
 	/**
 	 * @return count number.
 	 */
-	protected static int getCount() {
+	public static int getCount() {
 		int count = 0;
 		try {
 			count = Integer.parseInt(get(Key.create(Key.COUNT_STORE))
@@ -598,12 +592,15 @@ public class MonitorMemcache {
 		return count;
 	}
 
+	public static void increaseCount() {
+		setCount(getCount() + 1);
+	}
 	/**
 	 * @param count
 	 *            store the counting value.
 	 */
 	protected static void setCount(int count) {
-		put(Key.create(Key.COUNT_STORE), count);
+		syncCache.put(Key.create(Key.COUNT_STORE), count, null, SetPolicy.SET_ALWAYS);
 	}
 
 	/**
@@ -613,7 +610,7 @@ public class MonitorMemcache {
 	 *            Object which want to store
 	 */
 	protected static void put(Key key, Object obj) {
-		syncCache.put(key, obj, null, SetPolicy.SET_ALWAYS);
+		syncCache.put(key, obj, null, SetPolicy.ADD_ONLY_IF_NOT_PRESENT);
 	}
 
 	/**
@@ -621,11 +618,11 @@ public class MonitorMemcache {
 	 *            The key of store
 	 * @return Object in store. Return null if not found
 	 */
-	protected static Object get(Key key) {
+	public static Object get(Key key) {
 		return syncCache.get(key);
 	}
-	
-	protected static boolean delete(Key key) {
+
+	public static boolean delete(Key key) {
 		return syncCache.delete(key);
 	}
 
@@ -634,7 +631,7 @@ public class MonitorMemcache {
 	 *            true when an System Monitor JDO insert or update.
 	 */
 	public static void changeFlag(boolean b) {
-		put(Key.create(Key.FLAG_STORE), b);
+		syncCache.put(Key.create(Key.FLAG_STORE), b, null, SetPolicy.SET_ALWAYS);
 	}
 
 	/**
