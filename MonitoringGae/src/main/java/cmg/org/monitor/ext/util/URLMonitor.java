@@ -151,7 +151,7 @@ public class URLMonitor {
 						List<AlertMonitorDto> alertList = new ArrayList<AlertMonitorDto>(); 
 						alertList.add(alertDto);
 						
-						sendUnknownAlerts(systemDto, message, null, null, null, null, null, alertList,systemDto);
+						//sendUnknownAlerts(systemDto, message, null, null, null, null, null, alertList,systemDto);
 						
 						isError = true;
 					} else {
@@ -182,7 +182,7 @@ public class URLMonitor {
 					alertDto.setBasicInfo("", AlertMonitorDto.DATA_NULL, message, now);
 					List<AlertMonitorDto> alertList = new ArrayList<AlertMonitorDto>(); 
 					alertList.add(alertDto);
-					sendUnknownAlerts(systemDto, message, null, null, null, null, null, alertList, systemDto);
+					//sendUnknownAlerts(systemDto, message, null, null, null, null, null, alertList, systemDto);
 					logger.info(message);
 				} else {
 					logger.info("Internet connection failed");
@@ -202,7 +202,7 @@ public class URLMonitor {
 				alertDto.setBasicInfo("", AlertMonitorDto.DATA_ERROR, message, now);
 				List<AlertMonitorDto> alertList = new ArrayList<AlertMonitorDto>(); 
 				alertList.add(alertDto);
-				sendUnknownAlerts(systemDto, message, null, null, null, null, null, alertList, systemDto);
+				//sendUnknownAlerts(systemDto, message, null, null, null, null, null, alertList, systemDto);
 				logger.info(message);
 			}
 
