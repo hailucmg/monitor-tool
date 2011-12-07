@@ -21,7 +21,7 @@ import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
 public class MonitorMemcache {
 	private static MemcacheService syncCache = MemcacheServiceFactory
-			.getMemcacheService("monitor_system_store");
+			.getMemcacheService();
 
 	// START List of methods access alert monitor store
 	public static void putAlertMonitor(String sid, AlertMonitorDto alert) {
@@ -109,7 +109,7 @@ public class MonitorMemcache {
 							sysJdo = sysDao.getSystembyID(sysIn.getId());
 							sysJdo.setStatus(sysIn.isStatus());
 							sysDao.updateSystem(sysJdo);
-							changeFlag(true);
+							reloadSystemMonitor();
 						}
 					}
 				}
@@ -119,7 +119,7 @@ public class MonitorMemcache {
 			}
 
 			int count = getCount() + 1;
-			
+
 			ArrayList<SystemMonitorDto> sysList = new ArrayList<SystemMonitorDto>();
 			SystemMonitorDto sys = null;
 			for (SystemMonitorStore sms : smsList) {
@@ -214,6 +214,18 @@ public class MonitorMemcache {
 		}
 		return check;
 	}
+	
+	public static boolean deleteSystem(SystemMonitorDto system) {
+		boolean b = false;
+		SystemMonitorDAO sysDao = new SystemMonitorDaoJDOImpl();
+		try {
+			b = sysDao.deleteSystembyID(system.getId());
+			reloadSystemMonitor();
+		} catch (Exception e) {
+			// do nothing
+		}
+		return b;
+	}
 
 	/**
 	 * @param system
@@ -236,7 +248,7 @@ public class MonitorMemcache {
 			sysJdo.setIp(system.getIp());
 			sysJdo.setRemoteUrl(system.getRemoteUrl());
 			b = sysDao.addnewSystem(sysJdo);
-			changeFlag(b);
+			reloadSystemMonitor();
 		} catch (Exception ex) {
 			// do nothing
 		}
@@ -263,8 +275,7 @@ public class MonitorMemcache {
 			sysJdo.setIp(system.getIp());
 			sysJdo.setRemoteUrl(system.getRemoteUrl());
 			sysDao.updateSystem(sysJdo);
-			b = true;
-			changeFlag(b);
+			reloadSystemMonitor();
 		} catch (Exception ex) {
 			// do nothing
 		}
@@ -277,18 +288,22 @@ public class MonitorMemcache {
 	public static ArrayList<SystemMonitorDto> listSystemMonitorToUi() {
 		ArrayList<SystemMonitorDto> list = listSystemMonitor();
 		SystemMonitorDto sys = null;
-		for (int i = 0; i < list.size(); i++) {
-			sys = list.get(i);
-			String sid = sys.getId();
-			ArrayList<MemoryDto> listMem = getMemories(sid);
-			sys.setHealthStatus(getCurrentHealthStatus(sid));
-			sys.setLastestCpu(getCpu(sid));
-			if (listMem != null) {
-				if (listMem.size() > 0) {
-					sys.setLastestMemory(listMem.get(0));
+		if (list != null) {
+			if (list.size() > 0) {
+				for (int i = 0; i < list.size(); i++) {
+					sys = list.get(i);
+					String sid = sys.getId();
+					ArrayList<MemoryDto> listMem = getMemories(sid);
+					sys.setHealthStatus(getCurrentHealthStatus(sid));
+					sys.setLastestCpu(getCpu(sid));
+					if (listMem != null) {
+						if (listMem.size() > 0) {
+							sys.setLastestMemory(listMem.get(0));
+						}
+					}
+					list.set(i, sys);
 				}
 			}
-			list.set(i, sys);
 		}
 		return list;
 	}
@@ -573,9 +588,13 @@ public class MonitorMemcache {
 		} catch (Exception ex) {
 			// do nothing
 		}
-		//
-		changeFlag(false);
 		return list;
+	}
+	
+	private static void reloadSystemMonitor() {
+		ArrayList<SystemMonitorDto> listJdo = readSystemFromJdo();
+		syncCache.put(Key.create(Key.SYSTEM_MONITOR_STORE), listJdo, null, SetPolicy.SET_ALWAYS);
+		changeFlag(false);
 	}
 
 	/**
@@ -595,12 +614,14 @@ public class MonitorMemcache {
 	public static void increaseCount() {
 		setCount(getCount() + 1);
 	}
+
 	/**
 	 * @param count
 	 *            store the counting value.
 	 */
 	protected static void setCount(int count) {
-		syncCache.put(Key.create(Key.COUNT_STORE), count, null, SetPolicy.SET_ALWAYS);
+		syncCache.put(Key.create(Key.COUNT_STORE), count, null,
+				SetPolicy.SET_ALWAYS);
 	}
 
 	/**
@@ -611,6 +632,7 @@ public class MonitorMemcache {
 	 */
 	protected static void put(Key key, Object obj) {
 		syncCache.put(key, obj, null, SetPolicy.ADD_ONLY_IF_NOT_PRESENT);
+		//syncCache.putIfUntouched(key, syncCache.getIdentifiable(key), obj);
 	}
 
 	/**
@@ -631,7 +653,8 @@ public class MonitorMemcache {
 	 *            true when an System Monitor JDO insert or update.
 	 */
 	public static void changeFlag(boolean b) {
-		syncCache.put(Key.create(Key.FLAG_STORE), b, null, SetPolicy.SET_ALWAYS);
+		syncCache
+				.put(Key.create(Key.FLAG_STORE), b, null, SetPolicy.SET_ALWAYS);
 	}
 
 	/**
