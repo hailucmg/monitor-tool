@@ -145,7 +145,10 @@ public class CpuMemory implements Model {
 	 * @return
 	 */
 	public int getPercentMemoryUsage() {
-		return (int) ((usedMemory / totalMemory) * 100);
+		
+		if (totalMemory == 0)
+			return 0;
+		return (int) (usedMemory  / (totalMemory * 1024) * 100);
 	}
 
 	@Override

@@ -357,13 +357,13 @@ public class XMLMonitorParser {
         NodeList size = element.getElementsByTagName("size");
         if (size!= null && size.getLength() > 0) {
         	Element nameElement = (Element) size.item(0);
-	        cpuDto.setSize(Long.parseLong(Ultility.extractDigit(getCharacterDataFromElement(nameElement))));
+	        cpuDto.setSize(Long.parseLong(Ultility.extractDigit(getCharacterDataFromElement(nameElement))) * 1073741824);
         }
         
         NodeList used = element.getElementsByTagName("used");
         if (used!= null && used.getLength() > 0) {
         	Element nameElement = (Element) used.item(0);
-	        cpuDto.setUsed(Long.parseLong(Ultility.extractDigit(getCharacterDataFromElement(nameElement))));
+	        cpuDto.setUsed(Long.parseLong(Ultility.extractDigit(getCharacterDataFromElement(nameElement))) * 1073741824  );
         }
         
         NodeList available = element.getElementsByTagName("available");

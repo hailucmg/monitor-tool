@@ -168,8 +168,8 @@ public class URLMonitor {
 				try {
 					if (ConnectionUtil.internetAvail()) {
 						// Prints out
-						message = "The system can not achieve data from following url :/r/n"
-								+ systemDto.getRemoteUrl() + "/r/n"
+						message = "The system can not achieve data from following url :\r\n"
+								+ systemDto.getRemoteUrl() + "\r\n"
 								+ " Please update system which has name : "
 								+ systemDto.getName();
 						systemDto.setSystemStatus(false);
@@ -324,6 +324,7 @@ public class URLMonitor {
 								.getSysDate()));
 						serviceDto.setStatus(true);
 						serviceDto.setTimeStamp(now);
+						serviceDto.setSysDate(now);
 					}
 
 					// Do update to Service and JVM JDO entity
@@ -367,21 +368,24 @@ public class URLMonitor {
 				fullComponent.setError(error);
 				fullComponent.setSysDate(dateFormat.format(now));
 				try {
-					cpuDao.updateCpu(cpuObj, systemDto);
+					
 					CpuPhysicalDto cpuPhysicalDto = null;
+					
 					if (physicalCPus != null) {
 						for (int p = 0; p < physicalCPus.size(); p++) {
-							cpuPhysicalDto = (CpuPhysicalDto) physicalCPus
-									.get(p);
-							cpuObj.setUsedMemory(cpuPhysicalDto.getUsed());
-							cpuObj.setTotalMemory(cpuPhysicalDto.getFree());
-							cpuDao.updateCpu(cpuObj, systemDto);
+							if ("mem".equalsIgnoreCase(physicalCPus.get(p).getType())) {
+								cpuPhysicalDto = (CpuPhysicalDto) physicalCPus
+										.get(p);
+								cpuObj.setUsedMemory(cpuPhysicalDto.getUsed()/1024);
+								cpuObj.setTotalMemory(cpuPhysicalDto.getFree()/1024);
+								cpuDao.updateCpu(cpuObj, systemDto);
+							}
 						}
 					}
+					
 					// In case of used mem exceed allowed values.
 					if (cpuPerc >= Constant.CPU_LEVEL_HISTORY_UPDATE)
-						cpuDao.updateCpu(cpuObj, systemDto);
-						
+						sendAlerts(fullComponent,null, compId);	
 					error = "CPU: " + cpuUsage;
 
 				} catch (Exception e) {
@@ -425,7 +429,7 @@ public class URLMonitor {
 //								mOrginalCpuList.get(0), 
 //								mfiles, mPhysicalCpuList);
 						
-						sendAlerts(fullComponent,null, compId);
+						//sendAlerts(fullComponent,null, compId);
 					}
 				} catch (Exception e) {
 					logger.info("Cannot get values for CPU , error: "
@@ -483,6 +487,7 @@ public class URLMonitor {
 				for (FileSystemDto fileDto : files) {
 					String used = String.valueOf(fileDto.getUsed());
 					fileDto.setTimeStamp(now);
+					
 					double percUsed = 50.0;
 					try {
 						if (used.equals("-")) {
@@ -521,13 +526,7 @@ public class URLMonitor {
 
 						// Send alert
 						sendAlerts(fullComponent,null, compId);
-						try {
-							// Do update File System JDO
-							fileSystemDao.updateFileSystem(fileDto, systemDto);
-						} catch (Exception e) {
-							logger.info("Cannot update data for File System, error: "
-									+ e.getMessage());
-						}
+						
 					}
 					logger.info("Default File System: " + fileDto);
 				}
