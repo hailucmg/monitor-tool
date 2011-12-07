@@ -186,9 +186,7 @@ public class URLMonitor {
 							+ e.getMessage();
 					logger.log(Level.WARNING, message);
 				}
-				throw new MonitorException(
-						"Unable to monitor the application, Error: "
-								+ mx.getMessage());
+				
 			}
 
 			// Reads content
@@ -271,7 +269,7 @@ public class URLMonitor {
 				Integer ping = null;
 				ServiceDto serviceDto = null;
 
-				if (parseJVMs.size() == 1) {
+				if (parseJVMs!= null && parseJVMs.size() == 1) {
 
 					jvmMemDto = parseJVMs.get(0);
 				  double percentUsedJVM = Ultility.percentageForJVM(jvmMemDto.getUsedMemory(), jvmMemDto.getMaxMemory());
@@ -307,7 +305,7 @@ public class URLMonitor {
 						count++;
 					}
 					
-					if (comp.getDescription().equalsIgnoreCase(Constant.ERROR)) {
+					if (Constant.ERROR.equalsIgnoreCase(comp.getDescription())) {
 						
 						// Describe service error.
 						errorMessage.append(count).append(". The service name : ").append(comp.getName())
