@@ -53,10 +53,10 @@ public class GlobalScheduler extends HttpServlet {
 		MonitorService monitorService = new MonitorService();
 		try {
 
-			long start = System.currentTimeMillis();
-			if (logger.isLoggable(Level.CONFIG)) {
-				logger.log(Level.ALL, "Start scheduled monitoring ...");
-			} // if
+			//long start = System.currentTimeMillis();
+			//if (logger.isLoggable(Level.CONFIG)) {
+			//	logger.log(Level.ALL, "Start scheduled monitoring ...");
+			//} // if
 			 
 			
 			// Initial monitor scheduled
@@ -65,12 +65,12 @@ public class GlobalScheduler extends HttpServlet {
 			if (logger.isLoggable(Level.CONFIG)) {
 				logger.log(Level.ALL, "Scheduled monitoring completed!");
 			} // if
-			long end = System.currentTimeMillis();
-			long time = end - start;
-			boCounter++;
+			//long end = System.currentTimeMillis();
+			//long time = end - start;
+			//boCounter++;
 			logger.log(Level.WARNING, "Send mail ok....!");
-			logger.info("Time executed: " + time + " ms" + ", email task: " // EmailTimely.emailCounter
-					+ " times, business object: " + boCounter + " times");
+			//logger.info("Time executed: " + time + " ms" + ", email task: " // EmailTimely.emailCounter
+			//		+ " times, business object: " + boCounter + " times");
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, ex.getMessage());
 		}
