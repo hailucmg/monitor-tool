@@ -151,23 +151,24 @@ public class URLMonitor {
 						List<AlertMonitorDto> alertList = new ArrayList<AlertMonitorDto>(); 
 						alertList.add(alertDto);
 						
-						//sendUnknownAlerts(systemDto, message, null, null, null, null, null, alertList,systemDto);
+						sendUnknownAlerts(systemDto, message, null, null, null, null, null, alertList,systemDto);
 						
 						isError = true;
 					} else {
 						logger.info("Internet connection failed");
 					}
-				} catch (Exception e) {
+				} catch(MonitorException me) {
+					throw new MonitorException(
+							"Unable to monitor the application, Error: "
+									+ mx.getMessage());
+				}catch (Exception e) {
 
 					// log with message
 					message = "The monitoring failed, try to update"
 							+ " project's status but not success, error details: "
 							+ e.getMessage();
 					logger.log(Level.WARNING, message);
-				}
-				throw new MonitorException(
-						"Unable to monitor the application, Error: "
-								+ mx.getMessage());
+				} 
 			}
 
 			// Reads content
@@ -182,7 +183,7 @@ public class URLMonitor {
 					alertDto.setBasicInfo("", AlertMonitorDto.DATA_NULL, message, now);
 					List<AlertMonitorDto> alertList = new ArrayList<AlertMonitorDto>(); 
 					alertList.add(alertDto);
-					//sendUnknownAlerts(systemDto, message, null, null, null, null, null, alertList, systemDto);
+					sendUnknownAlerts(systemDto, message, null, null, null, null, null, alertList, systemDto);
 					logger.info(message);
 				} else {
 					logger.info("Internet connection failed");
@@ -202,7 +203,7 @@ public class URLMonitor {
 				alertDto.setBasicInfo("", AlertMonitorDto.DATA_ERROR, message, now);
 				List<AlertMonitorDto> alertList = new ArrayList<AlertMonitorDto>(); 
 				alertList.add(alertDto);
-				//sendUnknownAlerts(systemDto, message, null, null, null, null, null, alertList, systemDto);
+				sendUnknownAlerts(systemDto, message, null, null, null, null, null, alertList, systemDto);
 				logger.info(message);
 			}
 
@@ -564,7 +565,7 @@ public class URLMonitor {
 			SystemMonitorDto sysMonitorList) throws MonitorException {
 		
 		JvmDto aJvm = null;
-		if (jvms.size() > 0)
+		if (jvms!= null && jvms.size() > 0)
 			aJvm = jvms.get(0);
 		
 		// Create an alert in Mem Cache
