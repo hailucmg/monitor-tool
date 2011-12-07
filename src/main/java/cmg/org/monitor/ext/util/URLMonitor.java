@@ -377,7 +377,7 @@ public class URLMonitor {
 								cpuPhysicalDto = (CpuPhysicalDto) physicalCPus
 										.get(p);
 								cpuObj.setUsedMemory(cpuPhysicalDto.getUsed()/1024);
-								cpuObj.setTotalMemory(cpuPhysicalDto.getFree()/1024);
+								cpuObj.setTotalMemory(cpuPhysicalDto.getTotal()/1024);
 								cpuDao.updateCpu(cpuObj, systemDto);
 							}
 						}

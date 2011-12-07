@@ -60,15 +60,15 @@ public class CpuMemory implements Model {
 	}
 
 	/**
-	 * @param alertDto
+	 * @param cpuDto
 	 */
-	public CpuMemory(CpuDto alertDto) {
+	public CpuMemory(CpuDto cpuDto) {
 
 		this();
-		this.setBasicInfo(alertDto.getTotalCpu(), alertDto.getUsedMemory(),
-				alertDto.getCpuUsage(), alertDto.getTotalCpu(),
-				alertDto.getVendor(), alertDto.getModel(),
-				alertDto.getTimeStamp());
+		this.setBasicInfo(cpuDto.getTotalMemory(), cpuDto.getUsedMemory(),
+				cpuDto.getCpuUsage(), cpuDto.getTotalCpu(),
+				cpuDto.getVendor(), cpuDto.getModel(),
+				cpuDto.getTimeStamp());
 	}
 
 	/**
@@ -148,7 +148,7 @@ public class CpuMemory implements Model {
 		
 		if (totalMemory == 0)
 			return 0;
-		return (int) (usedMemory  / (totalMemory * 1024) * 100);
+		return (int) ((usedMemory  / totalMemory ) * 100);
 	}
 
 	@Override
