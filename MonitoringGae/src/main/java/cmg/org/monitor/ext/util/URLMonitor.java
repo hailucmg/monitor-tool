@@ -17,42 +17,24 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import cmg.org.monitor.common.Constant;
-import cmg.org.monitor.dao.AlertDao;
-import cmg.org.monitor.dao.CpuMemoryDAO;
-import cmg.org.monitor.dao.FileSystemDAO;
-import cmg.org.monitor.dao.ServiceMonitorDAO;
-import cmg.org.monitor.dao.SystemMonitorDAO;
-import cmg.org.monitor.dao.impl.AlertDaoJDOImpl;
-import cmg.org.monitor.dao.impl.CpuMemoryDaoJDOImpl;
-import cmg.org.monitor.dao.impl.FileSystemDaoJDOImpl;
-import cmg.org.monitor.dao.impl.ServiceMonitorDaoJDOImpl;
-import cmg.org.monitor.dao.impl.SystemMonitorDaoJDOImpl;
 import cmg.org.monitor.exception.MonitorException;
 import cmg.org.monitor.ext.model.Component;
 import cmg.org.monitor.ext.model.URLPageObject;
-import cmg.org.monitor.ext.model.shared.AlertDto;
 import cmg.org.monitor.ext.model.shared.CpuDto;
-import cmg.org.monitor.memcache.shared.AlertMonitorDto;
-import cmg.org.monitor.memcache.shared.CpuDTO;
-import cmg.org.monitor.memcache.shared.MemoryDto;
-import cmg.org.monitor.memcache.shared.ServiceMonitorDto;
-import cmg.org.monitor.memcache.shared.SystemMonitorDto;
-import cmg.org.monitor.ext.model.shared.CpuPhysicalDto;
-import cmg.org.monitor.ext.model.shared.FileSystemDto;
-
-import cmg.org.monitor.memcache.shared.FileSystemCacheDto;
-import cmg.org.monitor.ext.model.shared.JVMMemoryDto;
-import cmg.org.monitor.ext.model.shared.ServiceDto;
-import cmg.org.monitor.ext.model.shared.SystemDto;
 import cmg.org.monitor.ext.util.HttpUtils.Page;
 import cmg.org.monitor.memcache.MonitorMemcache;
 import cmg.org.monitor.memcache.SystemMonitorStore;
+import cmg.org.monitor.memcache.shared.AlertMonitorDto;
+import cmg.org.monitor.memcache.shared.CpuDTO;
+import cmg.org.monitor.memcache.shared.FileSystemCacheDto;
 import cmg.org.monitor.memcache.shared.JvmDto;
+import cmg.org.monitor.memcache.shared.MemoryDto;
+import cmg.org.monitor.memcache.shared.ServiceMonitorDto;
+import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 import cmg.org.monitor.services.email.MailService;
 import cmg.org.monitor.util.shared.Ultility;
 
 import com.google.gdata.util.ServiceForbiddenException;
-import com.google.gwt.dev.util.Memory;
 
 /**
  * Please enter a short description for this class.
@@ -143,25 +125,13 @@ public class URLMonitor {
 			boolean isError = false;
 			String webContent = null;
 			try {
-				// if (Constant.USER_PROTOCOL.equals(systemDto.getProtocol())) {
-				// webContent = FetchMailUsage.fetchSMTPEmail();
-				// page =
-				// HttpUtils.retrievePage("http://c-mg.vn:81/bpg/content/cmg_mail.html");
-				// } else {
 				message = "Retrieves website content from "
 						+ systemDto.getUrl();
 				logger.info("Retrieves website content from ");
 				page = HttpUtils.retrievePage(systemDto.getRemoteUrl().trim());
 
-				// page =
-				// HttpUtils.retrievePage("https://ukpensionsint.bp.com/content/BT_monitorxml.html");
-				// page =
-				// HttpUtils.retrievePage("http://192.168.1.13:8080/content/BT_monitorxml.html");
-				// page =
-				// HttpUtils.retrievePage("http://192.168.1.111:8080/bpg/content/monitor_test_xml");
 				webContent = page.getContent();
 
-				// }
 				// log the message
 				message = "The website has been retrieved, content type: "
 						+ page.getContentType();
@@ -170,8 +140,8 @@ public class URLMonitor {
 				try {
 					if (ConnectionUtil.internetAvail()) {
 						// Prints out
-						message = "The system can not achieve data from following url:/r/n"
-								+ systemDto.getRemoteUrl().trim() + "/r/n"
+						message = "The system can not achieve data from following url:\r\n"
+								+ systemDto.getRemoteUrl().trim() + "\r\n"
 								+ ". Please update system which has name:"
 								+ systemDto.getName();
 			
@@ -224,7 +194,7 @@ public class URLMonitor {
 					|| (page.getContent().equals(MonitorUtil.getErrorContent()))) {
 
 				// Prints out
-				message = "The system contains error information from the following url : \r\n" 
+				message = "The system contains error information from the following url :\r\n" 
 						+ systemDto.getRemoteUrl()+ "\r\n"
 						+ "Please, recheck your system status or system information";
 				systemDto.setStatus(false);
@@ -235,16 +205,6 @@ public class URLMonitor {
 				sendUnknownAlerts(systemDto, message, null, null, null, null, null, alertList, systemDto);
 				logger.info(message);
 			}
-
-			// Parse xml data for alert
-//		    JVMMemoryDto jvmMemDto = new JVMMemoryDto();
-//			XMLMonitorParser parse = new XMLMonitorParser();
-//			List<JVMMemoryDto> parseJVMs = parse.getJVMComponent(webContent);
-//
-//			List<CpuDto> parseCPUs = parse.getOriginalCPU(webContent);
-//			List<FileSystemDto> files = parse.getFileSystem(webContent);
-//			List<CpuPhysicalDto> physicalCPus = parse
-//					.getPhysicalCPU(webContent);
 
 			// Parse xml data for memCache
 			XMLParserForMemCache cacheParser = new XMLParserForMemCache();
@@ -259,6 +219,8 @@ public class URLMonitor {
 			List<Component> parseServiceComponents = cacheParser.getComponent(webContent);
 			
 			List<Component> fullServiceComponents = new ArrayList<Component>();
+			List<MemoryDto> mems = new ArrayList<MemoryDto>();
+			
 			for (int i = 0; i < parseServiceComponents.size(); i++) {
 				
 				// Initiate new full component
@@ -328,7 +290,7 @@ public class URLMonitor {
 						
 						// Describe service error.
 						
-						errorMessage.append(count).append(". has following service name : ").append(comp.getName())
+						errorMessage.append(count).append(". has following failed service : ").append(comp.getName())
 						.append(" has taken too much time for response.\r\n")
 						.append("Please, re-check or update your system again.\r\n").append("\r\n");
 						comp.setError(errorMessage.toString());
@@ -361,8 +323,6 @@ public class URLMonitor {
 				    alertMonitorList.add(alertMonitorDto);
 				}
 				
-				storeToMemCache(serviceMonitorList, mJVMs, mCpuList.get(0), mfiles, mMemoryList, alertMonitorList, systemDto);
-				
 				// Send error message when service components have errors
 				int errorLength = errorMessage.length();
 				if (errorLength != 0) {
@@ -372,8 +332,6 @@ public class URLMonitor {
 						serviceMonitorList, mJVMs, mCpuList.get(0), mfiles, mMemoryList, alertMonitorList, systemDto);
 				}
 			}
-			
-			List<MemoryDto> mems = new ArrayList<MemoryDto>();
 			
 			// ------- CPU -------
 			String error = "";
@@ -409,7 +367,6 @@ public class URLMonitor {
 				    
 				    alertMonitorDto.setBasicInfo(fullComponent.getName(), AlertMonitorDto.SERVICE_ERROR, message, now);
 				    alertMonitorList.add(alertMonitorDto);
-					//storeToMemCache(serviceMonitorList, mJVMs, cpuObj, mfiles, mMemoryList, alertMonitorList);
 					MemoryDto memoryDto = null;
 					
 					if (mMemoryList != null) {
@@ -419,18 +376,17 @@ public class URLMonitor {
 							memoryDto.getUsedMemory();
 							memoryDto.getTotalMemory();
 							mems.add(memoryDto);
-							storeToMemCache(serviceMonitorList, mJVMs, cpuObj, mfiles, mems, alertMonitorList,systemDto);
 						}
 					}
 					// In case of used mem exceed allowed values.
 					if (cpuPerc >= Constant.CPU_LEVEL_HISTORY_UPDATE)
-						//storeToMemCache(serviceMonitorList, mJVMs, cpuObj, mfiles, mems, alertMonitorList);
-					error = "CPU: " + cpuUsage;
+						error = "CPU: " + cpuUsage;
 				} catch (Exception e) {
 					logger.log(Level.SEVERE,
 							"Cannot update a CPU, error: " + e.getMessage());
 				}
 				logger.info("CPU: " + cpuObj);
+				
 				// Gets CPU from Cpu memory for 3 times, if this values are
 				// greater than 90% then send alert
 				try {
@@ -465,7 +421,6 @@ public class URLMonitor {
 //								mJVMs, 
 //								mOrginalCpuList.get(0), 
 //								mfiles, mPhysicalCpuList);
-						//sendAlerts(fullComponent,null, compId);
 					}
 				} catch (Exception e) {
 					logger.info("Cannot get values for CPU , error: "
@@ -493,9 +448,6 @@ public class URLMonitor {
 					AlertMonitorDto alertDto = new AlertMonitorDto();
 					alertDto.setBasicInfo("", AlertMonitorDto.JVM_ERROR, "", now);
 					alertMonitorList.add(alertDto);
-					
-					//storeToMemCache(serviceMonitorList, mJVMs, cpuObj, mfiles, mems, alertMonitorList);
-					// error = "CPU: " + cpuUsage;
 				} catch (Exception e) {
 					logger.log(
 							Level.SEVERE,
@@ -527,9 +479,8 @@ public class URLMonitor {
 					logger.info("Cannot update data for File System, error: "
 							+ e.getMessage());
 				}
-				storeToMemCache(serviceMonitorList, mJVMs, cpuObj, fileSystemList, mems, alertMonitorList, systemDto);
 			} else {
-				List<FileSystemCacheDto> files = new ArrayList<FileSystemCacheDto>();
+				
 				for (FileSystemCacheDto fileDto : mfiles) {
 					String used = String.valueOf(fileDto.getUsed());
 					
@@ -559,8 +510,8 @@ public class URLMonitor {
 					fullComponent.setSysDate(dateFormat.format(currentDate));
 
 					// Do update File System JDO
-					files.add(fileDto);
-					storeToMemCache(serviceMonitorList, mJVMs, cpuObj, files, mems, alertMonitorList, systemDto);
+					fileSystemList.add(fileDto);
+					
 
 					// Check used value
 					if (percUsed > Constant.DF_LEVEL_HISTORY_UPDATE) {
@@ -571,19 +522,15 @@ public class URLMonitor {
 						fullComponent.setError(error);
 
 						// Send alert
-						// sendAlerts(fullComponent,null, compId);
-						try {
-							// Do update File System JDO
-							storeToMemCache(null, mJVMs, cpuObj, files, mems, alertMonitorList, systemDto);
-						} catch (Exception e) {
-							logger.info("Cannot update data for File System, error: "
-									+ e.getMessage());
-						}
+						sendAlerts(fullComponent, null, systemDto, null, mJVMs, cpuObj, fileSystemList, mems, alertMonitorList, systemDto);
+						
 					}
 					logger.info("Default File System: " + fileDto);
 				}
 			}
-
+			
+			// Put all ram data into cache 
+			storeToMemCache(serviceMonitorList, mJVMs, cpuObj, fileSystemList, mems, alertMonitorList, systemDto);
 			return obj;
 		} catch (MonitorException me) {
 			throw new MonitorException(me.getLocalizedMessage());
@@ -655,27 +602,23 @@ public class URLMonitor {
 			throws MonitorException {
 
 		try {
-			//SystemDto localSystemDto = systemDao.getSystembyID(componentId).toDTO();
-			
 			if (systemDto != null) {
 				MailService mailSrv = new MailService();
 				mailSrv.sendAlertMail(component, message,  systemDto);
 				logger.info("An email has been delivered to "
 						+ systemDto.getGroupEmail()
-						+ " to notify about error");
-
+						+ " to notify error");
 			}
-			
 		} catch (MonitorException e) {
 			logger.log(
 					Level.SEVERE,
-					"Cannot send email about error" + " of component "
+					"Cannot send email with component "
 							+ component.getName() + ", error: "
 							+ e.getMessage());
 		} catch (Exception e) {
 			logger.log(Level.SEVERE,
 					"Exception at component " + component.getName()
-							+ ", error: " + e.getMessage());
+							+ ", error explaination: " + e.getMessage());
 		}
 	}
 
@@ -703,13 +646,12 @@ public class URLMonitor {
 			service.sendAlertMail(sysDto, message);
 
 			// Create an alert
-			MonitorMemcache.changeFlag(false);
 			storeToMemCache(serviceMonitorList,jvms,cpuDto, files, memory, alertDtoList, sysMonitor);
 		} catch (Exception e) {
 			logger.log(
 					Level.SEVERE,
-					"Cannot send alert email" + " of component "
-							+ sysDto.getName() + ", error at: "
+					"Cannot send alert email with component "
+							+ sysDto.getName() + ", error due to: "
 							+ e.getMessage());
 		}
 	}
