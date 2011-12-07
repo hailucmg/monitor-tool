@@ -74,7 +74,9 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	public String editSystembyID(SystemMonitorDto system) throws Exception {
 		String callback = null;
 		try {
-			if (MonitorMemcache.checkRemoteUrl(system.getRemoteUrl())) {
+			boolean check = MonitorMemcache.checkRemoteUrl(system.getRemoteUrl());
+			SystemMonitorDto oldSys = MonitorMemcache.getSystemById(system.getId());
+			if (check && !oldSys.getRemoteUrl().toLowerCase().equals(system.getRemoteUrl().toLowerCase())) {
 				callback = "Remote URL is exitsting";
 			} else {
 				if (MonitorMemcache.updateSystem(system)) {
