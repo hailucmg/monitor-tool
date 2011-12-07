@@ -49,43 +49,45 @@ public class MonitorService {
 		// Initializes monitor object list
 		URLPageObject obj = null;
 		int continueCount = 0;
-		SystemMonitorDto aSysDto ;
-		for (SystemMonitorStore aSystem : systemMonitorCaches) {
-			aSysDto = aSystem.getSysMonitor();
-			if (!aSysDto.isActive()) {
-				logger.info("The system " + aSysDto.getName()
-						+ " is existed but is not active. "
-						+ " The monitor skips this system now");
-				continueCount++;
-
-				continue;
+		SystemMonitorDto aSysDto = new SystemMonitorDto();
+		try {
+			if (systemMonitorCaches != null && systemMonitorCaches.size() >= 1) {
+				for (SystemMonitorStore aSystem : systemMonitorCaches) {
+					aSysDto = aSystem.getSysMonitor();
+					if (aSysDto != null && !aSysDto.isActive()) {
+						logger.info("The system " + aSysDto.getName()
+								+ " is existed but is not active. "
+								+ " The monitor skips this system now");
+						continueCount++;
+						continue;
+					}
+					
+					logger.info("Number of system are monitoring : " + continueCount);
+					
+					// Initiates monitor and do task
+					String running = "";
+					
+						urlMonitor = new URLMonitor();
+						urlMonitor.setTimeStamp(timeStamp);
+						obj = urlMonitor.generateInfo(aSysDto);
+						running = (obj == null) ? FAILED : RUNNING;
+		
+						// Add systems to list
+						objList.add(obj);
+					
+					if (running.equals(FAILED)) {
+						errorCount++;
+					} // if
+				} // for
 			}
-			logger.info("Project url: " + aSysDto.getUrl());
-			logger.info("System name: " + aSysDto.getName());
-			logger.info("Number of system are monitoring : " + continueCount);
-			// Initiates monitor and do task
-			String running = "";
-			try {
-				urlMonitor = new URLMonitor();
-				urlMonitor.setTimeStamp(timeStamp);
-				obj = urlMonitor.generateInfo(aSysDto);
-				running = (obj == null) ? FAILED : RUNNING;
-				
-
-				// Add systems to list
-				objList.add(obj);
-			} catch (MonitorException me) {
-				logger.log(Level.SEVERE, me.getCause().getMessage());
-				throw me;
-			} catch(Exception e) {
-				logger.log(Level.SEVERE, e.getMessage());
-			}
-			if (running.equals(FAILED)) {
-				errorCount++;
-			} // if
-		} // for
+		} catch (MonitorException me) {
+			logger.log(Level.SEVERE, me.getCause().getMessage());
+			throw me;
+		} catch(Exception e) {
+			logger.log(Level.SEVERE, e.getMessage());
+		}
 		MonitorMemcache.increaseCount();
-		logger.info("Finished monitoring, object size: " + objList.size());
+		//logger.info("Finished monitoring, object size: " + objList.size());
 
 		return objList;
 	}
