@@ -2,13 +2,16 @@ package cmg.org.monitor.ext.util;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cmg.org.monitor.common.Constant;
+import cmg.org.monitor.ext.model.shared.JVMMemoryDto;
 
 /**
  * Please enter a short description for this class.
@@ -19,10 +22,64 @@ import cmg.org.monitor.common.Constant;
  * @version 1.0
  */
 public class MonitorUtil {
-	
+	public static String FREE_MEMORY = "freeMemory";
+	public static String TOTAL_MEMORY = "totalMemory";
+	public static String MAX_MEMORY = "maxMemory";
+	public static String USED_MEMORY = "memoryUsed";
 	private static final Logger logger = Logger.getLogger(MonitorUtil.class.getCanonicalName());
 	
 	
+	/**
+     * Returns a map that contains a pair feeMemory, totalMemory, ... and their
+     * values
+     *
+     * @param   inputStr  the string that contains the pair key/value
+     *
+     * @return  a map that contains the pair key/value
+     */
+    public static List<JVMMemoryDto> getJVM(String inputStr) {
+        JVMMemoryDto jvmDto = new JVMMemoryDto();
+        List<JVMMemoryDto> jvmList = new ArrayList<JVMMemoryDto>();
+        if (inputStr != null) {
+            Pattern pattern = Pattern.compile(
+                    Constant.PATTERN_MEMORY_KEY_VALUE);
+            Matcher matcher = pattern.matcher(inputStr);
+            while (matcher.find()) {
+                String key = matcher.group(2);
+                String value = matcher.group(5);
+                if (FREE_MEMORY.equals(key)) {
+                	jvmDto.setFreeMemory(Double.parseDouble(value));
+                }
+                if (TOTAL_MEMORY.equals(key)) {
+                	jvmDto.setTotalMemory(Double.parseDouble(value));
+                }
+                if (MAX_MEMORY.equals(key)) {
+                	jvmDto.setMaxMemory(Double.parseDouble(value));
+                }
+                if (USED_MEMORY.equals(key)) {
+                	jvmDto.setUsedMemory(Double.parseDouble(value));
+                }
+            }
+        } 
+        jvmList.add(jvmDto);
+        return jvmList;
+        
+    }
+	
+    public static boolean isPatternHtml(String inputStr) {
+    	boolean isHtml= false;
+        if (inputStr != null) {
+            Pattern pattern = Pattern.compile(
+                    Constant.PATTERN_HTML);
+            Matcher matcher = pattern.matcher(inputStr);
+            if (matcher.find()) {
+            	isHtml = true;
+            }
+        } 
+        return isHtml;
+        
+    }
+    
 	/**
      * Returns a map that contains a pair feeMemory, totalMemory, ... and their
      * values
@@ -49,8 +106,8 @@ public class MonitorUtil {
                     } // try-catch
                     map.put(key, new Long(lValue));
                 }
-            } // if
-        } // if
+            } 
+        } 
 
         return map;
     }

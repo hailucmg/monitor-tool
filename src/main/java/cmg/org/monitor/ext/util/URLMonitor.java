@@ -15,6 +15,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import cmg.org.monitor.common.Constant;
 import cmg.org.monitor.dao.AlertDao;
@@ -29,24 +31,17 @@ import cmg.org.monitor.dao.impl.ServiceMonitorDaoJDOImpl;
 import cmg.org.monitor.dao.impl.SystemMonitorDaoJDOImpl;
 import cmg.org.monitor.exception.MonitorException;
 import cmg.org.monitor.ext.model.Component;
+import cmg.org.monitor.ext.model.MemoryObject;
 import cmg.org.monitor.ext.model.URLPageObject;
 import cmg.org.monitor.ext.model.shared.AlertDto;
 import cmg.org.monitor.ext.model.shared.CpuDto;
-import cmg.org.monitor.memcache.shared.AlertMonitorDto;
-import cmg.org.monitor.memcache.shared.CpuDTO;
-import cmg.org.monitor.memcache.shared.MemoryDto;
-import cmg.org.monitor.memcache.shared.ServiceMonitorDto;
 import cmg.org.monitor.ext.model.shared.CpuPhysicalDto;
 import cmg.org.monitor.ext.model.shared.FileSystemDto;
-
-import cmg.org.monitor.memcache.shared.FileSystemCacheDto;
 import cmg.org.monitor.ext.model.shared.JVMMemoryDto;
 import cmg.org.monitor.ext.model.shared.ServiceDto;
 import cmg.org.monitor.ext.model.shared.SystemDto;
 import cmg.org.monitor.ext.util.HttpUtils.Page;
-import cmg.org.monitor.memcache.MonitorMemcache;
-import cmg.org.monitor.memcache.SystemMonitorStore;
-import cmg.org.monitor.memcache.shared.JvmDto;
+import cmg.org.monitor.services.MonitorWorker;
 import cmg.org.monitor.services.email.MailService;
 import cmg.org.monitor.util.shared.Ultility;
 
@@ -116,7 +111,96 @@ public class URLMonitor {
 		return fullComponent;
 	}
 	
+	/**
+	 * 
+	 * @param webContent
+	 * @return
+	 */
+	private List<JVMMemoryDto> listJVMByHtml(String webContent) {
+		List<JVMMemoryDto> jvmDtoList = MonitorUtil.getJVM(webContent);
+		return jvmDtoList;
+	}
 	
+	/**
+	 * 
+	 * @param proj
+	 * @param webContent
+	 * @return
+	 */
+	private List<Component> listComponent(SystemDto proj, String webContent) {
+		String item = null;
+		// Parse html
+		Pattern pattern = Pattern.compile(Constant.PATTERN_COMPONENT);
+		List<String> list = new ArrayList<String>();
+        Matcher matcher = pattern.matcher(webContent);
+        
+		// Checks if existing any string that match with the pattern
+        while (matcher.find()) {
+            item = StringUtils.getValueInTDTag(matcher.group().replace(
+                        Constant.PERCENTAGE_SYMBOL, "Perc"));
+
+            // Adds to the list
+            list.add(item);
+        } 
+        
+		int iC = 0;
+        Component component = null;
+        List<Component> compList = new ArrayList<Component>();
+        while (iC < (list.size())) {
+
+        	// Declares new component
+            component = new Component();
+            String id = proj.getName() + "_"
+                + list.get(iC).replaceAll("sysdate", "").trim().replaceAll(
+                    "\\s",
+                    "_");
+            component.setComponentId(id.trim());
+            component.setName(list.get(iC));
+            component.setSysDate(list.get(iC + 1));
+            String errorStr = list.get(iC + 2);
+            component.setError(errorStr);
+            component.setDiscription(list.get(iC + 2));
+            component.setPing(list.get(iC + 3));
+            System.out.println("Comp --> : " + component.getPing());
+
+            // Increases count variable
+            iC += 4;
+            compList.add(component);
+        } 
+		return compList;
+	}
+	
+	private List<Component> listComponentByXml(String webContent, SystemDto systemDto) {
+		XMLMonitorParser parse = new XMLMonitorParser();
+		List<Component> parseServiceComponents = parse.getServiceComponent(webContent);
+		
+		Component fullComponent = null;
+		List<Component> fullServiceComponents = new ArrayList<Component>();
+		String message = null;
+		for (int i = 0; i < parseServiceComponents.size(); i++) {
+			
+			// Initiate new full component
+			fullComponent = buildServiceComponent(fullComponent, parseServiceComponents.get(i), systemDto);
+			
+			// Checks if the component is error and send alert email
+			String errorStr = fullComponent.getError();
+			if (!errorStr.equals(Constant.COMPONENT_NONE_STRING)) {
+
+				// OK, you are an error exactly
+				message = "Having error with component: "
+						+ fullComponent.getName()
+						+ ". Update history and send email";
+				logger.info(message);
+			}
+
+			// Prints out
+			logger.info("Component : " + fullComponent);
+
+			// Adds components
+			fullServiceComponents.add(fullComponent);
+		}
+		return fullServiceComponents;
+	}
 	
 	public URLPageObject generateInfo(SystemDto systemDto)
 			throws MonitorException, Exception {
@@ -125,6 +209,7 @@ public class URLMonitor {
 
 		URLPageObject obj = null;
 		Component fullComponent = null;
+		JVMMemoryDto jvmMemDto = new JVMMemoryDto();
 		try {
 			SimpleDateFormat dateFormat = new SimpleDateFormat(TIME_FORMAT);
 			String message = "Begin monitor...";
@@ -155,8 +240,9 @@ public class URLMonitor {
 				// HttpUtils.retrievePage("https://ukpensionsint.bp.com/content/BT_monitorxml.html");
 				// page =
 				// HttpUtils.retrievePage("http://192.168.1.13:8080/content/BT_monitorxml.html");
-				// page =
-				// HttpUtils.retrievePage("http://192.168.1.111:8080/bpg/content/monitor_test_xml");
+//				page =
+//				HttpUtils.retrievePage("https://ukpensionsint.bp.com/content/cmg_monitor.html");
+//						HttpUtils.retrievePage("https://ukpensionsint.bp.com/content/BT_monitorxml.html?system_info=true");
 				webContent = page.getContent();
 
 				// }
@@ -186,7 +272,6 @@ public class URLMonitor {
 							+ e.getMessage();
 					logger.log(Level.WARNING, message);
 				}
-				
 			}
 
 			// Reads content
@@ -216,57 +301,38 @@ public class URLMonitor {
 				sendUnknownAlerts(systemDto, message);
 				logger.info(message);
 			}
-
-			// Parse xml data for alert
-			JVMMemoryDto jvmMemDto = new JVMMemoryDto();
-			XMLMonitorParser parse = new XMLMonitorParser();
-			List<JVMMemoryDto> parseJVMs = parse.getJVMComponent(webContent);
-
-			List<CpuDto> parseCPUs = parse.getOriginalCPU(webContent);
-			List<FileSystemDto> files = parse.getFileSystem(webContent);
-			List<CpuPhysicalDto> physicalCPus = parse
-					.getPhysicalCPU(webContent);
-
-			// Parse xml data for memCache
-			//XMLParserForMemCache cacheParser = new XMLParserForMemCache();
-//			List<ServiceMonitorDto> mServices = (ArrayList<ServiceMonitorDto>)cacheParser.getServiceComponent(webContent);
-//			List<JvmDto> mJVMs = cacheParser.getJVMForCache(webContent);
-//			List<FileSystemCacheDto> mfiles =  cacheParser.getFileSystem(webContent);
-//			List<MemoryDto> mPhysicalCpuList = cacheParser.getPhysicalCPUForMem(webContent);
-//			List<CpuDto> mOrginalCpuList = cacheParser.getOriginalCPUForMem(webContent);
 			
-			systemDto.setSystemStatus(true);
-			List<Component> parseServiceComponents = parse.getServiceComponent(webContent);
-			
+			List<JVMMemoryDto> parseJVMs = new ArrayList<JVMMemoryDto>();
 			List<Component> fullServiceComponents = new ArrayList<Component>();
-			for (int i = 0; i < parseServiceComponents.size(); i++) {
+			List<CpuDto> parseCPUs = new ArrayList<CpuDto>();
+			List<FileSystemDto> files = new ArrayList<FileSystemDto>();
+			List<CpuPhysicalDto> physicalCPus =new ArrayList<CpuPhysicalDto>();
+			CpuDto cpuObj = null;
+			if (MonitorUtil.isPatternHtml(webContent)) {
+				MonitorWorker worker = new MonitorWorker();
+		        cpuObj = worker.getCPUMonitor(webContent);
+		        files = worker.getDFMonitor(webContent);
+		        MemoryObject mem = worker.getMemObjectMonitor(webContent);
+		        fullServiceComponents = listComponent(systemDto, webContent);
+		        parseJVMs = listJVMByHtml(webContent);
+			} else {
 				
-				// Initiate new full component
-				fullComponent = buildServiceComponent(fullComponent, parseServiceComponents.get(i), systemDto);
-				
-				// Checks if the component is error and send alert email
-				String errorStr = fullComponent.getError();
-				if (!errorStr.equals(Constant.COMPONENT_NONE_STRING)) {
-
-					// OK, you are an error exactly
-					message = "Having error with component: "
-							+ fullComponent.getName()
-							+ ". Update history and send email";
-					logger.info(message);
-				}
-
-				// Prints out
-				logger.info("Component : " + fullComponent);
-
-				// Adds components
-				fullServiceComponents.add(fullComponent);
+				// Parse xml data for alert
+				XMLMonitorParser parse = new XMLMonitorParser();
+			    parseJVMs = parse.getJVMComponent(webContent);
+				parseCPUs = parse.getOriginalCPU(webContent);
+				files = parse.getFileSystem(webContent);
+				physicalCPus = parse
+						.getPhysicalCPU(webContent);
+				fullServiceComponents = listComponentByXml(webContent, systemDto);
 			}
-			
+			systemDto.setSystemStatus(true);
+
 			// >>>>>> Service Monitor and JVM process <<<<<<
 			if ((fullServiceComponents != null) && (fullServiceComponents.size() > 0)) {
 				ServiceMonitorDAO serviceDao = new ServiceMonitorDaoJDOImpl();
 
-				Integer ping = null;
+				
 				ServiceDto serviceDto = null;
 
 				if (parseJVMs!= null && parseJVMs.size() == 1) {
@@ -288,17 +354,20 @@ public class URLMonitor {
 				
 				int count = 1;
 				StringBuffer  errorMessage = new StringBuffer();
+				int ping =0;
+				String ps;
 				// Loop over array list to get 'ServiceMonitor' type
 				for (Component comp : fullServiceComponents) {
 					serviceDto = new ServiceDto();
-
+					ps = Ultility.extractDigit(comp.getPing());
+						
 					// Get ping number
-					ping = Integer.parseInt(Ultility.extractDigit(comp.getPing()));
+					ping = Integer.parseInt(ps);
 					
 					if (ping > Constant.PING_LEVEL_RESPONSE) {
 						
 						// Describe service error.
-						errorMessage.append(count).append(". The service name : ").append(comp.getName())
+						errorMessage.append(count).append(". The service name : ").append(comp.getName() == null ? " No name" :comp.getName())
 						.append(" has taken too much time for response.\r\n")
 						.append("Please, re-check or update your system again.\r\n").append("\r\n");
 						comp.setError(errorMessage.toString());
@@ -342,7 +411,7 @@ public class URLMonitor {
 			String error = "";
 			Timestamp currentDate = null;
 			CpuMemoryDAO cpuDao = new CpuMemoryDaoJDOImpl();
-			CpuDto cpuObj = null;
+			
 			if (parseCPUs != null && parseCPUs.size() > 0) { 
 				cpuObj = parseCPUs.get(0);
 				cpuObj.setTimeStamp(now);
@@ -402,7 +471,7 @@ public class URLMonitor {
 					List<CpuDto> cpuList = new ArrayList<CpuDto>();
 
 					final int threeLastestCpu = 3;
-					cpuDao.getLastestCpuMemory(systemDto, threeLastestCpu);
+					cpuList = cpuDao.getLastestCpuMemory(systemDto, threeLastestCpu);
 					if (cpuList != null) {
 						if (cpuList.size() < threeLastestCpu) {
 							cpuCritical = false;
@@ -424,12 +493,9 @@ public class URLMonitor {
 								+ " is greater than "
 								+ Constant.CPU_LEVEL_HISTORY_UPDATE);
 
-//						sendAlerts(fullComponent, compId, (ArrayList<ServiceMonitorDto>)mServices,
-//								mJVMs, 
-//								mOrginalCpuList.get(0), 
-//								mfiles, mPhysicalCpuList);
+						sendAlerts(fullComponent, null, compId );
+
 						
-						//sendAlerts(fullComponent,null, compId);
 					}
 				} catch (Exception e) {
 					logger.info("Cannot get values for CPU , error: "
@@ -540,7 +606,7 @@ public class URLMonitor {
 			if (e instanceof NullPointerException) {
 				
 				systemDto.setSystemStatus(false);
-				message = "Unknow error has occurr at system "+systemDto.getName();
+				message = "Can't not parse data information :"+systemDto.getName();
 				logger.log(Level.SEVERE, e.getMessage());
 			}
 			if (e instanceof ServiceForbiddenException) {
@@ -552,29 +618,6 @@ public class URLMonitor {
 			throw e;
 		}
 
-	}
-	
-	private void storeToMemCache(ArrayList<ServiceMonitorDto> serviceMonitorList,
-			ArrayList<JvmDto> jvms, 
-			CpuDTO  cpuDto, 
-			List<FileSystemCacheDto> files, 
-			List<MemoryDto> memory, AlertMonitorDto alertDto  ) throws MonitorException {
-		
-		JvmDto aJvm = null;
-		if (jvms.size() > 0)
-			aJvm = jvms.get(0);
-		
-		// Create an alert in Mem Cache
-		ArrayList<SystemMonitorStore> systemMonitorCaches = MonitorMemcache.getSystemMonitorStore();
-		for (SystemMonitorStore systemMonitor : systemMonitorCaches) {
-			systemMonitor.setJvm(aJvm);
-			systemMonitor.setServiceMonitorList(serviceMonitorList);
-			systemMonitor.setCpu(cpuDto);
-			systemMonitor.setFileSysList( (ArrayList<FileSystemCacheDto>)files);
-			systemMonitor.setMemory((ArrayList<MemoryDto>)memory);
-			systemMonitor.setAlert(alertDto);
-		}
-		MonitorMemcache.putSystemMonitorStore(systemMonitorCaches);
 	}
 	
 	/**
@@ -614,50 +657,7 @@ public class URLMonitor {
 							+ ", error: " + e.getMessage());
 		}
 	}
-
-
-	/**
-	 * @param component
-	 * @param compId
-	 * @param serviceMonitorList
-	 * @param jvms
-	 * @param cpuDto
-	 * @param files
-	 * @param memory
-	 * @throws MonitorException
-	 */
-	private void sendMemCacheAlerts(Component component, String compId, ArrayList<ServiceMonitorDto> serviceMonitorList,
-			ArrayList<JvmDto> jvms, 
-			CpuDTO  cpuDto, 
-			List<FileSystemCacheDto> files, 
-			List<MemoryDto> memory , 
-			AlertMonitorDto alertDto)
-			throws MonitorException {
-		SystemMonitorDAO systemDao = new SystemMonitorDaoJDOImpl();
-
-		try {
-			SystemDto localSystemDto = systemDao.getSystembyID(compId).toDTO();
-			if (localSystemDto != null) {
-				MailService mailSrv = new MailService();
-				mailSrv.sendAlertMail(component, null, localSystemDto);
-				logger.info("An email has been delivered to "
-						+ localSystemDto.getGroupEmail()
-						+ " to notify about error");
-			}
-			
-		} catch (MonitorException e) {
-			logger.log(
-					Level.SEVERE,
-					"Cannot send email about error" + " of component "
-							+ component.getName() + ", error: "
-							+ e.getMessage());
-		} catch (Exception e) {
-			logger.log(Level.SEVERE,
-					"Exception at component " + component.getName()
-							+ ", error: " + e.getMessage());
-		}
-	}
-
+	
 	/**
 	 * Make alert by email.
 	 * 

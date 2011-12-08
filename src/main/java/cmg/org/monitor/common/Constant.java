@@ -14,6 +14,8 @@ public interface Constant {
 	
 	public static String DATE_EMAIL_FORMAT = "E, dd MMM yyyy HH:mm:ss Z";
 	
+	public static String PERCENTAGE_SYMBOL = "%";
+	
 	/** User input protocol . */
 	public static String USER_PROTOCOL = "SMTP";
 	
@@ -84,6 +86,9 @@ public interface Constant {
     public static String PATTERN_COMPONENT =
         "(<td(|class='value')+>)([^<>]*)(</td>)";
 
+    public static String PATTERN_HTML =
+            "<html>";
+    
     /** The pattern for CPU usage value. */
     public static String PATTERN_CPU_USAGE = "(CPU usage:)(\\s\\d*[.][0-9][%])";
 
