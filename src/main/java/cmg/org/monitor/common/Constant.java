@@ -90,10 +90,10 @@ public interface Constant {
 
     /** The string describe the pattern of a component. */
     public static String PATTERN_HREF =
-        "(href=[\"']#([^<>]*)[\"'])";
+        "([\\s]*href=[\"']#([^<>]*)[\"'])";
     
     public static String PATTERN_HREF_A_NAME =
-            "(<a name=[\"']([^<>]*)[\"']/>)";
+            "(<a[\\s]*name=[\"']([^<>]*)[\"'][\\s]*/>)";
     
     public static String PATTERN_HTML =
             "<html>";
