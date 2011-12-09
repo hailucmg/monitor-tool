@@ -40,6 +40,14 @@ public class MonitorUtil {
           matchStr = matcher.group();
           inputStr = inputStr.replaceAll(matchStr, Constant.BLANK);
         }
+        
+        pattern = Pattern.compile(Constant.PATTERN_HREF_A_NAME);
+    	matcher = pattern.matcher(inputStr);        
+		// Checks if existing any string that match with the pattern
+        while (matcher.find()) {
+          matchStr = matcher.group();
+          inputStr = inputStr.replaceAll(matchStr, Constant.BLANK);
+        }
         return inputStr;
     }
 	

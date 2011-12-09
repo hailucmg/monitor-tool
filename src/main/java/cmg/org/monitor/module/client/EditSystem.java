@@ -1,5 +1,6 @@
 package cmg.org.monitor.module.client;
 
+import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorEditDto;
 import cmg.org.monitor.util.shared.HTMLControl;
 
@@ -52,10 +53,10 @@ public class EditSystem extends AncestorEntryPoint {
 		if (currentPage == HTMLControl.PAGE_EDIT_SYSTEM) {
 			final String sysID = HTMLControl.getSystemId(History.getToken());
 			try {
-				monitorGwtSv.validSystemId(sysID, new AsyncCallback<Boolean>() {
+				monitorGwtSv.validSystemId(sysID, new AsyncCallback<SystemMonitor>() {
 					@Override
-					public void onSuccess(Boolean result) {
-						if (result) {
+					public void onSuccess(SystemMonitor result) {
+						if (result != null) {
 							tableForm = new FlexTable();
 							addWidget(HTMLControl.ID_BODY_CONTENT, tableForm);
 							initFlexTable(sysID);

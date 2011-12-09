@@ -14,6 +14,7 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -46,9 +47,12 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 	protected boolean isOnload = true;
 
 	static boolean isReadyDelete = true;
+	
+	protected DialogBox dialogBox;
 
 	@Override
 	public void onModuleLoad() {
+		dialogBox = new DialogBox();
 		addWidget(HTMLControl.ID_VERSION, new HTML("<span>Version "
 				+ MonitorConstant.VERSION + "</span>"));
 		try {
@@ -122,11 +126,14 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 	private void initHash(String hash) {
 		currentUrl = HTMLControl.trimHashPart(Window.Location.getHref());
 		if (HTMLControl.validIndex(hash)) {
+			dialogBox.hide();
 			clear();
 			currentPage = HTMLControl.getPageIndex(hash);
-
-			addWidget(HTMLControl.ID_PAGE_HEADING,
-					HTMLControl.getPageHeading(currentPage));
+			if (currentPage != HTMLControl.PAGE_SYSTEM_DETAIL
+					&& currentPage != HTMLControl.PAGE_SYSTEM_STATISTIC) {
+				addWidget(HTMLControl.ID_PAGE_HEADING,
+						HTMLControl.getPageHeading(currentPage));
+			}
 			if (currentPage == HTMLControl.PAGE_SYSTEM_DETAIL
 					|| currentPage == HTMLControl.PAGE_SYSTEM_STATISTIC
 					|| currentPage == HTMLControl.PAGE_ADD_SYSTEM
@@ -153,7 +160,6 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 					+ HTMLControl.HTML_DASHBOARD_NAME);
 		}
 	}
-
 
 	protected void doLogin() {
 		monitorGwtSv.getUserLogin(new AsyncCallback<UserLoginDto>() {
@@ -233,6 +239,8 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 		setVisibleMessage(true, typeMessage);
 		timerMess.scheduleRepeating(1000);
 	}
+	
+	
 
 	protected static void showReloadCountMessage(final int typeMessage) {
 		count = MonitorConstant.REFRESH_RATE / 1000;
@@ -243,13 +251,13 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 		showMessage(
 				"Latest status of systems. Update in "
 						+ HTMLControl.getStringTime(count),
-				"#dashboard/reload", "Reload now.", typeMessage, true);
+				"#dashboard/reload", "<input type=\"button\"  class=\"form-reload\">", typeMessage, true);
 		timerMess = new Timer() {
 			@Override
 			public void run() {
 				showMessage("Latest status of systems. Update in "
 						+ HTMLControl.getStringTime(--count),
-						"#dashboard/reload", "Reload now.", typeMessage, false);
+						"#dashboard/reload", "<input type=\"button\"  class=\"form-reload\">", typeMessage, false);
 				if (count <= 0) {
 					setVisibleMessage(false, typeMessage);
 					Window.Location.replace(Window.Location.getHref()

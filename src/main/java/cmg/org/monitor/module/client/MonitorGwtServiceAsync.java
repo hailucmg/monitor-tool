@@ -7,6 +7,7 @@ import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorEditDto;
 import cmg.org.monitor.ext.model.shared.UserDto;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
+import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -37,7 +38,7 @@ public interface MonitorGwtServiceAsync {
 
 	void listUser(AsyncCallback<Map<String, UserDto>> callback);
 
-	void validSystemId(String sysID, AsyncCallback<Boolean> callback);
+	void validSystemId(String sysID, AsyncCallback<SystemMonitor> callback);
 
 	void addSystem(SystemMonitor system, String url,
 			AsyncCallback<String> callback);

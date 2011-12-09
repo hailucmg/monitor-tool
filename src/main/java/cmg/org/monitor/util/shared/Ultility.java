@@ -85,7 +85,6 @@ public class Ultility {
 	public static String extractDigit(String str) {
 		Pattern p = Pattern.compile(DIGIT_PATTERN);
 		Matcher m = p.matcher(str);
-
 		if (m.find())
 			return m.group();
 		return null;

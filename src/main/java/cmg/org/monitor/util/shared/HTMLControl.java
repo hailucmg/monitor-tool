@@ -1,6 +1,7 @@
 package cmg.org.monitor.util.shared;
 
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.HTML;
@@ -59,6 +60,14 @@ public class HTMLControl {
 			+ " style=\"display: block; margin-left: auto; margin-right: auto\"/>";
 
 	public static final String HTML_ARROW_IMAGE = "<img src=\"images/icon/right_arrow.png\" />";
+	
+	public static String getButtonHtml(String sid, boolean type) {
+		StringBuffer tmp = new StringBuffer();
+		tmp.append("<a href=\""+ (type ? HTML_SYSTEM_DETAIL_NAME : HTML_SYSTEM_STATISTIC_NAME) + "/" +sid+"\">");
+		tmp.append("<input type=\"button\" class=\""+ (type ? "form-details" : "form-statistic")+"\">");
+		tmp.append("</a>");
+		return tmp.toString();
+	}
 
 	public static String getAboutContent() {
 		StringBuffer tmp = new StringBuffer();
@@ -256,7 +265,10 @@ public class HTMLControl {
 		return "<img src=\"images/icon/"
 				+ healthStatus
 				+ "_status_icon.png\" width=\"24\" height=\"24\" "
-				+ "style=\"display: block; margin-left: auto; margin-right: auto\" />";
+				+ "style=\"display: block; margin-left: auto; margin-right: auto\""
+				+ " alt=\""
+				+"\""
+				+" />";
 	}
 
 	public static String getHTMLStatusImage(boolean b) {
@@ -292,6 +304,19 @@ public class HTMLControl {
 				+ (minutes < 10 ? "0" : "") + minutes + ":"
 				+ (seconds < 10 ? "0" : "") + seconds);
 		return time;
+	}
+	
+	public static HTML getPageHeading(SystemMonitor sys) {
+		StringBuffer temp = new StringBuffer();
+		temp.append("<h1>");
+		temp.append("<a href=\"" + HTML_DASHBOARD_NAME
+				+ "\">Dashboard</a> ");
+		temp.append(HTML_ARROW_IMAGE);
+		temp.append(" <a ");
+		temp.append("\">");
+		temp.append(sys.getCode() + " - " + sys.getName());
+		temp.append("</a> ");
+		return new HTML(temp.toString());
 	}
 
 	public static HTML getPageHeading(int page) {

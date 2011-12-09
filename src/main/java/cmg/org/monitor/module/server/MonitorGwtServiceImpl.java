@@ -20,6 +20,7 @@ import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorEditDto;
 import cmg.org.monitor.ext.model.shared.UserDto;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
+import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.module.client.MonitorGwtService;
 import cmg.org.monitor.services.MonitorLoginService;
 import cmg.org.monitor.services.SitesHelper;
@@ -197,16 +198,15 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public boolean validSystemId(String sysID) {
+	public SystemMonitor validSystemId(String sysID) {
 		SystemMonitorDAO sysDAO = new SystemMonitorDaoJDOImpl();
-		boolean b = true;
+		SystemMonitor sys = null;
 		try {
-			b = sysDAO.getSystembyID(sysID) != null;
+			sys = sysDAO.getSystembyID(sysID);
 		} catch (Exception ex) {
-			b = false;
 			logger.log(Level.SEVERE, ex.getCause().getMessage());
 		}
-		return b;
+		return sys;
 	}
 
 	@Override
@@ -298,13 +298,13 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public String getAboutContent() {
-		SitesHelper sh = new SitesHelper();
-		return sh.getSiteEntryContent(MonitorConstant.SITES_ABOUT_CONTENT_ID);
+		SitesHelper sh = new SitesHelper();		
+		return MonitorUtil.parseHref(sh.getSiteEntryContent(MonitorConstant.SITES_ABOUT_CONTENT_ID));
 	}
 
 	@Override
 	public String getHelpContent() {
 		SitesHelper sh = new SitesHelper();
-		return sh.getSiteEntryContent(MonitorConstant.SITES_HELP_CONTENT_ID);
+		return MonitorUtil.parseHref(sh.getSiteEntryContent(MonitorConstant.SITES_HELP_CONTENT_ID));
 	}
 }

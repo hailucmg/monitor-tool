@@ -3,6 +3,7 @@ package cmg.org.monitor.services;
 import java.io.IOException;
 import java.net.URL;
 
+import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
 import com.google.gdata.client.sites.SitesService;
@@ -54,7 +55,10 @@ public class SitesHelper {
 		
 	public static void main(String[] args) {
 		SitesHelper  s= new SitesHelper();
-		System.out.print(s.getSiteEntryContent(MonitorConstant.SITES_HELP_CONTENT_ID));
+		String temp = s.getSiteEntryContent(MonitorConstant.SITES_HELP_CONTENT_ID);
+		System.out.println(temp);
+		System.out.println("########################################################################");
+		System.out.println(MonitorUtil.parseHref(temp));
 	}
 	
 }

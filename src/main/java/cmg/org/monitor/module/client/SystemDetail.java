@@ -5,6 +5,7 @@ import cmg.org.monitor.entity.shared.FileSystem;
 import cmg.org.monitor.entity.shared.JVMMemory;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
@@ -73,13 +74,15 @@ public class SystemDetail extends AncestorEntryPoint {
 				|| currentPage == HTMLControl.PAGE_SYSTEM_STATISTIC) {
 			sysID = HTMLControl.getSystemId(History.getToken());
 			try {
-				monitorGwtSv.validSystemId(sysID, new AsyncCallback<Boolean>() {
+				monitorGwtSv.validSystemId(sysID, new AsyncCallback<SystemMonitor>() {
 					@Override
-					public void onSuccess(Boolean result) {
-						if (result) {
+					public void onSuccess(SystemMonitor result) {
+						if (result != null) {
 							flexTableContent = new FlexTable();
 							addWidget(HTMLControl.ID_BODY_CONTENT,
 									flexTableContent);
+							addWidget(HTMLControl.ID_PAGE_HEADING,
+									HTMLControl.getPageHeading(result));
 							initContent();
 						} else {
 							showMessage("Invalid System ID. ",
@@ -329,7 +332,7 @@ public class SystemDetail extends AncestorEntryPoint {
 		JVMMemory jvm = sys.getLastestJvm();
 		if (jvm != null) {
 			pieJvm.draw(createDataTableJvm(jvm),
-					createPieChartOptions("Java Visual Memory (" + HTMLControl.convertMemoryToString(jvm.getTotalMemory())
+					createPieChartOptions("Java Virtual Machine (" + HTMLControl.convertMemoryToString(jvm.getTotalMemory())
 												+ " of " + HTMLControl.convertMemoryToString(jvm.getMaxMemory()) + ")"));
 		}
 	}
@@ -527,6 +530,7 @@ public class SystemDetail extends AncestorEntryPoint {
 		ops.setHeight(200);
 		ops.setMax(max);
 		ops.setMin(min);
+		ops.setPointSize(0);
 		ops.setShowCategories(false);
 		ops.setStacked(false);
 		return ops;

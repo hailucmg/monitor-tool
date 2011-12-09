@@ -7,6 +7,7 @@ import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorEditDto;
 import cmg.org.monitor.ext.model.shared.UserDto;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
+import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -29,7 +30,7 @@ public interface MonitorGwtService extends RemoteService {
 
 	SystemMonitor getLastestDataMonitor(String sysID);
 
-	boolean validSystemId(String sysID);
+	SystemMonitor validSystemId(String sysID);
 
 	CpuMemory[] listCpuMemoryHistory(String sysID);
 
