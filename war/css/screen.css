@@ -747,6 +747,13 @@ a:hover.action-delete	{
 	text-indent: -3000px;
 	width: 80px;
 	}
+.form-reload	{
+	background: url(../images/icon/reload.png) no-repeat;
+	border:none;
+	height:20px;
+	width: 60px;
+	margin-bottom: 4px;
+	}
 .form-reset	{
 	background: url(../images/forms/form_reset.gif) no-repeat;
 	border: none;
@@ -1689,6 +1696,30 @@ a:hover.back-login	{
 	background-color: #e4edf5;
 }
 
+
+#closeButton {
+  margin: 5px;
+}
+
+.table-popup {
+	width: 400px;
+	margin: 5px;
+}
+
+.form-details	{
+	background: url(../images/icon/details.png) no-repeat;
+	border: none;
+	height: 30px;
+	margin: 5px;
+	width: 105px;
+	}
+.form-statistic	{
+	background: url(../images/icon/statistic.png) no-repeat;
+	border: none;
+	height: 30px;
+	margin: 5px;
+	width: 105px;
+}
 	
 	
 	
