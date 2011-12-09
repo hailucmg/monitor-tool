@@ -26,8 +26,22 @@ public class MonitorUtil {
 	public static String TOTAL_MEMORY = "totalMemory";
 	public static String MAX_MEMORY = "maxMemory";
 	public static String USED_MEMORY = "memoryUsed";
+	
 	private static final Logger logger = Logger.getLogger(MonitorUtil.class.getCanonicalName());
 	
+	
+	public static String parseHref(String inputStr) {
+		Pattern pattern = Pattern.compile(Constant.PATTERN_HREF);
+    	Matcher matcher = pattern.matcher(inputStr);
+        String matchStr;
+        
+		// Checks if existing any string that match with the pattern
+        while (matcher.find()) {
+          matchStr = matcher.group();
+          inputStr = inputStr.replaceAll(matchStr, Constant.BLANK);
+        }
+        return inputStr;
+    }
 	
 	/**
      * Returns a map that contains a pair feeMemory, totalMemory, ... and their

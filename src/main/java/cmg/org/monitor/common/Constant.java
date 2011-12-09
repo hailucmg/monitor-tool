@@ -77,7 +77,9 @@ public interface Constant {
      * The alert level name that describe the critical status of a component.
      */
     public static String ALERT_LEVEL_CRITICAL = "CRITICAL";
-
+    
+    public static String BLANK = "";
+    
     // Values for Pattern
     /** The string describe the pattern of ping time. */
     public static String PATTERN_PING_TIME = "[0-9]*\\d";
@@ -86,6 +88,10 @@ public interface Constant {
     public static String PATTERN_COMPONENT =
         "(<td(|class='value')+>)([^<>]*)(</td>)";
 
+    /** The string describe the pattern of a component. */
+    public static String PATTERN_HREF =
+        "(href=\"([^<>]*)\")";
+    
     public static String PATTERN_HTML =
             "<html>";
     
