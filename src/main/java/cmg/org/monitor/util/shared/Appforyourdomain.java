@@ -5,7 +5,9 @@ package cmg.org.monitor.util.shared;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import cmg.org.monitor.exception.MonitorException;
 
@@ -51,33 +53,34 @@ public class Appforyourdomain {
 				"gdata-sample-AppsForYourDomain-UserService");
 		try {
 			userService.setUserCredentials(adminEmail, adminPassword);
-			groupService = new AppsGroupsService(adminEmail, adminPassword, domain,
-					"gdata-sample-AppsForYourDomain-AppsGroupService");
+			groupService = new AppsGroupsService(adminEmail, adminPassword,
+					domain, "gdata-sample-AppsForYourDomain-AppsGroupService");
 		} catch (AuthenticationException ae) {
-			
+
 			throw ae;
 		}
-		
+
 	}
 
 	/**
 	 * Get all user from group email ID
+	 * 
 	 * @param groupID
 	 * @return all user
 	 * @throws Exception
 	 */
-	public String[] listAllUser(String groupID) throws MonitorException, ServiceException, IOException {
+	public String[] listAllUser(String groupID) throws MonitorException,
+			ServiceException, IOException {
 		String[] listUser = null;
 		String id;
 
-		id = groupID.substring(groupID.lastIndexOf("/") + 1,
-				groupID.length());
+		id = groupID.substring(groupID.lastIndexOf("/") + 1, groupID.length());
 		String group = id.split("%")[0];
-		
+
 		GenericFeed groupsFeed;
 		groupsFeed = groupService.retrieveAllMembers(id);
-		Iterator<GenericEntry> groupsEntryIterator = groupsFeed
-				.getEntries().iterator();
+		Iterator<GenericEntry> groupsEntryIterator = groupsFeed.getEntries()
+				.iterator();
 		StringBuffer members = new StringBuffer();
 		while (groupsEntryIterator.hasNext()) {
 			members.append(groupsEntryIterator.next().getProperty(
@@ -90,11 +93,10 @@ public class Appforyourdomain {
 		for (int i = 0; i < listUser.length; i++) {
 			listUser[i] = listUser[i] + ":" + group;
 		}
-		
+
 		return listUser;
 	}
-	
-	
+
 	/**
 	 * 
 	 * @return all group
@@ -201,7 +203,7 @@ public class Appforyourdomain {
 			members.append(groupsEntryIterator.next().getProperty(
 					AppsGroupsService.APPS_PROP_GROUP_MEMBER_ID));
 			if (groupsEntryIterator.hasNext()) {
-				members.append(", ");
+				members.append(",");
 			}
 		}
 
@@ -209,6 +211,86 @@ public class Appforyourdomain {
 		for (int i = 0; i < listUser.length; i++) {
 			listUser[i] = listUser[i] + ":" + group;
 		}
+		return listUser;
+	}
+
+	public String[] listAdminDotCom(String[] listGroupID)
+			throws AppsForYourDomainException, MalformedURLException,
+			IOException, ServiceException {
+		String idGroupAdmin = null;
+		String[] listUser = null;
+		GenericFeed groupsFeed = null;
+		GenericEntry groupsEntry = null;
+		Iterator<GenericEntry> groupsEntryIterator = null;
+		String id;
+		for (int i = 0; i < listGroupID.length; i++) {
+			id = listGroupID[i].substring(listGroupID[i].lastIndexOf("/") + 1,
+					listGroupID[i].length());
+			if (id.startsWith("admin")) {
+				idGroupAdmin = id;
+			}
+		}
+		String group = idGroupAdmin.split("%")[0];
+		groupsFeed = groupService.retrieveAllMembers(idGroupAdmin);
+		groupsEntryIterator = groupsFeed.getEntries().iterator();
+		StringBuffer members = new StringBuffer();
+		while (groupsEntryIterator.hasNext()) {
+			members.append(groupsEntryIterator.next().getProperty(
+					AppsGroupsService.APPS_PROP_GROUP_MEMBER_ID));
+			if (groupsEntryIterator.hasNext()) {
+				members.append(",");
+			}
+		}
+
+		listUser = members.toString().trim().split(",");
+		for (int i = 0; i < listUser.length; i++) {
+			listUser[i] = listUser[i] + ":" + group;
+		}
+		return listUser;
+	}
+
+	public String[] listUserDotCom(String listGroupID) throws Exception {
+		String[] listUser = null;
+		String id;
+		id = listGroupID.substring(listGroupID.lastIndexOf("/") + 1,
+				listGroupID.length());
+		String group = id.split("%")[0];
+		if (id.startsWith("monitor_")) {
+		
+			GenericFeed groupsFeed;
+			try {
+				groupsFeed = groupService.retrieveAllMembers(id);
+				GenericEntry groupsEntry = null;
+				Iterator<GenericEntry> groupsEntryIterator = groupsFeed
+						.getEntries().iterator();
+				StringBuffer members = new StringBuffer();
+				while (groupsEntryIterator.hasNext()) {
+					members.append(groupsEntryIterator.next().getProperty(
+							AppsGroupsService.APPS_PROP_GROUP_MEMBER_ID));
+					if (groupsEntryIterator.hasNext()) {
+						members.append(",");
+					}
+				}
+				listUser = members.toString().trim().split(",");
+				for (int i = 0; i < listUser.length; i++) {
+					listUser[i] = listUser[i] + ":" + group;
+				}
+			} catch (AppsForYourDomainException e) {
+				// TODO Auto-generated catch block
+				throw e;
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				throw e;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				throw e;
+			} catch (ServiceException e) {
+				// TODO Auto-generated catch block
+				throw e;
+			}
+
+		}
+
 		return listUser;
 	}
 
@@ -220,7 +302,6 @@ public class Appforyourdomain {
 	public String[] listUser(String listGroupID) throws Exception {
 		String[] listUser = null;
 		String id;
-
 		id = listGroupID.substring(listGroupID.lastIndexOf("/") + 1,
 				listGroupID.length());
 		String group = id.split("%")[0];
@@ -262,15 +343,33 @@ public class Appforyourdomain {
 		return listUser;
 	}
 
-	
-	  public static void main(String[] arg) throws Exception { String[] list =
-	  null;
-	  
-	  Appforyourdomain client = new Appforyourdomain("monitor@c-mg.vn",
-	  "31102011", "c-mg.vn"); 
-	  String[] ids = client.listGroupID();
-	  System.out.println(ids.toString());
-	  
-	  }
-	 
+	/*public static void main(String[] arg) throws Exception {
+
+		Appforyourdomain client = new Appforyourdomain("monitor@c-mg.com",
+				"w3lcom3back", "c-mg.com");
+		String[] ids = client.listGroupID();
+		for(int a = 0 ; a< ids.length;a++){
+			System.out.println(ids[a]);
+		}
+		String[] admins = client.listAdminDotCom(ids);
+		for(int h = 0;h<admins.length;h++){
+			System.out.println(admins[h]);
+		}
+		List<String> alluser = new ArrayList<String>();
+		for (int i = 0; i < ids.length; i++) {
+			String[] user = client.listUserDotCom(ids[i]);
+			if (user != null) {
+				for (int j = 0; j < user.length; j++) {
+					alluser.add(user[j]);
+				}
+			}else{
+				continue;
+			}
+		}
+		
+		for(int k = 0 ; k < alluser.size();k++){
+			System.out.println(alluser.get(k));
+		}
+	}*/
+
 }
