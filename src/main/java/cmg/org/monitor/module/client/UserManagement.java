@@ -68,17 +68,6 @@ public class UserManagement extends AncestorEntryPoint {
 			Map.Entry entry = (Map.Entry) iter.next();
 			UserDto u = (UserDto) entry.getValue();
 			user.add(u);
-		/*	String permission = "N/A";
-			if (u.getGroup().contains("admin")) {
-				permission = "Admin";
-			} else if (u.getGroup().startsWith("monitor")) {
-				permission = "Normal user";
-			}
-			data.setValue(i, 0, u.getUsername());
-			data.setValue(i, 1, u.getEmail());
-			data.setValue(i, 2, u.getGroup());
-			data.setValue(i, 3, permission);
-			i++;*/
 		}
 		
 		ArrayList<UserDto> sortUser = sortByname(user);
