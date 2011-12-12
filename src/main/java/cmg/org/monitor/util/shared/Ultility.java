@@ -371,6 +371,10 @@ public class Ultility {
 		return ip;
 	}
 	
+	/**
+	 * @return allAdmin in two domain
+	 * @throws Exception
+	 */
 	public static ArrayList<String> allAdmin() throws Exception{
 		ArrayList<String> admin = new ArrayList<String>();
 		String[] admin_vn = Ultility.listAdmin();
@@ -386,6 +390,10 @@ public class Ultility {
 		return admin;
 	}
 	
+	/**
+	 * @return allUser in two domain
+	 * @throws Exception
+	 */
 	public static ArrayList<String> allUser() throws Exception{
 		ArrayList<String> user = new ArrayList<String>();
 		String[] user_vn = Ultility.listUser();
@@ -403,7 +411,7 @@ public class Ultility {
 	}
 	
 	
-	/*public static void main(String[] agr){
+	public static void main(String[] agr){
 		try {
 			ArrayList<String> admin = Ultility.allAdmin();
 			ArrayList<String> user = Ultility.allUser();
@@ -420,5 +428,5 @@ public class Ultility {
 			e.printStackTrace();
 		}
 		
-	}*/
+	}
 }
