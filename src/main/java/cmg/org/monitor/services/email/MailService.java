@@ -94,7 +94,6 @@ public class MailService {
 					}
 				}
 				contentRtc = buildDateRfc() + rfcTxt + messageError + "\r\n";
-
 				new EmailDomainClientApps(MonitorConstant.ADMIN_EMAIL_ID,
 						MonitorConstant.ADMIN_PASSWORD, MonitorConstant.DOMAIN,
 						emailID, contentRtc);
@@ -143,11 +142,12 @@ public class MailService {
 				// Alert email with message
 				if (component == null)
 					contentEmail = buildDateRfc() + rfcTxt + message;
-				else
+				else {
+					String descriptionError = component.getError().equals("")? message:component.getError();
 					// Alert email with component
 					contentEmail = buildDateRfc() + rfcTxt
-							+ component.getError();
-
+							+ descriptionError;
+				}
 				new EmailDomainClientApps(MonitorConstant.ADMIN_EMAIL_ID,
 						MonitorConstant.ADMIN_PASSWORD, MonitorConstant.DOMAIN,
 						emailID, contentEmail);
@@ -162,42 +162,5 @@ public class MailService {
 			logger.log(Level.SEVERE, me.getCause().getMessage());
 			throw me;
 		}
-
-		// ---Old send mail---
-
-		// Properties props = new Properties();
-		// Session session = Session.getDefaultInstance(props, null);
-		// String msgBody = component.getError();
-		//
-		// try {
-		//
-		// Message msg = new MimeMessage(session);
-		// msg.setFrom(new InternetAddress(EMAIL_ADMINISTRATOR,
-		// systemDto.getName()+" Monitor system"));
-		// msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
-		// systemDto.getGroupEmail(), "Cmg monitor email"));
-		// msg.setSubject(systemDto.getName() + ALERT_NAME);
-		// msg.setText(msgBody);
-		// Transport.send(msg);
-		//
-		// // log any exception and throw it's reason
-		// } catch (AddressException ae) {
-		// logger.warning("Address exception occurrence due to :"
-		// + ae.getCause().getMessage());
-		// throw new AddressException(ae.getCause().getMessage());
-		// } catch (MessagingException me) {
-		// logger.warning("Messaging exception occurrence due to :"
-		// + me.getCause().getMessage());
-		// throw new MessagingException(me.getCause().getMessage());
-		// } catch (UnsupportedEncodingException uee) {
-		// logger.warning("Unsupported encoding exception due to :"
-		// + uee.getCause().getMessage());
-		// throw new UnsupportedEncodingException(uee.getCause().getMessage());
-		//
-		// } catch (Exception e) {
-		// logger.log(Level.SEVERE, e.getCause().getMessage());
-		// }
-
 	}
-
 }

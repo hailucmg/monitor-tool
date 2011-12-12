@@ -89,8 +89,7 @@ public interface Constant {
         "(<td(|class='value')+>)([^<>]*)(</td>)";
 
     /** The string describe the pattern of a component. */
-    public static String PATTERN_HREF =
-        "([\\s]*href=[\"']#([^<>]*)[\"'])";
+    public static String PATTERN_HREF = "([\\s]*href=[\"']#([^<>]*)[\"'])";
     
     public static String PATTERN_HREF_A_NAME =
             "(<a[\\s]*name=[\"']([^<>]*)[\"'][\\s]*/>)";

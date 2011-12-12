@@ -8,6 +8,12 @@
  */
 package cmg.org.monitor.ext.util;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -161,7 +167,6 @@ public class URLMonitor {
             component.setError(errorStr);
             component.setDiscription(list.get(iC + 2));
             component.setPing(list.get(iC + 3));
-            System.out.println("Comp --> : " + component.getPing());
 
             // Increases count variable
             iC += 4;
@@ -280,7 +285,7 @@ public class URLMonitor {
 					// Prints out
 					message = "The system can't fetch content of data from the following url : \r\n" 
 							+ systemDto.getRemoteUrl()+ "\r\n"
-							+ "Please, update your system input information correctly";
+							+ "Please, update system input information: "+systemDto.getName()+" correctly";
 					systemDto.setSystemStatus(false);
 					sendUnknownAlerts(systemDto, message);
 					logger.info(message);
@@ -296,7 +301,7 @@ public class URLMonitor {
 				// Prints out
 				message = "The system contains error information from the following url : \r\n" 
 						+ systemDto.getRemoteUrl()+ "\r\n"
-						+ "Please, recheck your system status or system information";
+						+ "Please, recheck your system status or system "+systemDto.getName();
 				systemDto.setSystemStatus(false);
 				sendUnknownAlerts(systemDto, message);
 				logger.info(message);
@@ -403,7 +408,7 @@ public class URLMonitor {
 				}
 				
 				// Send error message when service components have errors
-				if (!errorMessage.equals(null))
+				if (!errorMessage.equals(null) && errorMessage.length() > 1)
 					sendAlerts(null, errorMessage.toString(), systemDto.getId());
 			}
 
@@ -715,6 +720,45 @@ public class URLMonitor {
 	 */
 	public void setTimeStamp(Timestamp timeStamp) {
 		this.timeStamp = timeStamp;
+	}
+	
+	public static void main(String args[]) {
+		String str = null;
+		
+		File file = new File("C:\\Users\\admin\\Desktop\\matchhtml.txt");
+	    FileInputStream fis = null;
+	    BufferedInputStream bis = null;
+	    DataInputStream dis = null;
+
+	    try {
+	      fis = new FileInputStream(file);
+
+	      // Here BufferedInputStream is added for fast reading.
+	      bis = new BufferedInputStream(fis);
+	      dis = new DataInputStream(bis);
+	      StringBuffer contents = new StringBuffer();
+	       
+	      // dis.available() returns 0 if the file does not have more lines.
+	      while (( str = dis.readLine()) != null) {
+	    	// this statement reads the line from the file and print it to
+	        // the console.
+				contents.append(str);
+			    contents.append(System.getProperty("line.separator"));
+			    
+	      }
+	      String cContent = contents.toString();
+	      String cc  = MonitorUtil.parseHref(cContent);
+	     
+	      // dispose all the resources after using them.
+	      fis.close();
+	      bis.close();
+	      dis.close();
+
+	    } catch (FileNotFoundException e) {
+	      e.printStackTrace();
+	    } catch (IOException e) {
+	      e.printStackTrace();
+	    }
 	}
 
 }
