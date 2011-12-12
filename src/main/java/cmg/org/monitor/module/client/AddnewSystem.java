@@ -30,7 +30,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 	ListBox listProtocol;
 	Button bttCreate;
 	Button bttBack;
-	ResetButton bttReset;
+	Button bttReset;
 	Label labelName;
 	Label labelurl;
 	Label labelip;
@@ -200,16 +200,20 @@ public class AddnewSystem extends AncestorEntryPoint {
 				labelmailgroup.setText("Notification mail group");
 
 				txtName = new TextBox();
-				txtName.addStyleName("inp-form");
-
+				txtName.setWidth("190px");
+				txtName.setHeight("28px");
+				
 				txtURL = new TextBox();
-				txtURL.addStyleName("inp-form");
-
+				txtURL.setWidth("190px");
+				txtURL.setHeight("28px");
+				
 				txtIP = new TextBox();
-				txtIP.addStyleName("inp-form");
-
+				txtIP.setWidth("190px");
+				txtIP.setHeight("28px");
+				
 				txtRemote = new TextBox();
-				txtRemote.addStyleName("inp-form");
+				txtRemote.setWidth("190px");
+				txtRemote.setHeight("28px");
 
 				listActive = new ListBox();
 				listActive.setWidth("198px");
@@ -234,13 +238,21 @@ public class AddnewSystem extends AncestorEntryPoint {
 				listGroup.setSelectedIndex(0);
 
 				bttCreate = new Button();
-				bttCreate.addStyleName("form-create");
+				bttCreate.setText("Create");
+				bttCreate.setStylePrimaryName("margin:4px;");
+				bttCreate.addStyleName("form-button");
 
-				bttReset = new ResetButton();
-				bttReset.addStyleName("form-reset");
+				bttReset = new Button();
+				bttReset.setText("Reset");
+				bttReset.setStylePrimaryName("margin:4px;");
+				bttReset.addStyleName("form-button");
+
 
 				bttBack = new Button();
-				bttBack.addStyleName("form-back");
+				bttBack.setText("Back");
+				bttBack.setStylePrimaryName("margin:4px;");
+				bttBack.addStyleName("form-button");
+				
 
 				panelButton = new AbsolutePanel();
 				panelButton.add(bttCreate);
