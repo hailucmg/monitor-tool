@@ -257,34 +257,42 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public Map<String, UserDto> listUser() throws Exception {
-		String[] admins = null;
-		String[] users = null;
-		Map<String, UserDto> list = new HashMap<String, UserDto>();
-
+		Map<String, UserDto> listUser = new HashMap<String, UserDto>();
+		Map<String, UserDto> listUser_vn = MonitorGwtServiceImpl.listUser_VN();
+		Map<String, UserDto> listUser_dotcom = MonitorGwtServiceImpl.listUser_Dotcom();
+		listUser.putAll(listUser_dotcom);
+		listUser.putAll(listUser_vn);
+		return listUser;	
+	}
+	
+	public static Map<String, UserDto> listUser_VN() throws Exception{
+		String[] admins_vn = null;
+		String[] users_vn = null;
+		Map<String, UserDto> listUser_vn = new HashMap<String, UserDto>();
 		try {
 
-			admins = Ultility.listAdmin();
-			for (int i = 0; i < admins.length; i++) {
-				String[] temp = admins[i].split(":");
+			admins_vn = Ultility.listAdmin();
+			for (int i = 0; i < admins_vn.length; i++) {
+				String[] temp = admins_vn[i].split(":");
 				UserDto u = new UserDto();
 				u.setUsername(temp[0].split("@")[0]);
 				u.setEmail(temp[0]);
 				u.setGroup(temp[1]);
-				list.put(u.getUsername().toString().trim(), u);
+				listUser_vn.put(u.getEmail().toString().trim(), u);
 			}
 
-			users = Ultility.listUser();
+			users_vn = Ultility.listUser();
 
-			for (int j = 0; j < users.length; j++) {
+			for (int j = 0; j < users_vn.length; j++) {
 
-				String[] temp = users[j].split(":");
+				String[] temp = users_vn[j].split(":");
 				UserDto u = new UserDto();
 				u.setUsername(temp[0].split("@")[0]);
 				u.setEmail(temp[0]);
 				u.setGroup(temp[1]);
 
-				if (!list.containsKey(u.getUsername().toString().trim())) {
-					list.put(u.getUsername(), u);
+				if (!listUser_vn.containsKey(u.getEmail().toString().trim())) {
+					listUser_vn.put(u.getEmail(), u);
 				}
 
 			}
@@ -293,9 +301,47 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			e.printStackTrace();
 		}
 		
-		return list;
-	}
+		return listUser_vn;
+	} 
+	
+	public static Map<String, UserDto> listUser_Dotcom() throws Exception{
+		String[] admins_com = null;
+		String[] users_com = null;
+		Map<String, UserDto> listUser_com = new HashMap<String, UserDto>();
+		try {
 
+			admins_com = Ultility.listAdminDotCom();
+			for (int i = 0; i < admins_com.length; i++) {
+				String[] temp = admins_com[i].split(":");
+				UserDto u = new UserDto();
+				u.setUsername(temp[0].split("@")[0]);
+				u.setEmail(temp[0]);
+				u.setGroup(temp[1]);
+				listUser_com.put(u.getEmail().toString().trim(), u);
+			}
+
+			users_com = Ultility.listUserDotCom();
+
+			for (int j = 0; j < users_com.length; j++) {
+
+				String[] temp = users_com[j].split(":");
+				UserDto u = new UserDto();
+				u.setUsername(temp[0].split("@")[0]);
+				u.setEmail(temp[0]);
+				u.setGroup(temp[1]);
+
+				if (!listUser_com.containsKey(u.getEmail().toString().trim())) {
+					listUser_com.put(u.getEmail(), u);
+				}
+
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return listUser_com;
+	} 
 	@Override
 	public String getAboutContent() {
 		SitesHelper sh = new SitesHelper();		
