@@ -688,6 +688,12 @@ a:hover.action-delete	{
 		 
 	
 /* FORM ------------------------------------------------------- */	
+.form-button{
+	float: left;
+	height: 30px;
+	margin: 0 0 0 4px;
+	width: 80px;
+}
 .form-back	{
 	background: url(../images/forms/form_back.png) no-repeat;
 	border: none;
