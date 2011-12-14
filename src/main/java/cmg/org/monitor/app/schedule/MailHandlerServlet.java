@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cmg.org.monitor.ext.util.MonitorUtil;
+
 @SuppressWarnings("serial")
 public class MailHandlerServlet extends HttpServlet {
 	private static final Logger log = Logger.getLogger(MailHandlerServlet.class
@@ -52,9 +54,11 @@ public class MailHandlerServlet extends HttpServlet {
 						Object obj = mp.getBodyPart(i).getContent();
 						String data = (String) obj;
 						log.log(Level.INFO, "contentmail :" + data);
-						if (data.trim().endsWith("</html>")) {
-							log.log(Level.INFO, "contentmail :end");
+						if (MonitorUtil.isPatternHtml(data)) {
+							log.log(Level.INFO, "contentmail :is html");
 							saveJDO(data);
+						}else{
+							log.log(Level.INFO, "contentmail :wrong");
 						}
 					}
 
