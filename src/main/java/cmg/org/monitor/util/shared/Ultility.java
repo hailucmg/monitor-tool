@@ -7,37 +7,41 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cmg.org.monitor.exception.MonitorException;
+import cmg.org.monitor.ext.model.shared.UserDto;
 
 public class Ultility {
-	
+
 	/** Represent standard date format */
-    public static final String STANDARD_FORMAT_DATE = "yyyy-mm-dd";
+	public static final String STANDARD_FORMAT_DATE = "yyyy-mm-dd";
 
-    /** Represent common date format */
-    public static final String COMMON_FORMAT_DATE = "dd/mm/yyyy";
+	/** Represent common date format */
+	public static final String COMMON_FORMAT_DATE = "dd/mm/yyyy";
 
-    /** symbol value */
-    public static final char UPPER_LINE = '-';
+	/** symbol value */
+	public static final char UPPER_LINE = '-';
 
-    /** Forward slash */
-    public static final char SLASH = '/';
-    
-    /** Represent digit pattern value */
-    public static final String DIGIT_PATTERN = "\\d+";
-    
-	public static double percentageForJVM(double d1, double d2) throws MonitorException {
-		if (d2 == 0) 
-			throw  new MonitorException("do not divide by zero number");
-	  	double percent = Math.floor(d1/d2*100);
+	/** Forward slash */
+	public static final char SLASH = '/';
+
+	/** Represent digit pattern value */
+	public static final String DIGIT_PATTERN = "\\d+";
+
+	public static double percentageForJVM(double d1, double d2)
+			throws MonitorException {
+		if (d2 == 0)
+			throw new MonitorException("do not divide by zero number");
+		double percent = Math.floor(d1 / d2 * 100);
 		return percent;
 	}
-    
-    /**
+
+	/**
 	 * @return all normal user in domain
 	 * @throws Exception
 	 */
@@ -59,12 +63,13 @@ public class Ultility {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		for(int a = 0 ; a < list.size();a++){
-			for(int b = 1 ; b <list.size();b++){
-				if(list.get(a).split(":")[0].equals(list.get(b).split(":")[0])){
-					String newUser = list.get(a).toString()+","+ list.get(b).split(":")[1];
+		for (int a = 0; a < list.size(); a++) {
+			for (int b = 1; b < list.size(); b++) {
+				if (list.get(a).split(":")[0].equals(list.get(b).split(":")[0])) {
+					String newUser = list.get(a).toString() + ","
+							+ list.get(b).split(":")[1];
 					list.add(a, newUser);
-					list.remove(b);	
+					list.remove(b);
 				}
 			}
 		}
@@ -72,13 +77,13 @@ public class Ultility {
 		for (int j = 0; j < list.size(); j++) {
 			allUser[j] = list.get(j);
 		}
-		
+
 		return allUser;
 	}
 
-	
 	/**
 	 * Extract digit number from a string value
+	 * 
 	 * @param str
 	 * @return String value
 	 */
@@ -89,35 +94,36 @@ public class Ultility {
 			return m.group();
 		return null;
 	}
-	
-	/**
-     * Function parse String value to Date type.<br>
-     *
-     * @param  strDateValue string value.
-     * @return java.utit.Date type.
-     */
-    public static Date isValidFormat(String strDateValue) {
-        
-    	// Default format
-        DateFormat formatter = new SimpleDateFormat();
-        Date validDate = null;
-        try {
-        	
-            // Find character in given string value
-            if (strDateValue.charAt(4) == UPPER_LINE) {
-                formatter = new SimpleDateFormat(STANDARD_FORMAT_DATE);
-            }
-            if (strDateValue.charAt(2) == SLASH) {
-                formatter = new SimpleDateFormat(COMMON_FORMAT_DATE);
-            }
-            validDate= formatter.parse(strDateValue);
 
-            return validDate;
-        } catch (ParseException pe) {
-            return null;
-        }
-    }
-	
+	/**
+	 * Function parse String value to Date type.<br>
+	 * 
+	 * @param strDateValue
+	 *            string value.
+	 * @return java.utit.Date type.
+	 */
+	public static Date isValidFormat(String strDateValue) {
+
+		// Default format
+		DateFormat formatter = new SimpleDateFormat();
+		Date validDate = null;
+		try {
+
+			// Find character in given string value
+			if (strDateValue.charAt(4) == UPPER_LINE) {
+				formatter = new SimpleDateFormat(STANDARD_FORMAT_DATE);
+			}
+			if (strDateValue.charAt(2) == SLASH) {
+				formatter = new SimpleDateFormat(COMMON_FORMAT_DATE);
+			}
+			validDate = formatter.parse(strDateValue);
+
+			return validDate;
+		} catch (ParseException pe) {
+			return null;
+		}
+	}
+
 	/**
 	 * @param userId
 	 * @return role of user
@@ -126,97 +132,53 @@ public class Ultility {
 	public static int getSystemRole(String userId) throws Exception {
 		int member = MonitorConstant.ROLE_GUEST;
 		String domain = userId.split("@")[1];
-		if(domain.contains("c-mg")){
-			boolean checking=true;
+		if (domain.contains("c-mg")) {
+			boolean checking = true;
 			ArrayList<String> admin = Ultility.allAdmin();
 			ArrayList<String> user = Ultility.allUser();
-			for(int i = 0; i < admin.size();i++){
-				if(admin.get(i).trim().toLowerCase().equals(userId.trim().toLowerCase())){
+			for (int i = 0; i < admin.size(); i++) {
+				if (admin.get(i).trim().toLowerCase()
+						.equals(userId.trim().toLowerCase())) {
 					member = MonitorConstant.ROLE_ADMIN;
 					checking = false;
 					break;
 				}
 			}
-			if(checking){
-				for(int j= 0 ; j < user.size();j++){
-					if(user.get(j).trim().toLowerCase().equals(userId.trim().toLowerCase())){
+			if (checking) {
+				for (int j = 0; j < user.size(); j++) {
+					if (user.get(j).trim().toLowerCase()
+							.equals(userId.trim().toLowerCase())) {
 						member = MonitorConstant.ROLE_NORMAL_USER;
 						break;
 					}
 				}
-			
-			}
-		}else{
-			member = MonitorConstant.ROLE_GUEST;
-		}
-		/*if (domain.equals("c-mg.vn")) {
-			boolean checking = true;
-			String[] temp = Ultility.listAdmin();
-			String[] admins = new String[temp.length];
-			for (int i = 0; i < temp.length; i++) {
-				admins[0] = temp[i].split(":")[0];
-				if (admins[0].trim().toString().toLowerCase()
-						.equals(userId.toLowerCase())) {
-					member = MonitorConstant.ROLE_ADMIN;
-					checking = false;
-				}
-			}
-			if (checking == true) {
-				String[] temp1 = Ultility.listUser();
-				String[] users = new String[temp1.length];
-				for (int k = 0; k < temp1.length; k++) {
-					users[0] = temp1[k].split(":")[0];
-					if (users[0].toLowerCase().equals(userId.toLowerCase())) {
-						member = MonitorConstant.ROLE_NORMAL_USER;
-					}
-				}
-			}
-		}else if(domain.equals("c-mg.com")){
-			boolean checking = true;
-			String[] temp = Ultility.listAdminDotCom();
-			String[] admins = new String[temp.length];
-			for (int i = 0; i < temp.length; i++) {
-				admins[0] = temp[i].split(":")[0];
-				if (admins[0].trim().toString().toLowerCase()
-						.equals(userId.toLowerCase())) {
-					member = MonitorConstant.ROLE_ADMIN;
-					checking = false;
-				}
-			}
-			if (checking == true) {
-				String[] temp1 = Ultility.listUserDotCom();
-				String[] users = new String[temp1.length];
-				for (int k = 0; k < temp1.length; k++) {
-					users[0] = temp1[k].split(":")[0];
-					if (users[0].toLowerCase().equals(userId.toLowerCase())) {
-						member = MonitorConstant.ROLE_NORMAL_USER;
-					}
-				}
 
 			}
+		} else {
+			member = MonitorConstant.ROLE_GUEST;
 		}
-		*/
 		return member;
-		
+
 	}
 
 	/**
 	 * @return all group in your domain
 	 * @throws Exception
 	 */
-	public static String[] listGroup() throws Exception {
-		Appforyourdomain client = new Appforyourdomain(
-				MonitorConstant.ADMIN_EMAIL, MonitorConstant.ADMIN_PASSWORD,
-				MonitorConstant.DOMAIN);
 
-		String[] groups = null;
-		try {
-			groups = client.listGroup();
+	public static String[] listGroup() throws Exception {
+		Appforyourdomain client_com = new Appforyourdomain(
+				MonitorConstant.ADMIN_EMAIL_DotCom,
+				MonitorConstant.ADMIN_PASSWORD_DotCom,
+				MonitorConstant.DOMAIN_DotCom);
+		String[] groups_com = null;
+		try{
+			groups_com = client_com.listGroupDotCom();
 		} catch (Exception e) {
 			// TODO: handle exception
 			throw e;
 		}
-		return groups;
+		return groups_com;
 
 	}
 
@@ -239,14 +201,15 @@ public class Ultility {
 		return admins;
 
 	}
-	
+
 	/**
 	 * @return all admin in domain_DotCom
 	 * @throws Exception
 	 */
 	public static String[] listAdminDotCom() throws Exception {
 		Appforyourdomain client = new Appforyourdomain(
-				MonitorConstant.ADMIN_EMAIL_DotCom, MonitorConstant.ADMIN_PASSWORD_DotCom,
+				MonitorConstant.ADMIN_EMAIL_DotCom,
+				MonitorConstant.ADMIN_PASSWORD_DotCom,
 				MonitorConstant.DOMAIN_DotCom);
 		String[] admins = null;
 		String[] ids = null;
@@ -260,14 +223,15 @@ public class Ultility {
 		return admins;
 
 	}
-	
+
 	/**
 	 * @return all normal user in domain_dotcom
 	 * @throws Exception
 	 */
 	public static String[] listUserDotCom() throws Exception {
 		Appforyourdomain client = new Appforyourdomain(
-				MonitorConstant.ADMIN_EMAIL_DotCom, MonitorConstant.ADMIN_PASSWORD_DotCom,
+				MonitorConstant.ADMIN_EMAIL_DotCom,
+				MonitorConstant.ADMIN_PASSWORD_DotCom,
 				MonitorConstant.DOMAIN_DotCom);
 		List<String> list = new ArrayList<String>();
 		String[] ids = null;
@@ -287,13 +251,14 @@ public class Ultility {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		//tim kiem user trung nhau va loai bo
-		for(int a = 0 ; a < list.size();a++){
-			for(int b = 1 ; b <list.size();b++){
-				if(list.get(a).split(":")[0].equals(list.get(b).split(":")[0])){
-					String newUser = list.get(a).toString()+","+ list.get(b).split(":")[1];
+		// tim kiem user trung nhau va loai bo
+		for (int a = 0; a < list.size(); a++) {
+			for (int b = 1; b < list.size(); b++) {
+				if (list.get(a).split(":")[0].equals(list.get(b).split(":")[0])) {
+					String newUser = list.get(a).toString() + ","
+							+ list.get(b).split(":")[1];
 					list.add(a, newUser);
-					list.remove(b);	
+					list.remove(b);
 				}
 			}
 		}
@@ -301,9 +266,10 @@ public class Ultility {
 		for (int j = 0; j < list.size(); j++) {
 			allUser[j] = list.get(j);
 		}
-		
+
 		return allUser;
 	}
+
 	/**
 	 * @return all normal user in domain_dotvn
 	 * @throws Exception
@@ -330,12 +296,13 @@ public class Ultility {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		for(int a = 0 ; a < list.size();a++){
-			for(int b = 1 ; b <list.size();b++){
-				if(list.get(a).split(":")[0].equals(list.get(b).split(":")[0])){
-					String newUser = list.get(a).toString()+","+ list.get(b).split(":")[1];
+		for (int a = 0; a < list.size(); a++) {
+			for (int b = 1; b < list.size(); b++) {
+				if (list.get(a).split(":")[0].equals(list.get(b).split(":")[0])) {
+					String newUser = list.get(a).toString() + ","
+							+ list.get(b).split(":")[1];
 					list.add(a, newUser);
-					list.remove(b);	
+					list.remove(b);
 				}
 			}
 		}
@@ -343,13 +310,13 @@ public class Ultility {
 		for (int j = 0; j < list.size(); j++) {
 			allUser[j] = list.get(j);
 		}
-		
+
 		return allUser;
 	}
 
 	/**
 	 * @param url
-	 * @return ip 
+	 * @return ip
 	 * @throws Exception
 	 */
 	public static String getIpbyUrl(String url) throws Exception {
@@ -370,63 +337,119 @@ public class Ultility {
 		}
 		return ip;
 	}
-	
+
 	/**
 	 * @return allAdmin in two domain
 	 * @throws Exception
 	 */
-	public static ArrayList<String> allAdmin() throws Exception{
+	public static ArrayList<String> allAdmin() throws Exception {
 		ArrayList<String> admin = new ArrayList<String>();
 		String[] admin_vn = Ultility.listAdmin();
 		String[] admin_dotCom = Ultility.listAdminDotCom();
-		for(int i = 0; i < admin_vn.length;i++){
+		for (int i = 0; i < admin_vn.length; i++) {
 			String email = admin_vn[i].split(":")[0].trim();
 			admin.add(email);
 		}
-		for(int j = 0; j < admin_dotCom.length;j++){
+		for (int j = 0; j < admin_dotCom.length; j++) {
 			String email = admin_dotCom[j].split(":")[0].trim();
 			admin.add(email);
 		}
 		return admin;
 	}
-	
+
 	/**
 	 * @return allUser in two domain
 	 * @throws Exception
 	 */
-	public static ArrayList<String> allUser() throws Exception{
+	public static ArrayList<String> allUser() throws Exception {
 		ArrayList<String> user = new ArrayList<String>();
 		String[] user_vn = Ultility.listUser();
 		String[] user_dotCom = Ultility.listUserDotCom();
-		for(int i = 0; i < user_vn.length;i++){
+		for (int i = 0; i < user_vn.length; i++) {
 			String email = user_vn[i].split(":")[0].trim();
 			user.add(email);
 		}
-		for(int j = 0; j < user_dotCom.length;j++){
+		for (int j = 0; j < user_dotCom.length; j++) {
 			String email = user_dotCom[j].split(":")[0];
 			user.add(email);
 		}
-		
+
 		return user;
 	}
-	
-	
-	public static void main(String[] agr){
+
+	public static Map<String, UserDto> listAllUser() throws Exception {
+		String[] admins_vn = null;
+		String[] users_vn = null;
+		Map<String, UserDto> listAllUser = new HashMap<String, UserDto>();
+		Map<String, UserDto> listUser_vn = new HashMap<String, UserDto>();
 		try {
-			ArrayList<String> admin = Ultility.allAdmin();
-			ArrayList<String> user = Ultility.allUser();
-			for(int i = 0;i<admin.size();i++){
-				System.out.println(admin.get(i));
+
+			admins_vn = Ultility.listAdmin();
+			for (int i = 0; i < admins_vn.length; i++) {
+				String[] temp = admins_vn[i].split(":");
+				UserDto u = new UserDto();
+				u.setUsername(temp[0].split("@")[0]);
+				u.setEmail(temp[0]);
+				u.setGroup(temp[1]);
+				listUser_vn.put(u.getEmail().toString().trim(), u);
 			}
-			for(int j = 0;j<user.size();j++){
-				System.out.println(user.get(j));
+
+			users_vn = Ultility.listUser();
+
+			for (int j = 0; j < users_vn.length; j++) {
+
+				String[] temp = users_vn[j].split(":");
+				UserDto u = new UserDto();
+				u.setUsername(temp[0].split("@")[0]);
+				u.setEmail(temp[0]);
+				u.setGroup(temp[1]);
+
+				if (!listUser_vn.containsKey(u.getEmail().toString().trim())) {
+					listUser_vn.put(u.getEmail(), u);
+				}
+
 			}
-			int member = Ultility.getSystemRole("tuannguyen@c-mg.net");
-			System.out.println(member);
+
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
+		String[] admins_com = null;
+		String[] users_com = null;
+		Map<String, UserDto> listUser_com = new HashMap<String, UserDto>();
+		try {
+
+			admins_com = Ultility.listAdminDotCom();
+			for (int i = 0; i < admins_com.length; i++) {
+				String[] temp = admins_com[i].split(":");
+				UserDto u = new UserDto();
+				u.setUsername(temp[0].split("@")[0]);
+				u.setEmail(temp[0]);
+				u.setGroup(temp[1]);
+				listUser_com.put(u.getEmail().toString().trim(), u);
+			}
+
+			users_com = Ultility.listUserDotCom();
+
+			for (int j = 0; j < users_com.length; j++) {
+
+				String[] temp = users_com[j].split(":");
+				UserDto u = new UserDto();
+				u.setUsername(temp[0].split("@")[0]);
+				u.setEmail(temp[0]);
+				u.setGroup(temp[1]);
+
+				if (!listUser_com.containsKey(u.getEmail().toString().trim())) {
+					listUser_com.put(u.getEmail(), u);
+				}
+
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		listAllUser.putAll(listUser_com);
+		listAllUser.putAll(listUser_vn);
+		return listAllUser;
 	}
 }
