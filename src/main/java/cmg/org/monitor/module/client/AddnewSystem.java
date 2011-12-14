@@ -214,6 +214,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 				
 				
 				txtRemote = new TextBox();
+				
 				txtRemote.setWidth("191px");
 				txtRemote.setHeight("28px");
 				
@@ -547,10 +548,10 @@ public class AddnewSystem extends AncestorEntryPoint {
 			listActive.setSelectedIndex(0);
 			listGroup.setSelectedIndex(0);
 			listProtocol.setSelectedIndex(0);
-			panelLabelEmail.setVisible(false);
-			panelTxtEmail.setVisible(false);
+			/*panelLabelEmail.setVisible(false);*/
+			/*panelTxtEmail.setVisible(false);
 			panelLabelEmailPassword.setVisible(false);
-			panelTxtEmailPassword.setVisible(false);
+			panelTxtEmailPassword.setVisible(false);*/
 			txtRemote.setEnabled(true);
 			//checkSMTP = false;
 			panelValidateEmail.setVisible(false);
