@@ -15,7 +15,6 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PasswordTextBox;
-import com.google.gwt.user.client.ui.ResetButton;
 import com.google.gwt.user.client.ui.TextBox;
 
 public class AddnewSystem extends AncestorEntryPoint {
@@ -200,37 +199,40 @@ public class AddnewSystem extends AncestorEntryPoint {
 				labelmailgroup.setText("Notification mail group");
 
 				txtName = new TextBox();
-				txtName.setWidth("190px");
+				txtName.setWidth("191px");
 				txtName.setHeight("28px");
 				
+				
 				txtURL = new TextBox();
-				txtURL.setWidth("190px");
+				txtURL.setWidth("191px");
 				txtURL.setHeight("28px");
 				
+				
 				txtIP = new TextBox();
-				txtIP.setWidth("190px");
+				txtIP.setWidth("191px");
 				txtIP.setHeight("28px");
 				
+				
 				txtRemote = new TextBox();
-				txtRemote.setWidth("190px");
+				txtRemote.setWidth("191px");
 				txtRemote.setHeight("28px");
-
+				
 				listActive = new ListBox();
-				listActive.setWidth("198px");
+				listActive.setWidth("199px");
 				listActive.setHeight("28px");
 				listActive.setSelectedIndex(0);
 				listActive.addItem("Yes");
 				listActive.addItem("No");
 
 				listProtocol = new ListBox();
-				listProtocol.setWidth("198px");
+				listProtocol.setWidth("199px");
 				listProtocol.setHeight("28px");
 				listProtocol.setSelectedIndex(0);
 				listProtocol.addItem("HTTP(s)");
 				listProtocol.addItem("SMTP");
 
 				listGroup = new ListBox();
-				listGroup.setWidth("198px");
+				listGroup.setWidth("199px");
 				listGroup.setHeight("28px");
 				for (int i = 0; i < result.length; i++) {
 					listGroup.addItem(result[i]);
@@ -239,19 +241,22 @@ public class AddnewSystem extends AncestorEntryPoint {
 
 				bttCreate = new Button();
 				bttCreate.setText("Create");
-				bttCreate.setStylePrimaryName("margin:4px;");
-				bttCreate.addStyleName("form-button");
+				bttCreate.setHeight("30px");
+				bttCreate.setWidth("80px");
+				bttCreate.setStylePrimaryName("margin:6px;");
 
 				bttReset = new Button();
 				bttReset.setText("Reset");
-				bttReset.setStylePrimaryName("margin:4px;");
-				bttReset.addStyleName("form-button");
-
+				bttReset.setHeight("30px");
+				bttReset.setWidth("80px");
+				bttReset.setStylePrimaryName("margin:6px;");
+			
 
 				bttBack = new Button();
 				bttBack.setText("Back");
-				bttBack.setStylePrimaryName("margin:4px;");
-				bttBack.addStyleName("form-button");
+				bttBack.setHeight("30px");
+				bttBack.setWidth("80px");
+				bttBack.setStylePrimaryName("margin:6px;");
 				
 
 				panelButton = new AbsolutePanel();
