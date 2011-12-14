@@ -342,12 +342,67 @@ public class Appforyourdomain {
 
 		return listUser;
 	}
+	
+	public String[] listGroupDotCom() {
+		String[] listGroup = null;
+		String[] listGroupDotCom = null;
+		List<String> list = new ArrayList<String>();
+		GenericFeed groupFeed = null;
+		Iterator<GenericEntry> groupsEntryIterator = null;
+		try {
+			groupFeed = groupService.retrieveAllGroups();
+			groupsEntryIterator = groupFeed.getEntries().iterator();
+			StringBuffer groups = new StringBuffer();
+			while (groupsEntryIterator.hasNext()) {
+				groups.append(groupsEntryIterator.next().getProperty(
+						AppsGroupsService.APPS_PROP_GROUP_ID));
+				if (groupsEntryIterator.hasNext()) {
+					groups.append(",");
+				}
+			}
+			listGroup = groups.toString().trim().split(",");
+			
+			for(int i =0;i < listGroup.length;i++){
+				if(listGroup[i].contains("monitor")){
+					list.add(listGroup[i]);
+				}
+			}
+		} catch (AppsForYourDomainException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		listGroupDotCom = new String[list.size()];
+		for(int j = 0 ; j < list.size();j++){
+			listGroupDotCom[j] = list.get(j);
+		}
+		return listGroupDotCom;
+	}
 
-	/*public static void main(String[] arg) throws Exception {
+	
+	public static void main(String[] arg) throws Exception {
 
 		Appforyourdomain client = new Appforyourdomain("monitor@c-mg.com",
 				"w3lcom3back", "c-mg.com");
-		String[] ids = client.listGroupID();
+		try {
+			String[] group = client.listGroupDotCom();
+			for(int i = 0 ; i < group.length;i++){
+				System.out.println(group[i]);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		/*String[] ids = client.listGroupID();
 		for(int a = 0 ; a< ids.length;a++){
 			System.out.println(ids[a]);
 		}
@@ -369,7 +424,7 @@ public class Appforyourdomain {
 		
 		for(int k = 0 ; k < alluser.size();k++){
 			System.out.println(alluser.get(k));
-		}
-	}*/
+		}*/
+	}
 
 }
