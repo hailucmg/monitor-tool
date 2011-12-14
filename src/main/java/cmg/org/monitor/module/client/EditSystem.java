@@ -176,18 +176,23 @@ public class EditSystem extends AncestorEntryPoint {
 
 					btnEdit = new Button();
 					btnEdit.setText("Edit");
-					btnEdit.setStylePrimaryName("margin:4px;");
-					btnEdit.addStyleName("form-button");
+					btnEdit.setHeight("30px");
+					btnEdit.setWidth("80px");
+					btnEdit.setStylePrimaryName("margin:6px;");
+				
 					
 					bttReset = new Button();
 					bttReset.setText("Reset");
-					bttReset.setStylePrimaryName("margin:4px;");
-					bttReset.addStyleName("form-button");
+					bttReset.setHeight("30px");
+					bttReset.setWidth("80px");
+					bttReset.setStylePrimaryName("margin:6px;");
+				
 
 					bttBack = new Button();
 					bttBack.setText("Back");
-					bttBack.setStylePrimaryName("margin:4px;");
-					bttBack.addStyleName("form-button");
+					bttBack.setHeight("30px");
+					bttBack.setWidth("80px");
+					bttBack.setStylePrimaryName("margin:6px;");
 
 					panelButton = new AbsolutePanel();
 					panelButton.add(btnEdit);
