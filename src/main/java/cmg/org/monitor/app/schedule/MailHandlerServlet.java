@@ -1,7 +1,6 @@
 package cmg.org.monitor.app.schedule;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,7 +21,7 @@ public class MailHandlerServlet extends HttpServlet {
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
-		/*log.log(Level.INFO, "doget getting mail");*/
+		
 		doPost(req, resp);
 
 	}
@@ -30,7 +29,7 @@ public class MailHandlerServlet extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		try {
-			
+
 			Properties props = new Properties();
 			Session session = Session.getDefaultInstance(props, null);
 			log.log(Level.INFO, "start getting mail");
@@ -38,29 +37,30 @@ public class MailHandlerServlet extends HttpServlet {
 			Address[] add = message.getFrom();
 			InternetAddress from = (InternetAddress) add[0];
 			String sender = from.getAddress();
-			log.log(Level.INFO, "getting mail from:" +sender);
+			log.log(Level.INFO, "getting mail from:" + sender);
 			String subject = message.getSubject();
-			log.log(Level.INFO,"Got an email. Subject = " + subject);	 
+			log.log(Level.INFO, "Got an email. Subject = " + subject);
 			String contentType = message.getContentType();
-			log.log(Level.INFO,"Email Content Type : " + contentType);
+			log.log(Level.INFO, "Email Content Type : " + contentType);
 			Object o = message.getContent();
-			if(o instanceof Multipart){
+			if (o instanceof Multipart) {
 				Multipart mp = (Multipart) o;
 				int count = mp.getCount();
 				for (int i = 0; i < count; i++) {
-					if(mp.getBodyPart(i).getContent() instanceof String){
-						if(mp.getBodyPart(i).isMimeType("text/plain")){
-							log.log(Level.INFO, "contentmail :" + i);
-							String data = (String) mp.getBodyPart(i).getContent();
-							if(data.endsWith("</html>")){
-								saveJDO(data);
-							}
-							
-						}	
+					if (mp.getBodyPart(i).getContent() instanceof String) {
+						log.log(Level.INFO, "contentmail :" + i);
+						Object obj = mp.getBodyPart(i).getContent();
+						String data = (String) obj;
+						log.log(Level.INFO, "contentmail :" + data);
+						if (data.trim().endsWith("</html>")) {
+							log.log(Level.INFO, "contentmail :end");
+							saveJDO(data);
+						}
 					}
-					
+
 				}
-			}	
+
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			log.log(Level.INFO,
@@ -68,9 +68,8 @@ public class MailHandlerServlet extends HttpServlet {
 		}
 	}
 
-	private static void saveJDO(String data_html){
+	private static void saveJDO(String data_html) {
 
-		
-	}	
-	
+	}
+
 }
