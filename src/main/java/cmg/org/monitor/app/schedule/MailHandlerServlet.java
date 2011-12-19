@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.mail.Address;
+import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
@@ -19,13 +20,6 @@ import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 @SuppressWarnings("serial")
 public class MailHandlerServlet extends HttpServlet {
@@ -55,61 +49,8 @@ public class MailHandlerServlet extends HttpServlet {
 			String contentType = message.getContentType();
 			log.log(Level.INFO, "Email Content Type : " + contentType);
 			Object o = message.getContent();
-			if (contentType.equals("txt/xml")) {
-				if (o instanceof InputStream) {
-					log.log(Level.INFO, "This is just an input stream");
-					InputStream is = (InputStream) o;
-					try {
-						String data = convertInputStreamtoString(is);
-						log.log(Level.INFO, data);
-						log.log(Level.INFO, readXml(is));
-					} catch (Exception e) {
-						log.log(Level.INFO, e.getMessage());
-					}
-				}
-			} else if (contentType.equals("txt/html")) {
-				if (o instanceof Multipart) {
-					Multipart mp = (Multipart) o;
-					int count = mp.getCount();
-					for (int i = 0; i < count; i++) {
-						if (mp.getBodyPart(i).getContent() instanceof String) {
-							log.log(Level.INFO, "contentmail :" + i);
-							Object obj = mp.getBodyPart(i).getContent();
-							String data = (String) obj;
-							log.log(Level.INFO, "contentmail :is html");
-							log.log(Level.INFO, "contentmail :" + data);
-						}
-					}
-				}
-				if (o instanceof InputStream) {
-					log.log(Level.INFO, "This is just an input stream");
-					InputStream is = (InputStream) o;
-					try {
-						String data = convertInputStreamtoString(is);
-						log.log(Level.INFO, data);
-						log.log(Level.INFO, readXml(is));
-					} catch (Exception e) {
-						log.log(Level.INFO, e.getMessage());
-					}
-				}
-			} else {
-				if (o instanceof Multipart) {
-					Multipart mp = (Multipart) o;
-					int count = mp.getCount();
-					for (int i = 0; i < count; i++) {
-						if (mp.getBodyPart(i).getContent() instanceof String) {
-							log.log(Level.INFO, "contentmail :" + i);
-							Object obj = mp.getBodyPart(i).getContent();
-							String tp = mp.getBodyPart(i).getContentType();
-							String data = (String) obj;
-							log.log(Level.INFO, "contentmail type :" + tp);
-							log.log(Level.INFO, "contentmail :" + data);
-						} else {
-							log.log(Level.INFO, "contentmail :wrong");
-						}
-					}
-				}
-			}
+			
+			saveJDO(o, contentType);
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -117,13 +58,79 @@ public class MailHandlerServlet extends HttpServlet {
 					"Failure in receiving email : " + e.getMessage());
 		}
 	}
-
-	/*
-	 * private static void saveJDO(String data_html) {
-	 * 
-	 * }
+	/**
+	 * @param o
+	 * @param contentType
+	 * @throws MessagingException
+	 * @throws IOException
 	 */
-
+	public void saveJDO(Object o,String contentType) throws MessagingException, IOException{
+		if (contentType.equals("txt/xml")) {
+			if (o instanceof InputStream) {
+				log.log(Level.INFO, "This is just an input stream");
+				InputStream is = (InputStream) o;
+				try {
+					//do anything with data
+					String data = convertInputStreamtoString(is);
+					log.log(Level.INFO, data);
+					/*log.log(Level.INFO, readXml(data));*/
+				} catch (Exception e) {
+					log.log(Level.INFO, e.getMessage());
+				}
+			}
+		} else if (contentType.equals("txt/html")) {
+			if (o instanceof Multipart) {
+				Multipart mp = (Multipart) o;
+				int count = mp.getCount();
+				for (int i = 0; i < count; i++) {
+					if (mp.getBodyPart(i).getContent() instanceof String) {
+						log.log(Level.INFO, "contentmail :" + i);
+						Object obj = mp.getBodyPart(i).getContent();
+						//do anything with data
+						String data = (String) obj;
+						log.log(Level.INFO, "contentmail :is html");
+						log.log(Level.INFO, "contentmail :" + data);
+					}
+				}
+			}
+			if (o instanceof InputStream) {
+				log.log(Level.INFO, "This is just an input stream");
+				InputStream is = (InputStream) o;
+				try {
+					//do anything with data
+					String data = convertInputStreamtoString(is);
+					log.log(Level.INFO, data);
+					/*log.log(Level.INFO, readXml(data));*/
+				} catch (Exception e) {
+					log.log(Level.INFO, e.getMessage());
+				}
+			}
+		} else {
+			if (o instanceof Multipart) {
+				Multipart mp = (Multipart) o;
+				int count = mp.getCount();
+				for (int i = 0; i < count; i++) {
+					if (mp.getBodyPart(i).getContent() instanceof String) {
+						log.log(Level.INFO, "contentmail :" + i);
+						Object obj = mp.getBodyPart(i).getContent();
+						String tp = mp.getBodyPart(i).getContentType();
+						//do anything with data
+						String data = (String) obj;
+						log.log(Level.INFO, "contentmail type :" + tp);
+						log.log(Level.INFO, "contentmail :" + data);
+					} else {
+						log.log(Level.INFO, "contentmail :wrong");
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * @param is
+	 * @return
+	 * @throws IOException
+	 */
 	public String convertInputStreamtoString(InputStream is) throws IOException {
 		if (is != null) {
 			Writer write = new StringWriter();
@@ -144,8 +151,10 @@ public class MailHandlerServlet extends HttpServlet {
 		}
 	}
 
-	public static String readXml(InputStream is)
+
+/*	public static String readXml(String is)
 			throws ParserConfigurationException, SAXException, IOException {
+
 		DocumentBuilderFactory factory = null;
 		DocumentBuilder builder = null;
 		Document ret = null;
@@ -153,18 +162,18 @@ public class MailHandlerServlet extends HttpServlet {
 			factory = DocumentBuilderFactory.newInstance();
 			builder = factory.newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
-			log.log(Level.INFO, e.getMessage());
+			log.log(Level.INFO, e.getMessage()+ "zeo");
 		}
 		try {
-			ret = builder.parse(new InputSource(is));
+			ByteArrayInputStream bi = new ByteArrayInputStream(is.getBytes());
+			ret = builder.parse(bi);
 		} catch (SAXException e) {
-			log.log(Level.INFO, e.getMessage());
+			log.log(Level.INFO, e.getMessage() + "one");
 		} catch (IOException e) {
-			log.log(Level.INFO, e.getMessage());
+			log.log(Level.INFO, e.getMessage() +"two");
 		}
 		ret.getDocumentElement().normalize();
 		String data = ret.getDocumentElement().getNodeName();
 		return data;
-	}
-
+	}*/
 }
