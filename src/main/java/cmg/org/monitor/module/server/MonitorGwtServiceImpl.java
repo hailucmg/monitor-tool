@@ -45,25 +45,34 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		boolean check = true;
 		SystemMonitorDaoJDOImpl systemDAO = new SystemMonitorDaoJDOImpl();
 		try {
-
 			String remoteURL = system.getRemoteUrl();
 			String[] remoteURLs = systemDAO.remoteURLs();
-			for (int i = 0; i < remoteURLs.length; i++) {
-				if (remoteURL.toLowerCase().equals(remoteURLs[i].toLowerCase())) {
-					callback = "Remote-URL is existing";
-					check = false;
-					break;
-
+			if(remoteURLs!=null){
+				for (int i = 0; i < remoteURLs.length; i++) {
+					if (remoteURL.toLowerCase().equals(remoteURLs[i].toLowerCase())) {
+						callback = "Remote-URL is existing";
+						check = false;
+						break;
+					}
 				}
-			}
-			if (check) {
+				if (check) {
+					system.setCode(systemDAO.createCode());
+					if (systemDAO.addnewSystem(system)) {
+						callback = "done";
+					} else {
+						callback = "wrong to config jar or database";
+					}
+				}
+			}else if(remoteURLs == null){
 				system.setCode(systemDAO.createCode());
 				if (systemDAO.addnewSystem(system)) {
 					callback = "done";
 				} else {
 					callback = "wrong to config jar or database";
 				}
+			
 			}
+			
 
 		} catch (Exception e) {
 			// TODO: handle exception
