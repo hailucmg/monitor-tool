@@ -42,11 +42,11 @@ public class SystemManagement extends AncestorEntryPoint {
 		dialogBox = new DialogBox();
 		dialogBox.setText("Confirm delete");
 		dialogBox.setAnimationEnabled(true);
-		dialogBox.addStyleName("loginbox");
+		/*dialogBox.setStylePrimaryName("loginbox");*/
 		final Button closeButton = new Button("Cancel");
-		closeButton.addStyleName("form-back");
+		closeButton.setStyleName("form-back");
 		final Button okButton = new Button("Ok");
-		okButton.addStyleName("form-submit");
+		okButton.setStyleName("form-submit");
 		closeButton.getElement().setId("closeButton");
 		VerticalPanel dialogVPanel = new VerticalPanel();
 		dialogVPanel.add(new HTML("<h3>Do you want to delete System ID "+code+"</h3>"));
