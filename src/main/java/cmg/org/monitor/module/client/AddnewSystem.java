@@ -307,6 +307,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 				tableForm.setWidget(9, 0, panelButton);
 				addWidget(HTMLControl.ID_BODY_CONTENT, tableForm);
 				setVisibleLoadingImage(false);
+				setOnload(false);
 				setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
 				
 			}

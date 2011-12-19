@@ -91,6 +91,7 @@ public class SystemManagement extends AncestorEntryPoint {
 							"Add new system.", HTMLControl.RED_MESSAGE, true);
 					setVisibleLoadingImage(false);
 				}
+				setOnload(false);
 			}
 
 			@Override
@@ -99,6 +100,7 @@ public class SystemManagement extends AncestorEntryPoint {
 				showMessage("Server error. ",
 						HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME, "Try again.",
 						HTMLControl.RED_MESSAGE, true);
+				setOnload(false);
 			}
 		});
 
@@ -178,7 +180,7 @@ public class SystemManagement extends AncestorEntryPoint {
 			dataListSystem.setValue(i, 3, (result[i].getIp() == null) ? "N/A"
 					: result[i].getIp());
 			dataListSystem
-					.setValue(i, 4, HTMLControl.getHTMLStatusImage(result[i]
+					.setValue(i, 4, HTMLControl.getHTMLStatusImage(result[i].getId(),result[i]
 							.getHealthStatus()));
 			dataListSystem.setValue(i, 5,
 					HTMLControl.getHTMLActiveImage(result[i].isActive()));

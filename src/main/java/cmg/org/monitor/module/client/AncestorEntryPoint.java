@@ -48,7 +48,7 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 
 	static boolean isReadyDelete = true;
 	
-	protected DialogBox dialogBox;
+	protected static DialogBox dialogBox;
 	
 	private static DialogBox dialogFix;
 
@@ -137,7 +137,10 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 
 	private void initHash(String hash) {
 		currentUrl = HTMLControl.trimHashPart(Window.Location.getHref());
-		if (HTMLControl.validIndex(hash)) {
+		if (hash == null || hash.equals("")) {
+			Window.Location.replace(currentUrl
+					+ HTMLControl.HTML_DASHBOARD_NAME);
+		} else if (HTMLControl.validIndex(hash)) {
 			setOnload(true);
 			dialogBox.hide();
 			clear();
@@ -168,10 +171,10 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 				doLogin();
 			}
 
-		} else {
+		} /*else {
 			Window.Location.replace(currentUrl
 					+ HTMLControl.HTML_DASHBOARD_NAME);
-		}
+		}*/
 	}
 
 	protected void doLogin() {

@@ -261,14 +261,17 @@ public class HTMLControl {
 						+ "_blue.gif' /></a></td></tr></table></div>");
 	}
 
-	public static String getHTMLStatusImage(String healthStatus) {
-		return "<img src=\"images/icon/"
+	public static String getHTMLStatusImage(String sid, String healthStatus) {
+		return 
+				"<img src=\"images/icon/"
 				+ healthStatus
 				+ "_status_icon.png\" width=\"24\" height=\"24\" "
 				+ "style=\"display: block; margin-left: auto; margin-right: auto\""
-				+ " alt=\""
-				+"\""
-				+" />";
+				+ " onClick=\"javascript:showStatusDialogBox('"+sid+"','"
+				+ healthStatus
+				+ "');\""
+				+" title='Click the Icon to see more information!'"
+				+" alt='Click the Icon to see more information!'/>";
 	}
 
 	public static String getHTMLStatusImage(boolean b) {
@@ -287,8 +290,8 @@ public class HTMLControl {
 	}
 
 	public static String getLinkSystemDetail(String id, String code) {
-		return "<a href=\"" + HTML_SYSTEM_DETAIL_NAME + "/" + id + "\">" + code
-				+ "</a>";
+		return "<a href=\"" + HTML_SYSTEM_DETAIL_NAME + "/" + id + "\"  class='system-id' ><span>" + code
+				+ "</span></a>";
 
 	}
 

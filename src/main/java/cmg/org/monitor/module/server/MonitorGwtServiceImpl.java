@@ -273,12 +273,14 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public String getAboutContent() {
 		SitesHelper sh = new SitesHelper();		
-		return MonitorUtil.parseHref(sh.getSiteEntryContent(MonitorConstant.SITES_ABOUT_CONTENT_ID));
+		return sh.getSiteEntryContent(MonitorConstant.SITES_ABOUT_CONTENT_ID);
+				//MonitorUtil.parseHref(sh.getSiteEntryContent(MonitorConstant.SITES_ABOUT_CONTENT_ID));
 	}
 
 	@Override
 	public String getHelpContent() {
 		SitesHelper sh = new SitesHelper();
-		return MonitorUtil.parseHref(sh.getSiteEntryContent(MonitorConstant.SITES_HELP_CONTENT_ID));
+		return sh.getSiteEntryContent(MonitorConstant.SITES_HELP_CONTENT_ID);
+				//MonitorUtil.parseHref(sh.getSiteEntryContent(MonitorConstant.SITES_HELP_CONTENT_ID));
 	}
 }

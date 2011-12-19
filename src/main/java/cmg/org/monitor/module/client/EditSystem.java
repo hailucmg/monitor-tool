@@ -106,7 +106,8 @@ public class EditSystem extends AncestorEntryPoint {
 
 					labelName = new Label();
 					labelName.setText("Name");
-
+					
+					
 					labelurl = new Label();
 					labelurl.setText("URL");
 
@@ -127,17 +128,21 @@ public class EditSystem extends AncestorEntryPoint {
 
 					txtName = new TextBox();
 					txtName.setStylePrimaryName("inp-form");
+					txtName.setText(result.getName());
 					
 					txtURL = new TextBox();
 					txtURL.setStylePrimaryName("inp-form");
+					txtURL.setText(result.getUrl());
 					
 
 					txtIP = new TextBox();
 					txtIP.setStylePrimaryName("inp-form");
+					txtIP.setText(result.getIp());
 					
 
 					txtRemote = new TextBox();
 					txtRemote.setStylePrimaryName("inp-form");
+					txtRemote.setText(result.getRemoteURl());
 
 					listActive = new ListBox();
 					listActive.setWidth("198px");
@@ -243,6 +248,7 @@ public class EditSystem extends AncestorEntryPoint {
 					tableForm.setWidget(8, 0, panelButton);
 					initHandler();
 					setVisibleLoadingImage(false);
+					setOnload(false);
 					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
 
 				}

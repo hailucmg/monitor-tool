@@ -5,8 +5,11 @@ import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -28,40 +31,35 @@ public class DashBoard extends AncestorEntryPoint {
 	// Options of table list system
 	private Options opsTableListSystem;
 
-	private HTML popupContent;
+	private static HTML popupContent;
 
-	private HTML buttonDetails;
+	private static HTML buttonDetails;
 
-	private HTML buttonStatistic;
+	private static HTML buttonStatistic;
 
 	private SystemMonitor[] systemList;
 
 	private FlexTable flexTable;
 
 	protected void init() {
+		DashBoard.exportStaticMethod();
 		if (currentPage == HTMLControl.PAGE_DASHBOARD) {
 			tableListSystem = new Table();
 			createOptionsTableListSystem();
 			addWidget(HTMLControl.ID_BODY_CONTENT, tableListSystem);
 			initDialogBox();
-			tableListSystem.addSelectHandler(new SelectHandler() {
-				@Override
-				public void onSelect(SelectEvent event) {
-
-					// May be multiple selections.
-					JsArray<Selection> selections = tableListSystem
-							.getSelections();
-					for (int i = 0; i < selections.length(); i++) {
-						Selection selection = selections.get(i);
-						if (selection.isRow()) {
-							int row = selection.getRow();
-							if (systemList != null) {
-								showDialogBox(systemList[row]);
-							}
-						}
-					}
-				}
-			});
+			/*
+			 * tableListSystem.addSelectHandler(new SelectHandler() {
+			 * 
+			 * @Override public void onSelect(SelectEvent event) {
+			 * 
+			 * // May be multiple selections. JsArray<Selection> selections =
+			 * tableListSystem .getSelections(); for (int i = 0; i <
+			 * selections.length(); i++) { Selection selection =
+			 * selections.get(i); if (selection.isRow()) { int row =
+			 * selection.getRow(); if (systemList != null) {
+			 * showDialogBox(systemList[row]); } } } } });
+			 */
 			timerReload = new Timer() {
 				@Override
 				public void run() {
@@ -74,12 +72,26 @@ public class DashBoard extends AncestorEntryPoint {
 
 	}
 
-	void showDialogBox(SystemMonitor sys) {
+	public static native void exportStaticMethod() /*-{
+	$wnd.showStatusDialogBox =
+	$entry(@cmg.org.monitor.module.client.DashBoard::showStatusDialogBox(Ljava/lang/String;Ljava/lang/String;))
+	}-*/;
+
+	public static void showStatusDialogBox(String sysId, String healthStatus) {
+		String mes = "";
+		if (healthStatus.equals("dead")) {
+			mes = "<h4>The system is dead.</h4> Cannot gather data from this system.";
+		} else if (healthStatus.equals("bored")) {
+			mes = "<h4>Not good health.</h4>";
+			mes += "<p>CPU or Memory is running at 90%";
+			mes += "<br>Ping time is too long, or one of a service is Dead such as Database server.</p>";
+		} else if (healthStatus.equals("smile")) {
+			mes += "<h4>Good health</h4>";
+		}
 		try {
-			popupContent.setText(sys.getHealthStatus());
-			buttonDetails.setHTML(HTMLControl.getButtonHtml(sys.getId(), true));
-			buttonStatistic.setHTML(HTMLControl.getButtonHtml(sys.getId(),
-					false));
+			popupContent.setHTML(mes);
+			buttonDetails.setHTML(HTMLControl.getButtonHtml(sysId, true));
+			buttonStatistic.setHTML(HTMLControl.getButtonHtml(sysId, false));
 			dialogBox.center();
 		} catch (Exception ex) {
 			// do nothing
@@ -88,7 +100,16 @@ public class DashBoard extends AncestorEntryPoint {
 
 	void initDialogBox() {
 		dialogBox.setAnimationEnabled(true);
-		dialogBox.setAutoHideEnabled(true);
+		Button close = new Button();
+		close.setStyleName("");
+		close.getElement().setId("closeButton");
+		close.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				dialogBox.hide();
+			}
+		});
 		popupContent = new HTML();
 		flexTable = new FlexTable();
 		flexTable.setWidget(0, 0, popupContent);
@@ -101,9 +122,12 @@ public class DashBoard extends AncestorEntryPoint {
 		flexButton.setWidget(0, 0, buttonDetails);
 		flexButton.setWidget(0, 1, buttonStatistic);
 		VerticalPanel dialogVPanel = new VerticalPanel();
+
 		dialogVPanel.addStyleName("dialogVPanel");
-		dialogVPanel.add(flexTable);
+
 		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
+		dialogVPanel.add(close);
+		dialogVPanel.add(flexTable);
 		dialogVPanel.add(flexButton);
 		dialogBox.setWidget(dialogVPanel);
 	}
@@ -170,8 +194,8 @@ public class DashBoard extends AncestorEntryPoint {
 										&& result[i].getStatus() ? result[i]
 										.getLastCpuMemory()
 										.getPercentMemoryUsage() : 0));
-				dataListSystem.setValue(i, 6, HTMLControl
-						.getHTMLStatusImage(result[i].getHealthStatus()));
+				dataListSystem.setValue(i, 6, HTMLControl.getHTMLStatusImage(
+						result[i].getId(), result[i].getHealthStatus()));
 				dataListSystem.setValue(i, 7,
 						HTMLControl.getHTMLActiveImage(result[i].isActive()));
 			}
