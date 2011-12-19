@@ -184,21 +184,19 @@ public class AddnewSystem extends AncestorEntryPoint {
 				labelmailgroup.setText("Notification mail group");
 
 				txtName = new TextBox();
-				txtName.setWidth("191px");
-				txtName.setHeight("28px");
-
+				txtName.setStylePrimaryName("inp-form");
+				
 				txtURL = new TextBox();
-				txtURL.setWidth("191px");
-				txtURL.setHeight("28px");
+				txtURL.setStylePrimaryName("inp-form");
+				
 
 				txtIP = new TextBox();
-				txtIP.setWidth("191px");
-				txtIP.setHeight("28px");
+				txtIP.setStylePrimaryName("inp-form");
+				
 
 				txtRemote = new TextBox();
-
-				txtRemote.setWidth("191px");
-				txtRemote.setHeight("28px");
+				txtRemote.setStylePrimaryName("inp-form");
+				
 
 				listActive = new ListBox();
 				listActive.setWidth("199px");
@@ -223,22 +221,13 @@ public class AddnewSystem extends AncestorEntryPoint {
 				listGroup.setSelectedIndex(0);
 
 				bttCreate = new Button();
-				bttCreate.setText("Create");
-				bttCreate.setHeight("30px");
-				bttCreate.setWidth("80px");
-				bttCreate.setStylePrimaryName("margin:6px;");
+				bttCreate.setStylePrimaryName("form-create");
 
 				bttReset = new Button();
-				bttReset.setText("Reset");
-				bttReset.setHeight("30px");
-				bttReset.setWidth("80px");
-				bttReset.setStylePrimaryName("margin:6px;");
+				bttReset.setStylePrimaryName("form-reset");
 
 				bttBack = new Button();
-				bttBack.setText("Back");
-				bttBack.setHeight("30px");
-				bttBack.setWidth("80px");
-				bttBack.setStylePrimaryName("margin:6px;");
+				bttBack.setStylePrimaryName("form-back");
 
 				panelButton = new AbsolutePanel();
 				panelButton.add(bttCreate);
@@ -291,6 +280,8 @@ public class AddnewSystem extends AncestorEntryPoint {
 				bttReset.addClickHandler(resetHandler);
 				myBack backHandler = new myBack();
 				bttBack.addClickHandler(backHandler);
+				myProtocol actionProtocol = new myProtocol();
+				listProtocol.addClickHandler(actionProtocol);
 				tableForm.setWidget(0, 0, labelName);
 				tableForm.setWidget(0, 1, txtName);
 				tableForm.setWidget(0, 2, panelValidateName);
@@ -446,7 +437,6 @@ public class AddnewSystem extends AncestorEntryPoint {
 			listActive.setSelectedIndex(0);
 			listGroup.setSelectedIndex(0);
 			listProtocol.setSelectedIndex(0);
-
 			txtRemote.setEnabled(true);
 
 			
@@ -467,11 +457,20 @@ public class AddnewSystem extends AncestorEntryPoint {
 			Window.Location.replace(HTMLControl.trimHashPart(Window.Location
 					.getHref()) + HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME);
 		}
-
 	}
+	
 	/**
 	 * @author NDC
 	 * 
 	 */
+	class myProtocol implements ClickHandler{
 
+		@Override
+		public void onClick(ClickEvent event) {
+			// TODO Auto-generated method stub
+			txtRemote.setText("");
+			txtRemote.setEnabled(false);
+		}
+		
+	}
 }
