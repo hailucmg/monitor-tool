@@ -125,6 +125,7 @@ public class DashBoard extends AncestorEntryPoint {
 				showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
 				setVisibleLoadingImage(false);
 				setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+				setOnload(false);
 				drawTable(result);
 				systemList = result;
 			}

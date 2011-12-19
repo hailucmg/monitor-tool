@@ -49,10 +49,14 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 	static boolean isReadyDelete = true;
 	
 	protected DialogBox dialogBox;
+	
+	private static DialogBox dialogFix;
 
 	@Override
 	public void onModuleLoad() {
 		dialogBox = new DialogBox();
+		dialogFix = new DialogBox();
+		dialogFix.setStyleName("");
 		addWidget(HTMLControl.ID_VERSION, new HTML("<span>Version "
 				+ MonitorConstant.VERSION + "</span>"));
 		try {
@@ -98,6 +102,14 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 	protected void visibleMessage() {
 
 	}
+	
+	protected static void setOnload(boolean b) {
+		if (b) {			
+			dialogFix.center();
+		} else {
+			dialogFix.hide();
+		}
+	}
 
 	protected void clear() {
 		setVisibleWidget(HTMLControl.ID_STEP_HOLDER, false);
@@ -126,6 +138,7 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 	private void initHash(String hash) {
 		currentUrl = HTMLControl.trimHashPart(Window.Location.getHref());
 		if (HTMLControl.validIndex(hash)) {
+			setOnload(true);
 			dialogBox.hide();
 			clear();
 			currentPage = HTMLControl.getPageIndex(hash);
@@ -277,6 +290,7 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 
 	protected static void setVisibleLoadingImage(boolean b) {
 		RootPanel.get("img-loading").setVisible(b);
+		setOnload(b);
 	}
 
 	protected static void setVisibleMessage(boolean b, int type) {
@@ -303,5 +317,6 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 		if (isVisible) {
 			setVisibleMessage(isVisible, type);
 		}
+		setOnload(false);
 	}
 }

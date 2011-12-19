@@ -5,7 +5,6 @@ import cmg.org.monitor.entity.shared.FileSystem;
 import cmg.org.monitor.entity.shared.JVMMemory;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
-import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
@@ -315,7 +314,7 @@ public class SystemDetail extends AncestorEntryPoint {
 	}
 
 	void drawSystemDetails(SystemMonitor sys) {
-
+		
 		panelSystemInfo.clear();
 		panelSystemInfo.add(HTMLControl.getSystemInfo(sys));
 
