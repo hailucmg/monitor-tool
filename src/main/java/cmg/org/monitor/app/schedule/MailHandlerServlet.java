@@ -1,6 +1,12 @@
 package cmg.org.monitor.app.schedule;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,8 +19,13 @@ import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
-import cmg.org.monitor.ext.util.MonitorUtil;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 @SuppressWarnings("serial")
 public class MailHandlerServlet extends HttpServlet {
@@ -23,7 +34,7 @@ public class MailHandlerServlet extends HttpServlet {
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
-		
+
 		doPost(req, resp);
 
 	}
@@ -34,7 +45,6 @@ public class MailHandlerServlet extends HttpServlet {
 
 			Properties props = new Properties();
 			Session session = Session.getDefaultInstance(props, null);
-			log.log(Level.INFO, "start getting mail");
 			MimeMessage message = new MimeMessage(session, req.getInputStream());
 			Address[] add = message.getFrom();
 			InternetAddress from = (InternetAddress) add[0];
@@ -45,26 +55,62 @@ public class MailHandlerServlet extends HttpServlet {
 			String contentType = message.getContentType();
 			log.log(Level.INFO, "Email Content Type : " + contentType);
 			Object o = message.getContent();
-			if (o instanceof Multipart) {
-				Multipart mp = (Multipart) o;
-				int count = mp.getCount();
-				for (int i = 0; i < count; i++) {
-					if (mp.getBodyPart(i).getContent() instanceof String) {
-						log.log(Level.INFO, "contentmail :" + i);
-						Object obj = mp.getBodyPart(i).getContent();
-						String data = (String) obj;
-						log.log(Level.INFO, "contentmail :" + data);
-						if (MonitorUtil.isPatternHtml(data)) {
+			if (contentType.equals("txt/xml")) {
+				if (o instanceof InputStream) {
+					log.log(Level.INFO, "This is just an input stream");
+					InputStream is = (InputStream) o;
+					try {
+						String data = convertInputStreamtoString(is);
+						log.log(Level.INFO, data);
+						log.log(Level.INFO, readXml(is));
+					} catch (Exception e) {
+						log.log(Level.INFO, e.getMessage());
+					}
+				}
+			} else if (contentType.equals("txt/html")) {
+				if (o instanceof Multipart) {
+					Multipart mp = (Multipart) o;
+					int count = mp.getCount();
+					for (int i = 0; i < count; i++) {
+						if (mp.getBodyPart(i).getContent() instanceof String) {
+							log.log(Level.INFO, "contentmail :" + i);
+							Object obj = mp.getBodyPart(i).getContent();
+							String data = (String) obj;
 							log.log(Level.INFO, "contentmail :is html");
-							saveJDO(data);
-						}else{
+							log.log(Level.INFO, "contentmail :" + data);
+						}
+					}
+				}
+				if (o instanceof InputStream) {
+					log.log(Level.INFO, "This is just an input stream");
+					InputStream is = (InputStream) o;
+					try {
+						String data = convertInputStreamtoString(is);
+						log.log(Level.INFO, data);
+						log.log(Level.INFO, readXml(is));
+					} catch (Exception e) {
+						log.log(Level.INFO, e.getMessage());
+					}
+				}
+			} else {
+				if (o instanceof Multipart) {
+					Multipart mp = (Multipart) o;
+					int count = mp.getCount();
+					for (int i = 0; i < count; i++) {
+						if (mp.getBodyPart(i).getContent() instanceof String) {
+							log.log(Level.INFO, "contentmail :" + i);
+							Object obj = mp.getBodyPart(i).getContent();
+							String tp = mp.getBodyPart(i).getContentType();
+							String data = (String) obj;
+							log.log(Level.INFO, "contentmail type :" + tp);
+							log.log(Level.INFO, "contentmail :" + data);
+						} else {
 							log.log(Level.INFO, "contentmail :wrong");
 						}
 					}
-
 				}
-
 			}
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			log.log(Level.INFO,
@@ -72,8 +118,53 @@ public class MailHandlerServlet extends HttpServlet {
 		}
 	}
 
-	private static void saveJDO(String data_html) {
+	/*
+	 * private static void saveJDO(String data_html) {
+	 * 
+	 * }
+	 */
 
+	public String convertInputStreamtoString(InputStream is) throws IOException {
+		if (is != null) {
+			Writer write = new StringWriter();
+			char[] buffer = new char[1024];
+			try {
+				Reader reader = new BufferedReader(new InputStreamReader(is,
+						"UTF-8"));
+				int n;
+				while ((n = reader.read(buffer)) != -1) {
+					write.write(buffer, 0, n);
+				}
+			} finally {
+				is.close();
+			}
+			return write.toString();
+		} else {
+			return null;
+		}
+	}
+
+	public static String readXml(InputStream is)
+			throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory factory = null;
+		DocumentBuilder builder = null;
+		Document ret = null;
+		try {
+			factory = DocumentBuilderFactory.newInstance();
+			builder = factory.newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			log.log(Level.INFO, e.getMessage());
+		}
+		try {
+			ret = builder.parse(new InputSource(is));
+		} catch (SAXException e) {
+			log.log(Level.INFO, e.getMessage());
+		} catch (IOException e) {
+			log.log(Level.INFO, e.getMessage());
+		}
+		ret.getDocumentElement().normalize();
+		String data = ret.getDocumentElement().getNodeName();
+		return data;
 	}
 
 }
