@@ -126,24 +126,18 @@ public class EditSystem extends AncestorEntryPoint {
 					labelmailgroup.setText("Notification mail group");
 
 					txtName = new TextBox();
-					txtName.setWidth("190px");
-					txtName.setHeight("28px");
-					txtName.setText(system.getName());
-
+					txtName.setStylePrimaryName("inp-form");
+					
 					txtURL = new TextBox();
-					txtURL.setWidth("190px");
-					txtURL.setHeight("28px");
-					txtURL.setText(system.getUrl());
+					txtURL.setStylePrimaryName("inp-form");
+					
 
 					txtIP = new TextBox();
-					txtIP.setWidth("190px");
-					txtIP.setHeight("28px");
-					txtIP.setText(system.getIp());
+					txtIP.setStylePrimaryName("inp-form");
+					
 
 					txtRemote = new TextBox();
-					txtRemote.setWidth("190px");
-					txtRemote.setHeight("28px");
-					txtRemote.setText(system.getRemoteURl());
+					txtRemote.setStylePrimaryName("inp-form");
 
 					listActive = new ListBox();
 					listActive.setWidth("198px");
@@ -175,24 +169,15 @@ public class EditSystem extends AncestorEntryPoint {
 					listGroup.setSelectedIndex(system.getSelect());
 
 					btnEdit = new Button();
-					btnEdit.setText("Edit");
-					btnEdit.setHeight("30px");
-					btnEdit.setWidth("80px");
-					btnEdit.setStylePrimaryName("margin:6px;");
+					btnEdit.setStylePrimaryName("form-edit");
 				
 					
 					bttReset = new Button();
-					bttReset.setText("Reset");
-					bttReset.setHeight("30px");
-					bttReset.setWidth("80px");
-					bttReset.setStylePrimaryName("margin:6px;");
+					bttReset.setStylePrimaryName("form-reset");
 				
 
 					bttBack = new Button();
-					bttBack.setText("Back");
-					bttBack.setHeight("30px");
-					bttBack.setWidth("80px");
-					bttBack.setStylePrimaryName("margin:6px;");
+					bttBack.setStylePrimaryName("form-back");
 
 					panelButton = new AbsolutePanel();
 					panelButton.add(btnEdit);
@@ -276,6 +261,15 @@ public class EditSystem extends AncestorEntryPoint {
 	}
 
 	void initHandler() {
+		listProtocol.addClickHandler(new ClickHandler() {
+			
+			@Override
+			public void onClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				txtRemote.setText("");
+				txtRemote.setEnabled(false);
+			}
+		});
 		bttReset.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
@@ -450,5 +444,5 @@ public class EditSystem extends AncestorEntryPoint {
 		}
 		return msg;
 	}
-
+	
 }
