@@ -98,7 +98,7 @@ public class MailHandlerServlet extends HttpServlet {
 				try {
 					// do anything with data
 					 data = convertInputStreamtoString(is);
-					saveJDObyXML(data);
+				
 					log.log(Level.INFO, data);
 					/* log.log(Level.INFO, readXml(data)); */
 				} catch (Exception e) {
@@ -115,7 +115,7 @@ public class MailHandlerServlet extends HttpServlet {
 						Object obj = mp.getBodyPart(i).getContent();
 						// do anything with data
 						 data = (String) obj;
-						saveJDObyHtml(data);			
+						
 					}
 				}
 			}
@@ -125,7 +125,7 @@ public class MailHandlerServlet extends HttpServlet {
 				try {
 					// do anything with data
 					 data = convertInputStreamtoString(is);
-					saveJDObyHtml(data);
+					
 					/* log.log(Level.INFO, readXml(data)); */
 				} catch (Exception e) {
 					log.log(Level.INFO, e.getMessage());
@@ -142,11 +142,7 @@ public class MailHandlerServlet extends HttpServlet {
 						String tp = mp.getBodyPart(i).getContentType();
 						// do anything with data
 						 data = (String) obj;
-						if(tp.equals("txt/html")){
-							saveJDObyHtml(data);
-						}else if(tp.equals("txt/xml")){
-							saveJDObyXML(data);
-						}
+						
 						log.log(Level.INFO, "contentmail type :" + tp);
 						log.log(Level.INFO, "contentmail :" + data);
 					} else {
@@ -215,7 +211,7 @@ public class MailHandlerServlet extends HttpServlet {
 		return false;
 	}
 
-	public static void saveJDObyHtml(String content) {
+/*	public static void saveJDObyHtml(String content) {
 		List<JVMMemoryDto> parseJVMs = new ArrayList<JVMMemoryDto>();
 		List<Component> fullServiceComponents = new ArrayList<Component>();
 		List<CpuDto> parseCPUs = new ArrayList<CpuDto>();
@@ -246,7 +242,7 @@ public class MailHandlerServlet extends HttpServlet {
 		physicalCPus = parse
 				.getPhysicalCPU(content);
 		fullServiceComponents = URLMonitor.listComponentByXml(content, sys);
-	}
+	}*/
 	/*
 	 * public static String readXml(String is) throws
 	 * ParserConfigurationException, SAXException, IOException {
