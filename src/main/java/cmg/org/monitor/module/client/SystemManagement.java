@@ -23,7 +23,8 @@ public class SystemManagement extends AncestorEntryPoint {
 	static SystemMonitor[] listSystem;
 	static private Table tableListSystem;
 	static DialogBox dialogBox;
-	
+	private static HTML popupContent;
+	private static FlexTable flexHTML; 
 	protected void init() {
 		SystemManagement.exportStaticMethod();
 		if (currentPage == HTMLControl.PAGE_SYSTEM_MANAGEMENT) {		
@@ -40,24 +41,40 @@ public class SystemManagement extends AncestorEntryPoint {
 	
 	static void showConfirmDialogBox(final String code,final String id) {	
 		dialogBox = new DialogBox();
-		dialogBox.setText("Confirm delete");
+		/*dialogBox.setText("Confirm delete");*/
 		dialogBox.setAnimationEnabled(true);
 		/*dialogBox.setStylePrimaryName("loginbox");*/
 		final Button closeButton = new Button("Cancel");
 		closeButton.setStyleName("form-back");
 		final Button okButton = new Button("Ok");
 		okButton.setStyleName("form-submit");
-		/*closeButton.getElement().setId("closeButton");*/
+		final Button exitButton = new Button();
+		exitButton.setStyleName("");
+		exitButton.getElement().setId("closeButton");
+		exitButton.addClickHandler(new ClickHandler() {
+			
+			@Override
+			public void onClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				dialogBox.hide();
+			}
+		});
 		VerticalPanel dialogVPanel = new VerticalPanel();
-		dialogVPanel.add(new HTML("<h3>Do you want to delete System ID "+code+"</h3>"));
+		popupContent = new HTML();
+		popupContent.setHTML("<h3>Do you want to delete System ID "+code+"</h3>");
+		flexHTML = new FlexTable();
+		flexHTML.setWidget(0, 0,popupContent);
+		flexHTML.setStyleName("table-popup");
 		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
 		FlexTable table = new FlexTable();
 		table.setCellPadding(10);
 		table.setCellSpacing(10);
 		table.setWidget(0, 0, okButton);
 		table.setWidget(0, 1, closeButton);
+		dialogVPanel.add(exitButton);
+		dialogVPanel.add(flexHTML);
 		dialogVPanel.add(table);
-		dialogVPanel.setStyleName("dialog-delete");
+		dialogVPanel.setStyleName("dialogVPanel");
 		okButton.addClickHandler(new ClickHandler() {			
 			@Override
 			public void onClick(ClickEvent event) {				
