@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -23,6 +24,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cmg.org.monitor.dao.MailStoreDAO;
+import cmg.org.monitor.dao.SystemMonitorDAO;
+import cmg.org.monitor.dao.impl.MailStoreDaoJDO;
 import cmg.org.monitor.dao.impl.SystemMonitorDaoJDOImpl;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.Component;
@@ -31,6 +35,7 @@ import cmg.org.monitor.ext.model.shared.CpuDto;
 import cmg.org.monitor.ext.model.shared.CpuPhysicalDto;
 import cmg.org.monitor.ext.model.shared.FileSystemDto;
 import cmg.org.monitor.ext.model.shared.JVMMemoryDto;
+import cmg.org.monitor.ext.model.shared.MailStoreDto;
 import cmg.org.monitor.ext.model.shared.SystemDto;
 import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.ext.util.URLMonitor;
@@ -54,7 +59,7 @@ public class MailHandlerServlet extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		try {
-
+			
 			Properties props = new Properties();
 			Session session = Session.getDefaultInstance(props, null);
 			MimeMessage message = new MimeMessage(session, req.getInputStream());
@@ -85,13 +90,14 @@ public class MailHandlerServlet extends HttpServlet {
 	 */
 	public void parseEmail(Object o, String contentType)
 			throws MessagingException, IOException {
+		String data = null;
 		if (contentType.equals("txt/xml")) {
 			if (o instanceof InputStream) {
 				log.log(Level.INFO, "This is just an input stream content type xml");
 				InputStream is = (InputStream) o;
 				try {
 					// do anything with data
-					String data = convertInputStreamtoString(is);
+					 data = convertInputStreamtoString(is);
 					saveJDObyXML(data);
 					log.log(Level.INFO, data);
 					/* log.log(Level.INFO, readXml(data)); */
@@ -108,7 +114,7 @@ public class MailHandlerServlet extends HttpServlet {
 						log.log(Level.INFO, "contentmail :" + i);
 						Object obj = mp.getBodyPart(i).getContent();
 						// do anything with data
-						String data = (String) obj;
+						 data = (String) obj;
 						saveJDObyHtml(data);			
 					}
 				}
@@ -118,7 +124,7 @@ public class MailHandlerServlet extends HttpServlet {
 				InputStream is = (InputStream) o;
 				try {
 					// do anything with data
-					String data = convertInputStreamtoString(is);
+					 data = convertInputStreamtoString(is);
 					saveJDObyHtml(data);
 					/* log.log(Level.INFO, readXml(data)); */
 				} catch (Exception e) {
@@ -135,7 +141,7 @@ public class MailHandlerServlet extends HttpServlet {
 						Object obj = mp.getBodyPart(i).getContent();
 						String tp = mp.getBodyPart(i).getContentType();
 						// do anything with data
-						String data = (String) obj;
+						 data = (String) obj;
 						if(tp.equals("txt/html")){
 							saveJDObyHtml(data);
 						}else if(tp.equals("txt/xml")){
@@ -149,6 +155,22 @@ public class MailHandlerServlet extends HttpServlet {
 				}
 			}
 		}
+		
+		MailStoreDAO mailStore  = new MailStoreDaoJDO();
+		MailStoreDto mailDto = new MailStoreDto();
+		mailDto.setContent(data);
+		mailDto.setTimeStamp(new Date());
+
+		SystemMonitorDAO systemDao = new SystemMonitorDaoJDOImpl();
+		List<SystemMonitor> systems = systemDao.listSystems();
+		for(SystemMonitor system  : systems) {
+			if ("STMP".equals(system.getProtocol())) {
+				mailStore.addMail(mailDto, system.toDTO());
+				log.log(Level.INFO, "Save STMP email content successfully");
+				continue;
+			}
+		}
+
 	}
 
 	/**

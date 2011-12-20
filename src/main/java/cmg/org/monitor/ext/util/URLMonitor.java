@@ -8,12 +8,6 @@
  */
 package cmg.org.monitor.ext.util;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,13 +22,17 @@ import cmg.org.monitor.common.Constant;
 import cmg.org.monitor.dao.AlertDao;
 import cmg.org.monitor.dao.CpuMemoryDAO;
 import cmg.org.monitor.dao.FileSystemDAO;
+import cmg.org.monitor.dao.MailStoreDAO;
 import cmg.org.monitor.dao.ServiceMonitorDAO;
 import cmg.org.monitor.dao.SystemMonitorDAO;
 import cmg.org.monitor.dao.impl.AlertDaoJDOImpl;
 import cmg.org.monitor.dao.impl.CpuMemoryDaoJDOImpl;
 import cmg.org.monitor.dao.impl.FileSystemDaoJDOImpl;
+import cmg.org.monitor.dao.impl.MailStoreDaoJDO;
 import cmg.org.monitor.dao.impl.ServiceMonitorDaoJDOImpl;
 import cmg.org.monitor.dao.impl.SystemMonitorDaoJDOImpl;
+import cmg.org.monitor.entity.shared.MailStoreMonitor;
+import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.exception.MonitorException;
 import cmg.org.monitor.ext.model.Component;
 import cmg.org.monitor.ext.model.MemoryObject;
@@ -209,7 +207,8 @@ public class URLMonitor {
 	
 	public static URLPageObject generateInfo(SystemDto systemDto)
 			throws MonitorException, Exception {
-
+		
+		
 		Date now = new Date();
 
 		URLPageObject obj = null;
@@ -231,15 +230,17 @@ public class URLMonitor {
 			boolean isError = false;
 			String webContent = null;
 			try {
-				// if (Constant.USER_PROTOCOL.equals(systemDto.getProtocol())) {
-				// webContent = FetchMailUsage.fetchSMTPEmail();
+				if (Constant.USER_PROTOCOL.equals(systemDto.getProtocol())) {
+					MailStoreDAO mailStore  = new MailStoreDaoJDO();
+					MailStoreMonitor mail =  mailStore.listLastestMailStore(new SystemMonitor(systemDto));
+					webContent = mail.getContent();
 				// page =
 				// HttpUtils.retrievePage("http://c-mg.vn:81/bpg/content/cmg_mail.html");
-				// } else {
-				message = "Retrieves website content from "
-						+ systemDto.getUrl();
-				logger.info("Retrieves website content from ");
-				page = HttpUtils.retrievePage(systemDto.getRemoteUrl().trim());
+				 } else {
+					message = "Retrieves website content from "
+							+ systemDto.getUrl();
+					logger.info("Retrieves website content from ");
+					page = HttpUtils.retrievePage(systemDto.getRemoteUrl().trim());
 
 				// page =
 				// HttpUtils.retrievePage("https://ukpensionsint.bp.com/content/BT_monitorxml.html");
@@ -250,7 +251,7 @@ public class URLMonitor {
 //						HttpUtils.retrievePage("https://ukpensionsint.bp.com/content/BT_monitorxml.html?system_info=true");
 				webContent = page.getContent();
 
-				// }
+				 }
 				// log the message
 				message = "The website has been retrieved, content type: "
 						+ page.getContentType();
@@ -723,42 +724,7 @@ public class URLMonitor {
 	}
 	
 	public static void main(String args[]) {
-		String str = null;
 		
-		File file = new File("C:\\Users\\admin\\Desktop\\matchhtml.txt");
-	    FileInputStream fis = null;
-	    BufferedInputStream bis = null;
-	    DataInputStream dis = null;
-
-	    try {
-	      fis = new FileInputStream(file);
-
-	      // Here BufferedInputStream is added for fast reading.
-	      bis = new BufferedInputStream(fis);
-	      dis = new DataInputStream(bis);
-	      StringBuffer contents = new StringBuffer();
-	       
-	      // dis.available() returns 0 if the file does not have more lines.
-	      while (( str = dis.readLine()) != null) {
-	    	// this statement reads the line from the file and print it to
-	        // the console.
-				contents.append(str);
-			    contents.append(System.getProperty("line.separator"));
-			    
-	      }
-	      String cContent = contents.toString();
-	      String cc  = MonitorUtil.parseHref(cContent);
-	     
-	      // dispose all the resources after using them.
-	      fis.close();
-	      bis.close();
-	      dis.close();
-
-	    } catch (FileNotFoundException e) {
-	      e.printStackTrace();
-	    } catch (IOException e) {
-	      e.printStackTrace();
-	    }
 	}
-
+	
 }

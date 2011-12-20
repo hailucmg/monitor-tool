@@ -16,6 +16,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import cmg.org.monitor.ext.model.shared.SystemDto;
+import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 
 /**
  * @author lamphan
@@ -46,6 +47,9 @@ public class SystemMonitor implements Model {
 	
 	@Persistent(mappedBy = "systemMonitor")
 	private List<CpuMemory> cpuMems = new ArrayList<CpuMemory>();
+	
+	@Persistent(mappedBy = "systemMonitor")
+	private List<MailStoreMonitor> mails = new ArrayList<MailStoreMonitor>();
 	
 	@Persistent
 	private String remoteUrl;
@@ -129,6 +133,19 @@ public class SystemMonitor implements Model {
 
 	}
 
+	
+	/**
+	 * Constructor with parameters.
+	 * 
+	 * @param systemDto
+	 */
+	public SystemMonitor(SystemDto systemDto) {
+
+		this();
+		this.setBasicInfo(systemDto.getCode(), systemDto.getName(),
+				systemDto.getIp(), systemDto.getIsActive()
+				);
+	}
 	/**
 	 * @param name
 	 * @param url
@@ -137,9 +154,8 @@ public class SystemMonitor implements Model {
 	 * @param systemStatus
 	 * @param isDeleted
 	 */
-	public SystemMonitor(String name, String url, String ip,
+	public void setBasicInfo(String name, String url, String ip,
 			boolean isActive) {
-		super();
 		
 		this.name = name;
 		this.url = url;
@@ -205,6 +221,15 @@ public class SystemMonitor implements Model {
 	public void addJVMMemory(JVMMemory jvmEntity) {
 		jvmEntity.setSystemMonitor(this);
         this.jvmMemory.add(jvmEntity);
+    }
+	
+	/**
+	 * Add a Service to list.<br>
+	 * @param mailEntity
+	 */
+	public void addMail(MailStoreMonitor mailEntity) {
+		mailEntity.setSystemMonitor(this);
+        this.mails.add(mailEntity);
     }
 	
 	/**
@@ -402,5 +427,15 @@ public class SystemMonitor implements Model {
 	public void setLastestJvm(JVMMemory lastestJvm) {
 		this.lastestJvm = lastestJvm;
 	}
+
+	public List<MailStoreMonitor> getMails() {
+		return mails;
+	}
+
+	public void setMails(List<MailStoreMonitor> mails) {
+		this.mails = mails;
+	}
+	
+	
 	
 }
