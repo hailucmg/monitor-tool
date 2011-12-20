@@ -301,10 +301,10 @@ public class AddnewSystem extends AncestorEntryPoint {
 				tableForm.setWidget(6, 1, txtRemote);
 				tableForm.setWidget(6, 2, panelValidateRemoteURL);
 				tableForm.setWidget(6, 3, panelValidateRemoteURLServer);
-				tableForm.getFlexCellFormatter().setColSpan(8, 0, 2);
-				tableForm.setWidget(8, 0, panelAdding);
-				tableForm.getFlexCellFormatter().setColSpan(9, 0, 3);
-				tableForm.setWidget(9, 0, panelButton);
+				tableForm.getFlexCellFormatter().setColSpan(7, 0, 2);
+				tableForm.setWidget(7, 0, panelAdding);
+				tableForm.getFlexCellFormatter().setColSpan(8, 0, 3);
+				tableForm.setWidget(8, 0, panelButton);
 				addWidget(HTMLControl.ID_BODY_CONTENT, tableForm);
 				setVisibleLoadingImage(false);
 				setOnload(false);
