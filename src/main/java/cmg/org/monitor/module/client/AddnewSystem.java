@@ -299,8 +299,8 @@ public class AddnewSystem extends AncestorEntryPoint {
 				tableForm.setWidget(5, 1, listGroup);
 				tableForm.setWidget(6, 0, labelremoteurl);
 				tableForm.setWidget(6, 1, txtRemote);
-				tableForm.setWidget(7, 2, panelValidateRemoteURL);
-				tableForm.setWidget(7, 3, panelValidateRemoteURLServer);
+				tableForm.setWidget(6, 2, panelValidateRemoteURL);
+				tableForm.setWidget(6, 3, panelValidateRemoteURLServer);
 				tableForm.getFlexCellFormatter().setColSpan(8, 0, 2);
 				tableForm.setWidget(8, 0, panelAdding);
 				tableForm.getFlexCellFormatter().setColSpan(9, 0, 3);
