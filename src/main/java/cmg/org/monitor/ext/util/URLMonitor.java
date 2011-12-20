@@ -101,7 +101,7 @@ public class URLMonitor {
 	 * @throws MonitorException
 	 *             if monitor failed
 	 */
-	private Component buildServiceComponent(Component fullComponent, Component parseServiceComponent, SystemDto systemDto) {
+	public static Component buildServiceComponent(Component fullComponent, Component parseServiceComponent, SystemDto systemDto) {
 		
 		// Initiate new full component
 		fullComponent = new Component();
@@ -122,7 +122,7 @@ public class URLMonitor {
 	 * @param webContent
 	 * @return
 	 */
-	private List<JVMMemoryDto> listJVMByHtml(String webContent) {
+	public static List<JVMMemoryDto> listJVMByHtml(String webContent) {
 		List<JVMMemoryDto> jvmDtoList = MonitorUtil.getJVM(webContent);
 		return jvmDtoList;
 	}
@@ -133,7 +133,7 @@ public class URLMonitor {
 	 * @param webContent
 	 * @return
 	 */
-	private List<Component> listComponent(SystemDto proj, String webContent) {
+	public static List<Component> listComponent(SystemDto proj, String webContent) {
 		String item = null;
 		// Parse html
 		Pattern pattern = Pattern.compile(Constant.PATTERN_COMPONENT);
@@ -175,7 +175,7 @@ public class URLMonitor {
 		return compList;
 	}
 	
-	private List<Component> listComponentByXml(String webContent, SystemDto systemDto) {
+	public static List<Component> listComponentByXml(String webContent, SystemDto systemDto) {
 		XMLMonitorParser parse = new XMLMonitorParser();
 		List<Component> parseServiceComponents = parse.getServiceComponent(webContent);
 		
@@ -207,7 +207,7 @@ public class URLMonitor {
 		return fullServiceComponents;
 	}
 	
-	public URLPageObject generateInfo(SystemDto systemDto)
+	public static URLPageObject generateInfo(SystemDto systemDto)
 			throws MonitorException, Exception {
 
 		Date now = new Date();
@@ -635,7 +635,7 @@ public class URLMonitor {
 	 * @param memory
 	 * @throws MonitorException
 	 */
-	private void sendAlerts(Component component, String message, String componentId)
+	public static void sendAlerts(Component component, String message, String componentId)
 			throws MonitorException {
 		SystemMonitorDAO systemDao = new SystemMonitorDaoJDOImpl();
 
@@ -669,7 +669,7 @@ public class URLMonitor {
 	 * @param sysDto
 	 * @param comp
 	 */
-	private void sendUnknownAlerts(SystemDto sysDto, String message) throws Exception {
+	public static void sendUnknownAlerts(SystemDto sysDto, String message) throws Exception {
 		MailService service = new MailService();
 		try {
 			AlertDao alert = new AlertDaoJDOImpl();
