@@ -184,36 +184,36 @@ public class AddnewSystem extends AncestorEntryPoint {
 				labelmailgroup.setText("Notification mail group");
 
 				txtName = new TextBox();
-				txtName.setStylePrimaryName("inp-form");
+				txtName.setStyleName("inp-form");
 				
 				txtURL = new TextBox();
-				txtURL.setStylePrimaryName("inp-form");
+				txtURL.setStyleName("inp-form");
 				
 
 				txtIP = new TextBox();
-				txtIP.setStylePrimaryName("inp-form");
+				txtIP.setStyleName("inp-form");
 				
 
 				txtRemote = new TextBox();
-				txtRemote.setStylePrimaryName("inp-form");
+				txtRemote.setStyleName("inp-form");
 				
 
 				listActive = new ListBox();
-				listActive.setWidth("199px");
+				listActive.setWidth("198px");
 				listActive.setHeight("28px");
 				listActive.setSelectedIndex(0);
 				listActive.addItem("Yes");
 				listActive.addItem("No");
 
 				listProtocol = new ListBox();
-				listProtocol.setWidth("199px");
+				listProtocol.setWidth("198px");
 				listProtocol.setHeight("28px");
 				listProtocol.setSelectedIndex(0);
 				listProtocol.addItem("HTTP(s)");
 				listProtocol.addItem("SMTP");
 
 				listGroup = new ListBox();
-				listGroup.setWidth("199px");
+				listGroup.setWidth("198px");
 				listGroup.setHeight("28px");
 				for (int i = 0; i < result.length; i++) {
 					listGroup.addItem(result[i]);
