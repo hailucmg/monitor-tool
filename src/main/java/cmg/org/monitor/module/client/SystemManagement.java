@@ -47,7 +47,7 @@ public class SystemManagement extends AncestorEntryPoint {
 		closeButton.setStyleName("form-back");
 		final Button okButton = new Button("Ok");
 		okButton.setStyleName("form-submit");
-		closeButton.getElement().setId("closeButton");
+		/*closeButton.getElement().setId("closeButton");*/
 		VerticalPanel dialogVPanel = new VerticalPanel();
 		dialogVPanel.add(new HTML("<h3>Do you want to delete System ID "+code+"</h3>"));
 		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
