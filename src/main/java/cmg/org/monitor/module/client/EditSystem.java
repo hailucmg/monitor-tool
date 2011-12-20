@@ -16,7 +16,6 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.ResetButton;
 import com.google.gwt.user.client.ui.TextBox;
 
 public class EditSystem extends AncestorEntryPoint {
@@ -272,8 +271,12 @@ public class EditSystem extends AncestorEntryPoint {
 			@Override
 			public void onClick(ClickEvent event) {
 				// TODO Auto-generated method stub
-				txtRemote.setText("");
-				txtRemote.setEnabled(false);
+				if(listProtocol.getSelectedIndex()==0){
+					txtRemote.setEnabled(true);
+				}else if(listProtocol.getSelectedIndex()==1){
+					txtRemote.setText("");
+					txtRemote.setEnabled(false);
+				}
 			}
 		});
 		bttReset.addClickHandler(new ClickHandler() {
