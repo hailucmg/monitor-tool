@@ -470,8 +470,13 @@ public class AddnewSystem extends AncestorEntryPoint {
 		@Override
 		public void onClick(ClickEvent event) {
 			// TODO Auto-generated method stub
-			txtRemote.setText("");
-			txtRemote.setEnabled(false);
+			if(listProtocol.getSelectedIndex()==0){
+				txtRemote.setEnabled(true);
+			}else if(listProtocol.getSelectedIndex()==1){
+				txtRemote.setText("");
+				txtRemote.setEnabled(false);
+			}
+			
 		}
 		
 	}
