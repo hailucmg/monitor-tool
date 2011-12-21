@@ -126,21 +126,24 @@ public class EditSystem extends AncestorEntryPoint {
 					labelmailgroup.setText("Notification mail group");
 
 					txtName = new TextBox();
-					txtName.setStylePrimaryName("inp-form");
+					txtName.setWidth("196px");
+					txtName.setHeight("30px");
 					txtName.setText(result.getName());
 					
 					txtURL = new TextBox();
-					txtURL.setStylePrimaryName("inp-form");
+					txtURL.setWidth("196px");
+					txtURL.setHeight("30px");
 					txtURL.setText(result.getUrl());
 					
-
 					txtIP = new TextBox();
-					txtIP.setStylePrimaryName("inp-form");
+					txtIP.setWidth("196px");
+					txtIP.setHeight("30px");
 					txtIP.setText(result.getIp());
 					
 
 					txtRemote = new TextBox();
-					txtRemote.setStylePrimaryName("inp-form");
+					txtRemote.setWidth("196px");
+					txtRemote.setHeight("30px");
 					txtRemote.setText(result.getRemoteURl());
 
 					listActive = new ListBox();
@@ -341,11 +344,13 @@ public class EditSystem extends AncestorEntryPoint {
 					panelValidateIP.setVisible(true);
 					return;
 				} else if (validateRemoteURL != "") {
-					panelValidateIP.setVisible(false);
-					panelValidateName.setVisible(false);
-					panelValidateURL.setVisible(false);
-					panelValidateRemoteURL.setVisible(true);
-					return;
+					if(!listProtocol.getItemText(listProtocol.getSelectedIndex()).equals("SMTP")){
+						panelValidateIP.setVisible(false);
+						panelValidateName.setVisible(false);
+						panelValidateURL.setVisible(false);
+						panelValidateRemoteURL.setVisible(true);
+						return;
+					}					
 				}
 				panelAdding.setVisible(true);
 				monitorGwtSv.editSystembyID(system, txtName.getText(), txtURL
