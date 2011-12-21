@@ -207,8 +207,6 @@ public class URLMonitor {
 	
 	public static URLPageObject generateInfo(SystemDto systemDto)
 			throws MonitorException, Exception {
-		
-		
 		Date now = new Date();
 
 		URLPageObject obj = null;
@@ -234,23 +232,12 @@ public class URLMonitor {
 					MailStoreDAO mailStore  = new MailStoreDaoJDO();
 					MailStoreMonitor mail =  mailStore.listLastestMailStore(new SystemMonitor(systemDto));
 					webContent = mail.getContent();
-				// page =
-				// HttpUtils.retrievePage("http://c-mg.vn:81/bpg/content/cmg_mail.html");
 				 } else {
 					message = "Retrieves website content from "
 							+ systemDto.getUrl();
 					logger.info("Retrieves website content from ");
 					page = HttpUtils.retrievePage(systemDto.getRemoteUrl().trim());
-
-				// page =
-				// HttpUtils.retrievePage("https://ukpensionsint.bp.com/content/BT_monitorxml.html");
-				// page =
-				// HttpUtils.retrievePage("http://192.168.1.13:8080/content/BT_monitorxml.html");
-//				page =
-//				HttpUtils.retrievePage("https://ukpensionsint.bp.com/content/cmg_monitor.html");
-//						HttpUtils.retrievePage("https://ukpensionsint.bp.com/content/BT_monitorxml.html?system_info=true");
-				webContent = page.getContent();
-
+					webContent = page.getContent();
 				 }
 				// log the message
 				message = "The website has been retrieved, content type: "

@@ -21,10 +21,10 @@ public class MailStoreDaoJDO  implements MailStoreDAO {
 	private static SystemMonitorDAO systemDao = new SystemMonitorDaoJDOImpl();
 	
 	public MailStoreMonitor addMail(MailStoreDto mailDTO, SystemDto sysDto) {
-
+		logger.log(Level.INFO, "Begin add mail");
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		MailStoreMonitor mailEntity = null;
-		SystemMonitor existSystemEntity = null;
+		SystemMonitor existSystemEntity;
 		
 		try {
 
@@ -34,10 +34,12 @@ public class MailStoreDaoJDO  implements MailStoreDAO {
 			
 			// Check a system existence
 			if (existSystemEntity != null) {
+				logger.log(Level.INFO, "New add mail");
 				mailEntity = new MailStoreMonitor(mailDTO);
 				existSystemEntity.addMail(mailEntity);
 				existSystemEntity.setStatus(sysDto.getSystemStatus());
 				pm.makePersistent(existSystemEntity);
+				logger.log(Level.INFO, "End make persist mail");
 			}
 			// Do commit a transaction
 			pm.currentTransaction().commit();

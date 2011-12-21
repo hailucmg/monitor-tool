@@ -30,9 +30,11 @@ public class MailService {
 
 	private static String rfcTxt = "Message-ID: <c8acb6980707161012i5d395392p5a6d8d14a8582613@mail."
 			+ "gmail.com>\r\n"
-			+ "From: \"System Monitor\" <lam.phan@c-mg.com>\r\n"
-			+ "To: \"Monitor Group\" <monitor.globe@c-mg.vn>\r\n"
-			+ "Subject: Subject \r\n"
+			+ "From: \"System Monitor\" <adminmonitor@c-mg.com>\r\n";
+	private static String rfcTxt_1 = "To: \"Monitor User\" <";
+	private static String rfcTxt_2 = "@c-mg.com>\r\n";
+	private static String RFC_TAIL =
+			"Subject: Subject \r\n"
 			+ "MIME-Version: 1.0\r\n"
 			+ "Content-Type: text/plain; charset=ISO-8859-1; format=flowed\r\n"
 			+ "Content-Transfer-Encoding: 7bit\r\n"
@@ -79,8 +81,8 @@ public class MailService {
 		String emailID = null;
 		try {
 			Appforyourdomain client = new Appforyourdomain(
-					MonitorConstant.ADMIN_EMAIL,
-					MonitorConstant.ADMIN_PASSWORD, MonitorConstant.DOMAIN);
+					MonitorConstant.ADMIN_EMAIL_DotCom,
+					MonitorConstant.ADMIN_PASSWORD_DotCom, MonitorConstant.DOMAIN_DotCom);
 			String emailGroup = systemDto.getGroupEmail();
 			String[] emailAddresses = client.listAllUser(emailGroup);
 
@@ -93,9 +95,11 @@ public class MailService {
 						break;
 					}
 				}
-				contentRtc = buildDateRfc() + rfcTxt + messageError + "\r\n";
+				contentRtc = 
+						buildDateRfc() + rfcTxt +rfcTxt_1 + emailID + 
+						rfcTxt_2 + RFC_TAIL + messageError + "\r\n";
 				new EmailDomainClientApps(MonitorConstant.ADMIN_EMAIL_ID,
-						MonitorConstant.ADMIN_PASSWORD, MonitorConstant.DOMAIN,
+						MonitorConstant.ADMIN_PASSWORD_DotCom, MonitorConstant.DOMAIN_DotCom,
 						emailID, contentRtc);
 
 			}
@@ -124,8 +128,8 @@ public class MailService {
 		String emailID = null;
 		try {
 			Appforyourdomain client = new Appforyourdomain(
-					MonitorConstant.ADMIN_EMAIL,
-					MonitorConstant.ADMIN_PASSWORD, MonitorConstant.DOMAIN);
+					MonitorConstant.ADMIN_EMAIL_DotCom,
+					MonitorConstant.ADMIN_PASSWORD_DotCom, MonitorConstant.DOMAIN_DotCom);
 			String emailGroup = systemDto.getGroupEmail();
 			String[] emailAddresses;
 			emailAddresses = client.listAllUser(emailGroup);
@@ -141,15 +145,17 @@ public class MailService {
 
 				// Alert email with message
 				if (component == null)
-					contentEmail = buildDateRfc() + rfcTxt + message;
+					contentEmail = buildDateRfc()  + rfcTxt +rfcTxt_1 + emailID + 
+							rfcTxt_2 + RFC_TAIL  + message;
 				else {
 					String descriptionError = component.getError().equals("")? message:component.getError();
 					// Alert email with component
-					contentEmail = buildDateRfc() + rfcTxt
+					contentEmail = buildDateRfc() +  rfcTxt +rfcTxt_1 + emailID + 
+							rfcTxt_2 + RFC_TAIL 
 							+ descriptionError;
 				}
 				new EmailDomainClientApps(MonitorConstant.ADMIN_EMAIL_ID,
-						MonitorConstant.ADMIN_PASSWORD, MonitorConstant.DOMAIN,
+						MonitorConstant.ADMIN_PASSWORD_DotCom, MonitorConstant.DOMAIN_DotCom,
 						emailID, contentEmail);
 			}
 		} catch (ServiceException se) {

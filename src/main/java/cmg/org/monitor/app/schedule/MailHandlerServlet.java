@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -29,25 +28,16 @@ import cmg.org.monitor.dao.SystemMonitorDAO;
 import cmg.org.monitor.dao.impl.MailStoreDaoJDO;
 import cmg.org.monitor.dao.impl.SystemMonitorDaoJDOImpl;
 import cmg.org.monitor.entity.shared.SystemMonitor;
-import cmg.org.monitor.ext.model.Component;
-import cmg.org.monitor.ext.model.MemoryObject;
-import cmg.org.monitor.ext.model.shared.CpuDto;
-import cmg.org.monitor.ext.model.shared.CpuPhysicalDto;
-import cmg.org.monitor.ext.model.shared.FileSystemDto;
-import cmg.org.monitor.ext.model.shared.JVMMemoryDto;
 import cmg.org.monitor.ext.model.shared.MailStoreDto;
 import cmg.org.monitor.ext.model.shared.SystemDto;
-import cmg.org.monitor.ext.util.MonitorUtil;
-import cmg.org.monitor.ext.util.URLMonitor;
-import cmg.org.monitor.ext.util.XMLMonitorParser;
-import cmg.org.monitor.services.MonitorWorker;
+import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 
 @SuppressWarnings("serial")
 public class MailHandlerServlet extends HttpServlet {
 	private static final Logger log = Logger.getLogger(MailHandlerServlet.class
 			.getName());
 	private static final SystemMonitorDaoJDOImpl system = new SystemMonitorDaoJDOImpl();
-	private static SystemDto sys;
+	/*private static SystemDto sys;*/
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
@@ -59,7 +49,7 @@ public class MailHandlerServlet extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		try {
-			
+
 			Properties props = new Properties();
 			Session session = Session.getDefaultInstance(props, null);
 			MimeMessage message = new MimeMessage(session, req.getInputStream());
@@ -72,8 +62,21 @@ public class MailHandlerServlet extends HttpServlet {
 			String contentType = message.getContentType();
 			log.log(Level.INFO, "Email Content Type : " + contentType);
 			Object o = message.getContent();
-			if (checkMail(sender)) {
-				parseEmail(o, contentType);
+			// if (checkMail(sender)) {
+			SystemDto sys;
+			SystemMonitor[] list = system.listSystems(false);
+			log.log(Level.INFO, "lenght"+list.length);
+			if (list.length > 0) {
+				log.log(Level.INFO, "if not null");
+				for (int i = 0; i < list.length; i++) {
+					if (list[i].getProtocol().equals("SMTP")) {
+						sys = new SystemDto();
+						sys.setId(list[i].getId());
+						
+						sys.setGroupEmail(list[i].getGroupEmail());
+						parseEmail(o, contentType, sys);
+					}
+				}
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -88,17 +91,18 @@ public class MailHandlerServlet extends HttpServlet {
 	 * @throws MessagingException
 	 * @throws IOException
 	 */
-	public void parseEmail(Object o, String contentType)
+	public void parseEmail(Object o, String contentType, SystemDto sysDTO)
 			throws MessagingException, IOException {
 		String data = null;
 		if (contentType.equals("txt/xml")) {
 			if (o instanceof InputStream) {
-				log.log(Level.INFO, "This is just an input stream content type xml");
+				log.log(Level.INFO,
+						"This is just an input stream content type xml");
 				InputStream is = (InputStream) o;
 				try {
 					// do anything with data
-					 data = convertInputStreamtoString(is);
-				
+					data = convertInputStreamtoString(is);
+
 					log.log(Level.INFO, data);
 					/* log.log(Level.INFO, readXml(data)); */
 				} catch (Exception e) {
@@ -114,18 +118,19 @@ public class MailHandlerServlet extends HttpServlet {
 						log.log(Level.INFO, "contentmail :" + i);
 						Object obj = mp.getBodyPart(i).getContent();
 						// do anything with data
-						 data = (String) obj;
-						
+						data = (String) obj;
+
 					}
 				}
 			}
 			if (o instanceof InputStream) {
-				log.log(Level.INFO, "This is just an input stream of content html");
+				log.log(Level.INFO,
+						"This is just an input stream of content html");
 				InputStream is = (InputStream) o;
 				try {
 					// do anything with data
-					 data = convertInputStreamtoString(is);
-					
+					data = convertInputStreamtoString(is);
+
 					/* log.log(Level.INFO, readXml(data)); */
 				} catch (Exception e) {
 					log.log(Level.INFO, e.getMessage());
@@ -141,8 +146,8 @@ public class MailHandlerServlet extends HttpServlet {
 						Object obj = mp.getBodyPart(i).getContent();
 						String tp = mp.getBodyPart(i).getContentType();
 						// do anything with data
-						 data = (String) obj;
-						
+						data = (String) obj;
+
 						log.log(Level.INFO, "contentmail type :" + tp);
 						log.log(Level.INFO, "contentmail :" + data);
 					} else {
@@ -151,21 +156,29 @@ public class MailHandlerServlet extends HttpServlet {
 				}
 			}
 		}
-		
-		MailStoreDAO mailStore  = new MailStoreDaoJDO();
+
+		MailStoreDAO mailStore = new MailStoreDaoJDO();
 		MailStoreDto mailDto = new MailStoreDto();
 		mailDto.setContent(data);
 		mailDto.setTimeStamp(new Date());
-
-		SystemMonitorDAO systemDao = new SystemMonitorDaoJDOImpl();
-		List<SystemMonitor> systems = systemDao.listSystems();
-		for(SystemMonitor system  : systems) {
-			if ("STMP".equals(system.getProtocol())) {
-				mailStore.addMail(mailDto, system.toDTO());
-				log.log(Level.INFO, "Save STMP email content successfully");
-				continue;
-			}
+		log.log(Level.INFO, "Set content");
+		/*
+		 * SystemMonitorDAO systemDao = new SystemMonitorDaoJDOImpl();
+		 * List<SystemMonitor> systems = systemDao.listSystems();
+		 */
+		
+		/*
+		 * for(SystemMonitor system : systems) { if
+		 * ("STMP".equals(system.getProtocol())) {
+		 */
+		if (sysDTO != null) {
+			log.log(Level.INFO, "Get list of system");
+			mailStore.addMail(mailDto, sysDTO);
 		}
+		log.log(Level.INFO, "Save STMP email content successfully");
+		/*
+		 * continue; } }
+		 */
 
 	}
 
@@ -194,7 +207,7 @@ public class MailHandlerServlet extends HttpServlet {
 		}
 	}
 
-	public static boolean checkMail(String senderMail) throws Exception {
+	/*public static boolean checkMail(String senderMail) throws Exception {
 		SystemMonitor[] list = system.listSystems(false);
 		if (list.length > 0) {
 			for (int i = 0; i < list.length; i++) {
@@ -209,40 +222,34 @@ public class MailHandlerServlet extends HttpServlet {
 			return false;
 		}
 		return false;
-	}
-
-/*	public static void saveJDObyHtml(String content) {
-		List<JVMMemoryDto> parseJVMs = new ArrayList<JVMMemoryDto>();
-		List<Component> fullServiceComponents = new ArrayList<Component>();
-		List<CpuDto> parseCPUs = new ArrayList<CpuDto>();
-		List<FileSystemDto> files = new ArrayList<FileSystemDto>();
-		List<CpuPhysicalDto> physicalCPus =new ArrayList<CpuPhysicalDto>();
-		CpuDto cpuObj = null;
-		if (MonitorUtil.isPatternHtml(content)) {
-			MonitorWorker worker = new MonitorWorker();
-	        cpuObj = worker.getCPUMonitor(content);
-	        files = worker.getDFMonitor(content);
-	        MemoryObject mem = worker.getMemObjectMonitor(content);
-	        fullServiceComponents = URLMonitor.listComponent(sys, content);
-	        parseJVMs = URLMonitor.listJVMByHtml(content);
-		}
-	}
-
-	public static void saveJDObyXML(String content) {
-		List<JVMMemoryDto> parseJVMs = new ArrayList<JVMMemoryDto>();
-		List<Component> fullServiceComponents = new ArrayList<Component>();
-		List<CpuDto> parseCPUs = new ArrayList<CpuDto>();
-		List<FileSystemDto> files = new ArrayList<FileSystemDto>();
-		List<CpuPhysicalDto> physicalCPus =new ArrayList<CpuPhysicalDto>();
-		CpuDto cpuObj = null;
-		XMLMonitorParser parse = new XMLMonitorParser();
-	    parseJVMs = parse.getJVMComponent(content);
-		parseCPUs = parse.getOriginalCPU(content);
-		files = parse.getFileSystem(content);
-		physicalCPus = parse
-				.getPhysicalCPU(content);
-		fullServiceComponents = URLMonitor.listComponentByXml(content, sys);
 	}*/
+
+	/*
+	 * public static void saveJDObyHtml(String content) { List<JVMMemoryDto>
+	 * parseJVMs = new ArrayList<JVMMemoryDto>(); List<Component>
+	 * fullServiceComponents = new ArrayList<Component>(); List<CpuDto>
+	 * parseCPUs = new ArrayList<CpuDto>(); List<FileSystemDto> files = new
+	 * ArrayList<FileSystemDto>(); List<CpuPhysicalDto> physicalCPus =new
+	 * ArrayList<CpuPhysicalDto>(); CpuDto cpuObj = null; if
+	 * (MonitorUtil.isPatternHtml(content)) { MonitorWorker worker = new
+	 * MonitorWorker(); cpuObj = worker.getCPUMonitor(content); files =
+	 * worker.getDFMonitor(content); MemoryObject mem =
+	 * worker.getMemObjectMonitor(content); fullServiceComponents =
+	 * URLMonitor.listComponent(sys, content); parseJVMs =
+	 * URLMonitor.listJVMByHtml(content); } }
+	 * 
+	 * public static void saveJDObyXML(String content) { List<JVMMemoryDto>
+	 * parseJVMs = new ArrayList<JVMMemoryDto>(); List<Component>
+	 * fullServiceComponents = new ArrayList<Component>(); List<CpuDto>
+	 * parseCPUs = new ArrayList<CpuDto>(); List<FileSystemDto> files = new
+	 * ArrayList<FileSystemDto>(); List<CpuPhysicalDto> physicalCPus =new
+	 * ArrayList<CpuPhysicalDto>(); CpuDto cpuObj = null; XMLMonitorParser parse
+	 * = new XMLMonitorParser(); parseJVMs = parse.getJVMComponent(content);
+	 * parseCPUs = parse.getOriginalCPU(content); files =
+	 * parse.getFileSystem(content); physicalCPus = parse
+	 * .getPhysicalCPU(content); fullServiceComponents =
+	 * URLMonitor.listComponentByXml(content, sys); }
+	 */
 	/*
 	 * public static String readXml(String is) throws
 	 * ParserConfigurationException, SAXException, IOException {
@@ -259,5 +266,4 @@ public class MailHandlerServlet extends HttpServlet {
 	 * ret.getDocumentElement().getNodeName(); return data; }
 	 */
 
-	
 }
