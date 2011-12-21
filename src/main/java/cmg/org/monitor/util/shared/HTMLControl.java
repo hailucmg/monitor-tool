@@ -60,11 +60,14 @@ public class HTMLControl {
 			+ " style=\"display: block; margin-left: auto; margin-right: auto\"/>";
 
 	public static final String HTML_ARROW_IMAGE = "<img src=\"images/icon/right_arrow.png\" />";
-	
+
 	public static String getButtonHtml(String sid, boolean type) {
 		StringBuffer tmp = new StringBuffer();
-		tmp.append("<a href=\""+ (type ? HTML_SYSTEM_DETAIL_NAME : HTML_SYSTEM_STATISTIC_NAME) + "/" +sid+"\">");
-		tmp.append("<input type=\"button\" class=\""+ (type ? "form-details" : "form-statistic")+"\">");
+		tmp.append("<a href=\""
+				+ (type ? HTML_SYSTEM_DETAIL_NAME : HTML_SYSTEM_STATISTIC_NAME)
+				+ "/" + sid + "\">");
+		tmp.append("<input type=\"button\" class=\""
+				+ (type ? "form-details" : "form-statistic") + "\">");
 		tmp.append("</a>");
 		return tmp.toString();
 	}
@@ -262,16 +265,23 @@ public class HTMLControl {
 	}
 
 	public static String getHTMLStatusImage(String sid, String healthStatus) {
-		return 
-				"<img src=\"images/icon/"
+		String mes = "";
+		if (healthStatus.equals("dead")) {
+			mes = "System is not working.\\nClick the Icon to see more information!";
+		} else if (healthStatus.equals("bored")) {
+			mes = "Insufficient data.\\nClick the Icon to see more information!";
+		} else if (healthStatus.equals("smile")) {
+			mes = "All is working correctly.\\nClick the Icon to see more information!";
+		} else {
+			mes = "Click the Icon to see more information!";
+		}
+		return "<img src=\"images/icon/"
 				+ healthStatus
 				+ "_status_icon.png\" width=\"24\" height=\"24\" "
 				+ "style=\"display: block; margin-left: auto; margin-right: auto\""
-				+ " onClick=\"javascript:showStatusDialogBox('"+sid+"','"
-				+ healthStatus
-				+ "');\""
-				+" title='Click the Icon to see more information!'"
-				+" alt='Click the Icon to see more information!'/>";
+				+ " onClick=\"javascript:showStatusDialogBox('" + sid + "','"
+				+ healthStatus + "');\"" + " title='" + mes + "'" + " alt='"
+				+ mes + "'/>";
 	}
 
 	public static String getHTMLStatusImage(boolean b) {
@@ -290,8 +300,8 @@ public class HTMLControl {
 	}
 
 	public static String getLinkSystemDetail(String id, String code) {
-		return "<a href=\"" + HTML_SYSTEM_DETAIL_NAME + "/" + id + "\"  class='system-id' ><span>" + code
-				+ "</span></a>";
+		return "<a href=\"" + HTML_SYSTEM_DETAIL_NAME + "/" + id
+				+ "\"  class='system-id' ><span>" + code + "</span></a>";
 
 	}
 
@@ -308,12 +318,11 @@ public class HTMLControl {
 				+ (seconds < 10 ? "0" : "") + seconds);
 		return time;
 	}
-	
+
 	public static HTML getPageHeading(SystemMonitor sys) {
 		StringBuffer temp = new StringBuffer();
 		temp.append("<h1>");
-		temp.append("<a href=\"" + HTML_DASHBOARD_NAME
-				+ "\">Dashboard</a> ");
+		temp.append("<a href=\"" + HTML_DASHBOARD_NAME + "\">Dashboard</a> ");
 		temp.append(HTML_ARROW_IMAGE);
 		temp.append(" <a ");
 		temp.append("\">");
@@ -357,12 +366,10 @@ public class HTMLControl {
 					+ "\">User List</a> ");
 		}
 		if (page == PAGE_ABOUT) {
-			temp.append("<a href=\"" + HTML_ABOUT_NAME
-					+ "\">About Us</a> ");
+			temp.append("<a href=\"" + HTML_ABOUT_NAME + "\">About Us</a> ");
 		}
 		if (page == PAGE_HELP) {
-			temp.append("<a href=\"" + HTML_HELP_NAME
-					+ "\">Help Content</a> ");
+			temp.append("<a href=\"" + HTML_HELP_NAME + "\">Help Content</a> ");
 		}
 		temp.append("</h1>");
 		return new HTML(temp.toString());
