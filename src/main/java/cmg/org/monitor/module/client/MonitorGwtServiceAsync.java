@@ -19,9 +19,8 @@ public interface MonitorGwtServiceAsync {
 
 	void editSystem(String id, AsyncCallback<String> callback);
 
-	void editSystembyID(MonitorEditDto system, String newName, String newAddress,
-			String group, String protocsol, String ip, String remoteURL,
-			boolean isActive, AsyncCallback<String> callback);
+	void editSystembyID(MonitorEditDto system, SystemMonitor sysNew,
+			AsyncCallback<String> callback);
 
 	void getLastestDataMonitor(String sysID,
 			AsyncCallback<SystemMonitor> callback);
