@@ -24,35 +24,35 @@ public class SystemManagement extends AncestorEntryPoint {
 	static private Table tableListSystem;
 	static DialogBox dialogBox;
 	private static HTML popupContent;
-	private static FlexTable flexHTML; 
+	private static FlexTable flexHTML;
+
 	protected void init() {
 		SystemManagement.exportStaticMethod();
-		if (currentPage == HTMLControl.PAGE_SYSTEM_MANAGEMENT) {		
+		if (currentPage == HTMLControl.PAGE_SYSTEM_MANAGEMENT) {
 			tableListSystem = new Table();
 			addWidget(HTMLControl.ID_BODY_CONTENT, tableListSystem);
 			initContent();
 		}
 	}
-	
+
 	public static native void exportStaticMethod() /*-{
 	$wnd.showConfirmDialogBox =
 	$entry(@cmg.org.monitor.module.client.SystemManagement::showConfirmDialogBox(Ljava/lang/String;Ljava/lang/String;))
 	}-*/;
-	
-	static void showConfirmDialogBox(final String code,final String id) {	
+
+	static void showConfirmDialogBox(final String code, final String id) {
 		dialogBox = new DialogBox();
-		/*dialogBox.setText("Confirm delete");*/
 		dialogBox.setAnimationEnabled(true);
-		/*dialogBox.setStylePrimaryName("loginbox");*/
 		final Button closeButton = new Button("Cancel");
-		closeButton.setStyleName("form-back");
-		final Button okButton = new Button("Ok");
-		okButton.setStyleName("form-submit");
+		closeButton.setStyleName("margin:6px;");
+		closeButton.addStyleName("form-button");
+		final Button okButton = new Button("OK");
+		okButton.setStyleName("margin:6px;");
+		okButton.addStyleName("form-button");
 		final Button exitButton = new Button();
 		exitButton.setStyleName("");
 		exitButton.getElement().setId("closeButton");
 		exitButton.addClickHandler(new ClickHandler() {
-			
 			@Override
 			public void onClick(ClickEvent event) {
 				// TODO Auto-generated method stub
@@ -61,9 +61,10 @@ public class SystemManagement extends AncestorEntryPoint {
 		});
 		VerticalPanel dialogVPanel = new VerticalPanel();
 		popupContent = new HTML();
-		popupContent.setHTML("<h3>Do you want to delete System ID "+code+"</h3>");
+		popupContent.setHTML("<h4>Do you want to delete System ID " + code
+				+ "?</h4>");
 		flexHTML = new FlexTable();
-		flexHTML.setWidget(0, 0,popupContent);
+		flexHTML.setWidget(0, 0, popupContent);
 		flexHTML.setStyleName("table-popup");
 		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
 		FlexTable table = new FlexTable();
@@ -75,25 +76,25 @@ public class SystemManagement extends AncestorEntryPoint {
 		dialogVPanel.add(flexHTML);
 		dialogVPanel.add(table);
 		dialogVPanel.setStyleName("dialogVPanel");
-		okButton.addClickHandler(new ClickHandler() {			
+		okButton.addClickHandler(new ClickHandler() {
 			@Override
-			public void onClick(ClickEvent event) {				
+			public void onClick(ClickEvent event) {
 				setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
 				setVisibleLoadingImage(true);
 				deleteSystem(id);
 			}
 		});
-		closeButton.addClickHandler(new ClickHandler() {			
+		closeButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				dialogBox.hide();				
+				dialogBox.hide();
 			}
 		});
 		dialogBox.setWidget(dialogVPanel);
 		dialogBox.center();
 	}
 
-	private static void initContent() {			
+	private static void initContent() {
 		monitorGwtSv.listSystem(false, new AsyncCallback<SystemMonitor[]>() {
 			@Override
 			public void onSuccess(SystemMonitor[] result) {
@@ -131,7 +132,7 @@ public class SystemManagement extends AncestorEntryPoint {
 				showMessage("System deleted sucessfully.", "", "",
 						HTMLControl.BLUE_MESSAGE, true);
 				dialogBox.hide();
-				initContent();				
+				initContent();
 			}
 
 			@Override
@@ -143,8 +144,6 @@ public class SystemManagement extends AncestorEntryPoint {
 		});
 
 	}
-
-	
 
 	static void drawTable(SystemMonitor[] result) {
 		if (result != null) {
@@ -196,16 +195,20 @@ public class SystemManagement extends AncestorEntryPoint {
 					: result[i].getUrl());
 			dataListSystem.setValue(i, 3, (result[i].getIp() == null) ? "N/A"
 					: result[i].getIp());
-			dataListSystem
-					.setValue(i, 4, HTMLControl.getHTMLStatusImage(result[i].getId(),result[i]
-							.getHealthStatus()));
+			dataListSystem.setValue(
+					i,
+					4,
+					HTMLControl.getHTMLStatusImage(result[i].getId(),
+							result[i].getHealthStatus()));
 			dataListSystem.setValue(i, 5,
 					HTMLControl.getHTMLActiveImage(result[i].isActive()));
 			dataListSystem
 					.setValue(
 							i,
 							6,
-							"<a onClick=\"javascript:showConfirmDialogBox('"+result[i].getCode()+"','"
+							"<a onClick=\"javascript:showConfirmDialogBox('"
+									+ result[i].getCode()
+									+ "','"
 									+ result[i].getId()
 									+ "');\" title=\"Delete\" class=\"icon-2 info-tooltip\"></a>");
 		}
@@ -217,7 +220,7 @@ public class SystemManagement extends AncestorEntryPoint {
 		ops.setMax(100);
 		ops.setMin(0);
 		ops.setWidth(200);
-		
+
 		BarFormat bf = BarFormat.create(ops);
 		bf.format(dataListSystem, 4);
 		bf.format(dataListSystem, 5);
