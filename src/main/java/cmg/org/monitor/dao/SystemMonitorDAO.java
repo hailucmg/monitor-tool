@@ -59,23 +59,76 @@ public interface SystemMonitorDAO {
 	 */
 	List<SystemMonitor> listSystems();
 	
+	/**
+	 * @param id
+	 * @return
+	 * @throws Exception
+	 */
 	public SystemMonitor getSystembyID(String id) throws Exception;
 	
+	/**
+	 * @param system
+	 * @return
+	 * @throws Exception
+	 */
 	public boolean addnewSystem(SystemMonitor system) throws Exception;
 	
+	/**
+	 * @param id
+	 * @param newName
+	 * @param newAddress
+	 * @param protocol
+	 * @param group
+	 * @param ip
+	 * @param remoteURL
+	 * @param isActive
+	 * @return
+	 * @throws Exception
+	 */
 	public boolean editSystembyID(String id, String newName, String newAddress, String protocol, String group,String ip,
-			String remoteURL,boolean isActive) throws Exception;
+			String remoteURL,String email,boolean isActive) throws Exception;
 	
+	/**
+	 * @param id
+	 * @return
+	 * @throws Exception
+	 */
 	public boolean deleteSystembyID(String id) throws Exception;
 	
 	
+	/**
+	 * @param ids
+	 * @return
+	 * @throws Exception
+	 */
 	public boolean deleteListSystembyID(String[] ids) throws Exception;
 	
+	/**
+	 * @param url
+	 * @return
+	 * @throws Exception
+	 */
 	public String getIPbyURL(String url) throws Exception;
 	
+	/**
+	 * @return
+	 * @throws Exception
+	 */
 	public String createCode() throws Exception;
 	
+	/**
+	 * @return
+	 * @throws Exception
+	 */
 	public String[] groups() throws Exception;
+	
+	/**
+	 * @return
+	 * @throws Exception
+	 */
+	public String[] getEmails() throws Exception;
+	
+
 	
 	Date getLastestTimeStamp(SystemMonitor system, String className);
 	
