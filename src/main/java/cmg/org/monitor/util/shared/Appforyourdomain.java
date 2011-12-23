@@ -388,7 +388,7 @@ public class Appforyourdomain {
 	}
 
 	
-	public static void main(String[] arg) throws Exception {
+	/*public static void main(String[] arg) throws Exception {
 
 		Appforyourdomain client = new Appforyourdomain("monitor@c-mg.com",
 				"w3lcom3back", "c-mg.com");
@@ -400,7 +400,7 @@ public class Appforyourdomain {
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-		}
+		}*/
 		
 		/*String[] ids = client.listGroupID();
 		for(int a = 0 ; a< ids.length;a++){
@@ -425,6 +425,6 @@ public class Appforyourdomain {
 		for(int k = 0 ; k < alluser.size();k++){
 			System.out.println(alluser.get(k));
 		}*/
-	}
+	
 
 }
