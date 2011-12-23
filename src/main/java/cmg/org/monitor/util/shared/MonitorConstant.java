@@ -1,6 +1,10 @@
 package cmg.org.monitor.util.shared;
 
 public final class MonitorConstant {
+public static String SMTP_PROTOCOL = "SMTP";
+	
+	public static String HTTP_PROTOCOL = "HTTP(s)";
+	
 	
 	public static final String PROJECT_NAME = "CMG Health Monitor System";
 	
