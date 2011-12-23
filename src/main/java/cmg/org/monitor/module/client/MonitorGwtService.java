@@ -24,9 +24,7 @@ public interface MonitorGwtService extends RemoteService {
 
 	MonitorEditDto getSystembyID(String id) throws Exception;
 
-	String editSystembyID(MonitorEditDto system, String newName, String newAddress,
-			String group, String protocol, String ip, String remoteURL,
-			boolean isActive) throws Exception;
+	String editSystembyID(MonitorEditDto system,SystemMonitor sysNew) throws Exception;
 
 	SystemMonitor getLastestDataMonitor(String sysID);
 
