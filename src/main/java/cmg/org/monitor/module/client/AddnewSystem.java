@@ -15,7 +15,6 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 
 public class AddnewSystem extends AncestorEntryPoint {
@@ -25,7 +24,6 @@ public class AddnewSystem extends AncestorEntryPoint {
 	TextBox txtIP;
 	TextBox txtRemote;
 	TextBox txtEmail;
-	PasswordTextBox txtEmailPass;
 	ListBox listActive;
 	ListBox listProtocol;
 	Button bttCreate;
@@ -40,15 +38,18 @@ public class AddnewSystem extends AncestorEntryPoint {
 	Label labelmailgroup;
 	Label labeladdnew;
 	Label labelEmail;
-	Label labelEmailPassword;
 	AbsolutePanel panelAdding;
 	AbsolutePanel panelValidateName;
 	AbsolutePanel panelValidateURL;
 	AbsolutePanel panelValidateIP;
 	AbsolutePanel panelValidateRemoteURL;
 	AbsolutePanel panelButton;
+	AbsolutePanel panelValidateEmail;
 	private static FlexTable tableForm;
-	AbsolutePanel panelValidateRemoteURLServer;
+	AbsolutePanel panelLabelEmail;
+	AbsolutePanel panelTextEmail;
+	AbsolutePanel panelValidateRemoteServer;
+	AbsolutePanel panelValidateEmailServer;
 
 	@Override
 	protected void init() {
@@ -74,13 +75,19 @@ public class AddnewSystem extends AncestorEntryPoint {
 	 * @return
 	 */
 
-	/*
-	 * private String validateEmail(String email){ String msg =""; if(email ==
-	 * null || email == ""){ msg ="email is not validate"; } String pattern =
-	 * "\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*"; RegExp regExp =
-	 * RegExp.compile(pattern); boolean matchFound = regExp.test(email); if
-	 * (matchFound == false) { msg = "email is not validate"; } return msg; }
-	 */
+	private String validateEmail(String email) {
+		String msg = "";
+		if (email == null || email == "") {
+			msg = "This field is required";
+		}
+		String pattern = "\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
+		RegExp regExp = RegExp.compile(pattern);
+		boolean matchFound = regExp.test(email);
+		if (matchFound == false) {
+			msg = "email is not validate";
+		}
+		return msg;
+	}
 
 	/**
 	 * @param name
@@ -162,6 +169,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 				tableForm.getFlexCellFormatter().setWidth(6, 0, "100px");
 				tableForm.getFlexCellFormatter().setWidth(7, 0, "100px");
 				tableForm.getFlexCellFormatter().setWidth(8, 0, "100px");
+				tableForm.getFlexCellFormatter().setWidth(9, 0, "100px");
 
 				labelName = new Label();
 				labelName.setText("Name");
@@ -181,24 +189,31 @@ public class AddnewSystem extends AncestorEntryPoint {
 				labelprotocol = new Label();
 				labelprotocol.setText("Protocol");
 
+				labelEmail = new Label();
+				labelEmail.setText("Email");
+
 				labelmailgroup = new Label();
 				labelmailgroup.setText("Notification mail group");
 
 				txtName = new TextBox();
 				txtName.setWidth("196px");
 				txtName.setHeight("30px");
-				
+
 				txtURL = new TextBox();
 				txtURL.setWidth("196px");
 				txtURL.setHeight("30px");
-				
+
 				txtIP = new TextBox();
 				txtIP.setWidth("196px");
 				txtIP.setHeight("30px");
-				
+
 				txtRemote = new TextBox();
 				txtRemote.setWidth("196px");
 				txtRemote.setHeight("30px");
+
+				txtEmail = new TextBox();
+				txtEmail.setWidth("196px");
+				txtEmail.setHeight("30px");
 
 				listActive = new ListBox();
 				listActive.setWidth("198px");
@@ -223,13 +238,28 @@ public class AddnewSystem extends AncestorEntryPoint {
 				listGroup.setSelectedIndex(0);
 
 				bttCreate = new Button();
-				bttCreate.setStylePrimaryName("form-create");
-
+				bttCreate.setText("Create");
+				bttCreate.setStyleName("margin:6px;");
+				bttCreate.addStyleName("form-button");
+				
 				bttReset = new Button();
-				bttReset.setStylePrimaryName("form-reset");
+				bttReset.setText("Reset");
+				bttReset.setStyleName("margin:6px;");
+				bttReset.addStyleName("form-button");
 
 				bttBack = new Button();
-				bttBack.setStylePrimaryName("form-back");
+				bttBack.setText("Back");
+				bttBack.setStyleName("margin:6px;");
+				bttBack.addStyleName("form-button");
+				
+
+				panelLabelEmail = new AbsolutePanel();
+				panelLabelEmail.add(labelEmail);
+				panelLabelEmail.setVisible(false);
+
+				panelTextEmail = new AbsolutePanel();
+				panelTextEmail.add(txtEmail);
+				panelTextEmail.setVisible(false);
 
 				panelButton = new AbsolutePanel();
 				panelButton.add(bttCreate);
@@ -237,44 +267,33 @@ public class AddnewSystem extends AncestorEntryPoint {
 				panelButton.add(bttBack);
 
 				panelAdding = new AbsolutePanel();
-				/*
-				 * panelAdding.setHeight("37px"); panelAdding.setWidth("100px");
-				 */
 				panelAdding
 						.add(new HTML(
 								"<div id=\"img-adding\"><img src=\"images/icon/loading11.gif\"/></div>"));
 				panelAdding.setVisible(false);
 
-				panelValidateName = new AbsolutePanel();
-				panelValidateName
+				panelValidateEmailServer = new AbsolutePanel();
+				panelValidateEmailServer
 						.add(new HTML(
-								"<div class=\"error-left\"></div><div class=\"error-inner\">Name is not validate</div>"));
-				panelValidateName.setVisible(false);
+								"<div class=\"error-left\"></div><div class=\"error-inner\">Email is exitsting</div>"));
+				panelValidateEmailServer.setVisible(false);
+
+				panelValidateRemoteServer = new AbsolutePanel();
+				panelValidateRemoteServer
+						.add(new HTML(
+								"<div class=\"error-left\"></div><div class=\"error-inner\">Remote URL is exitsting</div>"));
+				panelValidateRemoteServer.setVisible(false);
 
 				panelValidateIP = new AbsolutePanel();
-				panelValidateIP
-						.add(new HTML(
-								"<div class=\"error-left\"></div><div class=\"error-inner\">IP is not validate</div>"));
-				panelValidateIP.setVisible(false);
-
+				panelValidateEmail = new AbsolutePanel();
+				panelValidateName = new AbsolutePanel();
 				panelValidateURL = new AbsolutePanel();
-				panelValidateURL
-						.add(new HTML(
-								"<div class=\"error-left\"></div><div class=\"error-inner\">URL is not validate</div>"));
-				panelValidateURL.setVisible(false);
-
 				panelValidateRemoteURL = new AbsolutePanel();
-				panelValidateRemoteURL
-						.add(new HTML(
-								"<div class=\"error-left\"></div><div class=\"error-inner\">Remote-url is not validate</div>"));
+				panelValidateName.setVisible(false);
+				panelValidateIP.setVisible(false);
+				panelValidateURL.setVisible(false);
 				panelValidateRemoteURL.setVisible(false);
-
-			
-				panelValidateRemoteURLServer = new AbsolutePanel();
-				panelValidateRemoteURLServer
-						.add(new HTML(
-								"<div class=\"error-left\"></div><div class=\"error-inner\">It is exists</div>"));
-				panelValidateRemoteURLServer.setVisible(false);
+				panelValidateEmail.setVisible(false);
 
 				MyHandler handler = new MyHandler();
 				bttCreate.addClickHandler(handler);
@@ -284,6 +303,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 				bttBack.addClickHandler(backHandler);
 				myProtocol actionProtocol = new myProtocol();
 				listProtocol.addClickHandler(actionProtocol);
+
 				tableForm.setWidget(0, 0, labelName);
 				tableForm.setWidget(0, 1, txtName);
 				tableForm.setWidget(0, 2, panelValidateName);
@@ -297,21 +317,25 @@ public class AddnewSystem extends AncestorEntryPoint {
 				tableForm.setWidget(3, 1, listActive);
 				tableForm.setWidget(4, 0, labelprotocol);
 				tableForm.setWidget(4, 1, listProtocol);
-				tableForm.setWidget(5, 0, labelmailgroup);
-				tableForm.setWidget(5, 1, listGroup);
-				tableForm.setWidget(6, 0, labelremoteurl);
-				tableForm.setWidget(6, 1, txtRemote);
-				tableForm.setWidget(6, 2, panelValidateRemoteURL);
-				tableForm.setWidget(6, 3, panelValidateRemoteURLServer);
-				tableForm.getFlexCellFormatter().setColSpan(7, 0, 2);
-				tableForm.setWidget(7, 0, panelAdding);
-				tableForm.getFlexCellFormatter().setColSpan(8, 0, 3);
-				tableForm.setWidget(8, 0, panelButton);
+				tableForm.setWidget(5, 0, panelLabelEmail);
+				tableForm.setWidget(5, 1, panelTextEmail);
+				tableForm.setWidget(5, 2, panelValidateEmail);
+				tableForm.setWidget(5, 3, panelValidateEmailServer);
+				tableForm.setWidget(6, 0, labelmailgroup);
+				tableForm.setWidget(6, 1, listGroup);
+				tableForm.setWidget(7, 0, labelremoteurl);
+				tableForm.setWidget(7, 1, txtRemote);
+				tableForm.setWidget(7, 2, panelValidateRemoteURL);
+				tableForm.setWidget(7, 3, panelValidateRemoteServer);
+				tableForm.getFlexCellFormatter().setColSpan(8, 0, 2);
+				tableForm.setWidget(8, 0, panelAdding);
+				tableForm.getFlexCellFormatter().setColSpan(9, 0, 3);
+				tableForm.setWidget(9, 0, panelButton);
 				addWidget(HTMLControl.ID_BODY_CONTENT, tableForm);
 				setVisibleLoadingImage(false);
 				setOnload(false);
 				setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
-				
+
 			}
 
 			@Override
@@ -333,65 +357,166 @@ public class AddnewSystem extends AncestorEntryPoint {
 
 		@Override
 		public void onClick(ClickEvent event) {
-			String validateName = validateName(txtName.getText());
-			String validateURL = validateURL(txtURL.getText());
-			String validateIp = validateIP(txtIP.getText());
-			String validateRemoteURL = validateRemoteURL(txtRemote.getText());
 
-			panelValidateName.setVisible(false);
-			panelValidateRemoteURL.setVisible(false);
-			panelValidateIP.setVisible(false);
-			panelValidateRemoteURL.setVisible(false);
-			panelValidateRemoteURLServer.setVisible(false);
-			if (validateName != "") {
-				panelValidateName.setVisible(true);
-				panelValidateURL.setVisible(false);
-				panelValidateIP.setVisible(false);
-				panelValidateRemoteURL.setVisible(false);
-
-				return;
-			} else if (validateURL != "") {
+			if (listProtocol.getItemText(listProtocol.getSelectedIndex())
+					.equals(MonitorConstant.HTTP_PROTOCOL)) {
+				String validateName = validateName(txtName.getText());
+				String validateURL = validateURL(txtURL.getText());
+				String validateIp = validateIP(txtIP.getText());
+				String validateRemoteURL = validateRemoteURL(txtRemote
+						.getText());
+				panelValidateEmail.setVisible(false);
 				panelValidateName.setVisible(false);
 				panelValidateRemoteURL.setVisible(false);
 				panelValidateIP.setVisible(false);
-
-				panelValidateURL.setVisible(true);
-				return;
-			} else if (validateIp != "") {
-				panelValidateName.setVisible(false);
+				panelValidateRemoteURL.setVisible(false);
+				if (validateName != "") {
+					panelValidateName.clear();
+					panelValidateName.add(new HTML(
+							"<div class=\"error-left\"></div><div class=\"error-inner\">"
+									+ validateName + "</div>"));
+					panelValidateName.setVisible(true);
+					panelValidateURL.setVisible(false);
+					panelValidateIP.setVisible(false);
+					panelValidateRemoteURL.setVisible(false);
+					panelValidateEmail.setVisible(false);
+					return;
+				} else if (validateURL != "") {
+					panelValidateURL.clear();
+					panelValidateURL.add(new HTML(
+							"<div class=\"error-left\"></div><div class=\"error-inner\">"
+									+ validateURL + "</div>"));
+					panelValidateURL.setVisible(true);
+					panelValidateName.setVisible(false);
+					panelValidateRemoteURL.setVisible(false);
+					panelValidateIP.setVisible(false);
+					panelValidateEmail.setVisible(false);
+					return;
+				} else if (validateIp != "") {
+					panelValidateIP.clear();
+					panelValidateIP.add(new HTML(
+							"<div class=\"error-left\"></div><div class=\"error-inner\">"
+									+ validateIp + "</div>"));
+					panelValidateIP.setVisible(true);
+					panelValidateName.setVisible(false);
+					panelValidateRemoteURL.setVisible(false);
+					panelValidateURL.setVisible(false);
+					panelValidateEmail.setVisible(false);
+					return;
+				} else if (validateRemoteURL != "") {
+					if (!listProtocol.getItemText(
+							listProtocol.getSelectedIndex()).equals("SMTP")) {
+						panelValidateRemoteURL.clear();
+						panelValidateRemoteURL.add(new HTML(
+								"<div class=\"error-left\"></div><div class=\"error-inner\">"
+										+ validateRemoteURL + "</div>"));
+						panelValidateRemoteURL.setVisible(true);
+						panelValidateIP.setVisible(false);
+						panelValidateName.setVisible(false);
+						panelValidateURL.setVisible(false);
+						panelValidateEmail.setVisible(false);
+						return;
+					}
+				}
+				panelValidateRemoteURL.setVisible(false);
 				panelValidateIP.setVisible(false);
+				panelValidateName.setVisible(false);
 				panelValidateURL.setVisible(false);
+				panelValidateEmail.setVisible(false);
+				panelValidateEmailServer.setVisible(false);
+				panelValidateRemoteServer.setVisible(false);
+				SystemMonitor system = new SystemMonitor();
+				system.setName(txtName.getText().toString());
+				system.setUrl(txtURL.getText().toString());
+				system.setActive(isActive(listActive.getValue(listActive
+						.getSelectedIndex())));
+				system.setProtocol(listProtocol.getValue(listProtocol
+						.getSelectedIndex()));
+				system.setGroupEmail(listGroup.getItemText(listGroup
+						.getSelectedIndex()));
+				system.setIp(txtIP.getText());
+				system.setRemoteUrl(txtRemote.getText());
+				panelAdding.setVisible(true);
+				sendData(system, txtURL.getText());
 
-				panelValidateIP.setVisible(true);
-				return;
-			} else if (validateRemoteURL != "") {
-				if(!listProtocol.getItemText(listProtocol.getSelectedIndex()).equals(MonitorConstant.SMTP_PROTOCOL)){
+			} else if (listProtocol
+					.getItemText(listProtocol.getSelectedIndex()).equals(
+							MonitorConstant.SMTP_PROTOCOL)) {
+				String validateName = validateName(txtName.getText());
+				String validateURL = validateURL(txtURL.getText());
+				String validateIp = validateIP(txtIP.getText());
+				String validateEmail = validateEmail(txtEmail.getText());
+				panelValidateEmail.setVisible(false);
+				panelValidateName.setVisible(false);
+				panelValidateRemoteURL.setVisible(false);
+				panelValidateIP.setVisible(false);
+				panelValidateRemoteURL.setVisible(false);
+				if (validateName != "") {
+					panelValidateName.clear();
+					panelValidateName.add(new HTML(
+							"<div class=\"error-left\"></div><div class=\"error-inner\">"
+									+ validateName + "</div>"));
+					panelValidateName.setVisible(true);
+					panelValidateURL.setVisible(false);
+					panelValidateIP.setVisible(false);
+					panelValidateRemoteURL.setVisible(false);
+					panelValidateEmail.setVisible(false);
+					return;
+				} else if (validateURL != "") {
+					panelValidateURL.clear();
+					panelValidateURL.add(new HTML(
+							"<div class=\"error-left\"></div><div class=\"error-inner\">"
+									+ validateURL + "</div>"));
+					panelValidateURL.setVisible(true);
+					panelValidateName.setVisible(false);
+					panelValidateRemoteURL.setVisible(false);
+					panelValidateIP.setVisible(false);
+					panelValidateEmail.setVisible(false);
+					return;
+				} else if (validateIp != "") {
+					panelValidateIP.clear();
+					panelValidateIP.add(new HTML(
+							"<div class=\"error-left\"></div><div class=\"error-inner\">"
+									+ validateIp + "</div>"));
+					panelValidateIP.setVisible(true);
+					panelValidateName.setVisible(false);
+					panelValidateRemoteURL.setVisible(false);
+					panelValidateURL.setVisible(false);
+					panelValidateEmail.setVisible(false);
+					return;
+				} else if (validateEmail != "") {
+					panelValidateEmail.clear();
+					panelValidateEmail.add(new HTML(
+							"<div class=\"error-left\"></div><div class=\"error-inner\">"
+									+ validateEmail + "</div>"));
+					panelValidateEmail.setVisible(true);
 					panelValidateIP.setVisible(false);
 					panelValidateName.setVisible(false);
+					panelValidateRemoteURL.setVisible(false);
 					panelValidateURL.setVisible(false);
-					panelValidateRemoteURL.setVisible(true);
 					return;
-				}				
+				}
+				panelValidateRemoteURL.setVisible(false);
+				panelValidateIP.setVisible(false);
+				panelValidateName.setVisible(false);
+				panelValidateURL.setVisible(false);
+				panelValidateEmail.setVisible(false);
+				panelValidateEmailServer.setVisible(false);
+				panelValidateRemoteServer.setVisible(false);
+				SystemMonitor system = new SystemMonitor();
+				system.setName(txtName.getText().toString());
+				system.setUrl(txtURL.getText().toString());
+				system.setActive(isActive(listActive.getValue(listActive
+						.getSelectedIndex())));
+				system.setProtocol(listProtocol.getValue(listProtocol
+						.getSelectedIndex()));
+				system.setGroupEmail(listGroup.getItemText(listGroup
+						.getSelectedIndex()));
+				system.setIp(txtIP.getText());
+				system.setEmail(txtEmail.getText());
+				panelAdding.setVisible(true);
+				sendData(system, txtURL.getText());
 			}
-			panelValidateRemoteURL.setVisible(false);
-			panelValidateIP.setVisible(false);
-			panelValidateName.setVisible(false);
-			panelValidateURL.setVisible(false);
-
-			SystemMonitor system = new SystemMonitor();
-			system.setName(txtName.getText().toString());
-			system.setUrl(txtURL.getText().toString());
-			system.setActive(isActive(listActive.getValue(listActive
-					.getSelectedIndex())));
-			system.setProtocol(listProtocol.getValue(listProtocol
-					.getSelectedIndex()));
-			system.setGroupEmail(listGroup.getItemText(listGroup
-					.getSelectedIndex()));
-			system.setIp(txtIP.getText());
-			system.setRemoteUrl(txtRemote.getText());
-			panelAdding.setVisible(true);
-			sendData(system, txtURL.getText());
-
 		}
 
 		/**
@@ -403,16 +528,17 @@ public class AddnewSystem extends AncestorEntryPoint {
 				@Override
 				public void onSuccess(String result) {
 					panelAdding.setVisible(false);
-					if (result.equals("Remote-URL is existing")) {
-						panelValidateRemoteURLServer.setVisible(true);
+					if (result.equals("Email is existing")) {
+						panelValidateEmailServer.setVisible(true);
+					} else if (result.equals("Remote-URL is existing")) {
+						panelValidateRemoteServer.setVisible(true);
 					} else if (result.toLowerCase().trim().equals("done")) {
 						showMessage("System added sucessfully. ",
 								HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
 								"View system list. ", HTMLControl.RED_MESSAGE,
 								true);
 					} else {
-						showMessage(result,
-								HTMLControl.HTML_DASHBOARD_NAME,
+						showMessage(result, HTMLControl.HTML_DASHBOARD_NAME,
 								"Goto Dashboard. ", HTMLControl.RED_MESSAGE,
 								true);
 					}
@@ -443,12 +569,16 @@ public class AddnewSystem extends AncestorEntryPoint {
 			listGroup.setSelectedIndex(0);
 			listProtocol.setSelectedIndex(0);
 			txtRemote.setEnabled(true);
-
-			
+			panelLabelEmail.setVisible(false);
+			panelTextEmail.setVisible(false);
+			txtEmail.setText("");
+			panelValidateEmail.setVisible(false);
 			panelValidateRemoteURL.setVisible(false);
 			panelValidateIP.setVisible(false);
 			panelValidateName.setVisible(false);
 			panelValidateURL.setVisible(false);
+			panelValidateEmailServer.setVisible(false);
+			panelValidateRemoteServer.setVisible(false);
 		}
 	}
 
@@ -463,24 +593,29 @@ public class AddnewSystem extends AncestorEntryPoint {
 					.getHref()) + HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME);
 		}
 	}
-	
+
 	/**
 	 * @author NDC
 	 * 
 	 */
-	class myProtocol implements ClickHandler{
+	class myProtocol implements ClickHandler {
 
 		@Override
 		public void onClick(ClickEvent event) {
 			// TODO Auto-generated method stub
-			if(listProtocol.getSelectedIndex()==0){
+			if (listProtocol.getSelectedIndex() == 0) {
 				txtRemote.setEnabled(true);
-			}else if(listProtocol.getSelectedIndex()==1){
+				panelLabelEmail.setVisible(false);
+				panelTextEmail.setVisible(false);
+				txtEmail.setText("");
+			} else if (listProtocol.getSelectedIndex() == 1) {
 				txtRemote.setText("");
 				txtRemote.setEnabled(false);
+				panelLabelEmail.setVisible(true);
+				panelTextEmail.setVisible(true);
 			}
-			
+
 		}
-		
+
 	}
 }
