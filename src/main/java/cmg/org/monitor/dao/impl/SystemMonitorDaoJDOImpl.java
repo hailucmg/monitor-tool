@@ -23,21 +23,21 @@ import cmg.org.monitor.util.shared.Ultility;
 public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 	private static final Logger logger = Logger
 			.getLogger(SystemMonitorDaoJDOImpl.class.getCanonicalName());
-	
+
 	@Override
 	public String[] remoteURLs() throws Exception {
 		// TODO Auto-generated method stub
-		String[] remoteURLs=null;
+		String[] remoteURLs = null;
 		List<String> list;
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		Query q = pm.newQuery("select remoteUrl from "
 				+ SystemMonitor.class.getName());
 		try {
 			list = (List<String>) q.execute();
-			if(list!=null || list.size()>0){
+			if (list != null || list.size() > 0) {
 				remoteURLs = new String[list.size()];
-				for(int i = 0;i<list.size();i++){
-					remoteURLs[i]=list.get(i);
+				for (int i = 0; i < list.size(); i++) {
+					remoteURLs[i] = list.get(i);
 				}
 			}
 		} catch (Exception e) {
@@ -230,18 +230,8 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 
 	public void updateSystem(SystemMonitor contact) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		/*
-		 * String name = contact.getName(); String url = contact.getUrl();
-		 * String ip = contact.getIp();
-		 */
-
 		try {
 			pm.currentTransaction().begin();
-			// We have to look it up first,
-			/*
-			 * contact = pm.getObjectById(SystemMonitor.class, contact.getId());
-			 * contact.setName(name); contact.setUrl(url); contact.setIp(ip);
-			 */
 			pm.makePersistent(contact);
 			pm.currentTransaction().commit();
 		} catch (Exception ex) {
@@ -290,7 +280,7 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 	@Override
 	public boolean editSystembyID(String id, String newName, String newAddress,
 			String protocol, String group, String ip, String remoteURL,
-			boolean isActive) throws Exception {
+			String email, boolean isActive) throws Exception {
 		// TODO Auto-generated method stub
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		SystemMonitor system;
@@ -306,6 +296,7 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 			system.setActive(isActive);
 			system.setIp(ip);
 			system.setRemoteUrl(remoteURL);
+			system.setEmail(email);
 			pm.makePersistent(system);
 			pm.currentTransaction().commit();
 			check = true;
@@ -478,8 +469,8 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 				for (FileSystem fs : listFs) {
 					if (fs.getSize() == 0) {
 						fs.setSize(1l);
-					}	
-						
+					}
+
 					if (fs.getPercentUsage() >= 90) {
 						checkFileSystem = false;
 						break;
@@ -506,6 +497,36 @@ public class SystemMonitorDaoJDOImpl implements SystemMonitorDAO {
 			e.printStackTrace();
 		}
 		return groups;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see cmg.org.monitor.dao.SystemMonitorDAO#getEmails()
+	 */
+	@Override
+	public String[] getEmails() throws Exception {
+		// TODO Auto-generated method stub
+		String[] Emails = null;
+		List<String> list;
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		Query q = pm.newQuery("select email from "
+				+ SystemMonitor.class.getName());
+		try {
+			list = (List<String>) q.execute();
+			if (list != null || list.size() > 0) {
+				Emails = new String[list.size()];
+				for (int i = 0; i < list.size(); i++) {
+					Emails[i] = list.get(i);
+				}
+			}
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			q.closeAll();
+			pm.close();
+		}
+		return Emails;
 	}
 
 }
