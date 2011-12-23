@@ -49,6 +49,9 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 				String[] remoteURLs = systemDAO.remoteURLs();
 				if (remoteURLs != null) {
 					for (int i = 0; i < remoteURLs.length; i++) {
+						if(remoteURLs[i]==null){
+							continue;
+						}
 						if (remoteURL.toLowerCase().equals(
 								remoteURLs[i].toLowerCase())) {
 							callback = "Remote-URL is existing";
@@ -73,17 +76,38 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 					}
 
 				}
-			} else if(system.getProtocol().equals("SMTP")){
+			} else if (system.getProtocol().equals("SMTP")) {
 				system.setRemoteUrl("");
-				system.setCode(systemDAO.createCode());
-				if (systemDAO.addnewSystem(system)) {
-					callback = "done";
+				String email = system.getEmail();
+				String[] emails = systemDAO.getEmails();
+				if (emails == null) {
+					system.setCode(systemDAO.createCode());
+					if (systemDAO.addnewSystem(system)) {
+						callback = "done";
+					} else {
+						callback = "wrong to config jar or database";
+					}
 				} else {
-					callback = "wrong to config jar or database";
+					for (int i = 0; i < emails.length; i++) {
+						if (emails[i] == null) {
+							continue;
+						} else if (email.toLowerCase().equals(
+								emails[i].toLowerCase())) {
+							callback = "Email is existing";
+							check = false;
+							break;
+						}
+					}
+					if (check) {
+						system.setCode(systemDAO.createCode());
+						if (systemDAO.addnewSystem(system)) {
+							callback = "done";
+						} else {
+							callback = "wrong to config jar or database";
+						}
+					}
 				}
-
 			}
-
 		} catch (Exception e) {
 			// TODO: handle exception
 			callback = e.toString();
@@ -147,25 +171,98 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public String editSystembyID(MonitorEditDto system, String newName,
-			String newAddress, String protocol, String group, String ip,
-			String remoteURL, boolean isActive) throws Exception {
+	public String editSystembyID(MonitorEditDto system, SystemMonitor sysNew)
+			throws Exception {
 		String b = "";
 		boolean check = false;
 		SystemMonitorDaoJDOImpl systemDAO = new SystemMonitorDaoJDOImpl();
 		try {
-			if (protocol.equals("SMTP")) {
-				if (!systemDAO.editSystembyID(system.getId(), newName,
-						newAddress, protocol, group, ip, remoteURL, isActive)) {
-					b = "config database error";
-				} else {
-					b = "done";
+			if (sysNew.getProtocol().equals(MonitorConstant.SMTP_PROTOCOL)) {
+				if(system.getEmail() == null){
+					String[] Emails = systemDAO.getEmails();
+					for (int i = 0; i < Emails.length; i++) {
+						if (Emails[i] == null) {
+							continue;
+						}
+						if ( sysNew.getEmail().toLowerCase().equals(Emails[i].toLowerCase())) {
+							b = "Email is exitsting";
+							return b;
+						}
+					}
+					if (!systemDAO.editSystembyID(system.getId(),
+							sysNew.getName(), sysNew.getUrl(),
+							sysNew.getProtocol(), sysNew.getGroupEmail(),
+							sysNew.getIp(), sysNew.getRemoteUrl(), sysNew.getEmail(),
+							sysNew.isActive())){
+						b = "config database error";
+					} else {
+						b = "done";
+					}
+					check = true;
 				}
-			} else {
-				if (system.getRemoteURl().equals(remoteURL)) {
-					if (!systemDAO.editSystembyID(system.getId(), newName,
-							newAddress, protocol, group, ip, remoteURL,
-							isActive)) {
+				else if (system.getEmail()!= null  && system.getEmail().equals(sysNew.getEmail())) {
+					if (!systemDAO.editSystembyID(system.getId(),
+							sysNew.getName(), sysNew.getUrl(),
+							sysNew.getProtocol(), sysNew.getGroupEmail(),
+							sysNew.getIp(), sysNew.getRemoteUrl(), sysNew.getEmail(),
+							sysNew.isActive())) {
+						b = "config database error";
+					} else {
+						b = "done";
+					}
+					check = true;
+				}
+				if (!check) {
+					String[] Emails = systemDAO.getEmails();
+					for (int i = 0; i < Emails.length; i++) {
+						if (Emails[i] == null) {
+							continue;
+						}
+						if ( sysNew.getEmail().toLowerCase().equals(Emails[i].toLowerCase())) {
+							b = "Email is exitsting";
+							return b;
+						}
+					}
+					if (!systemDAO.editSystembyID(system.getId(),
+							sysNew.getName(), sysNew.getUrl(),
+							sysNew.getProtocol(), sysNew.getGroupEmail(),
+							sysNew.getIp(), sysNew.getRemoteUrl(), sysNew.getEmail(),
+							sysNew.isActive())){
+						b = "config database error";
+					} else {
+						b = "done";
+					}
+				}
+			} else if (sysNew.getProtocol().equals(MonitorConstant.HTTP_PROTOCOL)) {
+				if(system.getRemoteURl() == null){
+					String[] remoteURLs = systemDAO.remoteURLs();
+					for (int i = 0; i < remoteURLs.length; i++) {
+						if(remoteURLs[i]==null){
+							continue;
+						}
+						if (sysNew.getRemoteUrl().toLowerCase().equals(
+								remoteURLs[i].toLowerCase())) {
+							b = "Remote URL is exitsting";
+							return b;
+						}
+					}
+					if (!systemDAO.editSystembyID(system.getId(),
+							sysNew.getName(), sysNew.getUrl(),
+							sysNew.getProtocol(), sysNew.getGroupEmail(),
+							sysNew.getIp(), sysNew.getRemoteUrl(), sysNew.getEmail(),
+							sysNew.isActive())){
+						b = "config database error";
+					} else {
+						b = "done";
+					}
+					check = true;
+				}
+				else if (system.getRemoteURl()!=null  && system.getRemoteURl().equals(sysNew.getRemoteUrl())) {
+					if (!systemDAO.editSystembyID(system.getId(),
+							sysNew.getName(), sysNew.getUrl(),
+							sysNew.getProtocol(), sysNew.getGroupEmail(),
+							sysNew.getIp(), sysNew.getRemoteUrl(), sysNew.getEmail(),
+							sysNew.isActive())) {
 						b = "config database error";
 					} else {
 						b = "done";
@@ -175,15 +272,20 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 				if (!check) {
 					String[] remoteURLs = systemDAO.remoteURLs();
 					for (int i = 0; i < remoteURLs.length; i++) {
-						if (remoteURL.toLowerCase().equals(
+						if(remoteURLs[i]==null){
+							continue;
+						}
+						if (sysNew.getRemoteUrl().toLowerCase().equals(
 								remoteURLs[i].toLowerCase())) {
 							b = "Remote URL is exitsting";
 							return b;
 						}
 					}
-					if (!systemDAO.editSystembyID(system.getId(), newName,
-							newAddress, protocol, group, ip, remoteURL,
-							isActive)) {
+					if (!systemDAO.editSystembyID(system.getId(),
+							sysNew.getName(), sysNew.getUrl(),
+							sysNew.getProtocol(), sysNew.getGroupEmail(),
+							sysNew.getIp(), sysNew.getRemoteUrl(), sysNew.getEmail(),
+							sysNew.isActive())){
 						b = "config database error";
 					} else {
 						b = "done";
@@ -222,7 +324,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 				sys.setLastestJvm(jvmDAO.getLastestJvm(sys));
 			}
 		} catch (Exception ex) {
-			// logger.log(Level.SEVERE, ex.getCause().getMessage());
+			logger.log(Level.SEVERE, ex.getCause().getMessage());
 		}
 		return sys;
 	}
