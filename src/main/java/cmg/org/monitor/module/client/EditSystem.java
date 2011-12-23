@@ -3,6 +3,7 @@ package cmg.org.monitor.module.client;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorEditDto;
 import cmg.org.monitor.util.shared.HTMLControl;
+import cmg.org.monitor.util.shared.MonitorConstant;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -160,9 +161,9 @@ public class EditSystem extends AncestorEntryPoint {
 					listProtocol = new ListBox();
 					listProtocol.setWidth("198px");
 					listProtocol.setHeight("28px");
-					listProtocol.addItem("HTTP(s)");
-					listProtocol.addItem("SMTP");
-					if (system.getProtocol().equals("HTTP(s)")) {
+					listProtocol.addItem(MonitorConstant.HTTP_PROTOCOL);
+					listProtocol.addItem(MonitorConstant.SMTP_PROTOCOL);
+					if (system.getProtocol().equals(MonitorConstant.HTTP_PROTOCOL)) {
 						listProtocol.setSelectedIndex(0);
 					} else {
 						listProtocol.setSelectedIndex(1);
@@ -344,7 +345,7 @@ public class EditSystem extends AncestorEntryPoint {
 					panelValidateIP.setVisible(true);
 					return;
 				} else if (validateRemoteURL != "") {
-					if(!listProtocol.getItemText(listProtocol.getSelectedIndex()).equals("SMTP")){
+					if(!listProtocol.getItemText(listProtocol.getSelectedIndex()).equals(MonitorConstant.SMTP_PROTOCOL)){
 						panelValidateIP.setVisible(false);
 						panelValidateName.setVisible(false);
 						panelValidateURL.setVisible(false);
