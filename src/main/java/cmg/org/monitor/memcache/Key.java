@@ -6,53 +6,55 @@ public class Key implements Serializable {
 	/**
 	 * 
 	 */
-	
+
 	private static final long serialVersionUID = 1L;
+
+	public static final int FILE_SYSTEM_STORE = 0x001;
+	public static final int CPU__STORE = 0x002;
+	public static final int MEMORY_STORE = 0x003;
+	public static final int ALERT_STORE = 0x004;
+	public static final int JVM_STORE = 0x005;
+	public static final int SERVICE_STORE = 0x006;
+	public static final int SYSTEM_MONITOR_STORE = 0x007;
 	
-	protected static final int FILE_SYSTEM_STORE = 0x001;
-	protected static final int CPU_MEMORY_STORE = 0x002;
-	protected static final int ALERT_STORE = 0x003;
-	protected static final int JVM_STORE = 0x004;
-	protected static final int SERVICE_STORE = 0x005;
-	protected static final int SYSTEM_MONITOR_STORE = 0x006;
-	protected static final int COUNT_STORE = 0x007;
-	protected static final int FLAG_STORE = 0x008;
-	protected static final int CPU_STORE = 0x009;
+	public static final int ALERT_TEMP_STORE = 0x008;
+	public static final int MAIL_STORE = 0x009;
 	
+
 	private int type;
-	
-	private int count;
-	
+
 	private String sid;
+	
+	private String options;
+	
+	private int memType;
 
 	protected Key() {
-		
+
 	}
-	
-	protected static Key create(int type) {
+
+	public static Key create(int type) {
 		Key key = new Key();
 		key.type = type;
 		return key;
 	}
-	
-	protected static Key create(int type, int count) {
+
+	public static Key create(int type, String sid) {
 		Key key = create(type);
-		key.count = count;
+		key.setSid(sid);
 		return key;
 	}
 	
-	protected static Key create(int type, int count, String sid) {
-		Key key = create(type, count);
-		key.sid = sid;
+	public static Key create(int type, String sid, String options) {
+		Key key = create(type, sid);
+		key.setOptions(options);
 		return key;
 	}
-
-	protected int getCount() {
-		return count;
-	}
-
-	protected void setCount(int count) {
-		this.count = count;
+	
+	public static Key create(int type, String sid, int memType) {
+		Key key = create(type, sid);
+		key.setMemType(memType);
+		return key;
 	}
 
 	protected String getSid() {
@@ -63,13 +65,27 @@ public class Key implements Serializable {
 		this.sid = sid;
 	}
 
-
 	protected int getType() {
 		return type;
 	}
 
-
 	protected void setType(int type) {
 		this.type = type;
+	}
+
+	public String getOptions() {
+		return options;
+	}
+
+	public void setOptions(String options) {
+		this.options = options;
+	}
+
+	public int getMemType() {
+		return memType;
+	}
+
+	public void setMemType(int memType) {
+		this.memType = memType;
 	}
 }
