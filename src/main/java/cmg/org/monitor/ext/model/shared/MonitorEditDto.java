@@ -24,6 +24,21 @@ public class MonitorEditDto implements Serializable{
 	
 	String email;
 	
+	String[] emails;
+	
+	String[] remoteURLs;
+	public String[] getRemoteURLs() {
+		return remoteURLs;
+	}
+	public void setRemoteURLs(String[] remoteURL) {
+		this.remoteURLs = remoteURL;
+	}
+	public String[] getEmails() {
+		return emails;
+	}
+	public void setEmails(String[] emails) {
+		this.emails = emails;
+	}
 	public String getEmail() {
 		return email;
 	}
