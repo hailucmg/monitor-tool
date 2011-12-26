@@ -1,6 +1,13 @@
 package cmg.org.monitor.util.shared;
 
 public final class MonitorConstant {
+	// Alert mail sender service
+	public static final String ALERT_MAIL_SENDER_NAME = "adminmonitor@c-mg.com";
+
+	public static final int STATISTIC_HISTORY_LENGTH = 999;
+
+	public static final int CPU_MEMORY_HISTORY_LENGTH = 100;
+
 	public static String SMTP_PROTOCOL = "SMTP";
 
 	public static String HTTP_PROTOCOL = "HTTP(s)";
