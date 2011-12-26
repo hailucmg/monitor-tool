@@ -7,7 +7,6 @@ import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorEditDto;
 import cmg.org.monitor.ext.model.shared.UserDto;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
-import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -19,8 +18,7 @@ public interface MonitorGwtServiceAsync {
 
 	void editSystem(String id, AsyncCallback<String> callback);
 
-	void editSystembyID(MonitorEditDto system, SystemMonitor sysNew,
-			AsyncCallback<String> callback);
+	void editSystembyID(String id,SystemMonitor sysNew, AsyncCallback<Boolean> callback);
 
 	void getLastestDataMonitor(String sysID,
 			AsyncCallback<SystemMonitor> callback);
@@ -39,10 +37,9 @@ public interface MonitorGwtServiceAsync {
 
 	void validSystemId(String sysID, AsyncCallback<SystemMonitor> callback);
 
-	void addSystem(SystemMonitor system, String url,
-			AsyncCallback<String> callback);
+	void addSystem(SystemMonitor system, AsyncCallback<Boolean> callback);
 
-	void groups(AsyncCallback<String[]> callback);
+	void groups(AsyncCallback<MonitorEditDto> callback);
 
 	void getAboutContent(AsyncCallback<String> callback);
 

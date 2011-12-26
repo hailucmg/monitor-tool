@@ -39,93 +39,39 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			.getLogger(MonitorGwtServiceImpl.class.getCanonicalName());
 
 	@Override
-	public String addSystem(SystemMonitor system, String url) throws Exception {
-		String callback = null;
-		boolean check = true;
+	public boolean addSystem(SystemMonitor system) {
+
+		boolean check = false;
 		SystemMonitorDaoJDOImpl systemDAO = new SystemMonitorDaoJDOImpl();
 		try {
-			if (system.getProtocol().equals("HTTP(s)")) {
-				String remoteURL = system.getRemoteUrl();
-				String[] remoteURLs = systemDAO.remoteURLs();
-				if (remoteURLs != null) {
-					for (int i = 0; i < remoteURLs.length; i++) {
-						if(remoteURLs[i]==null){
-							continue;
-						}
-						if (remoteURL.toLowerCase().equals(
-								remoteURLs[i].toLowerCase())) {
-							callback = "Remote-URL is existing";
-							check = false;
-							break;
-						}
-					}
-					if (check) {
-						system.setCode(systemDAO.createCode());
-						if (systemDAO.addnewSystem(system)) {
-							callback = "done";
-						} else {
-							callback = "wrong to config jar or database";
-						}
-					}
-				} else if (remoteURLs == null) {
-					system.setCode(systemDAO.createCode());
-					if (systemDAO.addnewSystem(system)) {
-						callback = "done";
-					} else {
-						callback = "wrong to config jar or database";
-					}
-
-				}
-			} else if (system.getProtocol().equals("SMTP")) {
-				system.setRemoteUrl("");
-				String email = system.getEmail();
-				String[] emails = systemDAO.getEmails();
-				if (emails == null) {
-					system.setCode(systemDAO.createCode());
-					if (systemDAO.addnewSystem(system)) {
-						callback = "done";
-					} else {
-						callback = "wrong to config jar or database";
-					}
-				} else {
-					for (int i = 0; i < emails.length; i++) {
-						if (emails[i] == null) {
-							continue;
-						} else if (email.toLowerCase().equals(
-								emails[i].toLowerCase())) {
-							callback = "Email is existing";
-							check = false;
-							break;
-						}
-					}
-					if (check) {
-						system.setCode(systemDAO.createCode());
-						if (systemDAO.addnewSystem(system)) {
-							callback = "done";
-						} else {
-							callback = "wrong to config jar or database";
-						}
-					}
-				}
-			}
+			system.setCode(systemDAO.createCode());
+			check = systemDAO.addnewSystem(system);
 		} catch (Exception e) {
 			// TODO: handle exception
-			callback = e.toString();
+			logger.log(Level.SEVERE, e.getCause().getMessage());
 		}
 
-		return callback;
+		return check;
 	}
 
 	@Override
-	public String[] groups() throws Exception {
+	public MonitorEditDto groups() throws Exception {
 		SystemMonitorDAO sysDAO = new SystemMonitorDaoJDOImpl();
 		String[] list = null;
+		String[] emails = null;
+		String[] remoteURLS = null;
+		MonitorEditDto sys = new MonitorEditDto();
 		try {
 			list = sysDAO.groups();
+			emails = sysDAO.getEmails();
+			remoteURLS = sysDAO.remoteURLs();
+			sys.setGroups(list);
+			sys.setEmails(emails);
+			sys.setRemoteURLs(remoteURLS);
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, ex.getCause().getMessage());
 		}
-		return list;
+		return sys;
 	}
 
 	@Override
@@ -141,7 +87,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public MonitorEditDto getSystembyID(String id) throws Exception {
+	public MonitorEditDto getSystembyID(String id) {
 		SystemMonitorDAO sysDAO = new SystemMonitorDaoJDOImpl();
 		MonitorEditDto monitorEdit = new MonitorEditDto();
 		String[] groups;
@@ -159,144 +105,35 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			monitorEdit.setPasswordEmail(system.getEmailPassword());
 			groups = sysDAO.groups();
 			monitorEdit.setGroups(groups);
+			monitorEdit.setEmails(sysDAO.getEmails());
+			monitorEdit.setRemoteURLs(sysDAO.remoteURLs());
 			for (int i = 0; i < groups.length; i++) {
 				if (groups[i].toString().equals(system.getGroupEmail())) {
 					monitorEdit.setSelect(i);
 				}
 			}
 		} catch (Exception e) {
-			throw e;
+			logger.log(Level.SEVERE, e.getCause().getMessage());
 		}
 		return monitorEdit;
 	}
 
 	@Override
-	public String editSystembyID(MonitorEditDto system, SystemMonitor sysNew)
-			throws Exception {
+	public boolean editSystembyID(String id,SystemMonitor sysNew) throws Exception {
 		String b = "";
 		boolean check = false;
 		SystemMonitorDaoJDOImpl systemDAO = new SystemMonitorDaoJDOImpl();
 		try {
-			if (sysNew.getProtocol().equals(MonitorConstant.SMTP_PROTOCOL)) {
-				if(system.getEmail() == null){
-					String[] Emails = systemDAO.getEmails();
-					for (int i = 0; i < Emails.length; i++) {
-						if (Emails[i] == null) {
-							continue;
-						}
-						if ( sysNew.getEmail().toLowerCase().equals(Emails[i].toLowerCase())) {
-							b = "Email is exitsting";
-							return b;
-						}
-					}
-					if (!systemDAO.editSystembyID(system.getId(),
-							sysNew.getName(), sysNew.getUrl(),
-							sysNew.getProtocol(), sysNew.getGroupEmail(),
-							sysNew.getIp(), sysNew.getRemoteUrl(), sysNew.getEmail(),
-							sysNew.isActive())){
-						b = "config database error";
-					} else {
-						b = "done";
-					}
-					check = true;
-				}
-				else if (system.getEmail()!= null  && system.getEmail().equals(sysNew.getEmail())) {
-					if (!systemDAO.editSystembyID(system.getId(),
-							sysNew.getName(), sysNew.getUrl(),
-							sysNew.getProtocol(), sysNew.getGroupEmail(),
-							sysNew.getIp(), sysNew.getRemoteUrl(), sysNew.getEmail(),
-							sysNew.isActive())) {
-						b = "config database error";
-					} else {
-						b = "done";
-					}
-					check = true;
-				}
-				if (!check) {
-					String[] Emails = systemDAO.getEmails();
-					for (int i = 0; i < Emails.length; i++) {
-						if (Emails[i] == null) {
-							continue;
-						}
-						if ( sysNew.getEmail().toLowerCase().equals(Emails[i].toLowerCase())) {
-							b = "Email is exitsting";
-							return b;
-						}
-					}
-					if (!systemDAO.editSystembyID(system.getId(),
-							sysNew.getName(), sysNew.getUrl(),
-							sysNew.getProtocol(), sysNew.getGroupEmail(),
-							sysNew.getIp(), sysNew.getRemoteUrl(), sysNew.getEmail(),
-							sysNew.isActive())){
-						b = "config database error";
-					} else {
-						b = "done";
-					}
-				}
-			} else if (sysNew.getProtocol().equals(MonitorConstant.HTTP_PROTOCOL)) {
-				if(system.getRemoteURl() == null){
-					String[] remoteURLs = systemDAO.remoteURLs();
-					for (int i = 0; i < remoteURLs.length; i++) {
-						if(remoteURLs[i]==null){
-							continue;
-						}
-						if (sysNew.getRemoteUrl().toLowerCase().equals(
-								remoteURLs[i].toLowerCase())) {
-							b = "Remote URL is exitsting";
-							return b;
-						}
-					}
-					if (!systemDAO.editSystembyID(system.getId(),
-							sysNew.getName(), sysNew.getUrl(),
-							sysNew.getProtocol(), sysNew.getGroupEmail(),
-							sysNew.getIp(), sysNew.getRemoteUrl(), sysNew.getEmail(),
-							sysNew.isActive())){
-						b = "config database error";
-					} else {
-						b = "done";
-					}
-					check = true;
-				}
-				else if (system.getRemoteURl()!=null  && system.getRemoteURl().equals(sysNew.getRemoteUrl())) {
-					if (!systemDAO.editSystembyID(system.getId(),
-							sysNew.getName(), sysNew.getUrl(),
-							sysNew.getProtocol(), sysNew.getGroupEmail(),
-							sysNew.getIp(), sysNew.getRemoteUrl(), sysNew.getEmail(),
-							sysNew.isActive())) {
-						b = "config database error";
-					} else {
-						b = "done";
-					}
-					check = true;
-				}
-				if (!check) {
-					String[] remoteURLs = systemDAO.remoteURLs();
-					for (int i = 0; i < remoteURLs.length; i++) {
-						if(remoteURLs[i]==null){
-							continue;
-						}
-						if (sysNew.getRemoteUrl().toLowerCase().equals(
-								remoteURLs[i].toLowerCase())) {
-							b = "Remote URL is exitsting";
-							return b;
-						}
-					}
-					if (!systemDAO.editSystembyID(system.getId(),
-							sysNew.getName(), sysNew.getUrl(),
-							sysNew.getProtocol(), sysNew.getGroupEmail(),
-							sysNew.getIp(), sysNew.getRemoteUrl(), sysNew.getEmail(),
-							sysNew.isActive())){
-						b = "config database error";
-					} else {
-						b = "done";
-					}
-				}
-			}
-
+			check = systemDAO
+					.editSystembyID(id, sysNew.getName(),
+							sysNew.getUrl(), sysNew.getProtocol(),
+							sysNew.getGroupEmail(), sysNew.getIp(),
+							sysNew.getRemoteUrl(), sysNew.getEmail(),
+							sysNew.isActive());
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getCause().getMessage());
 		}
-		return b;
+		return check;
 
 	}
 

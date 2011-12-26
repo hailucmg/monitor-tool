@@ -14,9 +14,9 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 @RemoteServiceRelativePath("MonitorGwtService")
 public interface MonitorGwtService extends RemoteService {
-	String addSystem(SystemMonitor system, String url) throws Exception;
+	boolean addSystem(SystemMonitor system);
 
-	String[] groups() throws Exception;
+	MonitorEditDto groups() throws Exception;
 
 	UserLoginDto getUserLogin();
 
@@ -24,7 +24,7 @@ public interface MonitorGwtService extends RemoteService {
 
 	MonitorEditDto getSystembyID(String id) throws Exception;
 
-	String editSystembyID(MonitorEditDto system,SystemMonitor sysNew) throws Exception;
+	boolean editSystembyID(String id,SystemMonitor sysNew) throws Exception;
 
 	SystemMonitor getLastestDataMonitor(String sysID);
 
