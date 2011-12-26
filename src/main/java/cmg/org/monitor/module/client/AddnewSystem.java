@@ -1,6 +1,7 @@
 package cmg.org.monitor.module.client;
 
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.ext.model.shared.MonitorEditDto;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
@@ -48,8 +49,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 	private static FlexTable tableForm;
 	AbsolutePanel panelLabelEmail;
 	AbsolutePanel panelTextEmail;
-	AbsolutePanel panelValidateRemoteServer;
-	AbsolutePanel panelValidateEmailServer;
+	MonitorEditDto sysDTO;
 
 	@Override
 	protected void init() {
@@ -75,16 +75,33 @@ public class AddnewSystem extends AncestorEntryPoint {
 	 * @return
 	 */
 
-	private String validateEmail(String email) {
+	private String validateEmail(String email, MonitorEditDto sys) {
 		String msg = "";
+		boolean check = false;
 		if (email == null || email == "") {
 			msg = "This field is required";
+			check = true;
 		}
 		String pattern = "\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
 		RegExp regExp = RegExp.compile(pattern);
 		boolean matchFound = regExp.test(email);
 		if (matchFound == false) {
 			msg = "email is not validate";
+			check = true;
+		}
+		if (!check) {
+			String[] emails = sys.getEmails();
+			if (emails != null) {
+				for (int i = 0; i < emails.length; i++) {
+					if (emails[i] != null) {
+						if (emails[i].equals(email)) {
+							msg = "Email is existing";
+						}
+					}
+
+				}
+			}
+
 		}
 		return msg;
 	}
@@ -124,12 +141,30 @@ public class AddnewSystem extends AncestorEntryPoint {
 	 * @param remoteUrl
 	 * @return
 	 */
-	private String validateRemoteURL(String remoteUrl) {
+	private String validateRemoteURL(String remoteUrl, MonitorEditDto sys) {
 		String msg = "";
+		boolean check = false;
 		if (remoteUrl == null || remoteUrl.trim().length() == 0) {
-			msg += "This field is required ";
+			msg = "This field is required ";
+			check = true;
 		} else if (remoteUrl.length() < 3) {
-			msg += "Remote url is not validate";
+			msg = "Remote url is not validate";
+			check = true;
+		}
+		if (check != true) {
+			String[] remoteURLs = sys.getRemoteURLs();
+			if (remoteURLs != null) {
+				for (int i = 0; i < remoteURLs.length; i++) {
+					if (remoteURLs[i] == null) {
+						continue;
+					}
+					if (remoteUrl.toLowerCase().equals(
+							remoteURLs[i].toLowerCase())) {
+						msg = "Remote-URL is existing";
+						break;
+					}
+				}
+			}
 		}
 		return msg;
 	}
@@ -153,9 +188,10 @@ public class AddnewSystem extends AncestorEntryPoint {
 	}
 
 	protected void initFlextTable() {
-		monitorGwtSv.groups(new AsyncCallback<String[]>() {
+		monitorGwtSv.groups(new AsyncCallback<MonitorEditDto>() {
 			@Override
-			public void onSuccess(String[] result) {
+			public void onSuccess(MonitorEditDto result) {
+				sysDTO = result;
 				// TODO Auto-generated method stub
 				tableForm = new FlexTable();
 				tableForm.setCellPadding(3);
@@ -232,8 +268,8 @@ public class AddnewSystem extends AncestorEntryPoint {
 				listGroup = new ListBox();
 				listGroup.setWidth("198px");
 				listGroup.setHeight("28px");
-				for (int i = 0; i < result.length; i++) {
-					listGroup.addItem(result[i]);
+				for (int i = 0; i < sysDTO.getGroups().length; i++) {
+					listGroup.addItem(sysDTO.getGroups()[i]);
 				}
 				listGroup.setSelectedIndex(0);
 
@@ -241,7 +277,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 				bttCreate.setText("Create");
 				bttCreate.setStyleName("margin:6px;");
 				bttCreate.addStyleName("form-button");
-				
+
 				bttReset = new Button();
 				bttReset.setText("Reset");
 				bttReset.setStyleName("margin:6px;");
@@ -251,7 +287,6 @@ public class AddnewSystem extends AncestorEntryPoint {
 				bttBack.setText("Back");
 				bttBack.setStyleName("margin:6px;");
 				bttBack.addStyleName("form-button");
-				
 
 				panelLabelEmail = new AbsolutePanel();
 				panelLabelEmail.add(labelEmail);
@@ -271,18 +306,8 @@ public class AddnewSystem extends AncestorEntryPoint {
 						.add(new HTML(
 								"<div id=\"img-adding\"><img src=\"images/icon/loading11.gif\"/></div>"));
 				panelAdding.setVisible(false);
-
-				panelValidateEmailServer = new AbsolutePanel();
-				panelValidateEmailServer
-						.add(new HTML(
-								"<div class=\"error-left\"></div><div class=\"error-inner\">Email is exitsting</div>"));
-				panelValidateEmailServer.setVisible(false);
-
-				panelValidateRemoteServer = new AbsolutePanel();
-				panelValidateRemoteServer
-						.add(new HTML(
-								"<div class=\"error-left\"></div><div class=\"error-inner\">Remote URL is exitsting</div>"));
-				panelValidateRemoteServer.setVisible(false);
+				
+			
 
 				panelValidateIP = new AbsolutePanel();
 				panelValidateEmail = new AbsolutePanel();
@@ -320,13 +345,11 @@ public class AddnewSystem extends AncestorEntryPoint {
 				tableForm.setWidget(5, 0, panelLabelEmail);
 				tableForm.setWidget(5, 1, panelTextEmail);
 				tableForm.setWidget(5, 2, panelValidateEmail);
-				tableForm.setWidget(5, 3, panelValidateEmailServer);
 				tableForm.setWidget(6, 0, labelmailgroup);
 				tableForm.setWidget(6, 1, listGroup);
 				tableForm.setWidget(7, 0, labelremoteurl);
 				tableForm.setWidget(7, 1, txtRemote);
 				tableForm.setWidget(7, 2, panelValidateRemoteURL);
-				tableForm.setWidget(7, 3, panelValidateRemoteServer);
 				tableForm.getFlexCellFormatter().setColSpan(8, 0, 2);
 				tableForm.setWidget(8, 0, panelAdding);
 				tableForm.getFlexCellFormatter().setColSpan(9, 0, 3);
@@ -363,8 +386,8 @@ public class AddnewSystem extends AncestorEntryPoint {
 				String validateName = validateName(txtName.getText());
 				String validateURL = validateURL(txtURL.getText());
 				String validateIp = validateIP(txtIP.getText());
-				String validateRemoteURL = validateRemoteURL(txtRemote
-						.getText());
+				String validateRemoteURL = validateRemoteURL(
+						txtRemote.getText(), sysDTO);
 				panelValidateEmail.setVisible(false);
 				panelValidateName.setVisible(false);
 				panelValidateRemoteURL.setVisible(false);
@@ -423,8 +446,6 @@ public class AddnewSystem extends AncestorEntryPoint {
 				panelValidateName.setVisible(false);
 				panelValidateURL.setVisible(false);
 				panelValidateEmail.setVisible(false);
-				panelValidateEmailServer.setVisible(false);
-				panelValidateRemoteServer.setVisible(false);
 				SystemMonitor system = new SystemMonitor();
 				system.setName(txtName.getText().toString());
 				system.setUrl(txtURL.getText().toString());
@@ -437,7 +458,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 				system.setIp(txtIP.getText());
 				system.setRemoteUrl(txtRemote.getText());
 				panelAdding.setVisible(true);
-				sendData(system, txtURL.getText());
+				sendData(system);
 
 			} else if (listProtocol
 					.getItemText(listProtocol.getSelectedIndex()).equals(
@@ -445,7 +466,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 				String validateName = validateName(txtName.getText());
 				String validateURL = validateURL(txtURL.getText());
 				String validateIp = validateIP(txtIP.getText());
-				String validateEmail = validateEmail(txtEmail.getText());
+				String validateEmail = validateEmail(txtEmail.getText(), sysDTO);
 				panelValidateEmail.setVisible(false);
 				panelValidateName.setVisible(false);
 				panelValidateRemoteURL.setVisible(false);
@@ -501,8 +522,6 @@ public class AddnewSystem extends AncestorEntryPoint {
 				panelValidateName.setVisible(false);
 				panelValidateURL.setVisible(false);
 				panelValidateEmail.setVisible(false);
-				panelValidateEmailServer.setVisible(false);
-				panelValidateRemoteServer.setVisible(false);
 				SystemMonitor system = new SystemMonitor();
 				system.setName(txtName.getText().toString());
 				system.setUrl(txtURL.getText().toString());
@@ -515,7 +534,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 				system.setIp(txtIP.getText());
 				system.setEmail(txtEmail.getText());
 				panelAdding.setVisible(true);
-				sendData(system, txtURL.getText());
+				sendData(system);
 			}
 		}
 
@@ -523,32 +542,36 @@ public class AddnewSystem extends AncestorEntryPoint {
 		 * @param system
 		 * @param url
 		 */
-		private void sendData(SystemMonitor system, String url) {
-			monitorGwtSv.addSystem(system, url, new AsyncCallback<String>() {
+		private void sendData(SystemMonitor system) {
+			panelAdding.setVisible(false);
+			monitorGwtSv.addSystem(system, new AsyncCallback<Boolean>() {
+				
 				@Override
-				public void onSuccess(String result) {
-					panelAdding.setVisible(false);
-					if (result.equals("Email is existing")) {
-						panelValidateEmailServer.setVisible(true);
-					} else if (result.equals("Remote-URL is existing")) {
-						panelValidateRemoteServer.setVisible(true);
-					} else if (result.toLowerCase().trim().equals("done")) {
+				public void onSuccess(Boolean result) {
+					// TODO Auto-generated method stub
+					if(result){
 						showMessage("System added sucessfully. ",
 								HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
 								"View system list. ", HTMLControl.RED_MESSAGE,
 								true);
-					} else {
-						showMessage(result, HTMLControl.HTML_DASHBOARD_NAME,
-								"Goto Dashboard. ", HTMLControl.RED_MESSAGE,
-								true);
+					}
+					else{
+						showMessage(
+								"Server error! ",
+								HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
+								"Goto System Management. ",
+								HTMLControl.RED_MESSAGE, true);
 					}
 				}
-
+				
 				@Override
 				public void onFailure(Throwable caught) {
-					showMessage("Oops! Error.",
-							HTMLControl.HTML_DASHBOARD_NAME,
-							"Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
+					// TODO Auto-generated method stub
+					showMessage(
+							"Server error! ",
+							HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
+							"Goto System Management. ",
+							HTMLControl.RED_MESSAGE, true);
 				}
 			});
 		}
@@ -577,8 +600,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 			panelValidateIP.setVisible(false);
 			panelValidateName.setVisible(false);
 			panelValidateURL.setVisible(false);
-			panelValidateEmailServer.setVisible(false);
-			panelValidateRemoteServer.setVisible(false);
+			
 		}
 	}
 
@@ -608,11 +630,13 @@ public class AddnewSystem extends AncestorEntryPoint {
 				panelLabelEmail.setVisible(false);
 				panelTextEmail.setVisible(false);
 				txtEmail.setText("");
+				panelValidateEmail.setVisible(false);
 			} else if (listProtocol.getSelectedIndex() == 1) {
 				txtRemote.setText("");
 				txtRemote.setEnabled(false);
 				panelLabelEmail.setVisible(true);
 				panelTextEmail.setVisible(true);
+				panelValidateRemoteURL.setVisible(false);
 			}
 
 		}
