@@ -1,46 +1,29 @@
-package cmg.org.monitor.ext.model.shared;
+package cmg.org.monitor.entity.shared;
 
 import java.io.Serializable;
+import java.util.Date;
 
-public class JVMMemoryDto implements Serializable { 
-	
-	/** Default UUID value */
-	private static final long serialVersionUID = 1L;
-
-	private String id;
+@SuppressWarnings("serial")
+public class JvmMonitor implements Serializable {
 	
 	private double freeMemory;
-	
+
 	private double totalMemory;
-	
+
 	private double maxMemory;
-	
+
 	private double usedMemory;
-	
-	
+
+	private Date timeStamp;
+
 	/**
 	 * Default constructor.<br>
 	 */
-	public JVMMemoryDto() {
-		
-	}
-
-	public JVMMemoryDto( double freeMemory, double totalMemory,
-			double maxMemory, double usedMemory) {
-		super();
-		
-		this.freeMemory = freeMemory;
-		this.totalMemory = totalMemory;
-		this.maxMemory = maxMemory;
-		this.usedMemory = usedMemory;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
+	public JvmMonitor() {
+		freeMemory = 0;
+		totalMemory = 0;
+		maxMemory = 0;
+		usedMemory = 0;
 	}
 
 	public double getFreeMemory() {
@@ -74,7 +57,13 @@ public class JVMMemoryDto implements Serializable {
 	public void setUsedMemory(double usedMemory) {
 		this.usedMemory = usedMemory;
 	}
-	
-	
+
+	public Date getTimeStamp() {
+		return timeStamp;
+	}
+
+	public void setTimeStamp(Date timeStamp) {
+		this.timeStamp = timeStamp;
+	}
 
 }

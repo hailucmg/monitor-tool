@@ -1,27 +1,28 @@
 package cmg.org.monitor.services;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import cmg.org.monitor.dao.SystemMonitorDAO;
-import cmg.org.monitor.dao.impl.SystemMonitorDaoJDOImpl;
+import cmg.org.monitor.dao.MailMonitorDAO;
+import cmg.org.monitor.dao.SystemDAO;
+import cmg.org.monitor.dao.impl.MailMonitorDaoImpl;
+import cmg.org.monitor.dao.impl.SystemDaoImpl;
+import cmg.org.monitor.entity.shared.MailMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.exception.MonitorException;
-import cmg.org.monitor.ext.model.URLPageObject;
-import cmg.org.monitor.ext.model.shared.SystemDto;
+import cmg.org.monitor.ext.util.MonitorParser;
+import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.ext.util.URLMonitor;
+import cmg.org.monitor.util.shared.MonitorConstant;
 
 public class MonitorService {
 	/** Show status of monitor */
 	private static String RUNNING = "running";
-	
+
 	/** Show status of monitor */
 	private static String FAILED = "failed";
-	
+
 	/** Default monitor logger */
 	private static final Logger logger = Logger.getLogger(MonitorService.class
 			.getCanonicalName());
@@ -34,66 +35,99 @@ public class MonitorService {
 	 * @throws MonitorException
 	 *             if the monitoring failed
 	 */
-	public synchronized List<URLPageObject> monitor() throws MonitorException {
-		List<URLPageObject> objList = new ArrayList<URLPageObject>();
-
-		// Gets system time
-		logger.info("Begin monitoring... ");
-
-		SystemMonitorDAO systemDao = new SystemMonitorDaoJDOImpl();
-		List<SystemMonitor> systems = new ArrayList<SystemMonitor>();
+	public synchronized void monitor() throws MonitorException {
+		SystemDAO systemDao = new SystemDaoImpl();
+		ArrayList<SystemMonitor> systems = null;
 		try {
-		   systems = Arrays.asList(systemDao.listSystems(false));
-		} catch(Exception me) { 
-			logger.log(Level.SEVERE, me.getCause().getMessage());
-			}
-		URLMonitor urlMonitor = null;
-		Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
-		@SuppressWarnings("unused")
-		int errorCount = 0;
+			systems = systemDao.listSystems(false);
+		} catch (Exception me) {
+			logger.log(Level.INFO, " -> ERROR when list all system. Message: "
+					+ me.getMessage());
+		}
+		if (systems != null && systems.size() > 0) {
+			SystemMonitor tempSys = null;
+			// loop all system
+			for (SystemMonitor aSystem : systems) {
+				if (!aSystem.isActive()) {
+					logger.log(
+							Level.INFO,
+							MonitorUtil.parserTime(System.currentTimeMillis(),
+									true)
+									+ "The system "
+									+ aSystem.toString()
+									+ " is existed but is not active. "
+									+ " The monitor skips this system now");
+				} else {
+					logger.log(
+							Level.INFO,
+							MonitorUtil.parserTime(System.currentTimeMillis(),
+									true)
+									+ "START monitoring system "
+									+ aSystem.toString());
+					logger.log(Level.INFO, "System url: " + aSystem.getUrl());
+					logger.log(Level.INFO,
+							"Remote url: " + aSystem.getRemoteUrl());
 
-		// Initializes monitor object list
-		URLPageObject obj = null;
-		int continueCount = 0;
-		SystemDto aSysDto;
-		for (SystemMonitor aSystem : systems) {
-			
-			aSysDto = aSystem.toDTO();
-			if (!aSysDto.getIsActive()) {
-				logger.info("The system " + aSysDto.getName()
-						+ " is existed but is not active. "
-						+ " The monitor skips this system now");
-				continueCount++;
+					try {
+						String infoContent = null;
+						if (MonitorConstant.SMTP_PROTOCOL.equals(aSystem
+								.getProtocol())) {
+							MailMonitorDAO mailDAO = new MailMonitorDaoImpl();
+							MailMonitor mail = mailDAO.getMailMonitor(aSystem
+									.getEmailRevice());
+							if (mail != null) {
+								infoContent = mail.getContent();
+							}
+						} else {
+							URLMonitor urlMonitor = new URLMonitor();
+							infoContent = urlMonitor.retrievesContent(aSystem
+									.getRemoteUrl());
+						}// if-else
 
-				continue;
-			}
-			logger.info("Project url: " + aSysDto.getUrl());
-			logger.info("System name: " + aSysDto.getName());
-			logger.info("Number of system are monitoring : " + continueCount);
-			// Initiates monitor and do task
-			String running = "";
-			try {
-				urlMonitor = new URLMonitor();
-				urlMonitor.setTimeStamp(timeStamp);
-				obj = urlMonitor.generateInfo(aSysDto);
-				running = (obj == null) ? FAILED : RUNNING;
-				logger.info("System '" + aSystem.getName() + "/" + "' is "
-						+ running);
+						if (infoContent == null || infoContent.equals("")) {
+							aSystem.setStatus(false);
+							// TODO put alert to store
+							logger.log(
+									Level.WARNING,
+									MonitorUtil.parserTime(
+											System.currentTimeMillis(), true)
+											+ "Fetch content of data from "
+											+ aSystem.toString()
+											+ ": NO CONTENT FOUND");
+						} else {
+							logger.log(
+									Level.INFO,
+									MonitorUtil.parserTime(
+											System.currentTimeMillis(), true)
+											+ "Fetch content of data from "
+											+ aSystem.toString()
+											+ ": \r\n"
+											+ infoContent);
+							MonitorParser parser = new MonitorParser();
+							aSystem = parser.parserData(infoContent, aSystem);
+						}// if-else
 
-				// Add systems to list
-				objList.add(obj);
-			} catch (MonitorException me) {
-				logger.log(Level.SEVERE, me.getCause().getMessage());
-				throw me;
-			} catch(Exception e) {
-				logger.log(Level.SEVERE, e.getMessage());
-			}
-			if (running.equals(FAILED)) {
-				errorCount++;
-			} // if
-		} // for
-		logger.info("Finished monitoring, object size: " + objList.size());
-
-		return objList;
+					} catch (Exception e) {
+						aSystem.setStatus(false);
+						// TODO put alert to store
+						logger.log(Level.INFO, " ->ERROR: when revice content"
+								+ e.getMessage());
+					}
+					
+				}// if-else
+				try {
+					systemDao.updateSystem(aSystem);
+				} catch (Exception ex) {
+					logger.log(
+							Level.SEVERE,
+							" -> ERROR: cannot update system. Message: "
+									+ ex.getMessage());
+				}
+			}// for
+		} else {
+			logger.log(Level.INFO,
+					MonitorUtil.parserTime(System.currentTimeMillis(), true)
+							+ " -> END Monitoring: No system found!");
+		}
 	}
 }

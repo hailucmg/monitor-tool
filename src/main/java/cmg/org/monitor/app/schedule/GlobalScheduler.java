@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import cmg.org.monitor.exception.MonitorException;
+import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.services.MonitorService;
 
 /**
@@ -21,58 +21,42 @@ public class GlobalScheduler extends HttpServlet {
 	/** Default UUID value */
 	private static final long serialVersionUID = -5005043235328590690L;
 
-	/** Count value */
-	public static long boCounter = 0;
-
 	/** The log of application */
 	private static final Logger logger = Logger.getLogger(GlobalScheduler.class
-			.getName());
-	
-	
+			.getCanonicalName());
+
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		doPost(req, resp);
 	}
 
-	
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException {
-
-		try {
-			doSchedule();
-		} catch (MonitorException me) {
-			logger.info("System cannot perform alert jobs successfully ");
-		}
+		doSchedule();
 	}
 
 	/**
 	 * Main schedule method.<br>
 	 * The method is executed by cron job task.
 	 */
-	public void doSchedule() throws MonitorException {
+	public void doSchedule() {
 		MonitorService monitorService = new MonitorService();
 		try {
-
+			//BEGIN LOG
 			long start = System.currentTimeMillis();
-			if (logger.isLoggable(Level.CONFIG)) {
-				logger.log(Level.ALL, "Start scheduled monitoring ...");
-			} // if
-			 
+			logger.log(Level.INFO, MonitorUtil.parserTime(start, true)
+					+ " -> START: Scheduled monitoring ...");
+			//BEGIN LOG
+			monitorService.monitor();	
 			
-			// Initial monitor scheduled
-			monitorService.monitor();
-			
-			if (logger.isLoggable(Level.CONFIG)) {
-				logger.log(Level.ALL, "Scheduled monitoring completed!");
-			} // if
+			//END LOG
 			long end = System.currentTimeMillis();
 			long time = end - start;
-			boCounter++;
-			logger.log(Level.WARNING, "Send mail ok....!");
-			logger.info("Time executed: " + time + " ms" + ", email task: " // EmailTimely.emailCounter
-					+ " times, business object: " + boCounter + " times");
+			logger.log(Level.INFO, MonitorUtil.parserTime(end, true)
+					+ " -> END: Scheduled monitoring. Time executed: " + time + " ms");
+			//END LOG
 		} catch (Exception ex) {
-			logger.log(Level.SEVERE, ex.getMessage());
+			logger.log(Level.SEVERE," ->ERROR: When Scheduled monitoring. Message: " + ex.getMessage());
 		}
 
 	}

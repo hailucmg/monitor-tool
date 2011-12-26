@@ -1,12 +1,7 @@
-
 package cmg.org.monitor.entity.shared;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Date;
 
-import javax.jdo.annotations.Element;
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -14,9 +9,6 @@ import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-
-import cmg.org.monitor.ext.model.shared.SystemDto;
-import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 
 /**
  * @author lamphan
@@ -27,36 +19,17 @@ import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
 public class SystemMonitor implements Model {
 
-	@Persistent(mappedBy = "systemMonitor")
-	@Element(dependent = "true")
-	private Set<AlertMonitor> alerts = new HashSet<AlertMonitor>();
-
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	@Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
 	private String encodedKey;
 
-	@Persistent(mappedBy = "systemMonitor")
-	private List<ServiceMonitor> services = new ArrayList<ServiceMonitor>();
-	
-	@Persistent(mappedBy = "systemMonitor")
-	private List<JVMMemory> jvmMemory = new ArrayList<JVMMemory>();
-
-	@Persistent(mappedBy = "systemMonitor")
-	private List<FileSystem> fileSystems = new ArrayList<FileSystem>();
-	
-	@Persistent(mappedBy = "systemMonitor")
-	private List<CpuMemory> cpuMems = new ArrayList<CpuMemory>();
-	
-	@Persistent(mappedBy = "systemMonitor")
-	private List<MailStoreMonitor> mails = new ArrayList<MailStoreMonitor>();
-	
 	@Persistent
 	private String remoteUrl;
-	
+
 	@Persistent
 	private String code;
-	
+
 	@Persistent
 	private String name;
 
@@ -68,64 +41,37 @@ public class SystemMonitor implements Model {
 
 	@Persistent
 	private boolean isActive;
-	
+
 	@Persistent
 	private boolean status;
-	
+
 	@Persistent
 	private boolean isDeleted;
-	
+
 	@Persistent
 	private String protocol;
 
 	@Persistent
 	private String groupEmail;
-	
+
 	@Persistent
 	private String email;
-	
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getEmailPassword() {
-		return emailPassword;
-	}
-
-	public void setEmailPassword(String emailPassword) {
-		this.emailPassword = emailPassword;
-	}
 
 	@Persistent
-	private String emailPassword;
+	private String emailRevice;
 	
 	@NotPersistent
-	private
-	CpuMemory lastCpuMemory;
-	
+	private Date timeStamp;
+
 	@NotPersistent
-	private
-	String healthStatus;
+	private int lastestCpuUsage;
+
 	@NotPersistent
-	private
-	CpuMemory[] listHistoryCpuMemory;
-	
+	private int lastestMemoryUsage;
+
 	@NotPersistent
-	private
-	FileSystem[] lastestFileSystems;
-	
-	@NotPersistent
-	private
-	ServiceMonitor[] lastestServiceMonitors;
-	
-	@NotPersistent
-	private
-	JVMMemory lastestJvm;
-	
+	private String healthStatus;
+
 	/**
 	 * Default constructor.<br>
 	 */
@@ -133,168 +79,24 @@ public class SystemMonitor implements Model {
 
 	}
 
-	
-	/**
-	 * Constructor with parameters.
-	 * 
-	 * @param systemDto
-	 */
-	public SystemMonitor(SystemDto systemDto) {
-
-		this();
-		this.setBasicInfo(systemDto.getCode(), systemDto.getName(),
-				systemDto.getIp(), systemDto.getIsActive()
-				);
-	}
-	/**
-	 * @param name
-	 * @param url
-	 * @param ip
-	 * @param isActive
-	 * @param systemStatus
-	 * @param isDeleted
-	 */
-	public void setBasicInfo(String name, String url, String ip,
-			boolean isActive) {
-		
-		this.name = name;
-		this.url = url;
-		this.ip = ip;
-		this.isActive = isActive;
-		this.isDeleted = false;
-		this.status = true;
-	}
-	
-	
-	public SystemMonitor(String code,String name, String url, String ip,
-			boolean isActive) {
-		super();
+	public SystemMonitor(String code, String name, String url,
+			String remoteUrl, boolean isActice) {
 		this.code = code;
 		this.name = name;
 		this.url = url;
-		this.ip = ip;
-		this.isActive = isActive;
-		this.isDeleted = false;
-		this.status = true;
+		this.remoteUrl = remoteUrl;
+		this.isActive = isActice;
 	}
-	/**
-	 * 
-	 * Convert an Entity to Data transfer object.
-	 * 
-	 * @return an DTO object.
-	 */
-	public SystemDto toDTO() {
-		SystemDto entityDTO = new SystemDto(this.getName(),
-			 this.getIp(), this.getUrl(), this.getRemoteUrl(), this.isActive(),
-				this.getStatus(), this.isDeleted(), this.getProtocol(), this.getGroupEmail());
-		entityDTO.setId(this.getId());
 
-		return entityDTO;
-	}
-	
 	@Override
-    public String getId() {
-        return encodedKey;
-    }
-	
-	
-	
-	/**
-	 * Get list of object
-	 * @return List of JVMMemory object
-	 */
-	public List<JVMMemory> getJvmMemory() {
-		return jvmMemory;
+	public String getId() {
+		return encodedKey;
 	}
 
-	/**
-	 * @param jvmMemory
-	 */
-	public void setJvmMemory(List<JVMMemory> jvmMemory) {
-		this.jvmMemory = jvmMemory;
-	}
-
-	/**
-	 * Add a Service to list.<br>
-	 * @param jvmEntity
-	 */
-	public void addJVMMemory(JVMMemory jvmEntity) {
-		jvmEntity.setSystemMonitor(this);
-        this.jvmMemory.add(jvmEntity);
-    }
-	
-	/**
-	 * Add a Service to list.<br>
-	 * @param mailEntity
-	 */
-	public void addMail(MailStoreMonitor mailEntity) {
-		mailEntity.setSystemMonitor(this);
-        this.mails.add(mailEntity);
-    }
-	
-	/**
-	 * @return
-	 */
-	public List<ServiceMonitor> getServices() {
-		return services;
-	}
-
-	/**
-	 * @param services
-	 */
-	public void setServices(List<ServiceMonitor> services) {
-		this.services = services;
-	}
-	
-	/**
-	 * Add a Service to list.<br>
-	 * @param service
-	 */
-	public void addService(ServiceMonitor service) {
-		service.setSystemMonitor(this);
-        this.services.add(service);
-    }
-
-	/**
-	 * Add a new Cpu Memory information to list.<br>
-	 * @param service
-	 */
-	public void addCpuMemory(CpuMemory cpuMemory) {
-		cpuMemory.setSystemMonitor(this);
-		this.cpuMems.add(cpuMemory);
-	}
-	/**
-	 * Add a new File system information to list.<br>
-	 * @param service
-	 */
-	
-	public void addFileSystem(FileSystem fileSystem) {
-		fileSystem.setSystemMonitor(this);
-		this.fileSystems.add(fileSystem);
-	}
-	
-	
-	/**
-	 * Get a name of system
-	 * @return
-	 */
 	public String getName() {
 		return name;
 	}
-	
-	/**
-	 * Get a services object.<br>
-	 * @param index
-	 * @return a ServiceMonitor object.
-	 */
-	public ServiceMonitor getServiceMonitorAt(int index) {
-        if (index < 0 || index >= this.services.size()) {
-            return null;
-        }
 
-        return this.services.get(index);
-    }
-	
 	public String getRemoteUrl() {
 		return remoteUrl;
 	}
@@ -306,7 +108,7 @@ public class SystemMonitor implements Model {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public String getUrl() {
 		return url;
 	}
@@ -363,29 +165,12 @@ public class SystemMonitor implements Model {
 		this.code = code;
 	}
 
-	public CpuMemory getLastCpuMemory() {
-		return lastCpuMemory;
-	}
-
-	public void setLastCpuMemory(CpuMemory lastCpuMemory) {
-		this.lastCpuMemory = lastCpuMemory;
-	}
-	
 	public String getGroupEmail() {
 		return groupEmail;
 	}
 
 	public void setGroupEmail(String groupEmail) {
 		this.groupEmail = groupEmail;
-	}
-	
-	/**
-	 * Get list of alerts.
-	 * 
-	 * @return set of alerts
-	 */
-	public Set<AlertMonitor> getAlerts() {
-		return alerts;
 	}
 
 	public String getHealthStatus() {
@@ -396,46 +181,48 @@ public class SystemMonitor implements Model {
 		this.healthStatus = healthStatus;
 	}
 
-	public CpuMemory[] getListHistoryCpuMemory() {
-		return listHistoryCpuMemory;
+	public String getEmail() {
+		return email;
 	}
 
-	public void setListHistoryCpuMemory(CpuMemory[] listHistoryCpuMemory) {
-		this.listHistoryCpuMemory = listHistoryCpuMemory;
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	@Override
+	public String toString() {
+		return code + " - " + name;
 	}
 
-	public FileSystem[] getLastestFileSystems() {
-		return lastestFileSystems;
+	public int getLastestCpuUsage() {
+		return lastestCpuUsage;
 	}
 
-	public void setLastestFileSystems(FileSystem[] lastestFileSystems) {
-		this.lastestFileSystems = lastestFileSystems;
+	public void setLastestCpuUsage(int lastestCpuUsage) {
+		this.lastestCpuUsage = lastestCpuUsage;
 	}
 
-	public ServiceMonitor[] getLastestServiceMonitors() {
-		return lastestServiceMonitors;
+	public int getLastestMemoryUsage() {
+		return lastestMemoryUsage;
 	}
 
-	public void setLastestServiceMonitors(ServiceMonitor[] lastestServiceMonitors) {
-		this.lastestServiceMonitors = lastestServiceMonitors;
+	public void setLastestMemoryUsage(int lastestMemoryUsage) {
+		this.lastestMemoryUsage = lastestMemoryUsage;
 	}
 
-	public JVMMemory getLastestJvm() {
-		return lastestJvm;
+	public Date getTimeStamp() {
+		return timeStamp;
 	}
 
-	public void setLastestJvm(JVMMemory lastestJvm) {
-		this.lastestJvm = lastestJvm;
+	public void setTimeStamp(Date timeStamp) {
+		this.timeStamp = timeStamp;
 	}
 
-	public List<MailStoreMonitor> getMails() {
-		return mails;
+	public String getEmailRevice() {
+		return emailRevice;
 	}
 
-	public void setMails(List<MailStoreMonitor> mails) {
-		this.mails = mails;
+	public void setEmailRevice(String emailRevice) {
+		this.emailRevice = emailRevice;
 	}
-	
-	
-	
+
 }

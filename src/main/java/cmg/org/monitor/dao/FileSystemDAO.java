@@ -1,26 +1,19 @@
 package cmg.org.monitor.dao;
 
-import cmg.org.monitor.entity.shared.FileSystem;
-import cmg.org.monitor.entity.shared.SystemMonitor;
-import cmg.org.monitor.ext.model.shared.FileSystemDto;
-import cmg.org.monitor.ext.model.shared.SystemDto;
+import java.util.ArrayList;
 
+import cmg.org.monitor.entity.shared.FileSystemMonitor;
+import cmg.org.monitor.entity.shared.SystemMonitor;
+
+/**
+ * @author HongHai
+ *
+ */
 public interface FileSystemDAO {
-	
 	/**
-	 * @param fileSysDTO
-	 * @param sysDto
-	 * @return
+	 * @param fileSystems
 	 */
-	public FileSystemDto updateFileSystem(FileSystemDto fileSysDTO, SystemDto sysDto) ;
+	public void storeFileSystems(SystemMonitor sys, ArrayList<FileSystemMonitor> fileSystems);
 	
-	/**
-	 * @param id
-	 * @return
-	 */
-	public SystemDto getSystem(String id) ;
-	
-	void addFileSystem(SystemMonitor system, FileSystem fileSystem);
-	
-	FileSystem[] listLastestFileSystem(SystemMonitor system) throws Exception;
+	public ArrayList<FileSystemMonitor> getFileSystems(SystemMonitor sys);
 }

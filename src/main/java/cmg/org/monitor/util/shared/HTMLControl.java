@@ -1,7 +1,6 @@
 package cmg.org.monitor.util.shared;
 
 import cmg.org.monitor.entity.shared.SystemMonitor;
-import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.HTML;

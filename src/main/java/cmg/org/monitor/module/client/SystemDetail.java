@@ -1,8 +1,8 @@
 package cmg.org.monitor.module.client;
 
-import cmg.org.monitor.entity.shared.CpuMemory;
-import cmg.org.monitor.entity.shared.FileSystem;
-import cmg.org.monitor.entity.shared.JVMMemory;
+import cmg.org.monitor.entity.shared.MemoryMonitor;
+import cmg.org.monitor.entity.shared.FileSystemMonitor;
+import cmg.org.monitor.entity.shared.JvmMonitor;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.util.shared.HTMLControl;
@@ -58,11 +58,11 @@ public class SystemDetail extends AncestorEntryPoint {
 
 	private String sysID;
 
-	private FileSystem[] listFileSystem;
+	private FileSystemMonitor[] listFileSystem;
 
 	private ServiceMonitor[] listService;
 
-	private CpuMemory[] listCpuMemory;
+	private MemoryMonitor[] listCpuMemory;
 
 	private boolean isShowService = true;
 	private boolean isShowFileSystem = true;
@@ -122,10 +122,10 @@ public class SystemDetail extends AncestorEntryPoint {
 			@Override
 			public void run() {
 				monitorGwtSv.listCpuMemoryHistory(sysID,
-						new AsyncCallback<CpuMemory[]>() {
+						new AsyncCallback<MemoryMonitor[]>() {
 
 							@Override
-							public void onSuccess(CpuMemory[] result) {
+							public void onSuccess(MemoryMonitor[] result) {
 								setVisibleLoadingImage(false);
 								setVisibleWidget(HTMLControl.ID_BODY_CONTENT,
 										true);
@@ -151,7 +151,7 @@ public class SystemDetail extends AncestorEntryPoint {
 		timerReload.scheduleRepeating(MonitorConstant.REFRESH_RATE);
 	}
 
-	void drawSystemStatistic(CpuMemory[] list) {
+	void drawSystemStatistic(MemoryMonitor[] list) {
 		DataTable data = DataTable.create();
 		data.addColumn(ColumnType.DATETIME, "Date");
 		data.addColumn(ColumnType.NUMBER, "Memory Usage");
@@ -328,7 +328,7 @@ public class SystemDetail extends AncestorEntryPoint {
 	}
 	
 	void drawJvmInfo(SystemMonitor sys) {
-		JVMMemory jvm = sys.getLastestJvm();
+		JvmMonitor jvm = sys.getLastestJvm();
 		if (jvm != null) {
 			pieJvm.draw(createDataTableJvm(jvm),
 					createPieChartOptions("Java Virtual Machine (" + HTMLControl.convertMemoryToString(jvm.getTotalMemory())
@@ -337,7 +337,7 @@ public class SystemDetail extends AncestorEntryPoint {
 	}
 
 	void drawCpuMemoryInfo(SystemMonitor sys) {
-		CpuMemory cm = sys.getLastCpuMemory() == null ? null : sys
+		MemoryMonitor cm = sys.getLastCpuMemory() == null ? null : sys
 				.getLastCpuMemory();
 		// Gauge CPU Usage
 		if (cm != null) {
@@ -421,7 +421,7 @@ public class SystemDetail extends AncestorEntryPoint {
 		return ops;
 	}
 	
-	AbstractDataTable createDataTableJvm(JVMMemory jvm) {
+	AbstractDataTable createDataTableJvm(JvmMonitor jvm) {
 		DataTable data = DataTable.create();
 		data.addColumn(ColumnType.STRING, "Task");
 		data.addColumn(ColumnType.NUMBER, "Memory");
@@ -433,7 +433,7 @@ public class SystemDetail extends AncestorEntryPoint {
 		return data;
 	}
 
-	AbstractDataTable createDataTableListFileSystem(FileSystem[] list) {
+	AbstractDataTable createDataTableListFileSystem(FileSystemMonitor[] list) {
 		DataTable data = DataTable.create();
 		data.addColumn(ColumnType.STRING, "Local Disk");
 		data.addColumn(ColumnType.STRING, "Type");
@@ -451,7 +451,7 @@ public class SystemDetail extends AncestorEntryPoint {
 		return data;
 	}
 
-	AbstractDataTable createDataTableFileSystem(FileSystem fs) {
+	AbstractDataTable createDataTableFileSystem(FileSystemMonitor fs) {
 		DataTable data = DataTable.create();
 		data.addColumn(ColumnType.STRING, "Task");
 		data.addColumn(ColumnType.NUMBER, "Memory");
