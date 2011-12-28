@@ -30,6 +30,7 @@ import cmg.org.monitor.entity.shared.MemoryMonitor;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.util.MonitorUtil;
+import cmg.org.monitor.util.shared.MonitorConstant;
 
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
@@ -39,7 +40,7 @@ public class GlobalSchedulerTest {
 
 	/** Log object. */
 	private static final Logger logger = Logger
-			.getLogger(GlobalSchedulerTest.class.getCanonicalName());
+			.getLogger(MailServiceScheduler.class.getCanonicalName());
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(
 			new LocalDatastoreServiceTestConfig());
 
@@ -54,7 +55,7 @@ public class GlobalSchedulerTest {
 		helper.tearDown();
 	}
 
-	void init() {
+	/*void init() {
 		SystemDAO sysDAO = new SystemDaoImpl();
 		try {
 			sysDAO.addSystem(new SystemMonitor("S001", "Test01", "test01.org",
@@ -73,13 +74,34 @@ public class GlobalSchedulerTest {
 		for (int i = 0; i < TEST_LENGTH; i++) {
 			gs.doSchedule();
 		}
-	}
-
+	}*/
+	@Test
 	public void test01() {
 		SystemDAO sysDAO = new SystemDaoImpl();
+		SystemMonitor sys = new SystemMonitor();
+		sys.setCode("S001");
+		sys.setActive(true);
+		sys.setName("test1");
+		sys.setGroupEmail("admin_monitor");
+		sys.setProtocol(MonitorConstant.HTTP_PROTOCOL);
+		sys.setRemoteUrl("http://localhost:8080/xml_ukpensionsint.bp.com.html");
+		sys.setUrl("ukpension.com");
+		sys.setDeleted(false);
+		SystemMonitor sys1 = new SystemMonitor();
+		sys1.setCode("S002");
+		sys1.setActive(true);
+		sys1.setName("test2");
+		sys1.setGroupEmail("admin_monitor");
+		sys1.setProtocol(MonitorConstant.HTTP_PROTOCOL);
+		sys1.setRemoteUrl("http://localhost:8080/html_pensionline.bp.com.html");
+		sys1.setUrl("pensom.com");
+		sys1.setDeleted(false);
 		try {
-			sysDAO.addSystem(new SystemMonitor("S001", "Test01", "test01.org",
-					"http://localhost:8080/xml_ukpensionsint.bp.com.html", true));
+			sysDAO.addSystem(sys);
+			sysDAO.addSystem(sys1);
+			/*sysDAO.addSystem(new SystemMonitor("S001", "Test01", "test01.org",
+					"http://localhost:8080/xml_ukpensionsint.bp.com.html", true));*/
+			
 			/*
 			 * sysDAO.addSystem(new SystemMonitor("S002", "Test02",
 			 * "test02.org",
@@ -94,9 +116,11 @@ public class GlobalSchedulerTest {
 		}
 		GlobalScheduler gs = new GlobalScheduler();
 		gs.doSchedule();
+		MailServiceScheduler mail = new MailServiceScheduler();
+		mail.doSchedule();
 	}
 
-	@Test
+	/*@Test
 	public void test() {
 		SystemDAO sysDAO = new SystemDaoImpl();
 		try {
@@ -189,6 +213,6 @@ public class GlobalSchedulerTest {
 				}
 			}
 		}
-	}
+	}*/
 
 }
