@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cronentries>
   <cron>
+    <url>/monitoringgae/mail</url>
+    <description>Send alert mail every 10 minutes</description>
+    <schedule>every 10 minutes</schedule>
+  </cron>
+  
+  <cron>
+    <url>/monitoringgae/gather</url>
+    <description>Gather sites & mail information every 1 minutes</description>
+    <schedule>every 1 minutes</schedule>
+  </cron>
+  
+  <cron>
     <url>/monitoringgae/job</url>
-    <description>Repopulate the cache every 30 minutes</description>
-    <schedule>every 30 minutes</schedule>
+    <description>Repopulate the cache every 1 minutes</description>
+    <schedule>every 1 minutes</schedule>
   </cron>
 
 </cronentries>

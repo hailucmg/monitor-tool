@@ -18,6 +18,25 @@
     <servlet-name>schedule</servlet-name>
     <url-pattern>/monitoringgae/job</url-pattern>
   </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>gatherSchedule</servlet-name>
+    <servlet-class>cmg.org.monitor.app.schedule.GatherScheduler</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>gatherSchedule</servlet-name>
+    <url-pattern>/monitoringgae/gather</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>mailSchedule</servlet-name>
+    <servlet-class>cmg.org.monitor.app.schedule.MailServiceScheduler</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>mailSchedule</servlet-name>
+    <url-pattern>/monitoringgae/mail</url-pattern>
+  </servlet-mapping>
+  
   <servlet>
     <servlet-name>LoginServlet</servlet-name>
     <servlet-class>cmg.org.monitor.module.server.LoginServlet</servlet-class>
@@ -27,15 +46,24 @@
     <servlet-name>LoginServlet</servlet-name>
     <url-pattern>/login</url-pattern>
   </servlet-mapping>
-  
-   <servlet>
-  <servlet-name>mailhandler</servlet-name>
-  <servlet-class>cmg.org.monitor.app.schedule.MailHandlerServlet</servlet-class>
-</servlet>
-<servlet-mapping>
-  <servlet-name>mailhandler</servlet-name>
-  <url-pattern>/_ah/mail/*</url-pattern>
-</servlet-mapping>
+
+	<servlet>
+		<servlet-name>mailMonitorHandler</servlet-name>
+		<servlet-class>cmg.org.monitor.app.schedule.MonitorMailHandlerServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>mailMonitorHandler</servlet-name>
+		<url-pattern>/_ah/mail/admin</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>mailAlertHandler</servlet-name>
+		<servlet-class>cmg.org.monitor.app.schedule.AlertMailHandlerServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>mailAlertHandler</servlet-name>
+		<url-pattern>/_ah/mail/alert</url-pattern>
+	</servlet-mapping>
 <security-constraint>
   <web-resource-collection>
     <url-pattern>/_ah/mail/*</url-pattern>
