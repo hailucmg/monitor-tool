@@ -8,8 +8,11 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Properties;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,11 +25,17 @@ import javax.mail.internet.MimeMessage;
 
 import cmg.org.monitor.common.Constant;
 import cmg.org.monitor.dao.MailMonitorDAO;
+import cmg.org.monitor.dao.SystemDAO;
 import cmg.org.monitor.dao.impl.AlertDaoImpl;
 import cmg.org.monitor.dao.impl.MailMonitorDaoImpl;
+import cmg.org.monitor.dao.impl.SystemDaoImpl;
+import cmg.org.monitor.entity.shared.AlertMonitor;
+import cmg.org.monitor.entity.shared.AlertStoreMonitor;
 import cmg.org.monitor.entity.shared.MailConfigMonitor;
 import cmg.org.monitor.entity.shared.MailMonitor;
+import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.util.MonitorUtil;
+import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
 import com.google.gdata.client.appsforyourdomain.migration.MailItemService;
@@ -137,8 +146,10 @@ public class MailService {
 	public Rfc822Msg initRfcContent(String subject, String content,
 			MailConfigMonitor mailConfig) {
 		Date now = new Date();
+		
 		SimpleDateFormat formatter = new SimpleDateFormat(
 				Constant.DATE_EMAIL_FORMAT);
+		
 		StringBuffer tmp = new StringBuffer();
 		tmp.append("Message-ID: <" + MESSAGE_ID + ">\r\n");
 		tmp.append("Date: " + formatter.format(now) + "\r\n");
@@ -157,6 +168,7 @@ public class MailService {
 		tmp.append(content + "\r\n\r\n");
 		return new Rfc822Msg(tmp.toString());
 	}
+	
 
 	public static MailMonitor receiveMail(InputStream is)
 			throws MessagingException, IOException {
@@ -235,4 +247,43 @@ public class MailService {
 		}
 	}
 
+	public String createMailContent(ArrayList<AlertStoreMonitor> stores) throws Exception {
+		StringBuffer content =new StringBuffer();
+		SystemDAO sysDAO = new SystemDaoImpl();
+		content.append("<html><head></head><body><div align=\"center\" style=\"COLOR:black;FONT-SIZE:15pt\">Alert Email from C-MG monitor</div>");
+		content.append("<div><ul>");
+		for(int i =0;i < stores.size();i++){
+			AlertStoreMonitor alertstore = stores.get(i);
+			SystemMonitor system = sysDAO.getSystemById(alertstore.getSysId());
+			ArrayList<AlertMonitor> alerts = (ArrayList<AlertMonitor>) alertstore.getAlerts();
+			content.append("<li style=\"COLOR:blue;FONT-SIZE:12pt\">");
+			content.append("<a href=\"\">");
+			content.append(system.getCode());
+			content.append("</a>");
+			content.append("<Ol>");
+			for(int j = 0; j < alerts.size();j++){
+				content.append("<li style=\"COLOR:red;FONT-SIZE:10pt\">");
+				content.append("Time:" + alerts.get(j).getTimeStamp().toString());
+				content.append("<br>Error:" + alerts.get(j).getError().toString());
+				content.append("<br>Detail:" + alerts.get(j).getDescription().toString());
+				content.append("</li>");
+			}
+			content.append("</Ol>");
+		}
+		content.append("</ul></div>");
+		content.append("<div><p style=\"COLOR:black;FONT-SIZE:15pt\"><b>(*)Note:Send me a email like below if you want to config email:</b></p>");
+		content.append("<ul><li>inbox=true/false;(choose true if you want us send mail to your inbox else if you chose false our alert email will sent you to the label that name: alert monitor and you can config the label you want in this next step)</li>");
+		content.append("<li>starred= true/false;(choose true if you want my mail is starred in your mail)</li>");
+		content.append("<li>maskAsUnread=false/true;(choose true if you want my mail mark as unread)</li>");
+		content.append("<li>label=alert monitor/or something;(give me a name you want our alert email going to,We will create automatic a space to store this)</li>");
+		content.append("</ul></p></div>");
+		content.append("<b>------------------------------<wbr>------------------------------<wbr>------------------------------<wbr>-----</b>");
+		content.append("<p><b>Monitor C-MG</b></p>");
+		content.append("<p>Monitor - Admin<br><span style=\"COLOR:black;FONT-SIZE:8.5pt\"></span></p>");
+		content.append("<p><b><span style=\"FONT-FAMILY:'Courier New';COLOR:black\">Claybourne McGregor Consulting Ltd</span></b><span style=\"FONT-FAMILY:'Courier New';COLOR:black;FONT-SIZE:10pt\"></span></p>");
+		content.append("<p><span style=\"COLOR:black;FONT-SIZE:8.5pt\">");
+		content.append("<img border=\"0\" alt=\"cmg-logo-email\" src=\"\" width=\"255\" height=\"90\">");
+		content.append("</span></p></body></html>");
+		return content.toString();
+	}
 }
