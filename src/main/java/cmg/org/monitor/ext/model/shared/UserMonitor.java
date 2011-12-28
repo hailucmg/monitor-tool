@@ -3,6 +3,8 @@ package cmg.org.monitor.ext.model.shared;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import cmg.org.monitor.entity.shared.AlertStoreMonitor;
+import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
 public class UserMonitor implements Serializable {
@@ -14,6 +16,26 @@ public class UserMonitor implements Serializable {
 	private String id;
 	private int role;
 	private ArrayList<GroupMonitor> groups;
+	private ArrayList<SystemMonitor> systems;
+	
+	private ArrayList<AlertStoreMonitor> stores;
+	
+	
+	public ArrayList<AlertStoreMonitor> getStores() {
+		return stores;
+	}
+
+	public void setStores(ArrayList<AlertStoreMonitor> stores) {
+		this.stores = stores;
+	}
+
+	public ArrayList<SystemMonitor> getSystems() {
+		return systems;
+	}
+
+	public void setSystems(ArrayList<SystemMonitor> systems) {
+		this.systems = systems;
+	}
 
 	public String getId() {
 		return id;
@@ -99,7 +121,50 @@ public class UserMonitor implements Serializable {
 			}
 		}
 	}
-
+	
+	public void addSystem(SystemMonitor system) {
+		if (system != null) {
+			if (systems == null) {
+				systems = new ArrayList<SystemMonitor>();
+				systems.add(system);
+			} else {
+				boolean check = false;
+				for (SystemMonitor sys : systems) {
+					if (sys.getGroupEmail().equals(system.getGroupEmail())) {
+						check = true;
+						break;
+					}
+				}
+				if (!check) {
+					systems.add(system);
+				}
+			}
+			
+		}
+	}
+	
+	public void addAlertStore(AlertStoreMonitor store) {
+		if (store != null) {
+			if (stores == null) {
+				stores = new ArrayList<AlertStoreMonitor>();
+				stores.add(store);
+			}
+			/* else {
+				boolean check = false;
+				for (AlertStoreMonitor st : stores) {
+					if (st.getSysId().equals(store.getSysId())) {
+						check = true;
+						break;
+					}
+				}
+				if (!check) {
+					stores.add(store);
+				}
+			}*/
+			
+		}
+	}
+	
 	public int compareByName(UserMonitor c) {
 		return id.trim().compareTo(c.getId().trim());
 	}
