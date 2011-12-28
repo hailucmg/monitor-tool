@@ -115,6 +115,8 @@ public interface Constant {
 	/** The pattern for System memory value. */
 	public static String PATTERN_SYSTEM_MEMORY = "(<td id=\"mem\">)([^<>]*)(</td>)";
 
+	
+	public static int MEMORY_LEVEL_HISTORY_UPDATE = 90;
 	/** The value level will be updated into database for history of CPU. */
 	public static int CPU_LEVEL_HISTORY_UPDATE = 90;
 

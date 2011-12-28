@@ -27,26 +27,15 @@ public class SystemDaoImpl implements SystemDAO {
 
 	@Override
 	public String[] remoteURLs() throws Exception {
-		initPersistence();
 		String[] remoteURLs = null;
-		List<String> list;
-		Query q = pm.newQuery("select remoteUrl from "
-				+ SystemMonitor.class.getName());
-		try {
-			pm.currentTransaction().begin();
-			list = (List<String>) q.execute();
-			if (list != null || list.size() > 0) {
+		ArrayList<SystemMonitor> list = listSystemsFromMemcache(false);
+		if (list != null) {
+			if (list.size() > 0) {
 				remoteURLs = new String[list.size()];
 				for (int i = 0; i < list.size(); i++) {
-					remoteURLs[i] = list.get(i);
+					remoteURLs[i] = list.get(0).getRemoteUrl();
 				}
 			}
-			pm.currentTransaction().commit();
-		} catch (Exception e) {
-			throw e;
-		} finally {
-			q.closeAll();
-			pm.close();
 		}
 		return remoteURLs;
 	}
@@ -56,10 +45,6 @@ public class SystemDaoImpl implements SystemDAO {
 			throws Exception {
 		initPersistence();
 		ArrayList<SystemMonitor> systems = null;
-
-		if (pm == null || pm.isClosed()) {
-			pm = PMF.get().getPersistenceManager();
-		}
 		List<SystemMonitor> listData = null;
 		Query query = pm.newQuery(SystemMonitor.class);
 		query.setFilter("isDeleted == isDeletedPara");
@@ -108,7 +93,10 @@ public class SystemDaoImpl implements SystemDAO {
 		boolean check = false;
 		try {
 			pm.currentTransaction().begin();
-			pm.makePersistent(sys);
+			SystemMonitor tempSys = pm.getObjectById(SystemMonitor.class,
+					sys.getId());
+			tempSys.swapValue(sys);
+			pm.makePersistent(tempSys);
 			pm.currentTransaction().commit();
 			check = true;
 		} catch (Exception ex) {
@@ -123,16 +111,17 @@ public class SystemDaoImpl implements SystemDAO {
 	@Override
 	public SystemMonitor getSystemById(String id) throws Exception {
 		initPersistence();
-		SystemMonitor system;
-		try {
-			pm.currentTransaction().begin();
-			system = pm.getObjectById(SystemMonitor.class, id);
-			pm.currentTransaction().commit();
-		} catch (Exception e) {
-			pm.currentTransaction().rollback();
-			throw e;
-		} finally {
-			pm.close();
+		SystemMonitor system = null;
+		ArrayList<SystemMonitor> list = listSystemsFromMemcache(false);
+		if (list != null) {
+			if (list.size() > 0) {
+				for (SystemMonitor sys : list) {
+					if (sys.getId().equals(id)) {
+						system = sys;
+						break;
+					}
+				}
+			}
 		}
 		return system;
 	}
@@ -143,7 +132,9 @@ public class SystemDaoImpl implements SystemDAO {
 		boolean check = false;
 		try {
 			pm.currentTransaction().begin();
-			pm.makePersistent(system);
+			SystemMonitor tempSys = new SystemMonitor();
+			tempSys.swapValue(system);
+			pm.makePersistent(tempSys);
 			pm.currentTransaction().commit();
 			check = true;
 		} catch (Exception e) {
@@ -160,9 +151,11 @@ public class SystemDaoImpl implements SystemDAO {
 		boolean check = false;
 		try {
 			pm.currentTransaction().begin();
-			sys.setDeleted(true);
-			sys.setActive(false);
-			pm.makePersistent(sys);
+			SystemMonitor system = pm.getObjectById(SystemMonitor.class,
+					sys.getId());
+			system.setDeleted(true);
+			system.setActive(false);
+			pm.makePersistent(system);
 			pm.currentTransaction().commit();
 			check = true;
 		} catch (Exception e) {
@@ -229,10 +222,16 @@ public class SystemDaoImpl implements SystemDAO {
 			try {
 				list = listSystems(isDeleted);
 			} catch (Exception ex) {
-				logger.log(Level.WARNING, "ERROR: " + ex.fillInStackTrace().toString());
+				logger.log(Level.WARNING, "ERROR: "
+						+ ex.fillInStackTrace().toString());
 			}
 		}
 		return list;
+	}
+
+	@Override
+	public void storeSysList(ArrayList<SystemMonitor> list) {
+		MonitorMemcache.put(Key.create(Key.SYSTEM_MONITOR_STORE), list);
 	}
 
 }

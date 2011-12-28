@@ -19,33 +19,39 @@ public class MemoryDaoImpl implements MemoryDAO {
 
 	@Override
 	public void storeMemory(SystemMonitor sys, MemoryMonitor mem) {
-		// BEGIN LOG
-		long start = System.currentTimeMillis();
-		logger.log(Level.INFO,
-				MonitorUtil.parserTime(start, true) + sys.toString()
-						+ " -> START: put Memory Information ... ");
-		// BEGIN LOG
-		ArrayList<MemoryMonitor> list = listMemory(sys, mem.getType());
-		if (list == null) {
-			list = new ArrayList<MemoryMonitor>();
-		}
-		logger.log(Level.INFO,
-				"Start put to memcache. List size: " + list.size());
-		list.add(mem);
-		if (list.size() > MonitorConstant.CPU_MEMORY_HISTORY_LENGTH) {
-			list.remove(0);
-		}
-		MonitorMemcache.put(
-				Key.create(Key.MEMORY_STORE, sys.getId(), mem.getType()), list);
+		if (mem != null && sys != null) {
+			// BEGIN LOG
+			long start = System.currentTimeMillis();
+			logger.log(Level.INFO,
+					MonitorUtil.parseTime(start, true) + sys.toString()
+							+ " -> START: put Memory Information ... " + mem);
+			// BEGIN LOG
+			ArrayList<MemoryMonitor> list = listMemory(sys, mem.getType());
+			if (list == null) {
+				list = new ArrayList<MemoryMonitor>();
+			}
+			logger.log(Level.INFO,
+					"Start put to memcache. List size: " + list.size());
+			list.add(mem);
+			if (list.size() > MonitorConstant.CPU_MEMORY_HISTORY_LENGTH) {
+				list.remove(0);
+			}
+			MonitorMemcache.put(
+					Key.create(Key.MEMORY_STORE, sys.getId(), mem.getType()),
+					list);
 
-		logger.log(Level.INFO, "End put to memcache. List size: " + list.size());
-		// END LOG
-		long end = System.currentTimeMillis();
-		logger.log(Level.INFO,
-				MonitorUtil.parserTime(end, true) + sys.toString()
-						+ " -> END: put Memory Information. Time executed: "
-						+ (end - start) + " ms.");
-		// END LOG
+			logger.log(Level.INFO,
+					"End put to memcache. List size: " + list.size());
+			// END LOG
+			long end = System.currentTimeMillis();
+			logger.log(
+					Level.INFO,
+					MonitorUtil.parseTime(end, true)
+							+ sys.toString()
+							+ " -> END: put Memory Information. Time executed: "
+							+ (end - start) + " ms.");
+			// END LOG
+		}
 	}
 
 	@Override

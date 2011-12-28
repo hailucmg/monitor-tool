@@ -1,14 +1,31 @@
 package cmg.org.monitor.services.email;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.mail.Address;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
 import cmg.org.monitor.common.Constant;
+import cmg.org.monitor.dao.MailMonitorDAO;
 import cmg.org.monitor.dao.impl.AlertDaoImpl;
+import cmg.org.monitor.dao.impl.MailMonitorDaoImpl;
 import cmg.org.monitor.entity.shared.MailConfigMonitor;
+import cmg.org.monitor.entity.shared.MailMonitor;
 import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
@@ -61,8 +78,8 @@ public class MailService {
 			MailConfigMonitor mailConfig) {
 		// BEGIN LOG
 		long start = System.currentTimeMillis();
-		logger.log(Level.INFO, MonitorUtil.parserTime(start, true)
-				+ " -> START: send alert mail to " + mailConfig.getMailId());
+		logger.log(Level.INFO, MonitorUtil.parseTime(start, true)
+				+ " -> START: send alert mail to " + mailConfig.getMailId(true));
 		// BEGIN LOG
 		boolean b = false;
 		if (mailConfig != null) {
@@ -87,7 +104,7 @@ public class MailService {
 				MailItemFeed feed = new MailItemFeed();
 				feed.getEntries().add(entry);
 				feed = mailItemService.batch(MonitorConstant.DOMAIN,
-						mailConfig.getMailId(), feed);
+						mailConfig.getMailId(false), feed);
 				MailItemEntry returnedEntry = feed.getEntries().get(0);
 				if (BatchUtils.isFailure(returnedEntry)) {
 					BatchStatus status = BatchUtils
@@ -110,7 +127,7 @@ public class MailService {
 		}// if
 			// END LOG
 		long end = System.currentTimeMillis();
-		logger.log(Level.INFO, MonitorUtil.parserTime(end, true) + " -> END: "
+		logger.log(Level.INFO, MonitorUtil.parseTime(end, true) + " -> END: "
 				+ (b ? "Batch send mail succeeded" : "Cannot send email.")
 				+ ". Time executed: " + (end - start) + " ms.");
 		// END LOG
@@ -128,7 +145,7 @@ public class MailService {
 		tmp.append("From: \"" + MonitorConstant.PROJECT_NAME + "\" <"
 				+ MonitorConstant.ALERT_MAIL_SENDER_NAME + ">\r\n");
 		tmp.append("To: \"" + MONITOR_USER_NAME + "\" <"
-				+ mailConfig.getMailId() + ">\r\n");
+				+ mailConfig.getMailId(true) + ">\r\n");
 		tmp.append("Subject: " + subject + " \r\n");
 		tmp.append("MIME-Version: " + MIME_VERSION + "\r\n");
 		tmp.append("Content-Type: " + CONTENT_TYPE + "; charset=" + CHARSET
@@ -139,6 +156,83 @@ public class MailService {
 		tmp.append("Delivered-To: " + DELIVERED_TO + "\r\n");
 		tmp.append(content + "\r\n\r\n");
 		return new Rfc822Msg(tmp.toString());
+	}
+
+	public static MailMonitor receiveMail(InputStream is)
+			throws MessagingException, IOException {
+		MailMonitor mail = new MailMonitor();
+		Properties props = new Properties();
+		Session session = Session.getDefaultInstance(props, null);
+		MimeMessage message = new MimeMessage(session, is);
+		Address[] add = message.getFrom();
+		InternetAddress from = (InternetAddress) add[0];
+		mail.setSender(from.getAddress());
+		logger.log(Level.INFO, "From:" + mail.getSender());
+
+		mail.setSubject(message.getSubject());
+		logger.log(Level.INFO, "Subject: " + mail.getSubject());
+
+		mail.setContentType(message.getContentType());
+		logger.log(Level.INFO, "Content Type: " + mail.getContentType());
+
+		mail.setContent(MailService.parseMailContent(message.getContent()));
+		logger.log(Level.INFO, "Content: "
+				+ (mail.getContent() == null ? "null" : mail.getContent()));
+		return mail;
+	}
+
+	public static String parseMailContent(Object o) throws MessagingException,
+			IOException {
+
+		String data = null;
+		if (o instanceof Multipart) {
+			Multipart mp = (Multipart) o;
+			int count = mp.getCount();
+			for (int i = 0; i < count; i++) {
+				if (mp.getBodyPart(i).getContent() instanceof String) {
+					Object obj = mp.getBodyPart(i).getContent();
+					data = (String) obj;
+				}
+			}
+		} else if (o instanceof InputStream) {
+			InputStream is = (InputStream) o;
+			try {
+				data = convertInputStreamtoString(is);
+			} catch (Exception e) {
+				logger.log(Level.WARNING,
+						" -> ERROR when get content mail - type txt/html. Message: "
+								+ e.getMessage());
+			}
+		} else if (o instanceof String) {
+			data = (String) o;
+		}
+		return data;
+	}
+
+	/**
+	 * @param is
+	 * @return
+	 * @throws IOException
+	 */
+	public static String convertInputStreamtoString(InputStream is)
+			throws IOException {
+		if (is != null) {
+			Writer write = new StringWriter();
+			char[] buffer = new char[1024];
+			try {
+				Reader reader = new BufferedReader(new InputStreamReader(is,
+						"UTF-8"));
+				int n;
+				while ((n = reader.read(buffer)) != -1) {
+					write.write(buffer, 0, n);
+				}
+			} finally {
+				is.close();
+			}
+			return write.toString();
+		} else {
+			return null;
+		}
 	}
 
 }

@@ -19,7 +19,14 @@ public class Key implements Serializable {
 	
 	public static final int ALERT_TEMP_STORE = 0x008;
 	public static final int MAIL_STORE = 0x009;
+	public static final int MAIL_CONFIG_STORE = 0x010;
 	
+	public static final int ABOUT_CONTENT = 0x011;
+	public static final int HELP_CONTENT = 0x012;
+	
+	public static final int LIST_GROUP = 0x013;
+	public static final int LIST_ALL_USERS = 0x014;
+	public static final int LIST_USERS_IN_GROUP = 0x015;
 
 	private int type;
 

@@ -45,6 +45,18 @@ public class ServiceMonitor implements Serializable {
 		this.description = description;
 		this.timeStamp = timeStamp;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuffer sf = new StringBuffer();
+		sf.append("\r\nName: " + name);
+		sf.append("\r\nSystem date: " + strSystemDate);
+		sf.append("\r\nPing time: " + ping);
+		sf.append("\r\nStatus: " + status);
+		sf.append("\r\nDescription: " + description);
+		sf.append("\r\nTimestamp: " + timeStamp + "\r\n");
+		return sf.toString();
+	}
 
 	public String getName() {
 		return name;

@@ -1,6 +1,7 @@
 package cmg.org.monitor.app.schedule;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -9,6 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cmg.org.monitor.dao.SystemDAO;
+import cmg.org.monitor.dao.impl.SystemDaoImpl;
+import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.services.MonitorService;
 
@@ -31,7 +35,7 @@ public class GlobalScheduler extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException {
+			throws ServletException {		
 		doSchedule();
 	}
 
@@ -40,25 +44,24 @@ public class GlobalScheduler extends HttpServlet {
 	 * The method is executed by cron job task.
 	 */
 	public void doSchedule() {
-		MonitorService monitorService = new MonitorService();
 		try {
 			//BEGIN LOG
 			long start = System.currentTimeMillis();
-			logger.log(Level.INFO, MonitorUtil.parserTime(start, true)
+			logger.log(Level.INFO, MonitorUtil.parseTime(start, true)
 					+ " -> START: Scheduled monitoring ...");
 			//BEGIN LOG
-			monitorService.monitor();	
+			
+			MonitorService.monitor();	
 			
 			//END LOG
 			long end = System.currentTimeMillis();
 			long time = end - start;
-			logger.log(Level.INFO, MonitorUtil.parserTime(end, true)
+			logger.log(Level.INFO, MonitorUtil.parseTime(end, true)
 					+ " -> END: Scheduled monitoring. Time executed: " + time + " ms");
 			//END LOG
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE," ->ERROR: When Scheduled monitoring. Message: " + ex.getMessage());
 		}
-
 	}
 
 }

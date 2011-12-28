@@ -19,6 +19,17 @@ public class CpuMonitor implements Serializable {
 		cpuUsage = 0;
 	}
 	
+	@Override
+	public String toString() {
+		StringBuffer sf = new StringBuffer();
+		sf.append("\r\nUsage: " + cpuUsage);
+		sf.append("\r\nTotal CPU: " + totalCpu);
+		sf.append("\r\nVendor: " + vendor);
+		sf.append("\r\nModel: " + model);
+		sf.append("\r\nTimestamp: " + timeStamp + "\r\n");
+		return sf.toString();
+	}
+	
 	public int getCpuUsage() {
 		return cpuUsage;
 	}

@@ -20,34 +20,36 @@ public class JvmDaoImpl implements JvmDAO {
 
 	@Override
 	public void storeJvm(SystemMonitor sys, JvmMonitor jvm) {
-		// BEGIN LOG
-		long start = System.currentTimeMillis();
-		logger.log(Level.INFO,
-				MonitorUtil.parserTime(start, true) + sys.toString()
-						+ " -> START: put Jvm Information ... ");
-		// BEGIN LOG
+		if (jvm != null) {
+			// BEGIN LOG
+			long start = System.currentTimeMillis();
+			logger.log(Level.INFO,
+					MonitorUtil.parseTime(start, true) + sys.toString()
+							+ " -> START: put Jvm Information ... " + jvm);
+			// BEGIN LOG
 
-		ArrayList<JvmMonitor> list = listJvm(sys);
-		if (list == null) {
-			list = new ArrayList<JvmMonitor>();
-		}
-		logger.log(Level.INFO,
-				"Start put to memcache. List size: " + list.size());
-		list.add(jvm);
-		if (list.size() > MonitorConstant.CPU_MEMORY_HISTORY_LENGTH) {
-			list.remove(0);
-		}
-		MonitorMemcache.put(Key.create(Key.JVM_STORE, sys.getId()), list);
+			ArrayList<JvmMonitor> list = listJvm(sys);
+			if (list == null) {
+				list = new ArrayList<JvmMonitor>();
+			}
+			logger.log(Level.INFO,
+					"Start put to memcache. List size: " + list.size());
+			list.add(jvm);
+			if (list.size() > MonitorConstant.CPU_MEMORY_HISTORY_LENGTH) {
+				list.remove(0);
+			}
+			MonitorMemcache.put(Key.create(Key.JVM_STORE, sys.getId()), list);
 
-		logger.log(Level.INFO,
-				"End put to memcache. List size: " + list.size());
-		// END LOG
-		long end = System.currentTimeMillis();
-		logger.log(Level.INFO,
-				MonitorUtil.parserTime(end, true) + sys.toString()
-						+ " -> END: put Jvm Information. Time executed: "
-						+ (end - start) + " ms.");
-		// END LOG
+			logger.log(Level.INFO,
+					"End put to memcache. List size: " + list.size());
+			// END LOG
+			long end = System.currentTimeMillis();
+			logger.log(Level.INFO,
+					MonitorUtil.parseTime(end, true) + sys.toString()
+							+ " -> END: put Jvm Information. Time executed: "
+							+ (end - start) + " ms.");
+			// END LOG
+		}
 	}
 
 	@Override

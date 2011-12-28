@@ -24,7 +24,7 @@ public class AlertStoreMonitor implements Model {
 	private ArrayList<AlertMonitor> alerts = new ArrayList<AlertMonitor>();
 
 	@Persistent
-	private SystemMonitor system;
+	private String sysId;
 
 	@Persistent
 	private int cpuUsage;
@@ -40,28 +40,28 @@ public class AlertStoreMonitor implements Model {
 		return id;
 	}
 
-	public boolean addAlert(AlertMonitor alert) {
-		boolean check = false;
+	public boolean addAlert(AlertMonitor alert) {		
 		if (alerts == null) {
 			alerts = new ArrayList<AlertMonitor>();
 		}
-		alert.setAlertStore(this);
-		if (alerts.size() > 0) {
-			for (AlertMonitor al : alerts) {
-				if (al.getType() == alert.getType()) {
-					check = true;
-					break;
-				}
-			}
-		}
-		if (!check) {
-			alerts.add(alert);
-			check = true;
-		}
-		return check;
+		alert.setAlertStore(this);		
+		
+		alerts.add(alert);
+		return true;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuffer sf = new StringBuffer();
+		sf.append("\r\nSystem ID: " + sysId);
+		sf.append("\r\nCPU Usage: " + cpuUsage);
+		sf.append("\r\nMemory Usage: " + memUsage);
+		sf.append("\r\nTimestamp: " + timeStamp + "\r\n");
+		return sf.toString();
 	}
 
-	public List<AlertMonitor> getAlerts() {
+
+	public ArrayList<AlertMonitor> getAlerts() {
 		return alerts;
 	}
 
@@ -93,13 +93,12 @@ public class AlertStoreMonitor implements Model {
 		this.timeStamp = timeStamp;
 	}
 
-	
-	public SystemMonitor getSystem() {
-		return system;
+	public String getSysId() {
+		return sysId;
 	}
 
-	public void setSystem(SystemMonitor system) {
-		this.system = system;
+	public void setSysId(String sysId) {
+		this.sysId = sysId;
 	}
 
 }

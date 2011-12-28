@@ -10,13 +10,14 @@ import javax.jdo.Query;
 import cmg.org.monitor.dao.MailMonitorDAO;
 import cmg.org.monitor.entity.shared.MailConfigMonitor;
 import cmg.org.monitor.entity.shared.MailMonitor;
+import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.memcache.Key;
 import cmg.org.monitor.memcache.MonitorMemcache;
 import cmg.org.monitor.util.shared.PMF;
 
 public class MailMonitorDaoImpl implements MailMonitorDAO {
-	private static final Logger logger = Logger.getLogger(MailMonitorDaoImpl.class
-			.getCanonicalName());
+	private static final Logger logger = Logger
+			.getLogger(MailMonitorDaoImpl.class.getCanonicalName());
 
 	@Override
 	public MailConfigMonitor getMailConfig(String maild) {
@@ -35,7 +36,9 @@ public class MailMonitorDaoImpl implements MailMonitorDAO {
 			}
 			pm.currentTransaction().commit();
 		} catch (Exception ex) {
-			logger.log(Level.SEVERE, " -> ERROR get mail config. Message: " + ex.getMessage());
+			logger.log(Level.SEVERE, " -> ERROR get mail config. Message: "
+					+ ex.getMessage());
+			pm.currentTransaction().rollback();
 		} finally {
 			query.closeAll();
 			pm.close();
@@ -49,7 +52,13 @@ public class MailMonitorDaoImpl implements MailMonitorDAO {
 
 	@Override
 	public void putMailMonitor(MailMonitor mail) {
-		MonitorMemcache.put(Key.create(Key.MAIL_STORE, mail.getSender()), mail);
+		if (mail != null) {
+			logger.log(Level.INFO,
+					MonitorUtil.parseTime(System.currentTimeMillis(), true)
+							+ " -> START: put Mail Information ... " + mail);
+			MonitorMemcache.put(Key.create(Key.MAIL_STORE, mail.getSender()),
+					mail);
+		}
 	}
 
 	@Override
@@ -62,6 +71,26 @@ public class MailMonitorDaoImpl implements MailMonitorDAO {
 			}
 		}
 		return mail;
+	}
+
+	@Override
+	public void putMailConfig(MailConfigMonitor mailConfig) {
+		if (mailConfig != null) {
+			logger.log(Level.INFO,
+					MonitorUtil.parseTime(System.currentTimeMillis(), true)
+							+ " -> START Put mail configuration ... " + mailConfig);
+			// put to memcache
+			MonitorMemcache.put(
+					Key.create(Key.MAIL_CONFIG_STORE,
+							mailConfig.getMailId(true)), mailConfig);
+
+			// put to JDO
+		}
+	}
+	
+	public void clearMailStore(String sender) {
+		logger.log(Level.INFO, "Clear mail monitor store. Sender: " +sender);
+		MonitorMemcache.delete(Key.create(Key.MAIL_STORE, sender));
 	}
 
 }

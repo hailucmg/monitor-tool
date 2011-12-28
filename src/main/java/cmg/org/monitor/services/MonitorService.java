@@ -1,13 +1,17 @@
 package cmg.org.monitor.services;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import cmg.org.monitor.dao.AlertDao;
 import cmg.org.monitor.dao.MailMonitorDAO;
 import cmg.org.monitor.dao.SystemDAO;
+import cmg.org.monitor.dao.impl.AlertDaoImpl;
 import cmg.org.monitor.dao.impl.MailMonitorDaoImpl;
 import cmg.org.monitor.dao.impl.SystemDaoImpl;
+import cmg.org.monitor.entity.shared.AlertMonitor;
 import cmg.org.monitor.entity.shared.MailMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.exception.MonitorException;
@@ -17,27 +21,15 @@ import cmg.org.monitor.ext.util.URLMonitor;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
 public class MonitorService {
-	/** Show status of monitor */
-	private static String RUNNING = "running";
-
-	/** Show status of monitor */
-	private static String FAILED = "failed";
 
 	/** Default monitor logger */
 	private static final Logger logger = Logger.getLogger(MonitorService.class
 			.getCanonicalName());
 
-	/**
-	 * Monitor the node/projects.
-	 * 
-	 * @return the return value
-	 * 
-	 * @throws MonitorException
-	 *             if the monitoring failed
-	 */
-	public synchronized void monitor() throws MonitorException {
+	public static void  monitor() throws MonitorException {
 		SystemDAO systemDao = new SystemDaoImpl();
 		ArrayList<SystemMonitor> systems = null;
+		ArrayList<SystemMonitor> tempList = null;
 		try {
 			systems = systemDao.listSystems(false);
 		} catch (Exception me) {
@@ -45,13 +37,13 @@ public class MonitorService {
 					+ me.getMessage());
 		}
 		if (systems != null && systems.size() > 0) {
-			SystemMonitor tempSys = null;
+			tempList = new ArrayList<SystemMonitor>();
 			// loop all system
 			for (SystemMonitor aSystem : systems) {
 				if (!aSystem.isActive()) {
 					logger.log(
 							Level.INFO,
-							MonitorUtil.parserTime(System.currentTimeMillis(),
+							MonitorUtil.parseTime(System.currentTimeMillis(),
 									true)
 									+ "The system "
 									+ aSystem.toString()
@@ -60,7 +52,7 @@ public class MonitorService {
 				} else {
 					logger.log(
 							Level.INFO,
-							MonitorUtil.parserTime(System.currentTimeMillis(),
+							MonitorUtil.parseTime(System.currentTimeMillis(),
 									true)
 									+ "START monitoring system "
 									+ aSystem.toString());
@@ -75,21 +67,22 @@ public class MonitorService {
 							MailMonitorDAO mailDAO = new MailMonitorDaoImpl();
 							MailMonitor mail = mailDAO.getMailMonitor(aSystem
 									.getEmailRevice());
+							// clear store after get data
+							mailDAO.clearMailStore(aSystem.getEmailRevice());
 							if (mail != null) {
 								infoContent = mail.getContent();
 							}
 						} else {
-							URLMonitor urlMonitor = new URLMonitor();
-							infoContent = urlMonitor.retrievesContent(aSystem
+							infoContent = URLMonitor.retrievesContent(aSystem
 									.getRemoteUrl());
 						}// if-else
 
 						if (infoContent == null || infoContent.equals("")) {
 							aSystem.setStatus(false);
-							// TODO put alert to store
+
 							logger.log(
 									Level.WARNING,
-									MonitorUtil.parserTime(
+									MonitorUtil.parseTime(
 											System.currentTimeMillis(), true)
 											+ "Fetch content of data from "
 											+ aSystem.toString()
@@ -97,14 +90,13 @@ public class MonitorService {
 						} else {
 							logger.log(
 									Level.INFO,
-									MonitorUtil.parserTime(
+									MonitorUtil.parseTime(
 											System.currentTimeMillis(), true)
 											+ "Fetch content of data from "
 											+ aSystem.toString()
 											+ ": \r\n"
 											+ infoContent);
-							MonitorParser parser = new MonitorParser();
-							aSystem = parser.parserData(infoContent, aSystem);
+							aSystem = MonitorParser.parseData(infoContent, aSystem);
 						}// if-else
 
 					} catch (Exception e) {
@@ -113,7 +105,17 @@ public class MonitorService {
 						logger.log(Level.INFO, " ->ERROR: when revice content"
 								+ e.getMessage());
 					}
-					
+					if (!aSystem.getStatus()) {
+						AlertDao alertDAO = new AlertDaoImpl();
+						AlertMonitor alert = new AlertMonitor(
+								AlertMonitor.CANNOT_GATHER_DATA,
+								"Cannot gather data",
+								"Please re-check the configuration of system",
+								new Date());
+						
+						alertDAO.storeAlert(aSystem, alert);
+					}//if
+
 				}// if-else
 				try {
 					systemDao.updateSystem(aSystem);
@@ -122,12 +124,14 @@ public class MonitorService {
 							Level.SEVERE,
 							" -> ERROR: cannot update system. Message: "
 									+ ex.getMessage());
-				}
-			}// for
+				}				
+				tempList.add(aSystem);
+			}// for			
 		} else {
 			logger.log(Level.INFO,
-					MonitorUtil.parserTime(System.currentTimeMillis(), true)
+					MonitorUtil.parseTime(System.currentTimeMillis(), true)
 							+ " -> END Monitoring: No system found!");
 		}
+		systemDao.storeSysList(tempList);
 	}
 }

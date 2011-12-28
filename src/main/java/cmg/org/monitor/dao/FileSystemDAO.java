@@ -15,5 +15,5 @@ public interface FileSystemDAO {
 	 */
 	public void storeFileSystems(SystemMonitor sys, ArrayList<FileSystemMonitor> fileSystems);
 	
-	public ArrayList<FileSystemMonitor> getFileSystems(SystemMonitor sys);
+	public ArrayList<FileSystemMonitor> listFileSystems(SystemMonitor sys);
 }

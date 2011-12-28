@@ -51,7 +51,7 @@ public class URLMonitor {
 		super();
 	}
 
-	public String retrievesContent(String remoteUrl) {
+	public static String retrievesContent(String remoteUrl) {
 		String webContent = "";
 		// Processes page
 		Page page = null;

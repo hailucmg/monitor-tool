@@ -1,13 +1,11 @@
 package cmg.org.monitor.module.client;
 
-import java.util.Map;
+import java.util.ArrayList;
 
-import cmg.org.monitor.entity.shared.CpuMemory;
 import cmg.org.monitor.entity.shared.SystemMonitor;
-import cmg.org.monitor.ext.model.shared.MonitorEditDto;
-import cmg.org.monitor.ext.model.shared.UserDto;
+import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
-import cmg.org.monitor.memcache.shared.SystemMonitorDto;
+import cmg.org.monitor.ext.model.shared.UserMonitor;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -15,34 +13,20 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("MonitorGwtService")
 public interface MonitorGwtService extends RemoteService {
 	boolean addSystem(SystemMonitor system);
-
-	MonitorEditDto groups() throws Exception;
-
+	
 	UserLoginDto getUserLogin();
-
-	SystemMonitor[] listSystems();
-
-	MonitorEditDto getSystembyID(String id) throws Exception;
-
-	boolean editSystembyID(String id,SystemMonitor sysNew) throws Exception;
-
-	SystemMonitor getLastestDataMonitor(String sysID);
+	
+	ArrayList<SystemMonitor> listSystems();
 
 	SystemMonitor validSystemId(String sysID);
 
-	CpuMemory[] listCpuMemoryHistory(String sysID);
-
-	SystemMonitor[] listSystem(boolean isDeleted) throws Exception;
-
-	String editSystem(String id) throws Exception;
-
 	boolean deleteSystem(String id) throws Exception;
 
-	boolean deleteListSystem(String[] ids) throws Exception;
-
-	Map<String, UserDto> listUser() throws Exception;
-	
 	String getAboutContent();
 	
 	String getHelpContent();
+	
+	MonitorContainer getSystemMonitorContainer();
+	
+	ArrayList<UserMonitor> listAllUsers();
 }

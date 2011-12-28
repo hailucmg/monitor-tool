@@ -7,9 +7,11 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import cmg.org.monitor.exception.MonitorException;
+import cmg.org.monitor.ext.model.shared.GroupMonitor;
+import cmg.org.monitor.ext.model.shared.UserMonitor;
 
 import com.google.gdata.client.appsforyourdomain.AppsGroupsService;
 import com.google.gdata.client.appsforyourdomain.UserService;
@@ -21,410 +23,141 @@ import com.google.gdata.util.ServiceException;
 
 public class Appforyourdomain {
 
+	private static final Logger logger = Logger
+			.getLogger(Appforyourdomain.class.getCanonicalName());
+
 	private AppsGroupsService groupService;
 
 	private UserService userService;
 
-	private static final String APPS_FEEDS_URL_BASE = "https://apps-apis.google.com/a/feeds/";
-
-	private static final String SERVICE_VERSION = "2.0";
-
-	private String domainUrlBase;
-
-	private String domain;
-
-	protected Appforyourdomain(String domain) {
-		this.domain = domain;
-		this.domainUrlBase = APPS_FEEDS_URL_BASE + domain + "/";
-	}
-
-	/**
-	 * 
-	 * @param adminEmail
-	 * @param adminPassword
-	 * @param domain
-	 * @throws Exception
-	 */
 	public Appforyourdomain(String adminEmail, String adminPassword,
-			String domain) throws AuthenticationException {
-		this(domain);
-		// Configure all of the different Provisioning services
-		userService = new UserService(
-				"gdata-sample-AppsForYourDomain-UserService");
+			String domain) {
+
 		try {
+			userService = new UserService("monitor-tool-user-service");
 			userService.setUserCredentials(adminEmail, adminPassword);
 			groupService = new AppsGroupsService(adminEmail, adminPassword,
-					domain, "gdata-sample-AppsForYourDomain-AppsGroupService");
-		} catch (AuthenticationException ae) {
-
-			throw ae;
+					domain, "monitor-tool-app-group-service");
+		} catch (AuthenticationException e) {
+			logger.log(
+					Level.SEVERE,
+					"ERROR when list group. AuthenticationException: "
+							+ e.getMessage());
 		}
 
 	}
 
-	/**
-	 * Get all user from group email ID
-	 * 
-	 * @param groupID
-	 * @return all user
-	 * @throws Exception
-	 */
-	public String[] listAllUser(String groupID) throws MonitorException,
-			ServiceException, IOException {
-		String[] listUser = null;
-		String id;
-
-		id = groupID.substring(groupID.lastIndexOf("/") + 1, groupID.length());
-		String group = id.split("%")[0];
-
-		GenericFeed groupsFeed;
-		groupsFeed = groupService.retrieveAllMembers(id);
-		Iterator<GenericEntry> groupsEntryIterator = groupsFeed.getEntries()
-				.iterator();
-		StringBuffer members = new StringBuffer();
-		while (groupsEntryIterator.hasNext()) {
-			members.append(groupsEntryIterator.next().getProperty(
-					AppsGroupsService.APPS_PROP_GROUP_MEMBER_ID));
-			if (groupsEntryIterator.hasNext()) {
-				members.append(",");
-			}
-		}
-		listUser = members.toString().trim().split(",");
-		for (int i = 0; i < listUser.length; i++) {
-			listUser[i] = listUser[i] + ":" + group;
-		}
-
-		return listUser;
-	}
-
-	/**
-	 * 
-	 * @return all group
-	 */
-	public String[] listGroup() {
-		String[] listGroup = null;
-		GenericFeed groupFeed = null;
-		Iterator<GenericEntry> groupsEntryIterator = null;
+	public ArrayList<GroupMonitor> listGroups() {
+		ArrayList<GroupMonitor> list = null;
+		GroupMonitor group = null;
 		try {
-			groupFeed = groupService.retrieveAllGroups();
-			groupsEntryIterator = groupFeed.getEntries().iterator();
-			StringBuffer groups = new StringBuffer();
+			GenericFeed groupFeed = groupService.retrieveAllGroups();
+			Iterator<GenericEntry> groupsEntryIterator = groupFeed.getEntries()
+					.iterator();
 			while (groupsEntryIterator.hasNext()) {
-				groups.append(groupsEntryIterator.next().getProperty(
-						AppsGroupsService.APPS_PROP_GROUP_ID));
-				if (groupsEntryIterator.hasNext()) {
-					groups.append(",");
+				if (list == null) {
+					list = new ArrayList<GroupMonitor>();
 				}
-			}
-			listGroup = groups.toString().trim().split(",");
-		} catch (AppsForYourDomainException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return listGroup;
-	}
-
-	/**
-	 * 
-	 * @return all id of group
-	 */
-	public String[] listGroupID() {
-		String[] listGroupID = null;
-		GenericFeed groupFeed = null;
-		Iterator<GenericEntry> groupsEntryIterator = null;
-		try {
-			groupFeed = groupService.retrieveAllGroups();
-			groupsEntryIterator = groupFeed.getEntries().iterator();
-			StringBuffer groups = new StringBuffer();
-			while (groupsEntryIterator.hasNext()) {
-				groups.append(groupsEntryIterator.next().getId());
-				if (groupsEntryIterator.hasNext()) {
-					groups.append(",");
-				}
-			}
-			listGroupID = groups.toString().trim().split(",");
-		} catch (AppsForYourDomainException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return listGroupID;
-	}
-
-	/**
-	 * 
-	 * @param filter
-	 * @param listGroupID
-	 * @return all admin
-	 * @throws AppsForYourDomainException
-	 * @throws MalformedURLException
-	 * @throws IOException
-	 * @throws ServiceException
-	 */
-
-	public String[] listAdmin(String[] listGroupID)
-			throws AppsForYourDomainException, MalformedURLException,
-			IOException, ServiceException {
-		String idGroupAdmin = null;
-		String[] listUser = null;
-		GenericFeed groupsFeed = null;
-		GenericEntry groupsEntry = null;
-		Iterator<GenericEntry> groupsEntryIterator = null;
-
-		for (int i = 0; i < listGroupID.length; i++) {
-			if (listGroupID[i].contains("admin")) {
-				idGroupAdmin = listGroupID[i].substring(
-						listGroupID[i].lastIndexOf("/") + 1,
-						listGroupID[i].length()).toString();
-			}
-		}
-		String group = idGroupAdmin.split("%")[0];
-		groupsFeed = groupService.retrieveAllMembers(idGroupAdmin);
-		groupsEntryIterator = groupsFeed.getEntries().iterator();
-		StringBuffer members = new StringBuffer();
-		while (groupsEntryIterator.hasNext()) {
-			members.append(groupsEntryIterator.next().getProperty(
-					AppsGroupsService.APPS_PROP_GROUP_MEMBER_ID));
-			if (groupsEntryIterator.hasNext()) {
-				members.append(",");
-			}
-		}
-
-		listUser = members.toString().trim().split(",");
-		for (int i = 0; i < listUser.length; i++) {
-			listUser[i] = listUser[i] + ":" + group;
-		}
-		return listUser;
-	}
-
-	public String[] listAdminDotCom(String[] listGroupID)
-			throws AppsForYourDomainException, MalformedURLException,
-			IOException, ServiceException {
-		String idGroupAdmin = null;
-		String[] listUser = null;
-		GenericFeed groupsFeed = null;
-		GenericEntry groupsEntry = null;
-		Iterator<GenericEntry> groupsEntryIterator = null;
-		String id;
-		for (int i = 0; i < listGroupID.length; i++) {
-			id = listGroupID[i].substring(listGroupID[i].lastIndexOf("/") + 1,
-					listGroupID[i].length());
-			if (id.startsWith("admin")) {
-				idGroupAdmin = id;
-			}
-		}
-		String group = idGroupAdmin.split("%")[0];
-		groupsFeed = groupService.retrieveAllMembers(idGroupAdmin);
-		groupsEntryIterator = groupsFeed.getEntries().iterator();
-		StringBuffer members = new StringBuffer();
-		while (groupsEntryIterator.hasNext()) {
-			members.append(groupsEntryIterator.next().getProperty(
-					AppsGroupsService.APPS_PROP_GROUP_MEMBER_ID));
-			if (groupsEntryIterator.hasNext()) {
-				members.append(",");
-			}
-		}
-
-		listUser = members.toString().trim().split(",");
-		for (int i = 0; i < listUser.length; i++) {
-			listUser[i] = listUser[i] + ":" + group;
-		}
-		return listUser;
-	}
-
-	public String[] listUserDotCom(String listGroupID) throws Exception {
-		String[] listUser = null;
-		String id;
-		id = listGroupID.substring(listGroupID.lastIndexOf("/") + 1,
-				listGroupID.length());
-		String group = id.split("%")[0];
-		if (id.startsWith("monitor_")) {
-		
-			GenericFeed groupsFeed;
-			try {
-				groupsFeed = groupService.retrieveAllMembers(id);
-				GenericEntry groupsEntry = null;
-				Iterator<GenericEntry> groupsEntryIterator = groupsFeed
-						.getEntries().iterator();
-				StringBuffer members = new StringBuffer();
-				while (groupsEntryIterator.hasNext()) {
-					members.append(groupsEntryIterator.next().getProperty(
-							AppsGroupsService.APPS_PROP_GROUP_MEMBER_ID));
-					if (groupsEntryIterator.hasNext()) {
-						members.append(",");
-					}
-				}
-				listUser = members.toString().trim().split(",");
-				for (int i = 0; i < listUser.length; i++) {
-					listUser[i] = listUser[i] + ":" + group;
-				}
-			} catch (AppsForYourDomainException e) {
-				// TODO Auto-generated catch block
-				throw e;
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				throw e;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				throw e;
-			} catch (ServiceException e) {
-				// TODO Auto-generated catch block
-				throw e;
-			}
-
-		}
-
-		return listUser;
-	}
-
-	/**
-	 * @param listGroupID
-	 * @return all user
-	 * @throws Exception
-	 */
-	public String[] listUser(String listGroupID) throws Exception {
-		String[] listUser = null;
-		String id;
-		id = listGroupID.substring(listGroupID.lastIndexOf("/") + 1,
-				listGroupID.length());
-		String group = id.split("%")[0];
-		if (id.startsWith("monitor")) {
-			GenericFeed groupsFeed;
-			try {
-				groupsFeed = groupService.retrieveAllMembers(id);
-				GenericEntry groupsEntry = null;
-				Iterator<GenericEntry> groupsEntryIterator = groupsFeed
-						.getEntries().iterator();
-				StringBuffer members = new StringBuffer();
-				while (groupsEntryIterator.hasNext()) {
-					members.append(groupsEntryIterator.next().getProperty(
-							AppsGroupsService.APPS_PROP_GROUP_MEMBER_ID));
-					if (groupsEntryIterator.hasNext()) {
-						members.append(",");
-					}
-				}
-				listUser = members.toString().trim().split(",");
-				for (int i = 0; i < listUser.length; i++) {
-					listUser[i] = listUser[i] + ":" + group;
-				}
-			} catch (AppsForYourDomainException e) {
-				// TODO Auto-generated catch block
-				throw e;
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				throw e;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				throw e;
-			} catch (ServiceException e) {
-				// TODO Auto-generated catch block
-				throw e;
-			}
-
-		}
-
-		return listUser;
-	}
-	
-	public String[] listGroupDotCom() {
-		String[] listGroup = null;
-		String[] listGroupDotCom = null;
-		List<String> list = new ArrayList<String>();
-		GenericFeed groupFeed = null;
-		Iterator<GenericEntry> groupsEntryIterator = null;
-		try {
-			groupFeed = groupService.retrieveAllGroups();
-			groupsEntryIterator = groupFeed.getEntries().iterator();
-			StringBuffer groups = new StringBuffer();
-			while (groupsEntryIterator.hasNext()) {
-				groups.append(groupsEntryIterator.next().getProperty(
-						AppsGroupsService.APPS_PROP_GROUP_ID));
-				if (groupsEntryIterator.hasNext()) {
-					groups.append(",");
-				}
-			}
-			listGroup = groups.toString().trim().split(",");
-			
-			for(int i =0;i < listGroup.length;i++){
-				if(listGroup[i].contains("monitor")){
-					list.add(listGroup[i]);
-				}
+				group = new GroupMonitor();
+				group.setId(groupsEntryIterator.next().getId());
+				group.parseName();
+				list.add(group);
 			}
 		} catch (AppsForYourDomainException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(
+					Level.SEVERE,
+					"ERROR when list group. AppsForYourDomainException: "
+							+ e.getMessage());
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(
+					Level.SEVERE,
+					"ERROR when list group. MalformedURLException: "
+							+ e.getMessage());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.SEVERE,
+					"ERROR when list group. IOException: " + e.getMessage());
 		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(
+					Level.SEVERE,
+					"ERROR when list group. ServiceException: "
+							+ e.getMessage());
 		}
-		listGroupDotCom = new String[list.size()];
-		for(int j = 0 ; j < list.size();j++){
-			listGroupDotCom[j] = list.get(j);
-		}
-		return listGroupDotCom;
+		return list;
 	}
 
-	
-	/*public static void main(String[] arg) throws Exception {
+	public ArrayList<UserMonitor> listAllUsers() {
+		ArrayList<UserMonitor> list = null;
+		ArrayList<UserMonitor> users = null;
+		ArrayList<GroupMonitor> groups = listGroups();
+		if (groups != null & groups.size() > 0) {
+			list = new ArrayList<UserMonitor>();
+			for (GroupMonitor g : groups) {
+				users = listUser(g);
+				if (users != null && users.size() > 0) {
+					for (UserMonitor user : users) {
+						boolean check = false;
+						if (list.size() == 0) {
+							check = true;
+						} else {
+							for (UserMonitor u : list) {
+								if (user.getId().equals(u.getId())) {
+									u.addGroup(g);
+									break;
+								} else {
+									check = true;
+								}
+							}// for
+						}// if-else
+						if (check) {
+							list.add(user);
+						}
+					}// for
+				}// if
+			}// for
+		}//
+		return list;
+	}
 
-		Appforyourdomain client = new Appforyourdomain("monitor@c-mg.com",
-				"w3lcom3back", "c-mg.com");
+	public ArrayList<UserMonitor> listUser(GroupMonitor group) {
+		ArrayList<UserMonitor> list = null;
+		UserMonitor user = null;
 		try {
-			String[] group = client.listGroupDotCom();
-			for(int i = 0 ; i < group.length;i++){
-				System.out.println(group[i]);
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}*/
-		
-		/*String[] ids = client.listGroupID();
-		for(int a = 0 ; a< ids.length;a++){
-			System.out.println(ids[a]);
-		}
-		String[] admins = client.listAdminDotCom(ids);
-		for(int h = 0;h<admins.length;h++){
-			System.out.println(admins[h]);
-		}
-		List<String> alluser = new ArrayList<String>();
-		for (int i = 0; i < ids.length; i++) {
-			String[] user = client.listUserDotCom(ids[i]);
-			if (user != null) {
-				for (int j = 0; j < user.length; j++) {
-					alluser.add(user[j]);
+			GenericFeed groupsFeed = groupService.retrieveAllMembers(group
+					.getName());
+			Iterator<GenericEntry> groupsEntryIterator = groupsFeed
+					.getEntries().iterator();
+			while (groupsEntryIterator.hasNext()) {
+				if (list == null) {
+					list = new ArrayList<UserMonitor>();
 				}
-			}else{
-				continue;
+				user = new UserMonitor();
+				user.setId(groupsEntryIterator.next().getProperty(
+						AppsGroupsService.APPS_PROP_GROUP_MEMBER_ID));
+				user.setRole(group.getName().contains("admin") ? MonitorConstant.ROLE_ADMIN
+						: MonitorConstant.ROLE_NORMAL_USER);
+				user.addGroup(group);
+				list.add(user);
 			}
+		} catch (AppsForYourDomainException e) {
+			logger.log(
+					Level.SEVERE,
+					"ERROR when list group. AppsForYourDomainException: "
+							+ e.getMessage());
+		} catch (MalformedURLException e) {
+			logger.log(
+					Level.SEVERE,
+					"ERROR when list group. MalformedURLException: "
+							+ e.getMessage());
+		} catch (IOException e) {
+			logger.log(Level.SEVERE,
+					"ERROR when list group. IOException: " + e.getMessage());
+		} catch (ServiceException e) {
+			logger.log(
+					Level.SEVERE,
+					"ERROR when list group. ServiceException: "
+							+ e.getMessage());
 		}
-		
-		for(int k = 0 ; k < alluser.size();k++){
-			System.out.println(alluser.get(k));
-		}*/
-	
+		return list;
+	}
 
 }

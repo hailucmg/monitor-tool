@@ -23,13 +23,10 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import cmg.org.monitor.common.Constant;
-import cmg.org.monitor.entity.shared.CpuMonitor;
-import cmg.org.monitor.entity.shared.FileSystemMonitor;
-import cmg.org.monitor.entity.shared.JvmMonitor;
-import cmg.org.monitor.entity.shared.MemoryMonitor;
-import cmg.org.monitor.entity.shared.ServiceMonitor;
-import cmg.org.monitor.entity.shared.SystemMonitor;
-import cmg.org.monitor.util.shared.Ultility;
+import cmg.org.monitor.dao.*;
+import cmg.org.monitor.dao.impl.*;
+import cmg.org.monitor.entity.shared.*;
+import cmg.org.monitor.util.shared.Utility;
 
 public class MonitorParser {
 
@@ -41,6 +38,8 @@ public class MonitorParser {
 
 	/** The element component . */
 	public static String ERROR = "error";
+
+	public static String NONE = "none";
 
 	/** The element component . */
 	public static String PING = "ping";
@@ -78,18 +77,20 @@ public class MonitorParser {
 	private static final Logger logger = Logger.getLogger(MonitorParser.class
 			.getCanonicalName());
 
-	public boolean checkContentType(String content) {
+	private static boolean checkContentType(String content) {
 		return (content.toLowerCase().contains("<cmg>") && content
 				.toLowerCase().contains("</cmg>"));
 	}
 
-	public SystemMonitor parserData(String content, SystemMonitor sys) {
+	public static SystemMonitor parseData(String content, SystemMonitor sys) {
 		// BEGIN LOG
 		long start = System.currentTimeMillis();
 		logger.log(Level.INFO,
-				MonitorUtil.parserTime(start, true) + sys.toString()
+				MonitorUtil.parseTime(start, true) + sys.toString()
 						+ " -> START: parse data ... ");
 		// BEGIN LOG
+
+		/* START GATHER INFORMATION */
 		Date timeStamp = new Date(start);
 		JvmMonitor jvm = null;
 		CpuMonitor cpu = null;
@@ -97,7 +98,6 @@ public class MonitorParser {
 		ArrayList<FileSystemMonitor> fileSysList = null;
 		ArrayList<ServiceMonitor> serviceList = null;
 
-		/* START GATHER INFORMATION */
 		if (checkContentType(content)) {
 			logger.log(Level.INFO, "Content type: XML");
 			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory
@@ -138,12 +138,168 @@ public class MonitorParser {
 		/* END GATHER INFORMATION */
 
 		/* START CHECK & STORE INFORMATION */
+		AlertDao alertDAO = new AlertDaoImpl();
+		CpuDAO cpuDAO = new CpuDaoImpl();
+		FileSystemDAO fileSysDAO = new FileSystemDaoImpl();
+		JvmDAO jvmDAO = new JvmDaoImpl();
+		MemoryDAO memDAO = new MemoryDaoImpl();
+		ServiceDAO serviceDAO = new ServiceDaoImpl();
+
+		AlertMonitor alert = null;
+
+		boolean checkCpu = true;
+		boolean checkService = true;
+		boolean checkJvm = true;
+		boolean checkFileSys = true;
+		boolean checkMem = true;
+		boolean isDone = false;
+
+		if (cpu != null) {
+			cpu.setTimeStamp(timeStamp);
+			if (cpu.getCpuUsage() > Constant.CPU_LEVEL_HISTORY_UPDATE) {
+				checkCpu = false;
+				alert = new AlertMonitor(AlertMonitor.HIGH_USAGE_LEVEL_CPU,
+						"High CPU usage", "Cpu usage is " + cpu.getCpuUsage()
+								+ "%", timeStamp);
+				alertDAO.storeAlert(sys, alert);
+			}
+			// store CPU information
+			cpuDAO.storeCpu(sys, cpu);
+		}
+
+		if (jvm != null) {
+			isDone = true;
+			jvm.setTimeStamp(timeStamp);
+			if (jvm.getPercentUsage() > Constant.LEVEL_JVM_PERCENTAGE) {
+				checkJvm = false;
+				alert = new AlertMonitor(AlertMonitor.HIGH_USAGE_LEVEL_JVM,
+						"High Java Virtual Machine memory usage",
+						"Java Virtual Machine memory usage is "
+								+ jvm.getPercentUsage()
+								+ "% ("
+								+ Utility.convertMemoryToString(jvm
+										.getUsedMemory())
+								+ " of "
+								+ Utility.convertMemoryToString(jvm
+										.getTotalMemory()) + ")"
+
+						, timeStamp);
+				// store alert
+				alertDAO.storeAlert(sys, alert);
+			}// if
+				// store JVM information
+			jvmDAO.storeJvm(sys, jvm);
+		}// if
+
+		if (fileSysList != null) {
+			for (FileSystemMonitor fileSys : fileSysList) {
+				fileSys.setTimeStamp(timeStamp);
+				if (fileSys.getPercentUsage() > Constant.DF_LEVEL_HISTORY_UPDATE) {
+
+					alert = new AlertMonitor(AlertMonitor.HIGH_USAGE_LEVEL_JVM,
+							"High File system memory usage", fileSys.getName()
+									+ "("
+									+ fileSys.getType()
+									+ ")"
+									+ "memory usage is "
+									+ fileSys.getPercentUsage()
+									+ "% ("
+									+ Utility.convertMemoryToString(fileSys
+											.getUsed())
+									+ " of "
+									+ Utility.convertMemoryToString(fileSys
+											.getSize()) + ")", timeStamp);
+					// store alert
+					alertDAO.storeAlert(sys, alert);
+					// change status
+					checkFileSys = false;
+				}// if
+			}// for
+			fileSysDAO.storeFileSystems(sys, fileSysList);
+		}// if
+
+		int lastestMemUsage = 0;
+		if (memList != null) {
+			for (MemoryMonitor mem : memList) {
+				if (mem.getType() == MemoryMonitor.MEM) {
+					lastestMemUsage = mem.getPercentUsage();
+				}
+				mem.setTimeStamp(timeStamp);
+				if (mem.getPercentUsage() > Constant.MEMORY_LEVEL_HISTORY_UPDATE) {
+					alert = new AlertMonitor(
+							AlertMonitor.HIGH_USAGE_LEVEL_MEMORY,
+							"High memory usage",
+							(mem.getType() == MemoryMonitor.SWAP ? "Swap"
+									: "Ram")
+									+ " memory usage is "
+									+ mem.getPercentUsage()
+									+ "% ("
+									+ Utility.convertMemoryToString(mem
+											.getUsedMemory())
+									+ " of "
+									+ Utility.convertMemoryToString(mem
+											.getTotalMemory()) + ")", timeStamp);
+					// store alert
+					alertDAO.storeAlert(sys, alert);
+					// change status
+					checkMem = false;
+				}
+
+				// store Memory information
+				memDAO.storeMemory(sys, mem);
+			}// for
+		}// if
+
+		if (serviceList != null) {
+			isDone = true;
+			for (ServiceMonitor service : serviceList) {
+				service.setTimeStamp(timeStamp);
+				if (!service.getStatus()) {
+					alert = new AlertMonitor(AlertMonitor.SERVICE_ERROR_STATUS,
+							"Service error", (service.getName() == null ? "N/A"
+									: service.getName())
+									+ " have some errors. Description: "
+									+ service.getDescription(), timeStamp);
+					// store alert
+					alertDAO.storeAlert(sys, alert);
+					checkService = false;
+				}// if
+				if (service.getPing() > Constant.PING_LEVEL_RESPONSE) {
+					alert = new AlertMonitor(AlertMonitor.SERVICE_ERROR_STATUS,
+							"High service ping time",
+							(service.getName() == null ? "N/A"
+									: service.getName())
+									+ " ping time is "
+									+ service.getPing(), timeStamp);
+					// store alert
+					alertDAO.storeAlert(sys, alert);
+					checkService = false;
+				}// if
+
+			}// for
+			serviceDAO.storeServices(sys, serviceList);
+		}// if
+		sys.setStatus(isDone);
+		if (!isDone) {
+			alert = new AlertMonitor(AlertMonitor.CANNOT_GATHER_DATA,
+					"Cannot gather data",
+					"Please re-check the configuration of system", timeStamp);
+
+			alertDAO.storeAlert(sys, alert);
+		}
+		sys.setLastestMemoryUsage(lastestMemUsage);
+		sys.setLastestCpuUsage(cpu == null ? 0 : cpu.getCpuUsage());
+		sys.setHealthStatus(sys.getStatus() && sys.isActive() ? (checkMem
+				&& checkFileSys && checkService && checkCpu && checkJvm ? SystemMonitor.STATUS_SMILE
+				: SystemMonitor.STATUS_BORED)
+				: SystemMonitor.STATUS_DEAD);
+
 		/* END CHECK & STORE INFORMATION */
 
 		// END LOG
 		long end = System.currentTimeMillis();
 		logger.log(Level.INFO,
-				MonitorUtil.parserTime(end, true) + sys.toString()
+				MonitorUtil.parseTime(end, true) + sys.toString()
 						+ " -> END: parse data. Time executed: "
 						+ (end - start) + " ms.");
 		// END LOG
@@ -158,7 +314,7 @@ public class MonitorParser {
 	 *            the content of xml.
 	 * @return components list of object
 	 */
-	public ArrayList<ServiceMonitor> getServiceComponent(Document doc) {
+	private static ArrayList<ServiceMonitor> getServiceComponent(Document doc) {
 		logger.log(Level.INFO, "START Service Information");
 		ArrayList<ServiceMonitor> list = null;
 		ServiceMonitor service = null;
@@ -167,30 +323,35 @@ public class MonitorParser {
 			int totalElements = elementList.getLength();
 			Element element = null;
 			if (totalElements > 0) {
-				list = new ArrayList<ServiceMonitor>();
+				if (list == null) {
+					list = new ArrayList<ServiceMonitor>();
+				}
 				for (int i = 0; i < totalElements; i++) {
 					logger.log(Level.INFO, "START Service #" + (i + 1));
+					String strTemp = "";
 					element = (Element) elementList.item(i);
 					service = new ServiceMonitor();
 					NodeList temp = element.getElementsByTagName(NAME);
 					if (temp != null && temp.getLength() > 0) {
-						service.setName(getCharacterDataFromElement((Element) temp
-								.item(0)));
-						logger.log(Level.INFO, " Name: " + service.getName());
+						strTemp = getCharacterDataFromElement((Element) temp
+								.item(0));
+						service.setName(strTemp);
+						logger.log(Level.INFO, " Name: " + strTemp);
 					}// if
 					temp = element.getElementsByTagName(VALUE);
 					if (temp != null && temp.getLength() > 0) {
-						service.setStrSystemDate(getCharacterDataFromElement((Element) temp
-								.item(0)));
-						logger.log(Level.INFO,
-								" Sys date: " + service.getStrSystemDate());
+						strTemp = getCharacterDataFromElement((Element) temp
+								.item(0));
+						service.setStrSystemDate(strTemp);
+						logger.log(Level.INFO, " Sys date: " + strTemp);
 					}// if
 					temp = element.getElementsByTagName(ERROR);
 					if (temp != null && temp.getLength() > 0) {
-						service.setDescription(getCharacterDataFromElement((Element) temp
-								.item(0)));
-						logger.log(Level.INFO,
-								" Error: " + service.getDescription());
+						strTemp = getCharacterDataFromElement((Element) temp
+								.item(0));
+						service.setDescription(strTemp);
+						logger.log(Level.INFO, " Error: " + strTemp);
+						service.setStatus(NONE.equalsIgnoreCase(strTemp));
 					}// if
 					temp = element.getElementsByTagName(PING);
 					if (temp != null && temp.getLength() > 0) {
@@ -199,7 +360,7 @@ public class MonitorParser {
 						logger.log(Level.INFO, " Ping: " + ping);
 						int pingTime = 0;
 						try {
-							pingTime = Integer.parseInt(Ultility
+							pingTime = Integer.parseInt(Utility
 									.extractDigit(ping));
 						} catch (Exception ex) {
 
@@ -215,7 +376,7 @@ public class MonitorParser {
 		return list;
 	}
 
-	public ArrayList<ServiceMonitor> getServiceComponent(String webContent) {
+	private static ArrayList<ServiceMonitor> getServiceComponent(String webContent) {
 		logger.log(Level.INFO, "START Service Information");
 		ArrayList<ServiceMonitor> list = null;
 		ServiceMonitor service = null;
@@ -254,10 +415,13 @@ public class MonitorParser {
 				logger.log(Level.INFO, " Error: " + temp);
 				service.setDescription(temp);
 
+				service.setStatus(NONE.equalsIgnoreCase(service
+						.getDescription()));
+
 				temp = strList.get(iC + 3);
 				logger.log(Level.INFO, " Ping: " + temp);
 				try {
-					service.setPing(Integer.parseInt(Ultility.extractDigit(temp)));
+					service.setPing(Integer.parseInt(Utility.extractDigit(temp)));
 				} catch (Exception ex) {
 					logger.log(
 							Level.SEVERE,
@@ -279,7 +443,7 @@ public class MonitorParser {
 	 * @param xmlContent
 	 * @return
 	 */
-	public JvmMonitor getJVMComponent(Document doc) {
+	private static JvmMonitor getJVMComponent(Document doc) {
 		logger.log(Level.INFO, "START Jvm Information");
 		JvmMonitor jvm = new JvmMonitor();
 		NodeList elementList = doc.getElementsByTagName(JVM_ITEM);
@@ -339,47 +503,64 @@ public class MonitorParser {
 		return jvm;
 	}
 
-	public JvmMonitor getJVMComponent(String webContent) {
+	private static JvmMonitor getJVMComponent(String webContent) {
 		logger.log(Level.INFO, "START Jvm Information");
 		JvmMonitor jvm = new JvmMonitor();
 
-        Matcher matcher = Pattern.compile(
-                Constant.PATTERN_MEMORY_KEY_VALUE).matcher(webContent);
-        while (matcher.find()) {
-            String value = matcher.group(1);
-            if (value.toLowerCase().contains("free")) {
-            	logger.log(Level.INFO, "Free memory: " + Ultility.extractDigit(value));
-            	try {
-            		jvm.setFreeMemory(Double.parseDouble(Ultility.extractDigit(value)));
-            	} catch(Exception ex) {
-            		logger.log(Level.SEVERE, " -> ERROR. parseDouble free memory. Message: " + ex.getMessage());
-            	}
-            }
-            if (value.toLowerCase().contains("total")) {
-            	logger.log(Level.INFO, "Total memory: " + Ultility.extractDigit(value));
-            	try {
-            		jvm.setTotalMemory(Double.parseDouble(Ultility.extractDigit(value)));
-            	} catch(Exception ex) {
-            		logger.log(Level.SEVERE, " -> ERROR. parseDouble total memory. Message: " + ex.getMessage());
-            	}
-            }
-            if (value.toLowerCase().contains("max")) {
-            	logger.log(Level.INFO, "Max memory: " + Ultility.extractDigit(value));
-            	try {
-            		jvm.setMaxMemory(Double.parseDouble(Ultility.extractDigit(value)));
-            	} catch(Exception ex) {
-            		logger.log(Level.SEVERE, " -> ERROR. parseDouble max memory. Message: " + ex.getMessage());
-            	}
-            }
-            if (value.toLowerCase().contains("used")) {
-            	logger.log(Level.INFO, "Used memory: " + Ultility.extractDigit(value));
-            	try {
-            		jvm.setUsedMemory(Double.parseDouble(Ultility.extractDigit(value)));
-            	} catch(Exception ex) {
-            		logger.log(Level.SEVERE, " -> ERROR. parseDouble used memory. Message: " + ex.getMessage());
-            	}
-            }
-        }
+		Matcher matcher = Pattern.compile(Constant.PATTERN_MEMORY_KEY_VALUE)
+				.matcher(webContent);
+		while (matcher.find()) {
+			String value = matcher.group(1);
+			if (value.toLowerCase().contains("free")) {
+				logger.log(Level.INFO,
+						"Free memory: " + Utility.extractDigit(value));
+				try {
+					jvm.setFreeMemory(Double.parseDouble(Utility
+							.extractDigit(value)));
+				} catch (Exception ex) {
+					logger.log(Level.SEVERE,
+							" -> ERROR. parseDouble free memory. Message: "
+									+ ex.getMessage());
+				}
+			}
+			if (value.toLowerCase().contains("total")) {
+				logger.log(Level.INFO,
+						"Total memory: " + Utility.extractDigit(value));
+				try {
+					jvm.setTotalMemory(Double.parseDouble(Utility
+							.extractDigit(value)));
+				} catch (Exception ex) {
+					logger.log(Level.SEVERE,
+							" -> ERROR. parseDouble total memory. Message: "
+									+ ex.getMessage());
+				}
+			}
+			if (value.toLowerCase().contains("max")) {
+				logger.log(Level.INFO,
+						"Max memory: " + Utility.extractDigit(value));
+				try {
+					jvm.setMaxMemory(Double.parseDouble(Utility
+							.extractDigit(value)));
+				} catch (Exception ex) {
+					logger.log(
+							Level.SEVERE,
+							" -> ERROR. parseDouble max memory. Message: "
+									+ ex.getMessage());
+				}
+			}
+			if (value.toLowerCase().contains("used")) {
+				logger.log(Level.INFO,
+						"Used memory: " + Utility.extractDigit(value));
+				try {
+					jvm.setUsedMemory(Double.parseDouble(Utility
+							.extractDigit(value)));
+				} catch (Exception ex) {
+					logger.log(Level.SEVERE,
+							" -> ERROR. parseDouble used memory. Message: "
+									+ ex.getMessage());
+				}
+			}
+		}
 
 		logger.log(Level.INFO, "END Jvm Information");
 		return jvm;
@@ -389,7 +570,7 @@ public class MonitorParser {
 	 * @param xmlContent
 	 * @return
 	 */
-	public CpuMonitor getOriginalCPU(Document doc) {
+	private static CpuMonitor getOriginalCPU(Document doc) {
 		logger.log(Level.INFO, "START CPU Information");
 		CpuMonitor cpu = new CpuMonitor();
 		NodeList elementList = doc.getElementsByTagName(CPU_ITEM);
@@ -401,7 +582,7 @@ public class MonitorParser {
 				strTemp = getCharacterDataFromElement((Element) temp.item(0));
 				logger.log(Level.INFO, " Usage: " + strTemp);
 				try {
-					cpu.setCpuUsage(Integer.parseInt(Ultility
+					cpu.setCpuUsage(Integer.parseInt(Utility
 							.extractDigit(strTemp)));
 				} catch (Exception ex) {
 					logger.log(
@@ -443,7 +624,7 @@ public class MonitorParser {
 		return cpu;
 	}
 
-	public CpuMonitor getOriginalCPU(String webContent) {
+	private static CpuMonitor getOriginalCPU(String webContent) {
 		logger.log(Level.INFO, "START CPU Information");
 		CpuMonitor cpu = new CpuMonitor();
 		try {
@@ -507,7 +688,7 @@ public class MonitorParser {
 	 * @param xmlContent
 	 * @return
 	 */
-	public ArrayList<FileSystemMonitor> getFileSystem(Document doc) {
+	private static ArrayList<FileSystemMonitor> getFileSystem(Document doc) {
 		logger.log(Level.INFO, "START File System Information");
 		ArrayList<FileSystemMonitor> list = null;
 		FileSystemMonitor fileSystem = null;
@@ -536,7 +717,7 @@ public class MonitorParser {
 							.item(0));
 					logger.log(Level.INFO, " Size: " + strTemp);
 					try {
-						fileSystem.setSize(Long.parseLong(Ultility
+						fileSystem.setSize(Long.parseLong(Utility
 								.extractDigit(strTemp)));
 					} catch (Exception ex) {
 						logger.log(Level.SEVERE,
@@ -551,7 +732,7 @@ public class MonitorParser {
 							.item(0));
 					logger.log(Level.INFO, " Used: " + strTemp);
 					try {
-						fileSystem.setUsed(Long.parseLong(Ultility
+						fileSystem.setUsed(Long.parseLong(Utility
 								.extractDigit(strTemp)));
 					} catch (Exception ex) {
 						logger.log(Level.SEVERE,
@@ -583,7 +764,7 @@ public class MonitorParser {
 		return list;
 	}
 
-	public ArrayList<FileSystemMonitor> getFileSystem(String webContent) {
+	private static ArrayList<FileSystemMonitor> getFileSystem(String webContent) {
 		logger.log(Level.INFO, "START File System Information");
 		ArrayList<FileSystemMonitor> list = null;
 		FileSystemMonitor fileSystem = null;
@@ -654,7 +835,7 @@ public class MonitorParser {
 	 * @param xmlContent
 	 * @return
 	 */
-	public ArrayList<MemoryMonitor> getMemories(Document doc) {
+	private static ArrayList<MemoryMonitor> getMemories(Document doc) {
 		logger.log(Level.INFO, "START Memory Information");
 		ArrayList<MemoryMonitor> list = new ArrayList<MemoryMonitor>();
 		MemoryMonitor mem = null;
@@ -671,8 +852,9 @@ public class MonitorParser {
 				if (temp != null && temp.getLength() > 0) {
 					strTemp = getCharacterDataFromElement((Element) temp
 							.item(0));
-					logger.log(Level.INFO, " Type: " + strTemp);					
-					mem.setType(strTemp.toLowerCase().equals(MemoryMonitor.SWAP) ? MemoryMonitor.SWAP : MemoryMonitor.MEM);
+					logger.log(Level.INFO, " Type: " + strTemp);
+					mem.setType(strTemp.toLowerCase().equals("swap") ? MemoryMonitor.SWAP
+							: MemoryMonitor.MEM);
 				}// if
 
 				temp = element.getElementsByTagName("total");
@@ -681,7 +863,7 @@ public class MonitorParser {
 							.item(0));
 					logger.log(Level.INFO, " Total: " + strTemp);
 					try {
-						mem.setTotalMemory(Double.parseDouble(Ultility
+						mem.setTotalMemory(Double.parseDouble(Utility
 								.extractDigit(strTemp)));
 					} catch (Exception ex) {
 						logger.log(Level.SEVERE,
@@ -696,7 +878,7 @@ public class MonitorParser {
 							.item(0));
 					logger.log(Level.INFO, " Used: " + strTemp);
 					try {
-						mem.setUsedMemory(Double.parseDouble(Ultility
+						mem.setUsedMemory(Double.parseDouble(Utility
 								.extractDigit(strTemp)));
 					} catch (Exception ex) {
 						logger.log(Level.SEVERE,
@@ -709,13 +891,13 @@ public class MonitorParser {
 			}// for
 		} else {
 			list.add(new MemoryMonitor(MemoryMonitor.SWAP));
-			list.add(new MemoryMonitor(MemoryMonitor.MEM));			
+			list.add(new MemoryMonitor(MemoryMonitor.MEM));
 		}
 		logger.log(Level.INFO, "END Memory Information");
 		return list;
 	}
 
-	public ArrayList<MemoryMonitor> getMemories(String webContent) {
+	private static ArrayList<MemoryMonitor> getMemories(String webContent) {
 		logger.log(Level.INFO, "START Memory Information");
 		ArrayList<MemoryMonitor> list = null;
 		MemoryMonitor mem = null;
@@ -738,8 +920,9 @@ public class MonitorParser {
 
 				logger.log(Level.INFO, "START Memory #1");
 				logger.log(Level.INFO, " Type: " + temp);
-				mem.setType(temp.toLowerCase().equals(MemoryMonitor.SWAP) ? MemoryMonitor.SWAP : MemoryMonitor.MEM);
-				
+				mem.setType(temp.toLowerCase().equals("swap") ? MemoryMonitor.SWAP
+						: MemoryMonitor.MEM);
+
 				temp = strList.get(1);
 				logger.log(Level.INFO, " Total memory: " + temp);
 				try {
@@ -768,7 +951,8 @@ public class MonitorParser {
 				mem = new MemoryMonitor();
 				temp = strList.get(4);
 				logger.log(Level.INFO, " Type: " + temp);
-				mem.setType(temp.toLowerCase().equals(MemoryMonitor.SWAP) ? MemoryMonitor.SWAP : MemoryMonitor.MEM);
+				mem.setType(temp.toLowerCase().equals(MemoryMonitor.SWAP) ? MemoryMonitor.SWAP
+						: MemoryMonitor.MEM);
 
 				temp = strList.get(5);
 				logger.log(Level.INFO, " Total memory: " + temp);

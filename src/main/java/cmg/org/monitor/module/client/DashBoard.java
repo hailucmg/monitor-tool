@@ -1,10 +1,11 @@
 package cmg.org.monitor.module.client;
 
+import java.util.ArrayList;
+
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
-import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
@@ -15,8 +16,6 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
-import com.google.gwt.visualization.client.Selection;
-import com.google.gwt.visualization.client.events.SelectHandler;
 import com.google.gwt.visualization.client.formatters.BarFormat;
 import com.google.gwt.visualization.client.formatters.BarFormat.Color;
 import com.google.gwt.visualization.client.visualizations.Table;
@@ -37,7 +36,7 @@ public class DashBoard extends AncestorEntryPoint {
 
 	private static HTML buttonStatistic;
 
-	private SystemMonitor[] systemList;
+	private ArrayList<SystemMonitor> systems;
 
 	private FlexTable flexTable;
 
@@ -48,18 +47,6 @@ public class DashBoard extends AncestorEntryPoint {
 			createOptionsTableListSystem();
 			addWidget(HTMLControl.ID_BODY_CONTENT, tableListSystem);
 			initDialogBox();
-			/*
-			 * tableListSystem.addSelectHandler(new SelectHandler() {
-			 * 
-			 * @Override public void onSelect(SelectEvent event) {
-			 * 
-			 * // May be multiple selections. JsArray<Selection> selections =
-			 * tableListSystem .getSelections(); for (int i = 0; i <
-			 * selections.length(); i++) { Selection selection =
-			 * selections.get(i); if (selection.isRow()) { int row =
-			 * selection.getRow(); if (systemList != null) {
-			 * showDialogBox(systemList[row]); } } } } });
-			 */
 			timerReload = new Timer() {
 				@Override
 				public void run() {
@@ -136,7 +123,7 @@ public class DashBoard extends AncestorEntryPoint {
 	 * Create callback to server via RPC
 	 */
 	void callBack() {
-		monitorGwtSv.listSystems(new AsyncCallback<SystemMonitor[]>() {
+		monitorGwtSv.listSystems(new AsyncCallback<ArrayList<SystemMonitor>>() {
 			@Override
 			public void onFailure(Throwable caught) {
 				showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
@@ -145,13 +132,13 @@ public class DashBoard extends AncestorEntryPoint {
 			}
 
 			@Override
-			public void onSuccess(SystemMonitor[] result) {
+			public void onSuccess(ArrayList<SystemMonitor> result) {
 				showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
 				setVisibleLoadingImage(false);
 				setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
 				setOnload(false);
-				drawTable(result);
-				systemList = result;
+				systems = result;
+				drawTable(systems);				
 			}
 		});
 	}
@@ -159,45 +146,37 @@ public class DashBoard extends AncestorEntryPoint {
 	/*
 	 * Draw table ui with result callback from server via RPC
 	 */
-	void drawTable(SystemMonitor[] result) {
-		if (result != null) {
+	void drawTable(ArrayList<SystemMonitor> result) {
+		if (result != null && result.size() > 0) {
 			createDataListSystem();
-			dataListSystem.addRows(result.length);
-			for (int i = 0; i < result.length; i++) {
+			dataListSystem.addRows(result.size());
+			for (int i = 0; i < result.size(); i++) {
 				dataListSystem.setValue(i, 0, HTMLControl.getLinkSystemDetail(
-						result[i].getId(), result[i].getCode()));
+						result.get(i).getId(), result.get(i).getCode()));
 				dataListSystem.setValue(
 						i,
 						1,
-						(result[i].getName() == null) ? "N/A" : result[i]
-								.getName());
+						result.get(i).getName());
 				dataListSystem.setValue(
 						i,
 						2,
-						(result[i].getUrl() == null) ? "N/A" : result[i]
-								.getUrl());
+						result.get(i).getUrl());
 				dataListSystem
-						.setValue(i, 3, (result[i].getIp() == null) ? "N/A"
-								: result[i].getIp());
-				dataListSystem.setValue(
-						i,
-						4,
-						(result[i].getLastCpuMemory() == null) ? 0
-								: (result[i].isActive()
-										&& result[i].getStatus() ? result[i]
-										.getLastCpuMemory().getCpuUsage() : 0));
-				dataListSystem.setValue(
-						i,
-						5,
-						(result[i].getLastCpuMemory() == null) ? 0
-								: (result[i].isActive()
-										&& result[i].getStatus() ? result[i]
-										.getLastCpuMemory()
-										.getPercentMemoryUsage() : 0));
+						.setValue(i, 3, result.get(i).getIp());
+				dataListSystem
+						.setValue(
+								i,
+								4,
+								result.get(i).getLastestCpuUsage());
+				dataListSystem
+						.setValue(
+								i,
+								5,
+								result.get(i).getLastestMemoryUsage());
 				dataListSystem.setValue(i, 6, HTMLControl.getHTMLStatusImage(
-						result[i].getId(), result[i].getHealthStatus()));
+						result.get(i).getId(), result.get(i).getHealthStatus()));
 				dataListSystem.setValue(i, 7,
-						HTMLControl.getHTMLActiveImage(result[i].isActive()));
+						HTMLControl.getHTMLActiveImage(result.get(i).isActive()));
 			}
 			createFormatDataTableListSystem();
 			setVisibleMessage(false, HTMLControl.RED_MESSAGE);

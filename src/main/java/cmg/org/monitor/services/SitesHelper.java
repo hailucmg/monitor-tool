@@ -16,7 +16,7 @@ import com.google.gdata.util.ServiceException;
 
 public class SitesHelper {
 
-	public String getSiteEntryContent(String entryID) {
+	public static String getSiteEntryContent(String entryID) {
 		String temp = "";		
 		SitesService service = new SitesService(MonitorConstant.SITES_APP_NAME);		
 		try {
@@ -40,7 +40,7 @@ public class SitesHelper {
 		return temp;
 	}
 	
-	public String getContentBlob(BaseContentEntry<?> entry) {
+	public static String getContentBlob(BaseContentEntry<?> entry) {
 		return ((XhtmlTextConstruct) entry.getTextContent().getContent())
 				.getXhtml().getBlob();
 	}
@@ -48,17 +48,9 @@ public class SitesHelper {
 	/**
 	 * Returns an entry's numeric ID.
 	 */
-	private String getEntryId(BaseContentEntry<?> entry) {
+	private static String getEntryId(BaseContentEntry<?> entry) {
 		String selfLink = entry.getSelfLink().getHref();
 		return selfLink.substring(selfLink.lastIndexOf("/") + 1);
 	}
-		
-	public static void main(String[] args) {
-		SitesHelper  s= new SitesHelper();
-		String temp = s.getSiteEntryContent(MonitorConstant.SITES_HELP_CONTENT_ID);
-		System.out.println(temp);
-		System.out.println("########################################################################");
-		System.out.println(MonitorUtil.parseHref(temp));
-	}
-	
+			
 }

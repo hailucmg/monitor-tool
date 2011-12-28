@@ -15,9 +15,11 @@ public interface AlertDao {
 	
 	public void storeAlert(SystemMonitor sys, AlertMonitor alert);
 	
-	public ArrayList<AlertStoreMonitor> listAlertStore(SystemMonitor sys);
+	public ArrayList<AlertStoreMonitor> listAlertStore(String sysId);
 	
 	public AlertStoreMonitor getLastestAlertStore(SystemMonitor sys);
 	
 	public void clearTempStore(SystemMonitor sys);
+	
+	public void putAlertStore(AlertStoreMonitor store);
 }

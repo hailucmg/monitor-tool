@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @author lamphan
+ * @author lamphan, Hong Hai
  * @version 1.0
  */
 
@@ -34,11 +34,20 @@ public class MemoryMonitor implements Serializable {
 		totalMemory = 0;
 		usedMemory = 0;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuffer sf = new StringBuffer();
+		sf.append("\r\nType: " + (type == SWAP ? "Swap" : "Ram"));
+		sf.append("\r\nTotal memory: " + totalMemory);
+		sf.append("\r\nUsed memory: " + usedMemory);
+		sf.append("\r\nTimestamp: " + timeStamp + "\r\n");
+		return sf.toString();
+	}
 	/**
 	 * @return
 	 */
-	public int getPercentMemoryUsage() {
-		
+	public int getPercentUsage() {		
 		if (totalMemory == 0)
 			return 0;
 		return (int) ((usedMemory  / totalMemory ) * 100);

@@ -25,44 +25,46 @@ public class AlertDaoImpl implements AlertDao {
 
 	@Override
 	public void storeAlert(SystemMonitor sys, AlertMonitor alert) {
-		// BEGIN LOG
-		long start = System.currentTimeMillis();
-		logger.log(Level.INFO,
-				MonitorUtil.parserTime(start, true) + sys.toString()
-						+ " -> START: put AlertMonitor ... " + alert.getError());
-		// BEGIN LOG
+		if (alert != null) {
+			// BEGIN LOG
+			long start = System.currentTimeMillis();
+			logger.log(Level.INFO,
+					MonitorUtil.parseTime(start, true) + sys.toString()
+							+ " -> START: put AlertMonitor ... " + alert);
+			// BEGIN LOG
+			AlertStoreMonitor store = getTempStore(sys.getId());
+			if (store == null) {
+				// if is a first time create new object
+				store = new AlertStoreMonitor();
+				store.setCpuUsage(sys.getLastestCpuUsage());
+				store.setMemUsage(sys.getLastestMemoryUsage());
+				store.setSysId(sys.getId());
+				store.setTimeStamp(sys.getTimeStamp());
+			}
 
-		AlertStoreMonitor store = getTempStore(sys.getId());
-		if (store == null) {
-			// if is a first time create new object
-			store = new AlertStoreMonitor();
-			store.setCpuUsage(sys.getLastestCpuUsage());
-			store.setMemUsage(sys.getLastestMemoryUsage());
-			store.setSystem(sys);
-			store.setTimeStamp(sys.getTimeStamp());
+			store.addAlert(alert);
+			// put store to temp memcache
+			storeTemp(store);
+			// END LOG
+			long end = System.currentTimeMillis();
+			logger.log(Level.INFO,
+					MonitorUtil.parseTime(end, true) + sys.toString()
+							+ " -> END: put AlertMonitor. Time executed: "
+							+ (end - start) + " ms.");
+			// END LOG
 		}
-
-		// END LOG
-		long end = System.currentTimeMillis();
-		logger.log(Level.INFO,
-				MonitorUtil.parserTime(end, true) + sys.toString()
-						+ " -> END: put AlertMonitor. Time executed: "
-						+ (end - start) + " ms.");
-		// END LOG
 
 	}
 
 	@Override
-	public ArrayList<AlertStoreMonitor> listAlertStore(SystemMonitor sys) {
+	public ArrayList<AlertStoreMonitor> listAlertStore(String sysId) {
 		// BEGIN LOG
 		long start = System.currentTimeMillis();
-		logger.log(Level.INFO,
-				MonitorUtil.parserTime(start, true) + sys.toString()
-						+ " -> START: list Alert store ... ");
+		logger.log(Level.INFO, MonitorUtil.parseTime(start, true)
+				+ "START: list Alert store ... ");
 		// BEGIN LOG
 		ArrayList<AlertStoreMonitor> list = null;
-		Object obj = MonitorMemcache.get(Key.create(Key.ALERT_STORE,
-				sys.getId()));
+		Object obj = MonitorMemcache.get(Key.create(Key.ALERT_STORE, sysId));
 		if (obj != null) {
 			if (obj instanceof ArrayList<?>) {
 				try {
@@ -82,13 +84,13 @@ public class AlertDaoImpl implements AlertDao {
 		if (list == null) {
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			Query query = pm.newQuery(AlertStoreMonitor.class);
-			query.setFilter("systemId == sysId");
-			query.declareParameters("String sysId");
+			query.setFilter("sysId == systemId");
+			query.declareParameters("String systemId");
 			query.setRange(0, MonitorConstant.STATISTIC_HISTORY_LENGTH);
 			List<AlertStoreMonitor> listData = null;
 			try {
 				pm.currentTransaction().begin();
-				listData = (List<AlertStoreMonitor>) query.execute(sys.getId());
+				listData = (List<AlertStoreMonitor>) query.execute(sysId);
 				if (listData != null && listData.size() > 0) {
 					list = new ArrayList<AlertStoreMonitor>();
 					for (AlertStoreMonitor alertStore : listData) {
@@ -111,58 +113,61 @@ public class AlertDaoImpl implements AlertDao {
 		}// if
 			// END LOG
 		long end = System.currentTimeMillis();
-		logger.log(Level.INFO,
-				MonitorUtil.parserTime(end, true) + sys.toString()
-						+ " -> END: list Alert store. Time executed: "
-						+ (end - start) + " ms.");
+		logger.log(Level.INFO, MonitorUtil.parseTime(end, true)
+				+ "END: list Alert store. Time executed: " + (end - start)
+				+ " ms.");
 		// END LOG
 		return list;
 	}
 
 	public void putAlertStore(AlertStoreMonitor store) {
-		// BEGIN LOG
-		long start = System.currentTimeMillis();
-		logger.log(Level.INFO, MonitorUtil.parserTime(start, true) + store.getSystem().toString()
-				+ " -> START: put Alert store ... ");
-		// BEGIN LOG
-		ArrayList<AlertStoreMonitor> list = listAlertStore(store.getSystem());
-		if (list == null) {
-			list = new ArrayList<AlertStoreMonitor>();
+		if (store != null) {
+			// BEGIN LOG
+			long start = System.currentTimeMillis();
+			logger.log(Level.INFO, MonitorUtil.parseTime(start, true)
+					+ "START: put Alert store ... " + store);
+			// BEGIN LOG
+			ArrayList<AlertStoreMonitor> list = listAlertStore(store.getSysId());
+			if (list == null) {
+				list = new ArrayList<AlertStoreMonitor>();
+			}
+			logger.log(Level.INFO,
+					"Start put to memcache. List size: " + list.size());
+
+			list.add(store);
+			if (list.size() > MonitorConstant.STATISTIC_HISTORY_LENGTH) {
+				list.remove(0);
+			}
+			// Store to memcahe
+			MonitorMemcache.put(Key.create(Key.ALERT_STORE, store.getSysId()),
+					list);
+
+			logger.log(Level.INFO,
+					"End put to memcache. List size: " + list.size());
+
+			// Store to JDO
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+			try {
+				pm.currentTransaction().begin();
+				pm.makePersistent(store);
+				pm.currentTransaction().commit();
+				logger.log(Level.INFO, "Put to JDO sucessfully!");
+			} catch (Exception ex) {
+				pm.currentTransaction().rollback();
+
+				logger.log(Level.WARNING, " -> ERROR: "
+						+ ex.fillInStackTrace().toString());
+			} finally {
+				pm.close();
+			}
+
+			// END LOG
+			long end = System.currentTimeMillis();
+			logger.log(Level.INFO, MonitorUtil.parseTime(end, true)
+					+ "END: put Alert store. Time executed: " + (end - start)
+					+ " ms.");
+			// END LOG
 		}
-		logger.log(Level.INFO,
-				"Start put to memcache. List size: " + list.size());
-
-		list.add(store);
-		if (list.size() > MonitorConstant.STATISTIC_HISTORY_LENGTH) {
-			list.remove(0);
-		}
-		// Store to memcahe
-		MonitorMemcache.put(
-				Key.create(Key.ALERT_STORE, store.getSystem().getId()), list);
-
-		logger.log(Level.INFO, "End put to memcache. List size: " + list.size());
-
-		// Store to JDO
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-		try {
-			pm.currentTransaction().begin();
-			pm.makePersistent(store);
-			pm.currentTransaction().commit();
-			logger.log(Level.INFO, "Put to JDO sucessfully!");
-		} catch (Exception ex) {
-			logger.log(Level.WARNING, " -> ERROR: "
-					+ ex.fillInStackTrace().toString());
-		} finally {
-			pm.currentTransaction().rollback();
-			pm.close();
-		}
-
-		// END LOG
-		long end = System.currentTimeMillis();
-		logger.log(Level.INFO, MonitorUtil.parserTime(end, true) + store.getSystem().toString()
-				+ " -> END: put Alert store. Time executed: " + (end - start)
-				+ " ms.");
-		// END LOG
 	}
 
 	@Override
@@ -185,6 +190,14 @@ public class AlertDaoImpl implements AlertDao {
 			}
 		}
 		return store;
+	}
+
+	public void storeTemp(AlertStoreMonitor store) {
+		if (store != null) {
+			logger.log(Level.INFO, "Put AlertStore to memcahe ... " + store);
+			MonitorMemcache.put(
+					Key.create(Key.ALERT_TEMP_STORE, store.getSysId()), store);
+		}
 	}
 
 	@Override

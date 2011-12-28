@@ -6,6 +6,8 @@ package cmg.org.monitor.entity.shared;
 import java.io.Serializable;
 import java.util.Date;
 
+import cmg.org.monitor.ext.util.MonitorUtil;
+
 
 /**
  * @author admin
@@ -43,8 +45,22 @@ public class FileSystemMonitor implements Serializable {
 		this.timeStamp = timeStamp;
 	}
 	
+	@Override
+	public String toString() {
+		StringBuffer sf = new StringBuffer();
+		sf.append("\r\nName: " + name);
+		sf.append("\r\nMount: " + mount);
+		sf.append("\r\nSize: " + size);
+		sf.append("\r\nUsed: " + used);
+		sf.append("\r\nType: " + type);
+		sf.append("\r\nTimestamp: " + timeStamp + "\r\n");
+		return sf.toString();
+	}
+	
 	public int getPercentUsage() {
-		return (int) ((used / size) * 100);
+		if (size == 0)
+			return 0;
+		return (int) ((used  / size ) * 100);
 	}
 	
 	public String getName() {
@@ -60,15 +76,16 @@ public class FileSystemMonitor implements Serializable {
 	}
 
 	public void setSize(long size) {
-		this.size = size;
+		this.size = MonitorUtil.parseFileSystemValue(size);
 	}
+	
 
 	public long getUsed() {
 		return used;
 	}
 
 	public void setUsed(long used) {
-		this.used = used;
+		this.used = MonitorUtil.parseFileSystemValue(used);
 	}
 
 	public String getType() {

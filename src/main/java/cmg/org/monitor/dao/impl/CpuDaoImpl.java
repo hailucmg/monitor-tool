@@ -20,35 +20,38 @@ public class CpuDaoImpl implements CpuDAO {
 
 	@Override
 	public void storeCpu(SystemMonitor sys, CpuMonitor cpu) {
-		// BEGIN LOG
-		long start = System.currentTimeMillis();
-		logger.log(Level.INFO,
-				MonitorUtil.parserTime(start, true) + sys.toString()
-						+ " -> START: put Cpu Information ... ");
-		// BEGIN LOG
-		ArrayList<CpuMonitor> list = listCpu(sys);
-		if (list == null) {
-			list = new ArrayList<CpuMonitor>();
+		if (cpu != null) {
+			// BEGIN LOG
+			long start = System.currentTimeMillis();
+			logger.log(Level.INFO,
+					MonitorUtil.parseTime(start, true) + sys.toString()
+							+ " -> START: put Cpu Information ... " + cpu);
+			// BEGIN LOG
+			ArrayList<CpuMonitor> list = listCpu(sys);
+			if (list == null) {
+				list = new ArrayList<CpuMonitor>();
+			}
+
+			logger.log(Level.INFO,
+					"Start put to memcache. List size: " + list.size());
+
+			list.add(cpu);
+			if (list.size() > MonitorConstant.CPU_MEMORY_HISTORY_LENGTH) {
+				list.remove(0);
+			}
+			MonitorMemcache.put(Key.create(Key.CPU__STORE, sys.getId()), list);
+
+			logger.log(Level.INFO,
+					"End put to memcache. List size: " + list.size());
+
+			// END LOG
+			long end = System.currentTimeMillis();
+			logger.log(Level.INFO,
+					MonitorUtil.parseTime(end, true) + sys.toString()
+							+ " -> END: put Cpu Information. Time executed: "
+							+ (end - start) + " ms.");
+			// END LOG
 		}
-
-		logger.log(Level.INFO,
-				"Start put to memcache. List size: " + list.size());
-
-		list.add(cpu);
-		if (list.size() > MonitorConstant.CPU_MEMORY_HISTORY_LENGTH) {
-			list.remove(0);
-		}
-		MonitorMemcache.put(Key.create(Key.CPU__STORE, sys.getId()), list);
-
-		logger.log(Level.INFO, "End put to memcache. List size: " + list.size());
-
-		// END LOG
-		long end = System.currentTimeMillis();
-		logger.log(Level.INFO,
-				MonitorUtil.parserTime(end, true) + sys.toString()
-						+ " -> END: put Cpu Information. Time executed: "
-						+ (end - start) + " ms.");
-		// END LOG
 	}
 
 	@Override
@@ -71,10 +74,11 @@ public class CpuDaoImpl implements CpuDAO {
 				try {
 					list = (ArrayList<CpuMonitor>) obj;
 				} catch (Exception ex) {
-					logger.log(Level.WARNING, " -> ERROR: " + ex.fillInStackTrace().toString());
+					logger.log(Level.WARNING, " -> ERROR: "
+							+ ex.fillInStackTrace().toString());
 				}
 			}
 		}
-		return null;
+		return list;
 	}
 }

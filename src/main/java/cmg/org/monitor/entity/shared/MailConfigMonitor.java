@@ -16,45 +16,42 @@ public class MailConfigMonitor implements Model {
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	@Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
 	private String id;
-	
+
 	@Persistent
-	private
-	String mailId;
-	
+	private String mailId;
+
 	@Persistent
-	private
-	String label;
-	
+	private String label;
+
 	@Persistent
-	private
-	boolean isStarred;
-	
+	private boolean isStarred;
+
 	@Persistent
-	private
-	boolean isInbox;
-	
+	private boolean isInbox;
+
 	@Persistent
-	private
-	boolean isMarkAsUnread;
-	
+	private boolean isMarkAsUnread;
+
 	public MailConfigMonitor() {
 		this.label = DEFAULT_LABEL;
 		this.isStarred = false;
 		this.isInbox = true;
 		this.isMarkAsUnread = false;
-	}	
-	
+	}
+
 	@Override
 	public String getId() {
 		return id;
 	}
 
-	public String getMailId() {
-		return mailId;
+	public String getMailId(boolean withAtChar) {
+		mailId = mailId.toLowerCase();
+		return withAtChar ? mailId : (mailId.contains("@") ? mailId.substring(
+				0, mailId.indexOf("@")) : mailId);
 	}
 
 	public void setMailId(String mailId) {
-		this.mailId = mailId;
+		this.mailId = mailId.toLowerCase();
 	}
 
 	public String getLabel() {
@@ -88,5 +85,16 @@ public class MailConfigMonitor implements Model {
 	public void setMarkAsUnread(boolean isMarkAsUnread) {
 		this.isMarkAsUnread = isMarkAsUnread;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuffer sf = new StringBuffer();
+		sf.append("\r\nMail ID: " + mailId);
+		sf.append("\r\nLabel: " + label);
+		sf.append("\r\nStarred: " + isStarred);
+		sf.append("\r\nInbox: " + isInbox);
+		sf.append("\r\nMark as Unread: " + isMarkAsUnread + "\r\n");
+		return sf.toString();
+	}	
 	
 }

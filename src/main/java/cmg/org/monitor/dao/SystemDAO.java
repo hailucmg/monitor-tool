@@ -22,5 +22,7 @@ public interface SystemDAO {
 	public SystemMonitor getSystemById(String id) throws Exception;
 
 	public boolean deleteSystem(SystemMonitor sys) throws Exception;
+	
+	public void storeSysList(ArrayList<SystemMonitor> list);
 
 }

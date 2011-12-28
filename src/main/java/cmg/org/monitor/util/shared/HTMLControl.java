@@ -266,11 +266,11 @@ public class HTMLControl {
 	public static String getHTMLStatusImage(String sid, String healthStatus) {
 		String mes = "";
 		if (healthStatus.equals("dead")) {
-			mes = "System is not working.\\nClick the Icon to see more information!";
+			mes = "System is not working.\nClick the Icon to see more information!";
 		} else if (healthStatus.equals("bored")) {
-			mes = "Insufficient data.\\nClick the Icon to see more information!";
+			mes = "Insufficient data.\nClick the Icon to see more information!";
 		} else if (healthStatus.equals("smile")) {
-			mes = "All is working correctly.\\nClick the Icon to see more information!";
+			mes = "All is working correctly.\nClick the Icon to see more information!";
 		} else {
 			mes = "Click the Icon to see more information!";
 		}

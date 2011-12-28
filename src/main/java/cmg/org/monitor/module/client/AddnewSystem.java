@@ -1,7 +1,7 @@
 package cmg.org.monitor.module.client;
 
 import cmg.org.monitor.entity.shared.SystemMonitor;
-import cmg.org.monitor.ext.model.shared.MonitorEditDto;
+import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
@@ -49,7 +49,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 	private static FlexTable tableForm;
 	AbsolutePanel panelLabelEmail;
 	AbsolutePanel panelTextEmail;
-	MonitorEditDto sysDTO;
+	MonitorContainer sysDTO;
 
 	@Override
 	protected void init() {
@@ -75,7 +75,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 	 * @return
 	 */
 
-	private String validateEmail(String email, MonitorEditDto sys) {
+	private String validateEmail(String email, MonitorContainer sys) {
 		String msg = "";
 		boolean check = false;
 		if (email == null || email == "") {
@@ -141,7 +141,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 	 * @param remoteUrl
 	 * @return
 	 */
-	private String validateRemoteURL(String remoteUrl, MonitorEditDto sys) {
+	private String validateRemoteURL(String remoteUrl, MonitorContainer sys) {
 		String msg = "";
 		boolean check = false;
 		if (remoteUrl == null || remoteUrl.trim().length() == 0) {
@@ -188,9 +188,9 @@ public class AddnewSystem extends AncestorEntryPoint {
 	}
 
 	protected void initFlextTable() {
-		monitorGwtSv.groups(new AsyncCallback<MonitorEditDto>() {
+		monitorGwtSv.groups(new AsyncCallback<MonitorContainer>() {
 			@Override
-			public void onSuccess(MonitorEditDto result) {
+			public void onSuccess(MonitorContainer result) {
 				sysDTO = result;
 				// TODO Auto-generated method stub
 				tableForm = new FlexTable();

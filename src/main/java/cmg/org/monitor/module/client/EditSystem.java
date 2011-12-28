@@ -1,7 +1,7 @@
 package cmg.org.monitor.module.client;
 
 import cmg.org.monitor.entity.shared.SystemMonitor;
-import cmg.org.monitor.ext.model.shared.MonitorEditDto;
+import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
@@ -20,7 +20,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 
 public class EditSystem extends AncestorEntryPoint {
-	MonitorEditDto system;
+	MonitorContainer system;
 	ListBox listGroup;
 	ListBox listActive;
 	ListBox listProtocol;
@@ -93,9 +93,9 @@ public class EditSystem extends AncestorEntryPoint {
 	}
 
 	void initFlexTable(String sysID) {
-		monitorGwtSv.getSystembyID(sysID, new AsyncCallback<MonitorEditDto>() {
+		monitorGwtSv.getSystembyID(sysID, new AsyncCallback<MonitorContainer>() {
 			@Override
-			public void onSuccess(MonitorEditDto result) {
+			public void onSuccess(MonitorContainer result) {
 				if (result != null) {
 					system = result;
 					labelEmail = new Label();
@@ -591,7 +591,7 @@ public class EditSystem extends AncestorEntryPoint {
 	 * @param remoteUrl
 	 * @return
 	 */
-	private String validateRemoteURL(String remoteUrl, MonitorEditDto sys) {
+	private String validateRemoteURL(String remoteUrl, MonitorContainer sys) {
 		String msg = "";
 		boolean check = false;
 		if (remoteUrl == null || remoteUrl.trim().length() == 0) {
@@ -626,7 +626,7 @@ public class EditSystem extends AncestorEntryPoint {
 	 * @return
 	 */
 
-	private String validateEmail(String email, MonitorEditDto sys) {
+	private String validateEmail(String email, MonitorContainer sys) {
 		String msg = "";
 		boolean check = false;
 		if (email == null || email == "") {

@@ -25,10 +25,28 @@ public class JvmMonitor implements Serializable {
 		maxMemory = 0;
 		usedMemory = 0;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuffer sf = new StringBuffer();
+		sf.append("\r\nFree memory: " + freeMemory);
+		sf.append("\r\nTotal memory: " + totalMemory);
+		sf.append("\r\nMax memory: " + maxMemory);
+		sf.append("\r\nUsed memory: " + usedMemory);
+		sf.append("\r\nTimestamp: " + timeStamp + "\r\n");
+		return sf.toString();
+	}
+	
+	public int getPercentUsage() {
+		if (totalMemory == 0)
+			return 0;
+		return (int) ((usedMemory  / totalMemory ) * 100);
+	}
 
 	public double getFreeMemory() {
 		return freeMemory;
 	}
+	
 
 	public void setFreeMemory(double freeMemory) {
 		this.freeMemory = freeMemory;

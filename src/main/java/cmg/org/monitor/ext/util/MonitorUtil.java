@@ -12,81 +12,89 @@ import cmg.org.monitor.common.Constant;
 
 /**
  * Please enter a short description for this class.
- *
- * <p>Optionally, enter a longer description.</p>
- *
+ * 
+ * <p>
+ * Optionally, enter a longer description.
+ * </p>
+ * 
  * @author Lamphan
  * @version 1.0
  */
 public class MonitorUtil {
 	public static String ARROW_STRING = " -> ";
-	
+
 	public static String FREE_MEMORY = "freeMemory";
 	public static String TOTAL_MEMORY = "totalMemory";
 	public static String MAX_MEMORY = "maxMemory";
 	public static String USED_MEMORY = "memoryUsed";
-	
-	private static final Logger logger = Logger.getLogger(MonitorUtil.class.getCanonicalName());
-	
-	public static String parserTime(long millis, boolean addArrow) {
+
+	private static final Logger logger = Logger.getLogger(MonitorUtil.class
+			.getCanonicalName());
+
+	public static long parseFileSystemValue(long value) {
+		return value * 1024 * 1024 * 1024;
+	}
+
+	public static long parseMemoryValue(long value) {
+		return value * 1024;
+	}
+
+	public static String parseTime(long millis, boolean addArrow) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS");
 		return sdf.format(millis) + (addArrow ? ARROW_STRING : "");
 	}
 
-	public static String getCurrentTime() {
+	public static String parseTime(Date date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss:SSS");
-		return sdf.format(new Date());
+		return sdf.format(date);
 	}
-	
+
 	public static String parseHref(String inputStr) {
 		Pattern pattern = Pattern.compile(Constant.PATTERN_HREF);
-    	Matcher matcher = pattern.matcher(inputStr);
-        String matchStr;
-        
-		// Checks if existing any string that match with the pattern
-        while (matcher.find()) {
-          matchStr = matcher.group();
-          inputStr = inputStr.replaceAll(matchStr, Constant.BLANK);
-        }
-        
-        pattern = Pattern.compile(Constant.PATTERN_HREF_A_NAME);
-    	matcher = pattern.matcher(inputStr);        
-		// Checks if existing any string that match with the pattern
-        while (matcher.find()) {
-          matchStr = matcher.group();
-          inputStr = inputStr.replaceAll(matchStr, Constant.BLANK);
-        }
-        return inputStr;
-    }
-	
-	
-    
-	/**
-     * Gets property.
-     *
-     * @return  the return value
-     */
-    public static String getErrorContent() {
-        String s = "<html>"
-            + "<head>"
-            + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">"
-            + "<title>CMG Email Monitor</title>"
-            + "</head><body>ERROR</body></html>";
+		Matcher matcher = pattern.matcher(inputStr);
+		String matchStr;
 
-        return s;
-    }
-    
-    
-    public static String getIpFromUrl(String url) {
-    	try {
-	    	InetAddress addr = InetAddress.getByName ( "microsoft.com" );
-	        return addr.getHostAddress();
-    	} catch(UnknownHostException uhe) {
-    		uhe.printStackTrace();
-    		logger.info("unknow host exception occurrence");
-    		return null;
-    	}
-        
-    }
-    
+		// Checks if existing any string that match with the pattern
+		while (matcher.find()) {
+			matchStr = matcher.group();
+			inputStr = inputStr.replaceAll(matchStr, Constant.BLANK);
+		}
+
+		pattern = Pattern.compile(Constant.PATTERN_HREF_A_NAME);
+		matcher = pattern.matcher(inputStr);
+		// Checks if existing any string that match with the pattern
+		while (matcher.find()) {
+			matchStr = matcher.group();
+			inputStr = inputStr.replaceAll(matchStr, Constant.BLANK);
+		}
+		return inputStr;
+	}
+
+	/**
+	 * Gets property.
+	 * 
+	 * @return the return value
+	 */
+	public static String getErrorContent() {
+		String s = "<html>"
+				+ "<head>"
+				+ "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">"
+				+ "<title>CMG Email Monitor</title>"
+				+ "</head><body>ERROR</body></html>";
+
+		return s;
+	}
+
+	public static String getIpFromUrl(String url) {
+		try {
+			InetAddress addr = InetAddress.getByName("microsoft.com");
+			return addr.getHostAddress();
+		} catch (UnknownHostException uhe) {
+			uhe.printStackTrace();
+			logger.info("unknow host exception occurrence");
+			return null;
+		}
+
+	}
+
 }

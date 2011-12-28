@@ -1,5 +1,7 @@
 package cmg.org.monitor.module.client;
 
+import java.util.ArrayList;
+
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.util.shared.HTMLControl;
 
@@ -20,7 +22,7 @@ import com.google.gwt.visualization.client.visualizations.Table;
 import com.google.gwt.visualization.client.visualizations.Table.Options;
 
 public class SystemManagement extends AncestorEntryPoint {
-	static SystemMonitor[] listSystem;
+	static ArrayList<SystemMonitor> systems;
 	static private Table tableListSystem;
 	static DialogBox dialogBox;
 	private static HTML popupContent;
@@ -55,7 +57,6 @@ public class SystemManagement extends AncestorEntryPoint {
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
 				dialogBox.hide();
 			}
 		});
@@ -95,14 +96,14 @@ public class SystemManagement extends AncestorEntryPoint {
 	}
 
 	private static void initContent() {
-		monitorGwtSv.listSystem(false, new AsyncCallback<SystemMonitor[]>() {
+		monitorGwtSv.listSystems(new AsyncCallback<ArrayList<SystemMonitor>>() {
 			@Override
-			public void onSuccess(SystemMonitor[] result) {
-				listSystem = result;
+			public void onSuccess(ArrayList<SystemMonitor> result) {
+				systems = result;
 				if (result != null) {
 					setVisibleLoadingImage(false);
 					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
-					drawTable(result);
+					drawTable(systems);
 				} else {
 					showMessage("No system found. ",
 							HTMLControl.HTML_ADD_NEW_SYSTEM_NAME,
@@ -145,8 +146,8 @@ public class SystemManagement extends AncestorEntryPoint {
 
 	}
 
-	static void drawTable(SystemMonitor[] result) {
-		if (result != null) {
+	static void drawTable(ArrayList<SystemMonitor> result) {
+		if (result != null && result.size() > 0) {
 			tableListSystem.draw(createDataListSystem(result),
 					createOptionsTableListSystem());
 
@@ -171,7 +172,7 @@ public class SystemManagement extends AncestorEntryPoint {
 	/*
 	 * Create data table list system without value
 	 */
-	static AbstractDataTable createDataListSystem(SystemMonitor[] result) {
+	static AbstractDataTable createDataListSystem(ArrayList<SystemMonitor> result) {
 		// create object data table
 		DataTable dataListSystem = DataTable.create();
 		// add all columns
@@ -182,34 +183,31 @@ public class SystemManagement extends AncestorEntryPoint {
 		dataListSystem.addColumn(ColumnType.STRING, "Health Status");
 		dataListSystem.addColumn(ColumnType.STRING, "Monitor Status");
 		dataListSystem.addColumn(ColumnType.STRING, "Delete");
-		dataListSystem.addRows(result.length);
-		for (int i = 0; i < result.length; i++) {
+		dataListSystem.addRows(result.size());
+		for (int i = 0; i < result.size(); i++) {
 			dataListSystem.setValue(
 					i,
 					0,
-					HTMLControl.getLinkEditSystem(result[i].getId(),
-							result[i].getCode()));
-			dataListSystem.setValue(i, 1, (result[i].getName() == null) ? "N/A"
-					: result[i].getName());
-			dataListSystem.setValue(i, 2, (result[i].getUrl() == null) ? "N/A"
-					: result[i].getUrl());
-			dataListSystem.setValue(i, 3, (result[i].getIp() == null) ? "N/A"
-					: result[i].getIp());
+					HTMLControl.getLinkEditSystem(result.get(i).getId(),
+							result.get(i).getCode()));
+			dataListSystem.setValue(i, 1, result.get(i).getName());
+			dataListSystem.setValue(i, 2, result.get(i).getUrl());
+			dataListSystem.setValue(i, 3, result.get(i).getIp());
 			dataListSystem.setValue(
 					i,
 					4,
-					HTMLControl.getHTMLStatusImage(result[i].getId(),
-							result[i].getHealthStatus()));
+					HTMLControl.getHTMLStatusImage(result.get(i).getId(),
+							result.get(i).getHealthStatus()));
 			dataListSystem.setValue(i, 5,
-					HTMLControl.getHTMLActiveImage(result[i].isActive()));
+					HTMLControl.getHTMLActiveImage(result.get(i).isActive()));
 			dataListSystem
 					.setValue(
 							i,
 							6,
 							"<a onClick=\"javascript:showConfirmDialogBox('"
-									+ result[i].getCode()
+									+ result.get(i).getCode()
 									+ "','"
-									+ result[i].getId()
+									+ result.get(i).getId()
 									+ "');\" title=\"Delete\" class=\"icon-2 info-tooltip\"></a>");
 		}
 

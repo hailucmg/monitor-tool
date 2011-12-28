@@ -5,7 +5,6 @@ import java.util.Date;
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
@@ -18,6 +17,9 @@ import javax.jdo.annotations.PrimaryKey;
 @SuppressWarnings("serial")
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
 public class SystemMonitor implements Model {
+	public static final String STATUS_SMILE = "smile";
+	public static final String STATUS_BORED = "bored";
+	public static final String STATUS_DEAD = "dead";	
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -60,23 +62,25 @@ public class SystemMonitor implements Model {
 	@Persistent
 	private String emailRevice;
 	
-	@NotPersistent
+	@Persistent
+	private String healthStatus;
+	
+	@Persistent
 	private Date timeStamp;
 
-	@NotPersistent
+	@Persistent
 	private int lastestCpuUsage;
 
-	@NotPersistent
+	@Persistent
 	private int lastestMemoryUsage;
-
-	@NotPersistent
-	private String healthStatus;
 
 	/**
 	 * Default constructor.<br>
 	 */
 	public SystemMonitor() {
-
+		this.healthStatus = STATUS_DEAD;
+		this.isActive = false;
+		this.isDeleted = false;
 	}
 
 	public SystemMonitor(String code, String name, String url,
@@ -86,6 +90,27 @@ public class SystemMonitor implements Model {
 		this.url = url;
 		this.remoteUrl = remoteUrl;
 		this.isActive = isActice;
+		this.healthStatus = STATUS_DEAD;
+		this.isDeleted = false;
+	}
+	
+	
+	public void swapValue(SystemMonitor sys) {
+		code = sys.getCode();
+		name = sys.getName();
+		url = sys.getUrl();
+		remoteUrl = sys.getRemoteUrl();
+		isActive = sys.isActive();
+		isDeleted = sys.isDeleted();
+		healthStatus = sys.getHealthStatus();
+		ip = sys.getIp();
+		groupEmail = sys.getGroupEmail();
+		email = sys.getEmail();
+		emailRevice = sys.getEmailRevice();
+		status = sys.getStatus();
+		timeStamp = sys.getTimeStamp();
+		lastestCpuUsage = sys.getLastestCpuUsage();
+		lastestMemoryUsage = sys.getLastestMemoryUsage();
 	}
 
 	@Override
@@ -94,7 +119,7 @@ public class SystemMonitor implements Model {
 	}
 
 	public String getName() {
-		return name;
+		return name == null ? "N/A" : name;
 	}
 
 	public String getRemoteUrl() {
@@ -110,7 +135,7 @@ public class SystemMonitor implements Model {
 	}
 
 	public String getUrl() {
-		return url;
+		return url == null ? "N/A" : url;
 	}
 
 	public void setUrl(String url) {
@@ -118,7 +143,7 @@ public class SystemMonitor implements Model {
 	}
 
 	public String getIp() {
-		return ip;
+		return ip == null ? "N/A" : ip;
 	}
 
 	public void setIp(String ip) {
@@ -131,6 +156,9 @@ public class SystemMonitor implements Model {
 
 	public void setStatus(boolean status) {
 		this.status = status;
+		if (!status) {
+			this.healthStatus = STATUS_DEAD;
+		}
 	}
 
 	public boolean isDeleted() {
