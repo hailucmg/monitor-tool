@@ -1,10 +1,14 @@
 package cmg.org.monitor.module.client;
 
-import cmg.org.monitor.entity.shared.MemoryMonitor;
+import java.util.ArrayList;
+
+import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
 import cmg.org.monitor.entity.shared.JvmMonitor;
+import cmg.org.monitor.entity.shared.MemoryMonitor;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
@@ -45,7 +49,7 @@ public class SystemDetail extends AncestorEntryPoint {
 	private Table tblFileSystem;
 
 	private PieChart pieFileSystem;
-	
+
 	private PieChart pieJvm;
 
 	private AbsolutePanel panelSystemInfo;
@@ -58,11 +62,7 @@ public class SystemDetail extends AncestorEntryPoint {
 
 	private String sysID;
 
-	private FileSystemMonitor[] listFileSystem;
-
-	private ServiceMonitor[] listService;
-
-	private MemoryMonitor[] listCpuMemory;
+	private FileSystemMonitor[] fileSystems;
 
 	private boolean isShowService = true;
 	private boolean isShowFileSystem = true;
@@ -73,32 +73,33 @@ public class SystemDetail extends AncestorEntryPoint {
 				|| currentPage == HTMLControl.PAGE_SYSTEM_STATISTIC) {
 			sysID = HTMLControl.getSystemId(History.getToken());
 			try {
-				monitorGwtSv.validSystemId(sysID, new AsyncCallback<SystemMonitor>() {
-					@Override
-					public void onSuccess(SystemMonitor result) {
-						if (result != null) {
-							flexTableContent = new FlexTable();
-							addWidget(HTMLControl.ID_BODY_CONTENT,
-									flexTableContent);
-							addWidget(HTMLControl.ID_PAGE_HEADING,
-									HTMLControl.getPageHeading(result));
-							initContent();
-						} else {
-							showMessage("Invalid System ID. ",
-									HTMLControl.HTML_DASHBOARD_NAME,
-									"Goto Dashboard. ",
-									HTMLControl.RED_MESSAGE, true);
-						}
-					}
+				monitorGwtSv.validSystemId(sysID,
+						new AsyncCallback<SystemMonitor>() {
+							@Override
+							public void onSuccess(SystemMonitor result) {
+								if (result != null) {
+									flexTableContent = new FlexTable();
+									addWidget(HTMLControl.ID_BODY_CONTENT,
+											flexTableContent);
+									addWidget(HTMLControl.ID_PAGE_HEADING,
+											HTMLControl.getPageHeading(result));
+									initContent(result);
+								} else {
+									showMessage("Invalid System ID. ",
+											HTMLControl.HTML_DASHBOARD_NAME,
+											"Goto Dashboard. ",
+											HTMLControl.RED_MESSAGE, true);
+								}
+							}
 
-					@Override
-					public void onFailure(Throwable caught) {
-						showMessage("Oops! Error.",
-								HTMLControl.HTML_DASHBOARD_NAME,
-								"Goto Dashboard. ", HTMLControl.RED_MESSAGE,
-								true);
-					}
-				});
+							@Override
+							public void onFailure(Throwable caught) {
+								showMessage("Oops! Error.",
+										HTMLControl.HTML_DASHBOARD_NAME,
+										"Goto Dashboard. ",
+										HTMLControl.RED_MESSAGE, true);
+							}
+						});
 			} catch (Exception e) {
 				showMessage("Oops! Error.", HTMLControl.HTML_DASHBOARD_NAME,
 						"Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
@@ -107,100 +108,66 @@ public class SystemDetail extends AncestorEntryPoint {
 
 	}
 
-	void initContent() {
+	void initContent(SystemMonitor result) {
 		initFlexTableContent();
-
+		setVisibleLoadingImage(false);
+		setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+		setOnload(false);
 		if (currentPage == HTMLControl.PAGE_SYSTEM_STATISTIC) {
-			initSystemStatistic();
+			initSystemStatistic(result);
 		} else if (currentPage == HTMLControl.PAGE_SYSTEM_DETAIL) {
-			initSystemDetails();
+			initSystemDetails(result);
 		}
 	}
 
-	void initSystemStatistic() {
-		timerReload = new Timer() {
-			@Override
-			public void run() {
-				monitorGwtSv.listCpuMemoryHistory(sysID,
-						new AsyncCallback<MemoryMonitor[]>() {
-
-							@Override
-							public void onSuccess(MemoryMonitor[] result) {
-								setVisibleLoadingImage(false);
-								setVisibleWidget(HTMLControl.ID_BODY_CONTENT,
-										true);
-								if (result != null) {
-									drawSystemStatistic(result);
-								} else {
-									showMessage("No statistic found. ", "", "",
-											HTMLControl.YELLOW_MESSAGE, true);
-								}
-							}
-
-							@Override
-							public void onFailure(Throwable caught) {
-								showMessage("Server error! ",
-										HTMLControl.HTML_DASHBOARD_NAME,
-										"Goto Dashboard. ",
-										HTMLControl.RED_MESSAGE, true);
-							}
-						});
-			}
-		};
-		timerReload.run();
-		timerReload.scheduleRepeating(MonitorConstant.REFRESH_RATE);
+	void initSystemStatistic(SystemMonitor result) {
+		/*
+		 * timerReload = new Timer() {
+		 * 
+		 * @Override public void run() {
+		 * monitorGwtSv.listCpuMemoryHistory(sysID, new
+		 * AsyncCallback<MemoryMonitor[]>() {
+		 * 
+		 * @Override public void onSuccess(MemoryMonitor[] result) {
+		 * setVisibleLoadingImage(false);
+		 * setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true); if (result !=
+		 * null) { drawSystemStatistic(result); } else {
+		 * showMessage("No statistic found. ", "", "",
+		 * HTMLControl.YELLOW_MESSAGE, true); } }
+		 * 
+		 * @Override public void onFailure(Throwable caught) {
+		 * showMessage("Server error! ", HTMLControl.HTML_DASHBOARD_NAME,
+		 * "Goto Dashboard. ", HTMLControl.RED_MESSAGE, true); } }); } };
+		 * timerReload.run();
+		 * timerReload.scheduleRepeating(MonitorConstant.REFRESH_RATE);
+		 */
 	}
 
 	void drawSystemStatistic(MemoryMonitor[] list) {
-		DataTable data = DataTable.create();
-		data.addColumn(ColumnType.DATETIME, "Date");
-		data.addColumn(ColumnType.NUMBER, "Memory Usage");
-		data.addColumn(ColumnType.STRING, "title1");
-		data.addColumn(ColumnType.STRING, "text1");
-		data.addColumn(ColumnType.NUMBER, "CPU Usage");
-		data.addColumn(ColumnType.STRING, "title2");
-		data.addColumn(ColumnType.STRING, "text2");
-		data.addRows(list.length);
-		for (int i = 0; i < list.length; i++) {
-			data.setValue(i, 0, list[i].getTimeStamp());
-			data.setValue(i, 1, list[i].getPercentMemoryUsage());
-			data.setValue(i, 4, list[i].getCpuUsage());
-		}
-		atlStatistic.draw(data, createAnnotatedTimeLineOptions());
+		/*
+		 * DataTable data = DataTable.create();
+		 * data.addColumn(ColumnType.DATETIME, "Date");
+		 * data.addColumn(ColumnType.NUMBER, "Memory Usage");
+		 * data.addColumn(ColumnType.STRING, "title1");
+		 * data.addColumn(ColumnType.STRING, "text1");
+		 * data.addColumn(ColumnType.NUMBER, "CPU Usage");
+		 * data.addColumn(ColumnType.STRING, "title2");
+		 * data.addColumn(ColumnType.STRING, "text2");
+		 * data.addRows(list.length); for (int i = 0; i < list.length; i++) {
+		 * data.setValue(i, 0, list[i].getTimeStamp()); data.setValue(i, 1,
+		 * list[i].getPercentMemoryUsage()); data.setValue(i, 4,
+		 * list[i].getCpuUsage()); } atlStatistic.draw(data,
+		 * createAnnotatedTimeLineOptions());
+		 */
 	}
 
-	void initSystemDetails() {
-		timerReload = new Timer() {
-
-			@Override
-			public void run() {
-				monitorGwtSv.getLastestDataMonitor(sysID,
-						new AsyncCallback<SystemMonitor>() {
-
-							@Override
-							public void onSuccess(SystemMonitor result) {
-								if (result != null) {
-									setVisibleLoadingImage(false);
-									setVisibleWidget(
-											HTMLControl.ID_BODY_CONTENT, true);
-									drawSystemDetails(result);
-								} else {
-
-								}
-							}
-
-							@Override
-							public void onFailure(Throwable caught) {
-								showMessage("Server error! ",
-										HTMLControl.HTML_DASHBOARD_NAME,
-										"Goto Dashboard. ",
-										HTMLControl.RED_MESSAGE, true);
-							}
-						});
-			}
-		};
-		timerReload.run();
-		timerReload.scheduleRepeating(MonitorConstant.REFRESH_RATE);
+	void initSystemDetails(SystemMonitor result) {
+		drawSystemDetails(result);
+		drawCpuInfo(result);
+		drawMemory(result);
+		drawServiceInfo(result);
+		drawFileSystemInfo(result);
+		drawJvmInfo(result);
 	}
 
 	void initFlexTableContent() {
@@ -299,9 +266,8 @@ public class SystemDetail extends AncestorEntryPoint {
 		return new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				if (listFileSystem != null) {
+				if (fileSystems != null && fileSystems.length > 0) {
 					JsArray<Selection> selections = tbl.getSelections();
-
 					if (selections.length() == 1) {
 						Selection selection = selections.get(0);
 						if (selection.isRow()) {
@@ -314,98 +280,180 @@ public class SystemDetail extends AncestorEntryPoint {
 	}
 
 	void drawSystemDetails(SystemMonitor sys) {
-		
 		panelSystemInfo.clear();
 		panelSystemInfo.add(HTMLControl.getSystemInfo(sys));
-
-		drawCpuMemoryInfo(sys);
-
-		drawServiceInfo(sys);
-
-		drawFileSystemInfo(sys);
-		
-		drawJvmInfo(sys);
-	}
-	
-	void drawJvmInfo(SystemMonitor sys) {
-		JvmMonitor jvm = sys.getLastestJvm();
-		if (jvm != null) {
-			pieJvm.draw(createDataTableJvm(jvm),
-					createPieChartOptions("Java Virtual Machine (" + HTMLControl.convertMemoryToString(jvm.getTotalMemory())
-												+ " of " + HTMLControl.convertMemoryToString(jvm.getMaxMemory()) + ")"));
-		}
 	}
 
-	void drawCpuMemoryInfo(SystemMonitor sys) {
-		MemoryMonitor cm = sys.getLastCpuMemory() == null ? null : sys
-				.getLastCpuMemory();
-		// Gauge CPU Usage
-		if (cm != null) {
-			ggCpu.draw(createGaugeDataTable("CPU", cm.getCpuUsage()),
-					createGaugeOptions());
-			ggMemory.draw(
-					createGaugeDataTable("Memory", cm.getPercentMemoryUsage()),
-					createGaugeOptions());
-		}
-		// Gauge Memory Usage
-		;
-		// Area Chart CPU Usage & Memory Usage
-		listCpuMemory = sys.getListHistoryCpuMemory();
-		if (listCpuMemory != null) {
-			double[] listCpuUsage = new double[20];
-			double[] listMemoryUsage = new double[20];
-			if (listCpuMemory.length < 20) {
-				for (int i = 0; i < 20 - listCpuMemory.length; i++) {
-					listCpuUsage[i] = 0;
-					listMemoryUsage[i] = 0;
-				}
-				for (int i = 0; i < listCpuMemory.length; i++) {
-					listCpuUsage[19 - i] = listCpuMemory[i].getCpuUsage();
-					listMemoryUsage[19 - i] = listCpuMemory[i].getUsedMemory();
-				}
-			} else {
-				for (int i = 0; i < listCpuMemory.length; i++) {
-					listCpuUsage[listCpuMemory.length - i - 1] = listCpuMemory[i]
-							.getCpuUsage();
-					listMemoryUsage[listCpuMemory.length - i - 1] = listCpuMemory[i]
-							.getUsedMemory();
-				}
+	void drawJvmInfo(final SystemMonitor sys) {
+		timerJvm = new Timer() {
+			@Override
+			public void run() {
+				monitorGwtSv.listJvms(sys, new AsyncCallback<JvmMonitor[]>() {
+					@Override
+					public void onSuccess(JvmMonitor[] result) {
+						if (result != null && result.length > 0) {
+							JvmMonitor jvm = result[result.length - 1];
+							if (jvm != null) {
+								pieJvm.draw(
+										createDataTableJvm(jvm),
+										createPieChartOptions("Java Virtual Machine ("
+												+ HTMLControl
+														.convertMemoryToString(jvm
+																.getTotalMemory())
+												+ " of "
+												+ HTMLControl
+														.convertMemoryToString(jvm
+																.getMaxMemory())
+												+ ")"));
+							}
+						}
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+
+					}
+				});
 			}
-			achCpu.draw(createAreaChartDataTable("CPU Usage", listCpuUsage),
-					createAreaChartOptions(100, 0));
-			achMemory
-					.draw(createAreaChartDataTable("Memory Usage",
-							listMemoryUsage),
-							createAreaChartOptions(
-									listCpuMemory[0].getTotalMemory(), 0));
-		}
+		};
+		timerJvm.scheduleRepeating(MonitorConstant.REFRESH_RATE);
+		timerJvm.run();
 	}
 
-	void drawServiceInfo(SystemMonitor sys) {
-		listService = sys.getLastestServiceMonitors();
-		if (listService != null) {
-			tblService.draw(createDataTableListService(listService),
-					createTableOptions());
-		}
+	void drawMemory(final SystemMonitor sys) {
+		timerMem = new Timer() {
+			@Override
+			public void run() {
+				monitorGwtSv.listMems(sys,
+						new AsyncCallback<MonitorContainer>() {
+							@Override
+							public void onSuccess(MonitorContainer result) {
+								if (result != null) {
+									MemoryMonitor mem = null;
+									MemoryMonitor[] rams = result.getRams();
+									MemoryMonitor[] swaps = result.getSwaps();
+									if (rams != null && rams.length > 0) {
+										mem = rams[rams.length - 1];
+										ggMemory.draw(
+												createGaugeDataTable("Memory ",
+														mem.getPercentUsage()),
+												createGaugeOptions());
+										achMemory.draw(
+												createAreaChartDataTableMemory(
+														"Memory Usage (RAM)",
+														rams),
+												createAreaChartOptions(100, 0));
+									}
+								}
+							}
+
+							@Override
+							public void onFailure(Throwable caught) {
+
+							}
+						});
+			}
+		};
+		timerMem.scheduleRepeating(MonitorConstant.CPU_MEMORY_REFRESH_RATE);
+		timerMem.run();
 	}
 
-	void drawFileSystemInfo(SystemMonitor sys) {
-		listFileSystem = sys.getLastestFileSystems();
-		if (listFileSystem != null) {
-			tblFileSystem.draw(createDataTableListFileSystem(listFileSystem),
-					createTableOptions());
-			tblFileSystem.addSelectHandler(createSelectHandler(tblFileSystem));
-			drawPieFileSystem(0);
-		}
+	void drawCpuInfo(final SystemMonitor sys) {
+		timerCpu = new Timer() {
+			@Override
+			public void run() {
+				monitorGwtSv.listCpus(sys, new AsyncCallback<CpuMonitor[]>() {
+
+					@Override
+					public void onSuccess(CpuMonitor[] result) {
+						if (result != null && result.length > 0) {
+							CpuMonitor cpu = result[result.length - 1];
+							ggCpu.draw(
+									createGaugeDataTable("CPU",
+											cpu.getCpuUsage()),
+									createGaugeOptions());
+							achCpu.draw(
+									createAreaChartDataTableCpu("CPU Usage",
+											result),
+									createAreaChartOptions(100, 0));
+						}
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+
+					}
+				});
+			}
+		};
+		timerCpu.scheduleRepeating(MonitorConstant.CPU_MEMORY_REFRESH_RATE);
+		timerCpu.run();
+	}
+
+	void drawServiceInfo(final SystemMonitor sys) {
+		timerService = new Timer() {
+			@Override
+			public void run() {
+				monitorGwtSv.listServices(sys,
+						new AsyncCallback<ServiceMonitor[]>() {
+							@Override
+							public void onSuccess(ServiceMonitor[] result) {
+								if (result != null && result.length > 0) {
+									tblService.draw(
+											createDataTableListService(result),
+											createTableOptions());
+								}
+							}
+
+							@Override
+							public void onFailure(Throwable caught) {
+
+							}
+						});
+			}
+		};
+		timerService.scheduleRepeating(MonitorConstant.REFRESH_RATE);
+		timerService.run();
+	}
+
+	void drawFileSystemInfo(final SystemMonitor sys) {
+		timerFilesystem = new Timer() {
+			@Override
+			public void run() {
+				monitorGwtSv.listFileSystems(sys,
+						new AsyncCallback<FileSystemMonitor[]>() {
+
+							@Override
+							public void onSuccess(FileSystemMonitor[] result) {
+								if (result != null && result.length > 0) {
+									fileSystems = result;
+									tblFileSystem
+											.draw(createDataTableListFileSystem(result),
+													createTableOptions());
+									tblFileSystem
+											.addSelectHandler(createSelectHandler(tblFileSystem));
+									drawPieFileSystem(0);
+								}
+							}
+
+							@Override
+							public void onFailure(Throwable caught) {
+
+							}
+						});
+			}
+		};
+		timerFilesystem.scheduleRepeating(MonitorConstant.REFRESH_RATE);
+		timerFilesystem.run();
 	}
 
 	void drawPieFileSystem(int index) {
-		if (listFileSystem != null) {
+		if (fileSystems != null && fileSystems.length > 0) {
 			pieFileSystem.draw(
-					createDataTableFileSystem(listFileSystem[index]),
+					createDataTableFileSystem(fileSystems[index]),
 					createPieChartOptions("Local Disk "
-							+ listFileSystem[index].getName() + " ("
-							+ listFileSystem[index].getType() + ")"));
+							+ fileSystems[index].getName() + " ("
+							+ fileSystems[index].getType() + ")"));
 		}
 	}
 
@@ -420,7 +468,7 @@ public class SystemDetail extends AncestorEntryPoint {
 
 		return ops;
 	}
-	
+
 	AbstractDataTable createDataTableJvm(JvmMonitor jvm) {
 		DataTable data = DataTable.create();
 		data.addColumn(ColumnType.STRING, "Task");
@@ -467,14 +515,13 @@ public class SystemDetail extends AncestorEntryPoint {
 	AbstractDataTable createDataTableListService(ServiceMonitor[] list) {
 		DataTable data = DataTable.create();
 		data.addColumn(ColumnType.STRING, "Name");
-		data.addColumn(ColumnType.DATETIME, "System date");
+		data.addColumn(ColumnType.STRING, "System date");
 		data.addColumn(ColumnType.NUMBER, "Ping time (ms)");
 		data.addColumn(ColumnType.STRING, "Status");
 		data.addRows(list.length);
 		for (int i = 0; i < list.length; i++) {
-			data.setValue(i, 0,
-					(list[i].getName() == null) ? "N/A" : list[i].getName());
-			data.setValue(i, 1, list[i].getSystemDate());
+			data.setValue(i, 0, list[i].getName());
+			data.setValue(i, 1, list[i].getStrSystemDate());
 			data.setValue(i, 2, list[i].getPing());
 			data.setValue(i, 3,
 					HTMLControl.getHTMLStatusImage(list[i].getStatus()));
@@ -486,18 +533,63 @@ public class SystemDetail extends AncestorEntryPoint {
 			fm.addRange(500, 1000000, "red", "");
 			fm.format(data, 2);
 		} catch (Exception ex) {
-			//
-			ex.printStackTrace();
+			// do nothing
 		}
 		return data;
 	}
 
-	AbstractDataTable createAreaChartDataTable(String title, double[] list) {
+	AbstractDataTable createAreaChartDataTableCpu(String title,
+			CpuMonitor[] list) {
 		DataTable data = DataTable.create();
 		data.addColumn(ColumnType.NUMBER, title);
-		data.addRows(list.length);
-		for (int i = 0; i < list.length; i++) {
-			data.setValue(i, 0, list[i]);
+		int[] temp = null;
+		if (list.length < MonitorConstant.CPU_MEMORY_HISTORY_LENGTH) {
+			temp = new int[MonitorConstant.CPU_MEMORY_HISTORY_LENGTH];
+			for (int i = 0; i < MonitorConstant.CPU_MEMORY_HISTORY_LENGTH
+					- list.length; i++) {
+				temp[i] = 0;
+			}
+			for (int i = 0; i < list.length; i++) {
+				temp[MonitorConstant.CPU_MEMORY_HISTORY_LENGTH
+						- list.length + i] = list[i].getCpuUsage();
+			}
+		} else {
+			temp = new int[list.length];
+			for (int i = 0; i < list.length; i++) {
+				temp[i] = list[i].getCpuUsage();
+			}
+		}
+		data.addRows(temp.length);
+		for (int i = 0; i < temp.length; i++) {
+			data.setValue(i, 0, temp[i]);
+		}
+		return data;
+	}
+
+	AbstractDataTable createAreaChartDataTableMemory(String title,
+			MemoryMonitor[] list) {
+		DataTable data = DataTable.create();
+		data.addColumn(ColumnType.NUMBER, title);
+		int[] temp = null;
+		if (list.length < MonitorConstant.CPU_MEMORY_HISTORY_LENGTH) {
+			temp = new int[MonitorConstant.CPU_MEMORY_HISTORY_LENGTH];
+			for (int i = 0; i < MonitorConstant.CPU_MEMORY_HISTORY_LENGTH
+					- list.length; i++) {
+				temp[i] = 0;
+			}
+			for (int i = 0; i < list.length; i++) {
+				temp[MonitorConstant.CPU_MEMORY_HISTORY_LENGTH
+						- list.length + i] = list[i].getPercentUsage();
+			}
+		} else {
+			temp = new int[list.length];
+			for (int i = 0; i < list.length; i++) {
+				temp[i] = list[i].getPercentUsage();
+			}
+		}
+		data.addRows(temp.length);
+		for (int i = 0; i < temp.length; i++) {
+			data.setValue(i, 0, temp[i]);
 		}
 		return data;
 	}

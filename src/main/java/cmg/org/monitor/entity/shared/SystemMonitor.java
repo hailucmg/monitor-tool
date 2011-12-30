@@ -14,7 +14,6 @@ import javax.jdo.annotations.PrimaryKey;
  * @version 1.0
  */
 
-@SuppressWarnings("serial")
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
 public class SystemMonitor implements Model {
 	public static final String STATUS_SMILE = "smile";
@@ -108,6 +107,7 @@ public class SystemMonitor implements Model {
 		email = sys.getEmail();
 		emailRevice = sys.getEmailRevice();
 		status = sys.getStatus();
+		protocol = sys.getProtocol();
 		timeStamp = sys.getTimeStamp();
 		lastestCpuUsage = sys.getLastestCpuUsage();
 		lastestMemoryUsage = sys.getLastestMemoryUsage();
@@ -118,6 +118,10 @@ public class SystemMonitor implements Model {
 		return encodedKey;
 	}
 
+	public void setId(String id) {
+		this.encodedKey = id;
+	}
+	
 	public String getName() {
 		return name == null ? "N/A" : name;
 	}

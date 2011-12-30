@@ -1,6 +1,7 @@
 package cmg.org.monitor.module.client;
 
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.ext.model.shared.GroupMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
@@ -20,7 +21,9 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 
 public class EditSystem extends AncestorEntryPoint {
-	MonitorContainer system;
+	int index = 0;
+	SystemMonitor system;
+	MonitorContainer container;
 	ListBox listGroup;
 	ListBox listActive;
 	ListBox listProtocol;
@@ -50,7 +53,6 @@ public class EditSystem extends AncestorEntryPoint {
 	AbsolutePanel panelButton;
 	AbsolutePanel panelValidateEmail;
 	private static FlexTable tableForm;
-
 
 	protected void init() {
 		if (currentPage == HTMLControl.PAGE_EDIT_SYSTEM) {
@@ -93,192 +95,214 @@ public class EditSystem extends AncestorEntryPoint {
 	}
 
 	void initFlexTable(String sysID) {
-		monitorGwtSv.getSystembyID(sysID, new AsyncCallback<MonitorContainer>() {
-			@Override
-			public void onSuccess(MonitorContainer result) {
-				if (result != null) {
-					system = result;
-					labelEmail = new Label();
-					labelEmail.setText("Email");
-					txtEmail = new TextBox();
-					txtEmail.setWidth("196px");
-					txtEmail.setHeight("30px");
-					tableForm.setCellPadding(3);
-					tableForm.setCellSpacing(3);
-					tableForm.getFlexCellFormatter().setWidth(0, 0, "100px");
-					tableForm.getFlexCellFormatter().setWidth(1, 0, "100px");
-					tableForm.getFlexCellFormatter().setWidth(2, 0, "100px");
-					tableForm.getFlexCellFormatter().setWidth(3, 0, "100px");
-					tableForm.getFlexCellFormatter().setWidth(4, 0, "100px");
-					tableForm.getFlexCellFormatter().setWidth(5, 0, "100px");
-					tableForm.getFlexCellFormatter().setWidth(6, 0, "100px");
-					tableForm.getFlexCellFormatter().setWidth(7, 0, "100px");
-					tableForm.getFlexCellFormatter().setWidth(8, 0, "100px");
-					tableForm.getFlexCellFormatter().setWidth(9, 0, "100px");
+		monitorGwtSv.getSystemMonitorContainer(sysID,
+				new AsyncCallback<MonitorContainer>() {
+					@Override
+					public void onSuccess(MonitorContainer result) {
+						if (result != null) {
+							system = result.getSys();
+							container = result;
+							labelEmail = new Label();
+							labelEmail.setText("Email");
+							txtEmail = new TextBox();
+							txtEmail.setWidth("196px");
+							txtEmail.setHeight("30px");
+							tableForm.setCellPadding(3);
+							tableForm.setCellSpacing(3);
+							tableForm.getFlexCellFormatter().setWidth(0, 0,
+									"100px");
+							tableForm.getFlexCellFormatter().setWidth(1, 0,
+									"100px");
+							tableForm.getFlexCellFormatter().setWidth(2, 0,
+									"100px");
+							tableForm.getFlexCellFormatter().setWidth(3, 0,
+									"100px");
+							tableForm.getFlexCellFormatter().setWidth(4, 0,
+									"100px");
+							tableForm.getFlexCellFormatter().setWidth(5, 0,
+									"100px");
+							tableForm.getFlexCellFormatter().setWidth(6, 0,
+									"100px");
+							tableForm.getFlexCellFormatter().setWidth(7, 0,
+									"100px");
+							tableForm.getFlexCellFormatter().setWidth(8, 0,
+									"100px");
+							tableForm.getFlexCellFormatter().setWidth(9, 0,
+									"100px");
 
-					labelName = new Label();
-					labelName.setText("Name");
+							labelName = new Label();
+							labelName.setText("Name");
 
-					labelurl = new Label();
-					labelurl.setText("URL");
+							labelurl = new Label();
+							labelurl.setText("URL");
 
-					labelip = new Label();
-					labelip.setText("IP");
+							labelip = new Label();
+							labelip.setText("IP");
 
-					labelremoteurl = new Label();
-					labelremoteurl.setText("Remote-URL");
+							labelremoteurl = new Label();
+							labelremoteurl.setText("Remote-URL");
 
-					labelactive = new Label();
-					labelactive.setText("Active");
+							labelactive = new Label();
+							labelactive.setText("Active");
 
-					labelprotocol = new Label();
-					labelprotocol.setText("Protocol");
+							labelprotocol = new Label();
+							labelprotocol.setText("Protocol");
 
-					labelmailgroup = new Label();
-					labelmailgroup.setText("Notification mail group");
+							labelmailgroup = new Label();
+							labelmailgroup.setText("Notification mail group");
 
-					txtName = new TextBox();
-					txtName.setWidth("196px");
-					txtName.setHeight("30px");
-					txtName.setText(result.getName());
+							txtName = new TextBox();
+							txtName.setWidth("196px");
+							txtName.setHeight("30px");
+							txtName.setText(system.getName());
 
-					txtURL = new TextBox();
-					txtURL.setWidth("196px");
-					txtURL.setHeight("30px");
-					txtURL.setText(result.getUrl());
+							txtURL = new TextBox();
+							txtURL.setWidth("196px");
+							txtURL.setHeight("30px");
+							txtURL.setText(system.getUrl());
 
-					txtIP = new TextBox();
-					txtIP.setWidth("196px");
-					txtIP.setHeight("30px");
-					txtIP.setText(result.getIp());
+							txtIP = new TextBox();
+							txtIP.setWidth("196px");
+							txtIP.setHeight("30px");
+							txtIP.setText(system.getIp());
 
-					txtRemote = new TextBox();
-					txtRemote.setWidth("196px");
-					txtRemote.setHeight("30px");
-					txtRemote.setText(result.getRemoteURl());
+							txtRemote = new TextBox();
+							txtRemote.setWidth("196px");
+							txtRemote.setHeight("30px");
+							txtRemote.setText(system.getRemoteUrl());
 
-					txtEmail.setText(result.getEmail());
+							txtEmail.setText(system.getEmailRevice());
 
-					panelLabelEmail = new AbsolutePanel();
-					panelLabelEmail.add(labelEmail);
-					panelLabelEmail.setVisible(false);
+							panelLabelEmail = new AbsolutePanel();
+							panelLabelEmail.add(labelEmail);
+							panelLabelEmail.setVisible(false);
 
-					paneltxtEmail = new AbsolutePanel();
-					paneltxtEmail.add(txtEmail);
+							paneltxtEmail = new AbsolutePanel();
+							paneltxtEmail.add(txtEmail);
 
-					listActive = new ListBox();
-					listActive.setWidth("198px");
-					listActive.setHeight("28px");
-					listActive.addItem("Yes");
-					listActive.addItem("No");
-					if (system.isActive()) {
-						listActive.setSelectedIndex(0);
-					} else {
-						listActive.setSelectedIndex(1);
+							listActive = new ListBox();
+							listActive.setWidth("198px");
+							listActive.setHeight("28px");
+							listActive.addItem("Yes");
+							listActive.addItem("No");
+							if (system.isActive()) {
+								listActive.setSelectedIndex(0);
+							} else {
+								listActive.setSelectedIndex(1);
+							}
+
+							listProtocol = new ListBox();
+							listProtocol.setWidth("198px");
+							listProtocol.setHeight("28px");
+							listProtocol.addItem(MonitorConstant.HTTP_PROTOCOL);
+							listProtocol.addItem(MonitorConstant.SMTP_PROTOCOL);
+							if (system.getProtocol().equals("HTTP(s)")) {
+								listProtocol.setSelectedIndex(0);
+								paneltxtEmail.setVisible(false);
+								panelLabelEmail.setVisible(false);
+								txtRemote.setEnabled(true);
+							} else {
+								listProtocol.setSelectedIndex(1);
+								paneltxtEmail.setVisible(true);
+								panelLabelEmail.setVisible(true);
+								txtRemote.setEnabled(false);
+							}
+							listGroup = new ListBox();
+							listGroup.setWidth("198px");
+							listGroup.setHeight("28px");
+							GroupMonitor[] groups = container
+									.getGroups();
+							if (groups != null && groups.length > 0) {
+								
+								for (int i = 0; i < groups.length; i++) {
+									listGroup.addItem(groups[i].getName());
+									if (system.getGroupEmail().equalsIgnoreCase(groups[i].getName())) {
+										index = i;
+									}
+								}
+								listGroup.setSelectedIndex(index);
+							}
+
+							btnEdit = new Button();
+							btnEdit.setText("EDIT");
+							btnEdit.setStyleName("margin:6px;");
+							btnEdit.addStyleName("form-button");
+
+							bttReset = new Button();
+							bttReset.setText("Reset");
+							bttReset.setStyleName("margin:6px;");
+							bttReset.addStyleName("form-button");
+
+							bttBack = new Button();
+							bttBack.setText("Back");
+							bttBack.setStyleName("margin:6px;");
+							bttBack.addStyleName("form-button");
+
+							panelButton = new AbsolutePanel();
+							panelButton.add(btnEdit);
+							panelButton.add(bttReset);
+							panelButton.add(bttBack);
+
+							panelAdding = new AbsolutePanel();
+							panelAdding
+									.add(new HTML(
+											"<div id=\"img-adding\"><img src=\"images/icon/loading11.gif\"/></div>"));
+							panelAdding.setVisible(false);
+
+							panelValidateName = new AbsolutePanel();
+
+							panelValidateEmail = new AbsolutePanel();
+
+							panelValidateIP = new AbsolutePanel();
+
+							panelValidateURL = new AbsolutePanel();
+
+							panelValidateRemoteURL = new AbsolutePanel();
+
+							tableForm.setWidget(0, 0, labelName);
+							tableForm.setWidget(0, 1, txtName);
+							tableForm.setWidget(0, 2, panelValidateName);
+							tableForm.setWidget(1, 0, labelurl);
+							tableForm.setWidget(1, 1, txtURL);
+							tableForm.setWidget(1, 2, panelValidateURL);
+							tableForm.setWidget(2, 0, labelip);
+							tableForm.setWidget(2, 1, txtIP);
+							tableForm.setWidget(2, 2, panelValidateIP);
+							tableForm.setWidget(3, 0, labelactive);
+							tableForm.setWidget(3, 1, listActive);
+							tableForm.setWidget(4, 0, labelprotocol);
+							tableForm.setWidget(4, 1, listProtocol);
+							tableForm.setWidget(5, 0, panelLabelEmail);
+							tableForm.setWidget(5, 1, paneltxtEmail);
+							tableForm.setWidget(5, 2, panelValidateEmail);
+							tableForm.setWidget(6, 0, labelmailgroup);
+							tableForm.setWidget(6, 1, listGroup);
+							tableForm.setWidget(7, 0, labelremoteurl);
+							tableForm.setWidget(7, 1, txtRemote);
+							tableForm.setWidget(7, 2, panelValidateRemoteURL);
+							tableForm.getFlexCellFormatter()
+									.setColSpan(8, 0, 2);
+							tableForm.setWidget(8, 0, panelAdding);
+							tableForm.getFlexCellFormatter()
+									.setColSpan(9, 0, 3);
+							tableForm.setWidget(9, 0, panelButton);
+							initHandler();
+							setVisibleLoadingImage(false);
+							setOnload(false);
+							setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+
+						}
 					}
 
-					listProtocol = new ListBox();
-					listProtocol.setWidth("198px");
-					listProtocol.setHeight("28px");
-					listProtocol.addItem(MonitorConstant.HTTP_PROTOCOL);
-					listProtocol.addItem(MonitorConstant.SMTP_PROTOCOL);
-					if (system.getProtocol().equals("HTTP(s)")) {
-						listProtocol.setSelectedIndex(0);
-						paneltxtEmail.setVisible(false);
-						panelLabelEmail.setVisible(false);
-						txtRemote.setEnabled(true);
-					} else {
-						listProtocol.setSelectedIndex(1);
-						paneltxtEmail.setVisible(true);
-						panelLabelEmail.setVisible(true);
-						txtRemote.setEnabled(false);
+					@Override
+					public void onFailure(Throwable caught) {
+						showMessage("Oops! Error.",
+								HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
+								"Goto System Management. ",
+								HTMLControl.RED_MESSAGE, true);
 					}
-					listGroup = new ListBox();
-					listGroup.setWidth("198px");
-					listGroup.setHeight("28px");
-					for (int i = 0; i < system.getGroups().length; i++) {
-						listGroup.addItem(system.getGroups()[i]);
-					}
-					listGroup.setSelectedIndex(system.getSelect());
 
-					btnEdit = new Button();
-					btnEdit.setText("EDIT");
-					btnEdit.setStyleName("margin:6px;");
-					btnEdit.addStyleName("form-button");
-
-					bttReset = new Button();
-					bttReset.setText("Reset");
-					bttReset.setStyleName("margin:6px;");
-					bttReset.addStyleName("form-button");
-
-					bttBack = new Button();
-					bttBack.setText("Back");
-					bttBack.setStyleName("margin:6px;");
-					bttBack.addStyleName("form-button");
-
-					panelButton = new AbsolutePanel();
-					panelButton.add(btnEdit);
-					panelButton.add(bttReset);
-					panelButton.add(bttBack);
-
-					panelAdding = new AbsolutePanel();
-					panelAdding
-							.add(new HTML(
-									"<div id=\"img-adding\"><img src=\"images/icon/loading11.gif\"/></div>"));
-					panelAdding.setVisible(false);
-
-					panelValidateName = new AbsolutePanel();
-
-					panelValidateEmail = new AbsolutePanel();
-
-					panelValidateIP = new AbsolutePanel();
-
-					panelValidateURL = new AbsolutePanel();
-
-					panelValidateRemoteURL = new AbsolutePanel();
-
-					tableForm.setWidget(0, 0, labelName);
-					tableForm.setWidget(0, 1, txtName);
-					tableForm.setWidget(0, 2, panelValidateName);
-					tableForm.setWidget(1, 0, labelurl);
-					tableForm.setWidget(1, 1, txtURL);
-					tableForm.setWidget(1, 2, panelValidateURL);
-					tableForm.setWidget(2, 0, labelip);
-					tableForm.setWidget(2, 1, txtIP);
-					tableForm.setWidget(2, 2, panelValidateIP);
-					tableForm.setWidget(3, 0, labelactive);
-					tableForm.setWidget(3, 1, listActive);
-					tableForm.setWidget(4, 0, labelprotocol);
-					tableForm.setWidget(4, 1, listProtocol);
-					tableForm.setWidget(5, 0, panelLabelEmail);
-					tableForm.setWidget(5, 1, paneltxtEmail);
-					tableForm.setWidget(5, 2, panelValidateEmail);
-					tableForm.setWidget(6, 0, labelmailgroup);
-					tableForm.setWidget(6, 1, listGroup);
-					tableForm.setWidget(7, 0, labelremoteurl);
-					tableForm.setWidget(7, 1, txtRemote);
-					tableForm.setWidget(7, 2, panelValidateRemoteURL);
-					tableForm.getFlexCellFormatter().setColSpan(8, 0, 2);
-					tableForm.setWidget(8, 0, panelAdding);
-					tableForm.getFlexCellFormatter().setColSpan(9, 0, 3);
-					tableForm.setWidget(9, 0, panelButton);
-					initHandler();
-					setVisibleLoadingImage(false);
-					setOnload(false);
-					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
-
-				}
-			}
-
-			@Override
-			public void onFailure(Throwable caught) {
-				showMessage("Oops! Error.",
-						HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
-						"Goto System Management. ", HTMLControl.RED_MESSAGE,
-						true);
-			}
-
-		});
+				});
 
 	}
 
@@ -286,7 +310,6 @@ public class EditSystem extends AncestorEntryPoint {
 		listProtocol.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
 				if (listProtocol.getSelectedIndex() == 0) {
 					txtRemote.setEnabled(true);
 					panelLabelEmail.setVisible(false);
@@ -313,17 +336,17 @@ public class EditSystem extends AncestorEntryPoint {
 				txtName.setText(system.getName());
 				txtURL.setText(system.getUrl());
 				txtIP.setText(system.getIp());
-				txtRemote.setText(system.getRemoteURl());
+				txtRemote.setText(system.getRemoteUrl());
 				if (system.isActive()) {
 					listActive.setSelectedIndex(0);
 				} else {
 					listActive.setSelectedIndex(1);
 				}
-				listGroup.setSelectedIndex(system.getSelect());
+				listGroup.setSelectedIndex(index);
 				if (system.getProtocol().equals("HTTP(s)")) {
 					listProtocol.setSelectedIndex(0);
 					txtRemote.setEnabled(true);
-					txtRemote.setText(system.getRemoteURl());
+					txtRemote.setText(system.getRemoteUrl());
 					panelLabelEmail.setVisible(false);
 					paneltxtEmail.setVisible(false);
 				} else {
@@ -354,7 +377,7 @@ public class EditSystem extends AncestorEntryPoint {
 					String validateURL = validateURL(txtURL.getText());
 					String validateIp = validateIP(txtIP.getText());
 					String validateRemoteURL = validateRemoteURL(
-					txtRemote.getText(), system);
+							txtRemote.getText());
 					panelValidateEmail.setVisible(false);
 					panelValidateIP.setVisible(false);
 					panelValidateName.setVisible(false);
@@ -415,6 +438,7 @@ public class EditSystem extends AncestorEntryPoint {
 					panelValidateURL.setVisible(false);
 					panelAdding.setVisible(true);
 					SystemMonitor sysNew = new SystemMonitor();
+					sysNew.setId(system.getId());
 					sysNew.setName(txtName.getText());
 					sysNew.setUrl(txtURL.getText());
 					sysNew.setProtocol(listProtocol.getItemText(listProtocol
@@ -423,18 +447,17 @@ public class EditSystem extends AncestorEntryPoint {
 							.getSelectedIndex()));
 					sysNew.setIp(txtIP.getText());
 					sysNew.setRemoteUrl(txtRemote.getText());
-					sysNew.setEmail(null);
+					sysNew.setEmailRevice(txtEmail.getText());
 					sysNew.setActive(isActive(listActive.getItemText(listActive
 							.getSelectedIndex())));
-					editSystem(system.getId(), sysNew);
+					editSystem(sysNew);
 				} else if (listProtocol.getItemText(
 						listProtocol.getSelectedIndex()).equals(
 						MonitorConstant.SMTP_PROTOCOL)) {
 					String validateName = validateName(txtName.getText());
 					String validateURL = validateURL(txtURL.getText());
 					String validateIp = validateIP(txtIP.getText());
-					String validateEmail = validateEmail(txtEmail.getText(),
-							system);
+					String validateEmail = validateEmail(txtEmail.getText());
 					panelValidateEmail.setVisible(false);
 					panelValidateIP.setVisible(false);
 					panelValidateName.setVisible(false);
@@ -493,6 +516,7 @@ public class EditSystem extends AncestorEntryPoint {
 					panelValidateURL.setVisible(false);
 					panelAdding.setVisible(true);
 					SystemMonitor sysNew = new SystemMonitor();
+					sysNew.setId(system.getId());
 					sysNew.setName(txtName.getText());
 					sysNew.setUrl(txtURL.getText());
 					sysNew.setProtocol(listProtocol.getItemText(listProtocol
@@ -500,22 +524,21 @@ public class EditSystem extends AncestorEntryPoint {
 					sysNew.setGroupEmail(listGroup.getItemText(listGroup
 							.getSelectedIndex()));
 					sysNew.setIp(txtIP.getText());
-					sysNew.setEmail(txtEmail.getText());
-					sysNew.setRemoteUrl(null);
+					sysNew.setEmailRevice(txtEmail.getText());
+					sysNew.setRemoteUrl(txtRemote.getText());
 					sysNew.setActive(isActive(listActive.getItemText(listActive
 							.getSelectedIndex())));
-					editSystem(system.getId(), sysNew);
+					editSystem(sysNew);
 				}
 			}
 		});
 	}
 
-	private void editSystem(String id, SystemMonitor sysNew) {
+	private void editSystem(SystemMonitor sys) {
 		panelAdding.setVisible(false);
-		monitorGwtSv.editSystembyID(id, sysNew, new AsyncCallback<Boolean>() {
+		monitorGwtSv.editSystem(sys, new AsyncCallback<Boolean>() {
 			@Override
 			public void onSuccess(Boolean result) {
-				// TODO Auto-generated method stub
 				if (result) {
 					showMessage("System edited sucessfully. ",
 							HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
@@ -531,7 +554,6 @@ public class EditSystem extends AncestorEntryPoint {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
 				showMessage("Server error! ",
 						HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
 						"Goto System Management. ", HTMLControl.RED_MESSAGE,
@@ -591,7 +613,7 @@ public class EditSystem extends AncestorEntryPoint {
 	 * @param remoteUrl
 	 * @return
 	 */
-	private String validateRemoteURL(String remoteUrl, MonitorContainer sys) {
+	private String validateRemoteURL(String remoteUrl) {
 		String msg = "";
 		boolean check = false;
 		if (remoteUrl == null || remoteUrl.trim().length() == 0) {
@@ -602,8 +624,8 @@ public class EditSystem extends AncestorEntryPoint {
 			check = true;
 		}
 		if (!check) {
-			if (!remoteUrl.equals(sys.getRemoteURl())) {
-				String[] remoteURLs = sys.getRemoteURLs();
+			if (!remoteUrl.equals(system.getRemoteUrl())) {
+				String[] remoteURLs = container.getRemoteUrls();
 				if (remoteURLs != null) {
 					for (int i = 0; i < remoteURLs.length; i++) {
 						if (remoteURLs[i] != null) {
@@ -626,11 +648,11 @@ public class EditSystem extends AncestorEntryPoint {
 	 * @return
 	 */
 
-	private String validateEmail(String email, MonitorContainer sys) {
+	private String validateEmail(String email) {
 		String msg = "";
 		boolean check = false;
 		if (email == null || email == "") {
-			msg = "THis field is required";
+			msg = "This field is required";
 			check = true;
 		}
 		String pattern = "\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
@@ -641,8 +663,8 @@ public class EditSystem extends AncestorEntryPoint {
 			check = true;
 		}
 		if (!check) {
-			if (!email.equals(sys.getEmail())) {
-				String[] emails = sys.getEmails();
+			if (!email.equals(system.getEmail())) {
+				String[] emails = container.getEmails();
 				if (emails != null) {
 					for (int i = 0; i < emails.length; i++) {
 						if (emails[i] != null) {

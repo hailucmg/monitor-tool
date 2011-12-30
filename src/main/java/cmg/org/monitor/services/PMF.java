@@ -1,7 +1,7 @@
 /**
  * 
  */
-package cmg.org.monitor.util.shared;
+package cmg.org.monitor.services;
 
 import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManagerFactory;

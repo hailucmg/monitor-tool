@@ -13,7 +13,7 @@ import cmg.org.monitor.entity.shared.MailMonitor;
 import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.memcache.Key;
 import cmg.org.monitor.memcache.MonitorMemcache;
-import cmg.org.monitor.util.shared.PMF;
+import cmg.org.monitor.services.PMF;
 
 public class MailMonitorDaoImpl implements MailMonitorDAO {
 	private static final Logger logger = Logger

@@ -1,6 +1,7 @@
 package cmg.org.monitor.util.shared;
 
 public final class MonitorConstant {
+	public static final int CPU_MEMORY_REFRESH_RATE = 1000;
 	// Alert mail sender service
 	public static final String IMAGES_FOR_EMAIL ="monitor.c-mg.vn\\images\\logo\\c-mg_logo.png" ;
 	
@@ -26,7 +27,7 @@ public final class MonitorConstant {
 
 	public static final String DONE_MESSAGE = "Add a system successfully";
 	// time to refresh data for all module
-	public static final int REFRESH_RATE = 1800000;
+	public static final int REFRESH_RATE = 60000;
 
 	public static final int REDIRECT_WAIT_TIME = 5000;
 

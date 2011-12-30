@@ -177,10 +177,10 @@ public class MonitorParser {
 						"Java Virtual Machine memory usage is "
 								+ jvm.getPercentUsage()
 								+ "% ("
-								+ Utility.convertMemoryToString(jvm
+								+ MonitorUtil.convertMemoryToString(jvm
 										.getUsedMemory())
 								+ " of "
-								+ Utility.convertMemoryToString(jvm
+								+ MonitorUtil.convertMemoryToString(jvm
 										.getTotalMemory()) + ")"
 
 						, timeStamp);
@@ -204,10 +204,10 @@ public class MonitorParser {
 									+ "memory usage is "
 									+ fileSys.getPercentUsage()
 									+ "% ("
-									+ Utility.convertMemoryToString(fileSys
+									+ MonitorUtil.convertMemoryToString(fileSys
 											.getUsed())
 									+ " of "
-									+ Utility.convertMemoryToString(fileSys
+									+ MonitorUtil.convertMemoryToString(fileSys
 											.getSize()) + ")", timeStamp);
 					// store alert
 					alertDAO.storeAlert(sys, alert);
@@ -234,10 +234,10 @@ public class MonitorParser {
 									+ " memory usage is "
 									+ mem.getPercentUsage()
 									+ "% ("
-									+ Utility.convertMemoryToString(mem
+									+ MonitorUtil.convertMemoryToString(mem
 											.getUsedMemory())
 									+ " of "
-									+ Utility.convertMemoryToString(mem
+									+ MonitorUtil.convertMemoryToString(mem
 											.getTotalMemory()) + ")", timeStamp);
 					// store alert
 					alertDAO.storeAlert(sys, alert);
@@ -360,7 +360,7 @@ public class MonitorParser {
 						logger.log(Level.INFO, " Ping: " + ping);
 						int pingTime = 0;
 						try {
-							pingTime = Integer.parseInt(Utility
+							pingTime = Integer.parseInt(MonitorUtil
 									.extractDigit(ping));
 						} catch (Exception ex) {
 
@@ -421,7 +421,7 @@ public class MonitorParser {
 				temp = strList.get(iC + 3);
 				logger.log(Level.INFO, " Ping: " + temp);
 				try {
-					service.setPing(Integer.parseInt(Utility.extractDigit(temp)));
+					service.setPing(Integer.parseInt(MonitorUtil.extractDigit(temp)));
 				} catch (Exception ex) {
 					logger.log(
 							Level.SEVERE,
@@ -513,9 +513,9 @@ public class MonitorParser {
 			String value = matcher.group(1);
 			if (value.toLowerCase().contains("free")) {
 				logger.log(Level.INFO,
-						"Free memory: " + Utility.extractDigit(value));
+						"Free memory: " + MonitorUtil.extractDigit(value));
 				try {
-					jvm.setFreeMemory(Double.parseDouble(Utility
+					jvm.setFreeMemory(Double.parseDouble(MonitorUtil
 							.extractDigit(value)));
 				} catch (Exception ex) {
 					logger.log(Level.SEVERE,
@@ -525,9 +525,9 @@ public class MonitorParser {
 			}
 			if (value.toLowerCase().contains("total")) {
 				logger.log(Level.INFO,
-						"Total memory: " + Utility.extractDigit(value));
+						"Total memory: " + MonitorUtil.extractDigit(value));
 				try {
-					jvm.setTotalMemory(Double.parseDouble(Utility
+					jvm.setTotalMemory(Double.parseDouble(MonitorUtil
 							.extractDigit(value)));
 				} catch (Exception ex) {
 					logger.log(Level.SEVERE,
@@ -537,9 +537,9 @@ public class MonitorParser {
 			}
 			if (value.toLowerCase().contains("max")) {
 				logger.log(Level.INFO,
-						"Max memory: " + Utility.extractDigit(value));
+						"Max memory: " + MonitorUtil.extractDigit(value));
 				try {
-					jvm.setMaxMemory(Double.parseDouble(Utility
+					jvm.setMaxMemory(Double.parseDouble(MonitorUtil
 							.extractDigit(value)));
 				} catch (Exception ex) {
 					logger.log(
@@ -550,9 +550,9 @@ public class MonitorParser {
 			}
 			if (value.toLowerCase().contains("used")) {
 				logger.log(Level.INFO,
-						"Used memory: " + Utility.extractDigit(value));
+						"Used memory: " + MonitorUtil.extractDigit(value));
 				try {
-					jvm.setUsedMemory(Double.parseDouble(Utility
+					jvm.setUsedMemory(Double.parseDouble(MonitorUtil
 							.extractDigit(value)));
 				} catch (Exception ex) {
 					logger.log(Level.SEVERE,
@@ -582,7 +582,7 @@ public class MonitorParser {
 				strTemp = getCharacterDataFromElement((Element) temp.item(0));
 				logger.log(Level.INFO, " Usage: " + strTemp);
 				try {
-					cpu.setCpuUsage(Integer.parseInt(Utility
+					cpu.setCpuUsage(Integer.parseInt(MonitorUtil
 							.extractDigit(strTemp)));
 				} catch (Exception ex) {
 					logger.log(
@@ -717,7 +717,7 @@ public class MonitorParser {
 							.item(0));
 					logger.log(Level.INFO, " Size: " + strTemp);
 					try {
-						fileSystem.setSize(Long.parseLong(Utility
+						fileSystem.setSize(Long.parseLong(MonitorUtil
 								.extractDigit(strTemp)));
 					} catch (Exception ex) {
 						logger.log(Level.SEVERE,
@@ -732,7 +732,7 @@ public class MonitorParser {
 							.item(0));
 					logger.log(Level.INFO, " Used: " + strTemp);
 					try {
-						fileSystem.setUsed(Long.parseLong(Utility
+						fileSystem.setUsed(Long.parseLong(MonitorUtil
 								.extractDigit(strTemp)));
 					} catch (Exception ex) {
 						logger.log(Level.SEVERE,
@@ -863,7 +863,7 @@ public class MonitorParser {
 							.item(0));
 					logger.log(Level.INFO, " Total: " + strTemp);
 					try {
-						mem.setTotalMemory(Double.parseDouble(Utility
+						mem.setTotalMemory(Double.parseDouble(MonitorUtil
 								.extractDigit(strTemp)));
 					} catch (Exception ex) {
 						logger.log(Level.SEVERE,
@@ -878,7 +878,7 @@ public class MonitorParser {
 							.item(0));
 					logger.log(Level.INFO, " Used: " + strTemp);
 					try {
-						mem.setUsedMemory(Double.parseDouble(Utility
+						mem.setUsedMemory(Double.parseDouble(MonitorUtil
 								.extractDigit(strTemp)));
 					} catch (Exception ex) {
 						logger.log(Level.SEVERE,

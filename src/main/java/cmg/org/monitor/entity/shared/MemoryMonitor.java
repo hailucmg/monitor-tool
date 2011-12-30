@@ -1,7 +1,8 @@
 package cmg.org.monitor.entity.shared;
 
-import java.io.Serializable;
 import java.util.Date;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * @author lamphan, Hong Hai
@@ -9,7 +10,7 @@ import java.util.Date;
  */
 
 @SuppressWarnings("serial")
-public class MemoryMonitor implements Serializable {
+public class MemoryMonitor implements IsSerializable {
 	public static final int MEM = 0x001;
 	public static final int SWAP = 0x002;
 

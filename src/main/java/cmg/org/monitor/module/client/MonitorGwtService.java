@@ -1,7 +1,9 @@
 package cmg.org.monitor.module.client;
 
-import java.util.ArrayList;
-
+import cmg.org.monitor.entity.shared.CpuMonitor;
+import cmg.org.monitor.entity.shared.FileSystemMonitor;
+import cmg.org.monitor.entity.shared.JvmMonitor;
+import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
@@ -16,7 +18,7 @@ public interface MonitorGwtService extends RemoteService {
 	
 	UserLoginDto getUserLogin();
 	
-	ArrayList<SystemMonitor> listSystems();
+	SystemMonitor[] listSystems();
 
 	SystemMonitor validSystemId(String sysID);
 
@@ -28,5 +30,19 @@ public interface MonitorGwtService extends RemoteService {
 	
 	MonitorContainer getSystemMonitorContainer();
 	
-	ArrayList<UserMonitor> listAllUsers();
+	UserMonitor[] listAllUsers();
+	
+	MonitorContainer getSystemMonitorContainer(String sysId);
+	
+	boolean editSystem(SystemMonitor sys);
+	
+	JvmMonitor[] listJvms(SystemMonitor sys);
+	
+	ServiceMonitor[] listServices(SystemMonitor sys);
+	
+	FileSystemMonitor[] listFileSystems(SystemMonitor sys);
+	
+	CpuMonitor[] listCpus(SystemMonitor sys);
+	
+	MonitorContainer listMems(SystemMonitor sys);
 }

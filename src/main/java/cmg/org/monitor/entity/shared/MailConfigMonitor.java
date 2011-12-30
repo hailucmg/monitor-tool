@@ -7,7 +7,6 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-@SuppressWarnings("serial")
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
 public class MailConfigMonitor implements Model {
 	public static final String DEFAULT_LABEL = "Monitor Alert";

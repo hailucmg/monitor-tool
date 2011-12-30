@@ -22,7 +22,7 @@ import com.google.gwt.visualization.client.visualizations.Table;
 import com.google.gwt.visualization.client.visualizations.Table.Options;
 
 public class SystemManagement extends AncestorEntryPoint {
-	static ArrayList<SystemMonitor> systems;
+	static SystemMonitor[] systems;
 	static private Table tableListSystem;
 	static DialogBox dialogBox;
 	private static HTML popupContent;
@@ -96,9 +96,9 @@ public class SystemManagement extends AncestorEntryPoint {
 	}
 
 	private static void initContent() {
-		monitorGwtSv.listSystems(new AsyncCallback<ArrayList<SystemMonitor>>() {
+		monitorGwtSv.listSystems(new AsyncCallback<SystemMonitor[]>() {
 			@Override
-			public void onSuccess(ArrayList<SystemMonitor> result) {
+			public void onSuccess(SystemMonitor[] result) {
 				systems = result;
 				if (result != null) {
 					setVisibleLoadingImage(false);
@@ -146,8 +146,8 @@ public class SystemManagement extends AncestorEntryPoint {
 
 	}
 
-	static void drawTable(ArrayList<SystemMonitor> result) {
-		if (result != null && result.size() > 0) {
+	static void drawTable(SystemMonitor[] result) {
+		if (result != null && result.length > 0) {
 			tableListSystem.draw(createDataListSystem(result),
 					createOptionsTableListSystem());
 
@@ -172,7 +172,7 @@ public class SystemManagement extends AncestorEntryPoint {
 	/*
 	 * Create data table list system without value
 	 */
-	static AbstractDataTable createDataListSystem(ArrayList<SystemMonitor> result) {
+	static AbstractDataTable createDataListSystem(SystemMonitor[] result) {
 		// create object data table
 		DataTable dataListSystem = DataTable.create();
 		// add all columns
@@ -183,31 +183,31 @@ public class SystemManagement extends AncestorEntryPoint {
 		dataListSystem.addColumn(ColumnType.STRING, "Health Status");
 		dataListSystem.addColumn(ColumnType.STRING, "Monitor Status");
 		dataListSystem.addColumn(ColumnType.STRING, "Delete");
-		dataListSystem.addRows(result.size());
-		for (int i = 0; i < result.size(); i++) {
+		dataListSystem.addRows(result.length);
+		for (int i = 0; i < result.length; i++) {
 			dataListSystem.setValue(
 					i,
 					0,
-					HTMLControl.getLinkEditSystem(result.get(i).getId(),
-							result.get(i).getCode()));
-			dataListSystem.setValue(i, 1, result.get(i).getName());
-			dataListSystem.setValue(i, 2, result.get(i).getUrl());
-			dataListSystem.setValue(i, 3, result.get(i).getIp());
+					HTMLControl.getLinkEditSystem(result[i].getId(),
+							result[i].getCode()));
+			dataListSystem.setValue(i, 1, result[i].getName());
+			dataListSystem.setValue(i, 2, result[i].getUrl());
+			dataListSystem.setValue(i, 3, result[i].getIp());
 			dataListSystem.setValue(
 					i,
 					4,
-					HTMLControl.getHTMLStatusImage(result.get(i).getId(),
-							result.get(i).getHealthStatus()));
+					HTMLControl.getHTMLStatusImage(result[i].getId(),
+							result[i].getHealthStatus()));
 			dataListSystem.setValue(i, 5,
-					HTMLControl.getHTMLActiveImage(result.get(i).isActive()));
+					HTMLControl.getHTMLActiveImage(result[i].isActive()));
 			dataListSystem
 					.setValue(
 							i,
 							6,
 							"<a onClick=\"javascript:showConfirmDialogBox('"
-									+ result.get(i).getCode()
+									+ result[i].getCode()
 									+ "','"
-									+ result.get(i).getId()
+									+ result[i].getId()
 									+ "');\" title=\"Delete\" class=\"icon-2 info-tooltip\"></a>");
 		}
 

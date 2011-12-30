@@ -3,10 +3,11 @@
  */
 package cmg.org.monitor.entity.shared;
 
-import java.io.Serializable;
 import java.util.Date;
 
-import cmg.org.monitor.ext.util.MonitorUtil;
+import cmg.org.monitor.util.shared.Utility;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
@@ -15,7 +16,7 @@ import cmg.org.monitor.ext.util.MonitorUtil;
  */
 
 @SuppressWarnings("serial")
-public class FileSystemMonitor implements Serializable {
+public class FileSystemMonitor implements IsSerializable {
 	private String name;
 	
 	private String mount;
@@ -76,7 +77,7 @@ public class FileSystemMonitor implements Serializable {
 	}
 
 	public void setSize(long size) {
-		this.size = MonitorUtil.parseFileSystemValue(size);
+		this.size = Utility.parseFileSystemValue(size);
 	}
 	
 
@@ -85,7 +86,7 @@ public class FileSystemMonitor implements Serializable {
 	}
 
 	public void setUsed(long used) {
-		this.used = MonitorUtil.parseFileSystemValue(used);
+		this.used = Utility.parseFileSystemValue(used);
 	}
 
 	public String getType() {

@@ -1,7 +1,5 @@
 package cmg.org.monitor.module.client;
 
-import java.util.ArrayList;
-
 import cmg.org.monitor.ext.model.shared.UserMonitor;
 import cmg.org.monitor.util.shared.HTMLControl;
 
@@ -24,10 +22,10 @@ public class UserManagement extends AncestorEntryPoint {
 	}
 
 	private void initContent() {
-		monitorGwtSv.listAllUsers(new AsyncCallback<ArrayList<UserMonitor>>() {
+		monitorGwtSv.listAllUsers(new AsyncCallback<UserMonitor[]>() {
 
 			@Override
-			public void onSuccess(ArrayList<UserMonitor> result) {
+			public void onSuccess(UserMonitor[] result) {
 				if (result != null) {
 					setVisibleLoadingImage(false);
 					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
@@ -47,36 +45,36 @@ public class UserManagement extends AncestorEntryPoint {
 		});
 	}
 
-	private AbstractDataTable createData(ArrayList<UserMonitor> listUser) {
+	private AbstractDataTable createData(UserMonitor[] listUser) {
 		DataTable data = DataTable.create();
 		data.addColumn(ColumnType.STRING, "Username");
 		data.addColumn(ColumnType.STRING, "Group");
 		data.addColumn(ColumnType.STRING, "Permission");
-		data.addRows(listUser.size());
+		data.addRows(listUser.length);
 
-		ArrayList<UserMonitor> sortUser = sortByname(listUser);
-		for (int j = 0; j < sortUser.size(); j++) {
+		UserMonitor[] sortUser = sortByname(listUser);
+		for (int j = 0; j < sortUser.length; j++) {
 
-			data.setValue(j, 0, sortUser.get(j).getId());
-			data.setValue(j, 1, sortUser.get(j).getGroupsName());
-			data.setValue(j, 2, sortUser.get(j).getRoleName());
+			data.setValue(j, 0, sortUser[j].getId());
+			data.setValue(j, 1, sortUser[j].getGroupsName());
+			data.setValue(j, 2, sortUser[j].getRoleName());
 		}
 		return data;
 	}
 
-	public ArrayList<UserMonitor> sortByname(ArrayList<UserMonitor> users) {
+	public UserMonitor[] sortByname(UserMonitor[] users) {
 		UserMonitor temp = null;
-		for (int i = 1; i < users.size(); i++) {
+		for (int i = 1; i < users.length; i++) {
 			int j;
-			UserMonitor val = users.get(i);
+			UserMonitor val = users[i];
 			for (j = i - 1; j > -1; j--) {
-				temp = users.get(j);
+				temp = users[j];
 				if (temp.compareByName(val) <= 0) {
 					break;
 				}
-				users.set(j + 1, temp);
+				users[j + 1] = temp;
 			}
-			users.set(j + 1, val);
+			users[j + 1] = val;
 		}
 		return users;
 	}
@@ -89,7 +87,7 @@ public class UserManagement extends AncestorEntryPoint {
 
 	}
 
-	private void drawTable(ArrayList<UserMonitor> listUser) {
+	private void drawTable(UserMonitor[] listUser) {
 		myTable.draw(createData(listUser), option());
 
 	}

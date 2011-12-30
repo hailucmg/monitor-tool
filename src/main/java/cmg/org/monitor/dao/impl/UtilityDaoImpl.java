@@ -7,8 +7,8 @@ import cmg.org.monitor.ext.model.shared.GroupMonitor;
 import cmg.org.monitor.ext.model.shared.UserMonitor;
 import cmg.org.monitor.memcache.Key;
 import cmg.org.monitor.memcache.MonitorMemcache;
+import cmg.org.monitor.services.Appforyourdomain;
 import cmg.org.monitor.services.SitesHelper;
-import cmg.org.monitor.util.shared.Appforyourdomain;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
 public class UtilityDaoImpl implements UtilityDAO {

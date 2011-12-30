@@ -2,7 +2,13 @@ package cmg.org.monitor.entity.shared;
 
 import java.util.Date;
 
-public class MailMonitor {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class MailMonitor implements IsSerializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2413988831812933493L;
 	private String sender;
 	private String subject;
 	private String contentType;
@@ -21,10 +27,10 @@ public class MailMonitor {
 	}
 	
 	public String getSender() {
-		return sender;
+		return sender.toLowerCase();
 	}
 	public void setSender(String sender) {
-		this.sender = sender;
+		this.sender = sender.toLowerCase();
 	}
 	public String getContentType() {
 		return contentType;

@@ -1,24 +1,37 @@
 package cmg.org.monitor.ext.model.shared;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
-@SuppressWarnings("serial")
+import cmg.org.monitor.entity.shared.CpuMonitor;
+import cmg.org.monitor.entity.shared.MemoryMonitor;
+import cmg.org.monitor.entity.shared.SystemMonitor;
+
 public class MonitorContainer implements Serializable {
 
-	private String[] groups;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7534556803682802817L;
 
+	private GroupMonitor[] groups;
+	
 	private String[] emails;
 
-	private String[] remoteURLs;
+	private String[] remoteUrls;
 	
-	private int select;	
+	private SystemMonitor sys;
+	
+	private MemoryMonitor[] rams;
+	
+	private MemoryMonitor[] swaps;
 
-	public String[] getRemoteURLs() {
-		return remoteURLs;
+	public GroupMonitor[] getGroups() {
+		return groups;
 	}
 
-	public void setRemoteURLs(String[] remoteURL) {
-		this.remoteURLs = remoteURL;
+	public void setGroups(GroupMonitor[] groups) {
+		this.groups = groups;
 	}
 
 	public String[] getEmails() {
@@ -29,21 +42,37 @@ public class MonitorContainer implements Serializable {
 		this.emails = emails;
 	}
 
-	public int getSelect() {
-		return select;
+	public String[] getRemoteUrls() {
+		return remoteUrls;
 	}
 
-	public void setSelect(int select) {
-		this.select = select;
+	public void setRemoteUrls(String[] remoteUrls) {
+		this.remoteUrls = remoteUrls;
 	}
 
-	public String[] getGroups() {
-		return groups;
+	public SystemMonitor getSys() {
+		return sys;
 	}
 
-	public void setGroups(String[] groups) {
-		this.groups = groups;
+	public void setSys(SystemMonitor sys) {
+		this.sys = sys;
 	}
 
+	public MemoryMonitor[] getRams() {
+		return rams;
+	}
 
+	public void setRams(MemoryMonitor[] rams) {
+		this.rams = rams;
+	}
+
+	public MemoryMonitor[] getSwaps() {
+		return swaps;
+	}
+
+	public void setSwaps(MemoryMonitor[] swaps) {
+		this.swaps = swaps;
+	}
+	
+	
 }

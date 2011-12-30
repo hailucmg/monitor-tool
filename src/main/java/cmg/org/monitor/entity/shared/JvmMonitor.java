@@ -1,10 +1,10 @@
 package cmg.org.monitor.entity.shared;
 
-import java.io.Serializable;
 import java.util.Date;
 
-@SuppressWarnings("serial")
-public class JvmMonitor implements Serializable {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class JvmMonitor implements IsSerializable {
 	
 	private double freeMemory;
 

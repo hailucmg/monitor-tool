@@ -21,6 +21,8 @@ import cmg.org.monitor.common.Constant;
  * @version 1.0
  */
 public class MonitorUtil {
+	/** Represent digit pattern value */
+	public static final String DIGIT_PATTERN = "\\d+";
 	public static String ARROW_STRING = " -> ";
 
 	public static String FREE_MEMORY = "freeMemory";
@@ -31,13 +33,7 @@ public class MonitorUtil {
 	private static final Logger logger = Logger.getLogger(MonitorUtil.class
 			.getCanonicalName());
 
-	public static long parseFileSystemValue(long value) {
-		return value * 1024 * 1024 * 1024;
-	}
-
-	public static long parseMemoryValue(long value) {
-		return value * 1024;
-	}
+	
 
 	public static String parseTime(long millis, boolean addArrow) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS");
@@ -99,6 +95,35 @@ public class MonitorUtil {
 			return null;
 		}
 
+	}
+	
+	public static String convertMemoryToString(double value) {
+		String temp = "";
+		value = value / 1024;
+		if (value >= 1024 * 1024) {
+			temp = String.format("%.1f",value / (1024 * 1024))
+					+ " GB";
+		} else if (value >= 1024) {
+			temp = String.format("%.1f",value / 1024) + " MB";
+		} else {
+			temp = String.format("%.1f", value) + " KB";
+		}
+
+		return temp;
+	}
+	
+	/**
+	 * Extract digit number from a string value
+	 * 
+	 * @param str
+	 * @return String value
+	 */
+	public static String extractDigit(String str) {
+		Pattern p = Pattern.compile(DIGIT_PATTERN);
+		Matcher m = p.matcher(str);
+		if (m.find())
+			return m.group();
+		return null;
 	}
 
 }

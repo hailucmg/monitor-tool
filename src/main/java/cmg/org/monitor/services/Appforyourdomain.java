@@ -1,7 +1,7 @@
 /**
  * 
  */
-package cmg.org.monitor.util.shared;
+package cmg.org.monitor.services;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import cmg.org.monitor.ext.model.shared.GroupMonitor;
 import cmg.org.monitor.ext.model.shared.UserMonitor;
+import cmg.org.monitor.util.shared.MonitorConstant;
 
 import com.google.gdata.client.appsforyourdomain.AppsGroupsService;
 import com.google.gdata.client.appsforyourdomain.UserService;

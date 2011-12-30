@@ -1,6 +1,6 @@
 package cmg.org.monitor.entity.shared;
 
-import java.io.Serializable;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * Interface that all our models/JDO entities must implement. Here we will
@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @author lamphan
  * 
  */
-public interface Model extends Serializable {
+public interface Model extends IsSerializable {
    
 	String KEY_FIELD = "encodedKey";
 	String KEY_TYPE = "String";

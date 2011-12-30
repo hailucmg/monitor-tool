@@ -2,7 +2,6 @@ package cmg.org.monitor.entity.shared;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -11,7 +10,6 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-@SuppressWarnings("serial")
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
 public class AlertStoreMonitor implements Model {
 

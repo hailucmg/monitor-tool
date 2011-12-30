@@ -2,6 +2,7 @@ package cmg.org.monitor.app.schedule;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,14 +18,12 @@ import cmg.org.monitor.dao.impl.AlertDaoImpl;
 import cmg.org.monitor.dao.impl.MailMonitorDaoImpl;
 import cmg.org.monitor.dao.impl.SystemDaoImpl;
 import cmg.org.monitor.dao.impl.UtilityDaoImpl;
-import cmg.org.monitor.entity.shared.AlertMonitor;
 import cmg.org.monitor.entity.shared.AlertStoreMonitor;
 import cmg.org.monitor.entity.shared.MailConfigMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.GroupMonitor;
 import cmg.org.monitor.ext.model.shared.UserMonitor;
 import cmg.org.monitor.ext.util.MonitorUtil;
-import cmg.org.monitor.services.MonitorService;
 import cmg.org.monitor.services.email.MailService;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
@@ -85,6 +84,7 @@ public class MailServiceScheduler extends HttpServlet {
 					for(int j = 0; j<allSystem.size();j++){
 						AlertStoreMonitor alertstore = alertDAO.getLastestAlertStore(allSystem.get(j));
 						alertstore.setName(MonitorConstant.ALERTSTORE_DEFAULT_NAME + ": "+MonitorUtil.parseTime(start, false));
+						alertstore.setTimeStamp(new Date(start));
 						user.addAlertStore(alertstore);
 					}
 				}
@@ -101,14 +101,17 @@ public class MailServiceScheduler extends HttpServlet {
 							mailService.sendMail(MonitorConstant.ALERTSTORE_DEFAULT_NAME + ": "+ MonitorUtil.parseTime(start, false), content, config);
 							logger.log(Level.INFO, "send mail" + content);
 						} catch (Exception e) {
-							e.printStackTrace();
 							logger.log(Level.INFO, "Can not send mail" + e.getMessage().toString());
 						}
 						
 					}
 					
 				}
-				
+				for (SystemMonitor sys : systems) {
+					AlertStoreMonitor store = alertDAO.getLastestAlertStore(sys);
+					alertDAO.putAlertStore(store);
+					alertDAO.clearTempStore(sys);
+				}
 				
 				
 			}

@@ -1,7 +1,6 @@
 package cmg.org.monitor.app.schedule;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -10,9 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import cmg.org.monitor.dao.SystemDAO;
-import cmg.org.monitor.dao.impl.SystemDaoImpl;
-import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.services.MonitorService;
 

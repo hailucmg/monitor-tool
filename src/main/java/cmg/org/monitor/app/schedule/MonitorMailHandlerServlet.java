@@ -41,6 +41,7 @@ public class MonitorMailHandlerServlet extends HttpServlet {
 			// BEGIN LOG
 			MailMonitorDAO mailDAO = new MailMonitorDaoImpl();
 			MailMonitor mail = MailService.receiveMail(req.getInputStream());
+			logger.log(Level.INFO, mail.toString());
 			mailDAO.putMailMonitor(mail);			
 			// END LOG
 			long end = System.currentTimeMillis();
@@ -49,6 +50,7 @@ public class MonitorMailHandlerServlet extends HttpServlet {
 					+ (end - start) + " ms.");
 			// END LOG
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.log(Level.WARNING,
 					"Failure in receiving email : " + e.getMessage());
 		}

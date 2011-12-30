@@ -1,10 +1,11 @@
 package cmg.org.monitor.entity.shared;
 
-import java.io.Serializable;
 import java.util.Date;
 
-@SuppressWarnings("serial")
-public class CpuMonitor implements Serializable {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+
+public class CpuMonitor implements IsSerializable {
 	private int cpuUsage;
 
 	private int totalCpu;

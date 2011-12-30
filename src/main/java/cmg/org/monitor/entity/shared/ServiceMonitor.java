@@ -1,7 +1,8 @@
 package cmg.org.monitor.entity.shared;
 
-import java.io.Serializable;
 import java.util.Date;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * Model/entity representation of a network.
@@ -11,7 +12,7 @@ import java.util.Date;
  */
 
 @SuppressWarnings("serial")
-public class ServiceMonitor implements Serializable {
+public class ServiceMonitor implements IsSerializable {
 
 	private String name;
 
@@ -59,7 +60,7 @@ public class ServiceMonitor implements Serializable {
 	}
 
 	public String getName() {
-		return name;
+		return name == null ? "N/A" : name;
 	}
 
 	public void setName(String name) {

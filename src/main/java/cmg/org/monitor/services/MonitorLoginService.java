@@ -1,9 +1,13 @@
 package cmg.org.monitor.services;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import cmg.org.monitor.dao.UtilityDAO;
+import cmg.org.monitor.dao.impl.UtilityDaoImpl;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
+import cmg.org.monitor.ext.model.shared.UserMonitor;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 import cmg.org.monitor.util.shared.Utility;
@@ -29,7 +33,7 @@ public class MonitorLoginService {
 				userLogin.setEmail(user.getEmail());
 				userLogin.setNickName(user.getNickname());
 				userLogin.setUserId(user.getUserId());
-				userLogin.setRole(Utility.getSystemRole(user.getEmail()));				
+				userLogin.setRole(MonitorLoginService.getSystemRole(user.getEmail()));				
 				userLogin.setLogin(true);
 			}
 
@@ -37,5 +41,20 @@ public class MonitorLoginService {
 			logger.log(Level.SEVERE, "ERROR when login. Message: " + ex.getMessage());
 		}
 		return userLogin;
+	}
+	
+	public static int getSystemRole(String userId) throws Exception {
+		int role = MonitorConstant.ROLE_GUEST;
+		UtilityDAO utilDAO = new UtilityDaoImpl();		
+		ArrayList<UserMonitor> users = utilDAO.listAllUsers();
+		if (users != null && users.size() > 0) {
+			for (UserMonitor user : users) {
+				if (user.getId().equalsIgnoreCase(userId)) {
+					role = user.getRole();
+					break;
+				}
+			}
+		}
+		return role;
 	}
 }

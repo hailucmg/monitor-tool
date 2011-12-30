@@ -31,6 +31,12 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 
 	protected static Timer timerMess;
 	protected static Timer timerReload;
+	
+	protected static Timer timerJvm = null;
+	protected static Timer timerCpu = null;
+	protected static Timer timerMem = null;
+	protected static Timer timerService = null;
+	protected static Timer timerFilesystem = null;
 
 	protected String hash;
 
@@ -92,6 +98,26 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 			timerReload.cancel();
 			timerReload = null;
 		}
+		if (timerCpu != null) {
+			timerCpu.cancel();
+			timerCpu = null;
+		}
+		if (timerFilesystem != null) {
+			timerFilesystem.cancel();
+			timerFilesystem = null;
+		}
+		if (timerJvm != null) {
+			timerJvm.cancel();
+			timerJvm = null;
+		}
+		if (timerMem != null) {
+			timerMem.cancel();
+			timerMem = null;
+		}
+		if (timerService != null) {
+			timerService.cancel();
+			timerService = null;
+		}
 		setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
 		setVisibleWidget(HTMLControl.ID_MESSAGE_YELLOW, false);
 		setVisibleWidget(HTMLControl.ID_MESSAGE_RED, false);
@@ -137,7 +163,7 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 
 	private void initHash(String hash) {
 		currentUrl = HTMLControl.trimHashPart(Window.Location.getHref());
-		if (hash == null || hash.equals("")) {
+		if (hash == null || hash.equals("") || hash.equals("dashboard/reload")) {
 			Window.Location.replace(currentUrl
 					+ HTMLControl.HTML_DASHBOARD_NAME);
 		} else if (HTMLControl.validIndex(hash)) {
@@ -261,8 +287,8 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 	protected static void showReloadCountMessage(final int typeMessage) {
 		count = MonitorConstant.REFRESH_RATE / 1000;
 		if (timerMess != null) {
-			setVisibleMessage(false, typeMessage);
 			timerMess.cancel();
+			timerMess = null;
 		}
 		showMessage(
 				"Latest status of systems. Update in "
@@ -275,9 +301,6 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 						+ HTMLControl.getStringTime(--count),
 						"#dashboard/reload", "<input type=\"button\"  class=\"form-reload\">", typeMessage, false);
 				if (count <= 0) {
-					setVisibleMessage(false, typeMessage);
-					Window.Location.replace(Window.Location.getHref()
-							+ HTMLControl.PAGE_DASHBOARD);
 					this.cancel();
 				}
 			}

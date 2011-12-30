@@ -15,8 +15,8 @@ import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.memcache.Key;
 import cmg.org.monitor.memcache.MonitorMemcache;
+import cmg.org.monitor.services.PMF;
 import cmg.org.monitor.util.shared.MonitorConstant;
-import cmg.org.monitor.util.shared.PMF;
 
 public class AlertDaoImpl implements AlertDao {
 

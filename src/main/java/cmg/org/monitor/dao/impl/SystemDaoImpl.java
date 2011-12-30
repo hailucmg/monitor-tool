@@ -12,7 +12,7 @@ import cmg.org.monitor.dao.SystemDAO;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.memcache.Key;
 import cmg.org.monitor.memcache.MonitorMemcache;
-import cmg.org.monitor.util.shared.PMF;
+import cmg.org.monitor.services.PMF;
 
 public class SystemDaoImpl implements SystemDAO {
 	private static final Logger logger = Logger.getLogger(SystemDaoImpl.class
@@ -26,15 +26,13 @@ public class SystemDaoImpl implements SystemDAO {
 	}
 
 	@Override
-	public String[] remoteURLs() throws Exception {
+	public String[] listRemoteURLs() throws Exception {
 		String[] remoteURLs = null;
 		ArrayList<SystemMonitor> list = listSystemsFromMemcache(false);
-		if (list != null) {
-			if (list.size() > 0) {
-				remoteURLs = new String[list.size()];
-				for (int i = 0; i < list.size(); i++) {
-					remoteURLs[i] = list.get(0).getRemoteUrl();
-				}
+		if (list != null && list.size() > 0) {
+			remoteURLs = new String[list.size()];
+			for (int i = 0; i < list.size(); i++) {
+				remoteURLs[i] = list.get(0).getRemoteUrl();
 			}
 		}
 		return remoteURLs;
@@ -60,10 +58,14 @@ public class SystemDaoImpl implements SystemDAO {
 			}
 			pm.currentTransaction().commit();
 		} catch (Exception ex) {
+			logger.log(Level.SEVERE, " ERROR when list systems JDO. Message: "
+					+ ex.getMessage());
+			pm.currentTransaction().rollback();
 			throw ex;
 		} finally {
 			query.closeAll();
 			pm.close();
+			storeSysList(systems);
 		}
 		return systems;
 	}
@@ -79,6 +81,8 @@ public class SystemDaoImpl implements SystemDAO {
 			pm.currentTransaction().commit();
 			check = true;
 		} catch (Exception ex) {
+			logger.log(Level.SEVERE, " ERROR when remove system JDO. Message: "
+					+ ex.getMessage());
 			pm.currentTransaction().rollback();
 			throw ex;
 		} finally {
@@ -88,22 +92,25 @@ public class SystemDaoImpl implements SystemDAO {
 	}
 
 	@Override
-	public boolean updateSystem(SystemMonitor sys) throws Exception {
+	public boolean updateSystem(SystemMonitor sys, boolean reloadMemcache)
+			throws Exception {
 		initPersistence();
 		boolean check = false;
 		try {
 			pm.currentTransaction().begin();
-			SystemMonitor tempSys = pm.getObjectById(SystemMonitor.class,
-					sys.getId());
-			tempSys.swapValue(sys);
-			pm.makePersistent(tempSys);
+			pm.makePersistent(sys);
 			pm.currentTransaction().commit();
 			check = true;
 		} catch (Exception ex) {
+			logger.log(Level.SEVERE, " ERROR when update system JDO. Message: "
+					+ ex.getMessage());
 			pm.currentTransaction().rollback();
 			throw ex;
 		} finally {
 			pm.close();
+			if (reloadMemcache) {
+				listSystems(false);
+			}
 		}
 		return check;
 	}
@@ -127,45 +134,38 @@ public class SystemDaoImpl implements SystemDAO {
 	}
 
 	@Override
-	public boolean addSystem(SystemMonitor system) throws Exception {
+	public boolean addSystem(SystemMonitor system, String code)
+			throws Exception {
 		initPersistence();
 		boolean check = false;
 		try {
 			pm.currentTransaction().begin();
 			SystemMonitor tempSys = new SystemMonitor();
 			tempSys.swapValue(system);
+			tempSys.setCode(code);
 			pm.makePersistent(tempSys);
 			pm.currentTransaction().commit();
 			check = true;
 		} catch (Exception e) {
-			throw e;
+			logger.log(Level.SEVERE, " ERROR when add system JDO. Message: "
+					+ e.getMessage());
+			pm.currentTransaction().rollback();
 		} finally {
 			pm.close();
+			listSystems(false);
 		}
 		return check;
 	}
 
 	@Override
-	public boolean deleteSystem(SystemMonitor sys) throws Exception {
-		initPersistence();
-		boolean check = false;
-		try {
-			pm.currentTransaction().begin();
-			SystemMonitor system = pm.getObjectById(SystemMonitor.class,
-					sys.getId());
-			system.setDeleted(true);
-			system.setActive(false);
-			pm.makePersistent(system);
-			pm.currentTransaction().commit();
-			check = true;
-		} catch (Exception e) {
-			throw e;
-		} finally {
-			pm.close();
-		}
-		return check;
+	public boolean deleteSystem(String sysId) throws Exception {
+		SystemMonitor system = getSystemById(sysId);
+		system.setDeleted(true);
+		system.setActive(false);
+		return updateSystem(system, true);
 	}
 
+	@Override
 	public String createSID() throws Exception {
 		initPersistence();
 		String SID = null;
@@ -196,6 +196,9 @@ public class SystemDaoImpl implements SystemDAO {
 			}
 			pm.currentTransaction().commit();
 		} catch (Exception e) {
+			pm.currentTransaction().rollback();
+			logger.log(Level.SEVERE, "ERROR when create system Code. Message: "
+					+ e.getMessage());
 			throw e;
 		} finally {
 			q.closeAll();
@@ -232,6 +235,43 @@ public class SystemDaoImpl implements SystemDAO {
 	@Override
 	public void storeSysList(ArrayList<SystemMonitor> list) {
 		MonitorMemcache.put(Key.create(Key.SYSTEM_MONITOR_STORE), list);
+	}
+
+	@Override
+	public String[] listEmails() {
+		String[] emails = null;
+		ArrayList<SystemMonitor> list = listSystemsFromMemcache(false);
+		if (list != null && list.size() > 0) {
+			emails = new String[list.size()];
+			for (int i = 0; i < list.size(); i++) {
+				emails[i] = list.get(0).getEmailRevice();
+			}
+		}
+		return emails;
+	}
+
+	@Override
+	public boolean editSystem(SystemMonitor sys) throws Exception {
+		SystemMonitor temp = getSystemById(sys.getId());
+		temp.setName(sys.getName());
+		temp.setUrl(sys.getUrl());
+		temp.setProtocol(sys.getProtocol());
+		temp.setGroupEmail(sys.getGroupEmail());
+		temp.setIp(sys.getIp());
+		temp.setEmailRevice(sys.getEmailRevice());
+		temp.setRemoteUrl(sys.getRemoteUrl());
+		temp.setActive(sys.isActive());
+		return updateSystem(temp, true);
+	}
+
+	@Override
+	public boolean updateStatus(SystemMonitor sys, boolean status,
+			String healthStatus) throws Exception {
+		SystemMonitor temp = getSystemById(sys.getId());
+		temp.setStatus(status);
+		temp.setHealthStatus(healthStatus);
+		updateSystem(temp, false);
+		return false;
 	}
 
 }

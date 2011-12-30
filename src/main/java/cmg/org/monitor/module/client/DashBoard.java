@@ -1,7 +1,5 @@
 package cmg.org.monitor.module.client;
 
-import java.util.ArrayList;
-
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
@@ -36,7 +34,7 @@ public class DashBoard extends AncestorEntryPoint {
 
 	private static HTML buttonStatistic;
 
-	private ArrayList<SystemMonitor> systems;
+	private SystemMonitor[] systems;
 
 	private FlexTable flexTable;
 
@@ -123,16 +121,19 @@ public class DashBoard extends AncestorEntryPoint {
 	 * Create callback to server via RPC
 	 */
 	void callBack() {
-		monitorGwtSv.listSystems(new AsyncCallback<ArrayList<SystemMonitor>>() {
+		monitorGwtSv.listSystems(new AsyncCallback<SystemMonitor[]>() {
 			@Override
 			public void onFailure(Throwable caught) {
 				showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
 				showMessage("Server error. ", HTMLControl.HTML_DASHBOARD_NAME,
 						"Try again.", HTMLControl.RED_MESSAGE, true);
+				setVisibleLoadingImage(false);
+				setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+				setOnload(false);
 			}
 
 			@Override
-			public void onSuccess(ArrayList<SystemMonitor> result) {
+			public void onSuccess(SystemMonitor[] result) {
 				showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
 				setVisibleLoadingImage(false);
 				setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
@@ -146,37 +147,37 @@ public class DashBoard extends AncestorEntryPoint {
 	/*
 	 * Draw table ui with result callback from server via RPC
 	 */
-	void drawTable(ArrayList<SystemMonitor> result) {
-		if (result != null && result.size() > 0) {
+	void drawTable(SystemMonitor[] result) {
+		if (result != null && result.length > 0) {
 			createDataListSystem();
-			dataListSystem.addRows(result.size());
-			for (int i = 0; i < result.size(); i++) {
+			dataListSystem.addRows(result.length);
+			for (int i = 0; i < result.length; i++) {
 				dataListSystem.setValue(i, 0, HTMLControl.getLinkSystemDetail(
-						result.get(i).getId(), result.get(i).getCode()));
+						result[i].getId(), result[i].getCode()));
 				dataListSystem.setValue(
 						i,
 						1,
-						result.get(i).getName());
+						result[i].getName());
 				dataListSystem.setValue(
 						i,
 						2,
-						result.get(i).getUrl());
+						result[i].getUrl());
 				dataListSystem
-						.setValue(i, 3, result.get(i).getIp());
+						.setValue(i, 3, result[i].getIp());
 				dataListSystem
 						.setValue(
 								i,
 								4,
-								result.get(i).getLastestCpuUsage());
+								result[i].getLastestCpuUsage());
 				dataListSystem
 						.setValue(
 								i,
 								5,
-								result.get(i).getLastestMemoryUsage());
+								result[i].getLastestMemoryUsage());
 				dataListSystem.setValue(i, 6, HTMLControl.getHTMLStatusImage(
-						result.get(i).getId(), result.get(i).getHealthStatus()));
+						result[i].getId(), result[i].getHealthStatus()));
 				dataListSystem.setValue(i, 7,
-						HTMLControl.getHTMLActiveImage(result.get(i).isActive()));
+						HTMLControl.getHTMLActiveImage(result[i].isActive()));
 			}
 			createFormatDataTableListSystem();
 			setVisibleMessage(false, HTMLControl.RED_MESSAGE);

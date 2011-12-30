@@ -68,7 +68,7 @@ public class MonitorService {
 								.getProtocol())) {
 							MailMonitorDAO mailDAO = new MailMonitorDaoImpl();
 							MailMonitor mail = mailDAO.getMailMonitor(aSystem
-									.getEmailRevice());
+									.getEmailRevice().toLowerCase());
 							// clear store after get data
 							mailDAO.clearMailStore(aSystem.getEmailRevice());
 							if (mail != null) {
@@ -120,7 +120,7 @@ public class MonitorService {
 
 				}// if-else
 				try {
-					systemDao.updateSystem(aSystem);
+					systemDao.updateSystem(aSystem, false);
 				} catch (Exception ex) {
 					logger.log(
 							Level.SEVERE,
