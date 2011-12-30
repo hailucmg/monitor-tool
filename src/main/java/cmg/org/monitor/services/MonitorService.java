@@ -26,6 +26,8 @@ public class MonitorService {
 	private static final Logger logger = Logger.getLogger(MonitorService.class
 			.getCanonicalName());
 
+
+	
 	public static void  monitor() throws MonitorException {
 		SystemDAO systemDao = new SystemDaoImpl();
 		ArrayList<SystemMonitor> systems = null;
