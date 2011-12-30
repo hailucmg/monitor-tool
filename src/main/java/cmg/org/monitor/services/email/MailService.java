@@ -10,9 +10,7 @@ import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Properties;
-import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,10 +22,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import cmg.org.monitor.common.Constant;
-import cmg.org.monitor.dao.MailMonitorDAO;
 import cmg.org.monitor.dao.SystemDAO;
 import cmg.org.monitor.dao.impl.AlertDaoImpl;
-import cmg.org.monitor.dao.impl.MailMonitorDaoImpl;
 import cmg.org.monitor.dao.impl.SystemDaoImpl;
 import cmg.org.monitor.entity.shared.AlertMonitor;
 import cmg.org.monitor.entity.shared.AlertStoreMonitor;
@@ -58,7 +54,7 @@ public class MailService {
 	public static final String CONTENT_DISPOSITION = "inline";
 	public static final String CONTENT_TRANSFER_ENCODING = "7bit";
 	public static final String FORMAT = "flowed";
-	public static final String CHARSET = "ISO-8859-1";
+	public static final String CHARSET = "UTF-8";
 	public static final String CONTENT_TYPE = "text/html";
 	public static final String MIME_VERSION = "1.0";
 	public static final String MONITOR_USER_NAME = "Monitor User";
@@ -246,44 +242,46 @@ public class MailService {
 			return null;
 		}
 	}
-
-	public String createMailContent(ArrayList<AlertStoreMonitor> stores) throws Exception {
-		StringBuffer content =new StringBuffer();
+	public static String createMailContent(ArrayList<AlertStoreMonitor> stores) throws Exception {
+		String content ="";
 		SystemDAO sysDAO = new SystemDaoImpl();
-		content.append("<html><head></head><body><div align=\"center\" style=\"COLOR:black;FONT-SIZE:15pt\">Alert Email from C-MG monitor</div>");
-		content.append("<div><ul>");
+		content+="<html><HEAD align=\"center\">ALERT MAIL<HEAD><body>";
+		content+="<OL>";
 		for(int i =0;i < stores.size();i++){
 			AlertStoreMonitor alertstore = stores.get(i);
 			SystemMonitor system = sysDAO.getSystemById(alertstore.getSysId());
 			ArrayList<AlertMonitor> alerts = (ArrayList<AlertMonitor>) alertstore.getAlerts();
-			content.append("<li style=\"COLOR:blue;FONT-SIZE:12pt\">");
-			content.append("<a href=\"\">");
-			content.append(system.getCode());
-			content.append("</a>");
-			content.append("<Ol>");
+			content+="<LI>";
+			content+= HTMLControl.getLinkSystemStatistic(system);
 			for(int j = 0; j < alerts.size();j++){
-				content.append("<li style=\"COLOR:red;FONT-SIZE:10pt\">");
-				content.append("Time:" + alerts.get(j).getTimeStamp().toString());
-				content.append("<br>Error:" + alerts.get(j).getError().toString());
-				content.append("<br>Detail:" + alerts.get(j).getDescription().toString());
-				content.append("</li>");
+				if(j>0){
+				content+="<br>";
+				}
+				content+="<UL>Time " + MonitorUtil.parseTimeEmail(alerts.get(0).getTimeStamp())+"</UL>";
+				content+="<UL>Error " + alerts.get(j).getError()+"</UL>";
+				content+="<UL>Detail " + alerts.get(j).getDescription()+"</UL>";
+				
+				
 			}
-			content.append("</Ol>");
+			content+="</LI>";
 		}
-		content.append("</ul></div>");
-		content.append("<div><p style=\"COLOR:black;FONT-SIZE:15pt\"><b>(*)Note:Send me a email like below if you want to config email:</b></p>");
-		content.append("<ul><li>inbox=true/false;(choose true if you want us send mail to your inbox else if you chose false our alert email will sent you to the label that name: alert monitor and you can config the label you want in this next step)</li>");
-		content.append("<li>starred= true/false;(choose true if you want my mail is starred in your mail)</li>");
-		content.append("<li>maskAsUnread=false/true;(choose true if you want my mail mark as unread)</li>");
-		content.append("<li>label=alert monitor/or something;(give me a name you want our alert email going to,We will create automatic a space to store this)</li>");
-		content.append("</ul></p></div>");
-		content.append("<b>------------------------------<wbr>------------------------------<wbr>------------------------------<wbr>-----</b>");
-		content.append("<p><b>Monitor C-MG</b></p>");
-		content.append("<p>Monitor - Admin<br><span style=\"COLOR:black;FONT-SIZE:8.5pt\"></span></p>");
-		content.append("<p><b><span style=\"FONT-FAMILY:'Courier New';COLOR:black\">Claybourne McGregor Consulting Ltd</span></b><span style=\"FONT-FAMILY:'Courier New';COLOR:black;FONT-SIZE:10pt\"></span></p>");
-		content.append("<p><span style=\"COLOR:black;FONT-SIZE:8.5pt\">");
-		content.append("<img border=\"0\" alt=\"cmg-logo-email\" src=\"\" width=\"255\" height=\"90\">");
-		content.append("</span></p></body></html>");
-		return content.toString();
+		
+		content+="</OL>";
+		content+="<p>(*)Send me a mail to config our alert email coming to your inbox like below</p>";
+		content+="<p>inbox value - on|off;<br>";
+		content+="starred  value - on|off;<br>";
+		content+="markAsUnread value - on|off;<br>";
+		content+="label value - Monitor Alert; </p>";
+		content+="<p><or><li><i>With the choosen of inbox you can choose on or off if you want or don't our alert email sending to your inbox !  </i></li>";
+		content+="<li><i>With the choosen of starred you can choose on or off if you want or don't alert email is starred in your mail !  </i></li>";
+		content+="<li><i>With the choosen of markAsUnread you can choose on or off if you want or don't alert email is marked !  </i></li>";
+		content+="<li><i>With the choosen of label,you can create any thing to set up a label that our alert email sending to this!</i></li></or></p>";
+		content+="<p>----------------------------------------------------------------------------------------------------------- </p>";
+		content+="<p><i>Thank and Best Regard</i></p>";
+		content+="<p><strong> ADMIN-MONITOR</strong></p>";
+		content+="<p><img src=\""+ MonitorConstant.IMAGES_FOR_EMAIL +"\" width=\"255\" height=\"90\" /> </p>";
+		content+="</body></html>";
+		return content;
 	}
+	
 }
