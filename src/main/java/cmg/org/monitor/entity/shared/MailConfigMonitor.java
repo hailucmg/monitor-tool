@@ -36,7 +36,7 @@ public class MailConfigMonitor implements Model {
 		this.label = DEFAULT_LABEL;
 		this.isStarred = false;
 		this.isInbox = true;
-		this.isMarkAsUnread = false;
+		this.isMarkAsUnread = true;
 	}
 
 	@Override
