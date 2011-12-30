@@ -1,5 +1,6 @@
 package cmg.org.monitor.entity.shared;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.jdo.annotations.Extension;
@@ -15,7 +16,12 @@ import javax.jdo.annotations.PrimaryKey;
  */
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-public class SystemMonitor implements Model {
+public class SystemMonitor implements Serializable  {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	public static final String STATUS_SMILE = "smile";
 	public static final String STATUS_BORED = "bored";
 	public static final String STATUS_DEAD = "dead";	
@@ -113,7 +119,6 @@ public class SystemMonitor implements Model {
 		lastestMemoryUsage = sys.getLastestMemoryUsage();
 	}
 
-	@Override
 	public String getId() {
 		return encodedKey;
 	}
@@ -256,5 +261,6 @@ public class SystemMonitor implements Model {
 	public void setEmailRevice(String emailRevice) {
 		this.emailRevice = emailRevice;
 	}
+
 
 }

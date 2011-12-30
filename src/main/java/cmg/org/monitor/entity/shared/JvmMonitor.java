@@ -1,11 +1,15 @@
 package cmg.org.monitor.entity.shared;
 
+import java.io.Serializable;
 import java.util.Date;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
-public class JvmMonitor implements IsSerializable {
+public class JvmMonitor implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5027602085427688515L;
+
 	private double freeMemory;
 
 	private double totalMemory;

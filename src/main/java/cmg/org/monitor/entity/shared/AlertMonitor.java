@@ -1,5 +1,6 @@
 package cmg.org.monitor.entity.shared;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.jdo.annotations.Extension;
@@ -14,7 +15,12 @@ import javax.jdo.annotations.PrimaryKey;
  * @version 1.0
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-public class AlertMonitor implements Model {
+public class AlertMonitor implements Serializable {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final int CANNOT_GATHER_DATA = 0x001;
 	public static final int HIGH_USAGE_LEVEL_CPU = 0x002;
 	public static final int HIGH_USAGE_LEVEL_JVM = 0x003;
@@ -23,10 +29,6 @@ public class AlertMonitor implements Model {
 	public static final int SERVICE_HIGH_LEVEL_PING_TIME = 0x006;
 	public static final int SERVICE_ERROR_STATUS = 0x007;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -117,5 +119,6 @@ public class AlertMonitor implements Model {
 	public void setType(int type) {
 		this.type = type;
 	}
+
 
 } // End class

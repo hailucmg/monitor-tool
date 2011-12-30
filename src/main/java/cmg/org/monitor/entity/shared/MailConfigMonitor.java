@@ -1,5 +1,7 @@
 package cmg.org.monitor.entity.shared;
 
+import java.io.Serializable;
+
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -8,7 +10,14 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-public class MailConfigMonitor implements Model {
+public class MailConfigMonitor implements Serializable {
+
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String DEFAULT_LABEL = "Monitor Alert";
 
 	@PrimaryKey
@@ -38,7 +47,6 @@ public class MailConfigMonitor implements Model {
 		this.isMarkAsUnread = true;
 	}
 
-	@Override
 	public String getId() {
 		return id;
 	}
@@ -94,6 +102,7 @@ public class MailConfigMonitor implements Model {
 		sf.append("\r\nInbox: " + isInbox);
 		sf.append("\r\nMark as Unread: " + isMarkAsUnread + "\r\n");
 		return sf.toString();
-	}	
+	}
+
 	
 }

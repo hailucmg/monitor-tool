@@ -1,10 +1,9 @@
 package cmg.org.monitor.entity.shared;
 
+import java.io.Serializable;
 import java.util.Date;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
-public class MailMonitor implements IsSerializable {
+public class MailMonitor implements Serializable {
 	/**
 	 * 
 	 */
@@ -56,4 +55,5 @@ public class MailMonitor implements IsSerializable {
 	public void setSubject(String subject) {
 		this.subject = subject;
 	}
+
 }

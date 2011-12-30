@@ -103,7 +103,7 @@ public class MonitorService {
 
 					} catch (Exception e) {
 						aSystem.setStatus(false);
-						// TODO put alert to store
+					
 						logger.log(Level.INFO, " ->ERROR: when revice content"
 								+ e.getMessage());
 					}

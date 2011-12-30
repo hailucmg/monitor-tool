@@ -3,20 +3,22 @@
  */
 package cmg.org.monitor.entity.shared;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import cmg.org.monitor.util.shared.Utility;
-
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
  * @author admin
  *
  */
+public class FileSystemMonitor implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8037940537272799331L;
 
-@SuppressWarnings("serial")
-public class FileSystemMonitor implements IsSerializable {
 	private String name;
 	
 	private String mount;
@@ -112,5 +114,6 @@ public class FileSystemMonitor implements IsSerializable {
 	public void setMount(String mount) {
 		this.mount = mount;
 	}
+
 	
 }

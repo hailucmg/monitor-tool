@@ -1,8 +1,10 @@
 package cmg.org.monitor.entity.shared;
 
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.Serializable;
 import java.util.Date;
-
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * Model/entity representation of a network.
@@ -11,8 +13,12 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  */
 
-@SuppressWarnings("serial")
-public class ServiceMonitor implements IsSerializable {
+public class ServiceMonitor implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8780862012781955762L;
 
 	private String name;
 

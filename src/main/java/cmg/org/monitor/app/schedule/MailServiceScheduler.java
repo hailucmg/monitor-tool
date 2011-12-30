@@ -47,7 +47,7 @@ public class MailServiceScheduler extends HttpServlet {
 		doSchedule();
 	}
 
-	public  void doSchedule() {
+	public void doSchedule() {
 		// BEGIN LOG
 		long start = System.currentTimeMillis();
 		logger.log(Level.INFO, MonitorUtil.parseTime(start, true)
@@ -76,47 +76,65 @@ public class MailServiceScheduler extends HttpServlet {
 					}
 				}
 			}
-			
+
 			for (int i = 0; i < listUsers.size(); i++) {
 				UserMonitor user = listUsers.get(i);
-				ArrayList<SystemMonitor> allSystem = listUsers.get(i).getSystems();
-				if(allSystem!=null){
-					for(int j = 0; j<allSystem.size();j++){
-						AlertStoreMonitor alertstore = alertDAO.getLastestAlertStore(allSystem.get(j));
-						alertstore.setName(MonitorConstant.ALERTSTORE_DEFAULT_NAME + ": "+MonitorUtil.parseTime(start, false));
-						alertstore.setTimeStamp(new Date(start));
-						user.addAlertStore(alertstore);
+				ArrayList<SystemMonitor> allSystem = listUsers.get(i)
+						.getSystems();
+				if (allSystem != null) {
+					for (int j = 0; j < allSystem.size(); j++) {
+						AlertStoreMonitor alertstore = alertDAO
+								.getLastestAlertStore(allSystem.get(j));
+						if (alertstore != null) {
+							alertstore
+									.setName(MonitorConstant.ALERTSTORE_DEFAULT_NAME
+											+ ": "
+											+ MonitorUtil.parseTime(start,
+													false));
+							alertstore.setTimeStamp(new Date(start));
+							user.addAlertStore(alertstore);
+						}
 					}
 				}
 			}
-			
-			if(listUsers!=null && listUsers.size() > 0){
-				for(int i= 0;i< listUsers.size();i++){
+
+			if (listUsers != null && listUsers.size() > 0) {
+				for (int i = 0; i < listUsers.size(); i++) {
 					UserMonitor user = listUsers.get(i);
-					if(user.getStores()!=null && user.getStores().size() > 0){
-						MailConfigMonitor config = mailDAO.getMailConfig(user.getId());
-						
+					if (user.getStores() != null && user.getStores().size() > 0) {
+						MailConfigMonitor config = mailDAO.getMailConfig(user
+								.getId());
+
 						try {
-							String content = MailService.createMailContent(user.getStores());
-							mailService.sendMail(MonitorConstant.ALERTSTORE_DEFAULT_NAME + ": "+ MonitorUtil.parseTime(start, false), content, config);
+							String content = MailService.createMailContent(user
+									.getStores());
+							mailService.sendMail(
+									MonitorConstant.ALERTSTORE_DEFAULT_NAME
+											+ ": "
+											+ MonitorUtil.parseTime(start,
+													false), content, config);
 							logger.log(Level.INFO, "send mail" + content);
 						} catch (Exception e) {
-							logger.log(Level.INFO, "Can not send mail" + e.getMessage().toString());
+							logger.log(Level.INFO, "Can not send mail"
+									+ e.getMessage().toString());
 						}
-						
+
 					}
-					
+
 				}
 				for (SystemMonitor sys : systems) {
-					AlertStoreMonitor store = alertDAO.getLastestAlertStore(sys);
+					AlertStoreMonitor store = alertDAO
+							.getLastestAlertStore(sys);
 					alertDAO.putAlertStore(store);
 					alertDAO.clearTempStore(sys);
 				}
-				
-				
+
 			}
-			for(SystemMonitor sys : systems){
+			for (SystemMonitor sys : systems) {
 				AlertStoreMonitor asm = alertDAO.getLastestAlertStore(sys);
+				asm.setName(MonitorConstant.ALERTSTORE_DEFAULT_NAME + ": "
+						+ MonitorUtil.parseTime(start, false));
+				asm.setTimeStamp(new Date(start));
 				alertDAO.putAlertStore(asm);
 				alertDAO.clearTempStore(sys);
 			}

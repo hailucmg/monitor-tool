@@ -1,11 +1,16 @@
 package cmg.org.monitor.entity.shared;
 
+import java.io.Serializable;
 import java.util.Date;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 
+public class CpuMonitor implements Serializable {
 
-public class CpuMonitor implements IsSerializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -796804579167614290L;
+
 	private int cpuUsage;
 
 	private int totalCpu;
@@ -70,4 +75,6 @@ public class CpuMonitor implements IsSerializable {
 	public void setTimeStamp(Date timeStamp) {
 		this.timeStamp = timeStamp;
 	}
+
+
 }

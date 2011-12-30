@@ -1,5 +1,6 @@
 package cmg.org.monitor.entity.shared;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -11,7 +12,12 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-public class AlertStoreMonitor implements Model {
+public class AlertStoreMonitor implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -44,7 +50,6 @@ public class AlertStoreMonitor implements Model {
 	@Persistent
 	private Date timeStamp;
 
-	@Override
 	public String getId() {
 		return id;
 	}
@@ -109,5 +114,7 @@ public class AlertStoreMonitor implements Model {
 	public void setSysId(String sysId) {
 		this.sysId = sysId;
 	}
+
+
 
 }

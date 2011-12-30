@@ -18,14 +18,10 @@
 	<entry-point class="cmg.org.monitor.module.client.DashBoard" />
 	<entry-point class="cmg.org.monitor.module.client.SystemManagement" />
 	<entry-point class="cmg.org.monitor.module.client.UserManagement" />
-	<!-- 
-	
-	<entry-point class="cmg.org.monitor.module.client.SystemDetail" />
 	<entry-point class="cmg.org.monitor.module.client.AddnewSystem" />	
-	
 	<entry-point class="cmg.org.monitor.module.client.EditSystem" />
-	 -->
-	<!-- END Entry point -->
+	<entry-point class="cmg.org.monitor.module.client.SystemDetail" />
+		<!-- END Entry point -->
 
 	<!-- START Source -->
 	<source path='client' />
