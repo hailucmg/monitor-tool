@@ -287,10 +287,9 @@ public class HTMLControl {
 		return "<img src=\"images/icon/"
 				+ Boolean.toString(b)
 				+ "_icon.png\" width=\"24\" height=\"24\" "
-				+ "style=\"display: block; margin-left: auto; margin-right: auto\" />";
+				+ "style=\"display: block; margin-left: auto; margin-right: autso\" />";
 
 	}
-
 	public static String getHTMLActiveImage(boolean b) {
 		return "<img src=\"images/icon/p_"
 				+ (b ? "online" : "offline")
@@ -303,7 +302,12 @@ public class HTMLControl {
 				+ "\"  class='system-id' ><span>" + code + "</span></a>";
 
 	}
+	public static String getLinkSystemStatistic(SystemMonitor sys) {
+		return "<a href=\""+MonitorConstant.PROJECT_HOST_NAME+"/Index.html" + HTML_SYSTEM_STATISTIC_NAME + "/" + sys.getId()
+				+ "\" ><span>" + sys + "</span></a>";
 
+	}
+	
 	public static String getLinkEditSystem(String id, String code) {
 		return "<a href=\"" + HTML_EDIT_NAME + "/" + id + "\">" + code + "</a>";
 
