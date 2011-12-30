@@ -130,7 +130,7 @@ public class UserMonitor implements Serializable {
 			} else {
 				boolean check = false;
 				for (SystemMonitor sys : systems) {
-					if (sys.getGroupEmail().equals(system.getGroupEmail())) {
+					if (sys.getId().equals(system.getId())) {
 						check = true;
 						break;
 					}
@@ -147,21 +147,8 @@ public class UserMonitor implements Serializable {
 		if (store != null) {
 			if (stores == null) {
 				stores = new ArrayList<AlertStoreMonitor>();
-				stores.add(store);
 			}
-			/* else {
-				boolean check = false;
-				for (AlertStoreMonitor st : stores) {
-					if (st.getSysId().equals(store.getSysId())) {
-						check = true;
-						break;
-					}
-				}
-				if (!check) {
-					stores.add(store);
-				}
-			}*/
-			
+			stores.add(store);
 		}
 	}
 	
