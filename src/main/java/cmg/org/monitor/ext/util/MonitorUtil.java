@@ -48,6 +48,10 @@ public class MonitorUtil {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss:SSS");
 		return sdf.format(date);
 	}
+	public static String parseTimeEmail(Date date) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh-mm-ss-SSS");
+		return sdf.format(date);
+	}
 
 	public static String parseHref(String inputStr) {
 		Pattern pattern = Pattern.compile(Constant.PATTERN_HREF);
