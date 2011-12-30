@@ -25,6 +25,17 @@ public class AlertStoreMonitor implements Model {
 
 	@Persistent
 	private String sysId;
+	
+	@Persistent
+	private String name;
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	@Persistent
 	private int cpuUsage;
