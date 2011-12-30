@@ -2,6 +2,12 @@ package cmg.org.monitor.util.shared;
 
 public final class MonitorConstant {
 	// Alert mail sender service
+	public static final String IMAGES_FOR_EMAIL ="monitor.c-mg.vn\\images\\logo\\c-mg_logo.png" ;
+	
+	public static final String ALERTSTORE_DEFAULT_NAME = "Alert Report";
+	
+	public static final String PROJECT_HOST_NAME = "monitor.c-mg.vn";
+	
 	public static final String ALERT_MAIL_SENDER_NAME = "adminmonitor@c-mg.com";
 
 	public static final int STATISTIC_HISTORY_LENGTH = 999;
