@@ -103,6 +103,7 @@ public class Appforyourdomain {
 							for (UserMonitor u : list) {
 								if (user.getId().equals(u.getId())) {
 									u.addGroup(g);
+									check = false;
 									break;
 								} else {
 									check = true;
