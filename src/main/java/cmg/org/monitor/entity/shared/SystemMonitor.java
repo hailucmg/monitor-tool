@@ -10,6 +10,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import cmg.org.monitor.ext.model.shared.UserMonitor;
+
 /**
  * @author lamphan
  * @version 1.0
@@ -261,6 +263,9 @@ public class SystemMonitor implements Serializable  {
 	public void setEmailRevice(String emailRevice) {
 		this.emailRevice = emailRevice;
 	}
-
+	
+	public int compareByCode(SystemMonitor sys) {
+		return code.compareTo(sys.getCode());
+	}
 
 }

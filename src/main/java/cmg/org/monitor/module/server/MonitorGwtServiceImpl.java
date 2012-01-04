@@ -80,9 +80,35 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 					" ERROR when load all systems from memcache. Message: "
 							+ ex.getCause().getMessage());
 		}
-		return systems;
+		if(systems==null){
+			return systems;
+		}else{
+			return sortByname(systems);
+		}
+		
 	}
-
+	
+	/**
+	 * @param sys
+	 * @return
+	 */
+	public SystemMonitor[] sortByname(SystemMonitor[] sys) {
+		SystemMonitor temp = null;
+		for (int i = 1; i < sys.length; i++) {
+			int j;
+			SystemMonitor val = sys[i];
+			for (j = i - 1; j > -1; j--) {
+				temp = sys[j];
+				if (temp.compareByCode(val) <= 0) {
+					break;
+				}
+				sys[j + 1] = temp;
+			}
+			sys[j + 1] = val;
+		}
+		return sys;
+	}
+	
 	@Override
 	public UserLoginDto getUserLogin() {
 		return MonitorLoginService.getUserLogin();
