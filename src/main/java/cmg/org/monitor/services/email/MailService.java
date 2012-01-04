@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -69,6 +70,7 @@ public class MailService {
 	public MailService() {
 		// Set up the mail item service.
 		mailItemService = new MailItemService(MonitorConstant.SITES_APP_NAME);
+
 		try {
 			mailItemService.setUserCredentials(MonitorConstant.ADMIN_EMAIL,
 					MonitorConstant.ADMIN_PASSWORD);
@@ -111,6 +113,7 @@ public class MailService {
 				feed = mailItemService.batch(MonitorConstant.DOMAIN,
 						mailConfig.getMailId(false), feed);
 				MailItemEntry returnedEntry = feed.getEntries().get(0);
+
 				if (BatchUtils.isFailure(returnedEntry)) {
 					BatchStatus status = BatchUtils
 							.getBatchStatus(returnedEntry);
@@ -142,12 +145,12 @@ public class MailService {
 	public Rfc822Msg initRfcContent(String subject, String content,
 			MailConfigMonitor mailConfig) {
 		Date now = new Date();
-		
+
 		SimpleDateFormat formatter = new SimpleDateFormat(
 				Constant.DATE_EMAIL_FORMAT);
-		
+
 		StringBuffer tmp = new StringBuffer();
-		tmp.append("Message-ID: <" + MESSAGE_ID + ">\r\n");
+		tmp.append("Message-ID: <>\r\n");
 		tmp.append("Date: " + formatter.format(now) + "\r\n");
 		tmp.append("From: \"" + MonitorConstant.PROJECT_NAME + "\" <"
 				+ MonitorConstant.ALERT_MAIL_SENDER_NAME + ">\r\n");
@@ -161,10 +164,17 @@ public class MailService {
 				+ "\r\n");
 		tmp.append("Content-Disposition: inline\r\n");
 		tmp.append("Delivered-To: " + DELIVERED_TO + "\r\n");
-		tmp.append(content + "\r\n\r\n");
-		return new Rfc822Msg(tmp.toString());
+		tmp.append("\r\n");
+		tmp.append(content + "\r\n");
+		tmp.append("\r\n");
+		String contentOut = tmp.toString();
+		String randomFactor = Integer.toString(100000 + (new Random())
+				.nextInt(900000));
+		contentOut = contentOut.replace("Message-ID: <", "Message-ID: <"
+				+ randomFactor);
+
+		return new Rfc822Msg(contentOut);
 	}
-	
 
 	public static MailMonitor receiveMail(InputStream is)
 			throws MessagingException, IOException {
@@ -245,45 +255,143 @@ public class MailService {
 			return null;
 		}
 	}
-	public static String createMailContent(ArrayList<AlertStoreMonitor> stores) throws Exception {
-		String content ="";
+
+	public static String parseContent(ArrayList<AlertStoreMonitor> stores,
+			MailConfigMonitor mailConfig) {
+		SystemDAO sysDao = new SystemDaoImpl();
+		SystemMonitor sys = null;
+		StringBuffer sb = new StringBuffer();
+		sb.append("<p align=\"center\"><img src=\"http://"
+				+ MonitorConstant.PROJECT_HOST_NAME
+				+ "/images/logo/c-mg_logo.png\" width=\"200px\" height=\"80px\"/></p>");
+		sb.append("<ol>");
+		for (AlertStoreMonitor store : stores) {
+			try {
+				sys = sysDao.getSystemById(store.getSysId());
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, " ERROR when get system by id.");
+				return null;
+			}
+			sb.append("<li><h4><a href=\"http://"
+					+ MonitorConstant.PROJECT_HOST_NAME + "/Index.html"
+					+ HTMLControl.HTML_SYSTEM_STATISTIC_NAME + "/"
+					+ sys.getId() + "\" >" + sys + "</a></h4>");
+			sb.append("<p><a href=\"http://"
+					+ MonitorConstant.PROJECT_HOST_NAME + "/Index.html"
+					+ HTMLControl.HTML_SYSTEM_DETAIL_NAME + "/" + sys.getId()
+					+ "\" title=\"View details.\">");
+
+			sb.append("<img src=\"http://"
+					+ MonitorConstant.PROJECT_HOST_NAME
+					+ "/images/icon/details.png\" title=\"View details.\" alt=\"View details.\"/></a>");
+			sb.append("&nbsp;&nbsp;");
+			sb.append("<a href=\"http://" + MonitorConstant.PROJECT_HOST_NAME
+					+ "/Index.html" + HTMLControl.HTML_SYSTEM_STATISTIC_NAME
+					+ "/" + sys.getId() + "\" title=\"View statistic.\">");
+			sb.append("<img src=\"http://"
+					+ MonitorConstant.PROJECT_HOST_NAME
+					+ "/images/icon/statistic.png\"  title=\"View statistic.\" alt=\"View statistic.\"/></a></p>");
+
+			String mes = "";
+			if (sys.getHealthStatus().equals(SystemMonitor.STATUS_DEAD)) {
+				mes = "System is not working.";
+			} else if (sys.getHealthStatus().equals(SystemMonitor.STATUS_BORED)) {
+				mes = "Insufficient data.";
+			} else if (sys.getHealthStatus().equals(SystemMonitor.STATUS_SMILE)) {
+				mes = "All is working correctly.";
+			}
+
+			sb.append("<ul><li><b>Current Health Status: </b> ");
+			sb.append("<img src=\"http://" + MonitorConstant.PROJECT_HOST_NAME
+					+ "/images/icon/" + sys.getHealthStatus()
+					+ "_status_icon.png\" title=\"" + mes + "\" alt=\"" + mes
+					+ "\"/></li>");
+			if (sys.getProtocol().equals(MonitorConstant.HTTP_PROTOCOL)) {
+				sb.append("<li><b>Remote URL: </b> " + sys.getRemoteUrl()
+						+ "</li>");
+			} else {
+				sb.append("<li><b>Remote Email: </b> " + sys.getEmailRevice()
+						+ "</li>");
+			}
+			sb.append("<li><b>IP Address: </b> " + sys.getIp()
+					+ "</li></ul><br/>");
+			sb.append("<table cellpadding=\"5\" cellspacing=\"5\"><tbody><tr><th>No.</th><th>Time</th><th>Title</th><th>Description</th></tr>");
+			ArrayList<AlertMonitor> alerts = store.getAlerts();
+			if (alerts != null && alerts.size() > 0) {
+				for (int i = 0; i < alerts.size(); i++) {
+					sb.append("<tr><td>" + (i + 1) + "</td>");
+					sb.append("<td>"
+							+ MonitorUtil.parseTimeEmail(alerts.get(i)
+									.getTimeStamp()) + "</td>");
+					sb.append("<td>" + alerts.get(i).getError() + "</td>");
+					sb.append("<td>" + alerts.get(i).getDescription()
+							+ "</td></tr>");
+				}
+			}
+			sb.append("</tbody></table><hr/></li>");
+		}
+
+		sb.append("</ol><h4>(*) <i>Reply with following content to configure the notification emails.</i></h4>");
+		sb.append("<b>Your current configuration: </b>");
+		sb.append("<blockquote>");
+		sb.append("inbox : " + (mailConfig.isInbox() ? "on" : "off") + "<br/>");
+		sb.append("starred : " + (mailConfig.isStarred() ? "on" : "off")
+				+ "<br/>");
+		sb.append("markAsUnread : "
+				+ (mailConfig.isMarkAsUnread() ? "on" : "off") + "<br/>");
+		sb.append("label : \"" + mailConfig.getLabel() + "\"<br/>");
+		sb.append("</blockquote>");
+		sb.append("--------------------------------------------------------------------------------<br/>");
+		sb.append("<i>Thanks and Best Regards</i><br/><br/>");
+		sb.append("<b>ADMIN-MONITOR</b>");
+		return sb.toString();
+	}
+
+	public static String createMailContent(ArrayList<AlertStoreMonitor> stores)
+			throws Exception {
+		String content = "";
 		SystemDAO sysDAO = new SystemDaoImpl();
-		content+="<html><HEAD align=\"center\">ALERT MAIL<HEAD><body>";
-		content+="<OL>";
-		for(int i =0;i < stores.size();i++){
+		content += "<html><HEAD align=\"center\">ALERT MAIL<HEAD><body>";
+		content += "<OL>";
+		for (int i = 0; i < stores.size(); i++) {
 			AlertStoreMonitor alertstore = stores.get(i);
 			SystemMonitor system = sysDAO.getSystemById(alertstore.getSysId());
-			ArrayList<AlertMonitor> alerts = (ArrayList<AlertMonitor>) alertstore.getAlerts();
-			content+="<LI>";
-			content+= HTMLControl.getLinkSystemStatistic(system);
-			for(int j = 0; j < alerts.size();j++){
-				if(j>0){
-				content+="<br>";
+			ArrayList<AlertMonitor> alerts = (ArrayList<AlertMonitor>) alertstore
+					.getAlerts();
+			content += "<LI>";
+			content += HTMLControl.getLinkSystemStatistic(system);
+			for (int j = 0; j < alerts.size(); j++) {
+				if (j > 0) {
+					content += "<br>";
 				}
-				content+="<UL>Time " + MonitorUtil.parseTimeEmail(alerts.get(j).getTimeStamp())+"</UL>";
-				content+="<UL>Error " + alerts.get(j).getError()+"</UL>";
-				content+="<UL>Detail " + alerts.get(j).getDescription()+"</UL>";			
-				
+				content += "<UL>Time "
+						+ MonitorUtil.parseTimeEmail(alerts.get(j)
+								.getTimeStamp()) + "</UL>";
+				content += "<UL>Error " + alerts.get(j).getError() + "</UL>";
+				content += "<UL>Detail " + alerts.get(j).getDescription()
+						+ "</UL>";
+
 			}
-			content+="</LI>";
+			content += "</LI>";
 		}
-		
-		content+="</OL>";
-		content+="<p>(*)Send me a mail to config our alert email coming to your inbox like below</p>";
-		content+="<p>inbox value - on|off;<br>";
-		content+="starred  value - on|off;<br>";
-		content+="markAsUnread value - on|off;<br>";
-		content+="label value - Monitor Alert; </p>";
-		content+="<p><or><li><i>With the choosen of inbox you can choose on or off if you want or don't our alert email sending to your inbox !  </i></li>";
-		content+="<li><i>With the choosen of starred you can choose on or off if you want or don't alert email is starred in your mail !  </i></li>";
-		content+="<li><i>With the choosen of markAsUnread you can choose on or off if you want or don't alert email is marked !  </i></li>";
-		content+="<li><i>With the choosen of label,you can create any thing to set up a label that our alert email sending to this!</i></li></or></p>";
-		content+="<p>----------------------------------------------------------------------------------------------------------- </p>";
-		content+="<p><i>Thank and Best Regard</i></p>";
-		content+="<p><strong> ADMIN-MONITOR</strong></p>";
-		content+="<p><img src=\""+ MonitorConstant.IMAGES_FOR_EMAIL +"\" width=\"255\" height=\"90\" /> </p>";
-		content+="</body></html>";
+
+		content += "</OL>";
+		content += "<p>(*)Send me a mail to config our alert email coming to your inbox like below</p>";
+		content += "<p>inbox value - on|off;<br>";
+		content += "starred  value - on|off;<br>";
+		content += "markAsUnread value - on|off;<br>";
+		content += "label value - Monitor Alert; </p>";
+		content += "<p><or><li><i>With the choosen of inbox you can choose on or off if you want or don't our alert email sending to your inbox !  </i></li>";
+		content += "<li><i>With the choosen of starred you can choose on or off if you want or don't alert email is starred in your mail !  </i></li>";
+		content += "<li><i>With the choosen of markAsUnread you can choose on or off if you want or don't alert email is marked !  </i></li>";
+		content += "<li><i>With the choosen of label,you can create any thing to set up a label that our alert email sending to this!</i></li></or></p>";
+		content += "<p>----------------------------------------------------------------------------------------------------------- </p>";
+		content += "<p><i>Thank and Best Regard</i></p>";
+		content += "<p><strong> ADMIN-MONITOR</strong></p>";
+		content += "<p><img src=\"" + MonitorConstant.IMAGES_FOR_EMAIL
+				+ "\" width=\"255\" height=\"90\" /> </p>";
+		content += "</body></html>";
 		return content;
 	}
-	
+
 }
