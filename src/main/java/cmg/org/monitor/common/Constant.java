@@ -114,6 +114,14 @@ public interface Constant {
 
 	/** The pattern for System memory value. */
 	public static String PATTERN_SYSTEM_MEMORY = "(<td id=\"mem\">)([^<>]*)(</td>)";
+	
+	public static String PATTERN_MAIL_LABEL = "(label)(\\s*):(\\s*)(&quot;)([\\w\\s]*)(&quot;)";
+	public static String PATTERN_MAIL_INBOX_ON = "(inbox)(\\s*):(\\s*)(on)";
+	public static String PATTERN_MAIL_INBOX_OFF = "(inbox)(\\s*):(\\s*)(off)";
+	public static String PATTERN_MAIL_STARRED_ON = "(starred)(\\s*):(\\s*)(on)";
+	public static String PATTERN_MAIL_STARRED_OFF = "(starred)(\\s*):(\\s*)(off)";
+	public static String PATTERN_MAIL_MARK_AS_UNREAD_ON = "(markasunread)(\\s*):(\\s*)(on)";
+	public static String PATTERN_MAIL_MARK_AS_UNREAD_OFF = "(markasunread)(\\s*):(\\s*)(off)";
 
 	
 	public static int MEMORY_LEVEL_HISTORY_UPDATE = 90;
