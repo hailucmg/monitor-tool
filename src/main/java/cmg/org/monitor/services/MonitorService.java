@@ -26,9 +26,7 @@ public class MonitorService {
 	private static final Logger logger = Logger.getLogger(MonitorService.class
 			.getCanonicalName());
 
-
-	
-	public static void  monitor() throws MonitorException {
+	public static void monitor() throws MonitorException {
 		SystemDAO systemDao = new SystemDaoImpl();
 		ArrayList<SystemMonitor> systems = null;
 		ArrayList<SystemMonitor> tempList = null;
@@ -98,12 +96,12 @@ public class MonitorService {
 											+ aSystem.toString()
 											+ ": \r\n"
 											+ infoContent);
-							aSystem = MonitorParser.parseData(infoContent, aSystem);
+							aSystem = MonitorParser.parseData(infoContent,
+									aSystem);
 						}// if-else
 
 					} catch (Exception e) {
 						aSystem.setStatus(false);
-					
 						logger.log(Level.INFO, " ->ERROR: when revice content"
 								+ e.getMessage());
 					}
@@ -111,12 +109,17 @@ public class MonitorService {
 						AlertDao alertDAO = new AlertDaoImpl();
 						AlertMonitor alert = new AlertMonitor(
 								AlertMonitor.CANNOT_GATHER_DATA,
-								"Cannot gather data",
-								"Please re-check the configuration of system",
+								"Cannot get data",
+								"Cannot get data from the system ("
+										+ (aSystem.getProtocol().equals(
+												MonitorConstant.HTTP_PROTOCOL) ? ("Remote URL: " + aSystem
+												.getRemoteUrl())
+												: ("Remote mail: " + aSystem
+														.getEmailRevice()))
+										+ ") , it maybe not working at the moment, please check the system immediately",
 								new Date());
-						
 						alertDAO.storeAlert(aSystem, alert);
-					}//if
+					}// if
 
 				}// if-else
 				aSystem.setTimeStamp(new Date(System.currentTimeMillis()));
@@ -127,9 +130,9 @@ public class MonitorService {
 							Level.SEVERE,
 							" -> ERROR: cannot update system. Message: "
 									+ ex.getMessage());
-				}				
+				}
 				tempList.add(aSystem);
-			}// for			
+			}// for
 		} else {
 			logger.log(Level.INFO,
 					MonitorUtil.parseTime(System.currentTimeMillis(), true)
