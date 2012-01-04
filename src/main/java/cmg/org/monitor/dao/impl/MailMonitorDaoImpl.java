@@ -20,33 +20,45 @@ public class MailMonitorDaoImpl implements MailMonitorDAO {
 			.getLogger(MailMonitorDaoImpl.class.getCanonicalName());
 
 	@Override
-	public MailConfigMonitor getMailConfig(String maild) {
+	public MailConfigMonitor getMailConfig(String mailId) {
+		logger.log(Level.INFO, "START get mail configuration. Mail ID: " + mailId);
 		MailConfigMonitor mailConfig = null;
-		PersistenceManager pm = PMF.get().getPersistenceManager();
-		List<MailConfigMonitor> listData = null;
-		Query query = pm.newQuery(MailConfigMonitor.class);
-		query.setFilter("mailId == strMailId");
-		query.declareParameters("String strMailId");
-		query.setRange(0, 1);
-		try {
-			pm.currentTransaction().begin();
-			listData = (List<MailConfigMonitor>) query.execute(maild);
-			if (listData.size() > 0) {
-				mailConfig = listData.get(0);
-			}
-			pm.currentTransaction().commit();
-		} catch (Exception ex) {
-			logger.log(Level.SEVERE, " -> ERROR get mail config. Message: "
-					+ ex.getMessage());
-			pm.currentTransaction().rollback();
-		} finally {
-			query.closeAll();
-			pm.close();
+		// get from memcache
+		Object obj = MonitorMemcache.get(Key.create(Key.MAIL_CONFIG_STORE,
+				mailId));
+		if (obj != null && obj instanceof MailConfigMonitor) {
+			mailConfig = (MailConfigMonitor) obj;
 		}
+		//get from JDO
+		if (obj == null) {
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+			List<MailConfigMonitor> listData = null;
+			Query query = pm.newQuery(MailConfigMonitor.class);
+			query.setFilter("mailId == strMailId");
+			query.declareParameters("String strMailId");
+			query.setRange(0, 1);
+			try {
+				pm.currentTransaction().begin();
+				listData = (List<MailConfigMonitor>) query.execute(mailId);
+				if (listData.size() > 0) {
+					mailConfig = listData.get(0);
+				}
+				pm.currentTransaction().commit();
+			} catch (Exception ex) {
+				logger.log(Level.SEVERE, " -> ERROR get mail config. Message: "
+						+ ex.getMessage());
+				pm.currentTransaction().rollback();
+			} finally {
+				query.closeAll();
+				pm.close();
+			}
+		}
+		
 		if (mailConfig == null) {
 			mailConfig = new MailConfigMonitor();
-			mailConfig.setMailId(maild);
+			mailConfig.setMailId(mailId);
 		}
+		logger.log(Level.INFO, "END get mail configuration. " + mailConfig);
 		return mailConfig;
 	}
 
@@ -78,18 +90,30 @@ public class MailMonitorDaoImpl implements MailMonitorDAO {
 		if (mailConfig != null) {
 			logger.log(Level.INFO,
 					MonitorUtil.parseTime(System.currentTimeMillis(), true)
-							+ " -> START Put mail configuration ... " + mailConfig);
+							+ " -> START Put mail configuration ... "
+							+ mailConfig);
 			// put to memcache
 			MonitorMemcache.put(
 					Key.create(Key.MAIL_CONFIG_STORE,
 							mailConfig.getMailId(true)), mailConfig);
 
-			// put to JDO
+			PersistenceManager pm = PMF.get().getPersistenceManager();
+			try {
+				pm.currentTransaction().begin();
+				pm.makePersistent(mailConfig);
+				pm.currentTransaction().commit();
+			} catch (Exception ex) {
+				logger.log(Level.SEVERE, " -> ERROR add mail config. Message: "
+						+ ex.getMessage());
+				pm.currentTransaction().rollback();
+			} finally {
+				pm.close();
+			}
 		}
 	}
-	
+
 	public void clearMailStore(String sender) {
-		logger.log(Level.INFO, "Clear mail monitor store. Sender: " +sender);
+		logger.log(Level.INFO, "Clear mail monitor store. Sender: " + sender);
 		MonitorMemcache.delete(Key.create(Key.MAIL_STORE, sender));
 		MonitorMemcache.put(Key.create(Key.MAIL_STORE, sender), null);
 	}

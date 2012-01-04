@@ -53,6 +53,8 @@ public class MailServiceScheduler extends HttpServlet {
 		logger.log(Level.INFO, MonitorUtil.parseTime(start, true)
 				+ " -> START: Scheduled send alert mail ...");
 		// BEGIN LOG
+		String alertName = MonitorConstant.ALERTSTORE_DEFAULT_NAME + ": "
+				+ MonitorUtil.parseTime(start, false);
 
 		SystemDAO sysDAO = new SystemDaoImpl();
 		AlertDao alertDAO = new AlertDaoImpl();
@@ -87,10 +89,7 @@ public class MailServiceScheduler extends HttpServlet {
 								.getLastestAlertStore(allSystem.get(j));
 						if (alertstore != null) {
 							alertstore
-									.setName(MonitorConstant.ALERTSTORE_DEFAULT_NAME
-											+ ": "
-											+ MonitorUtil.parseTime(start,
-													false));
+									.setName(alertName);
 							alertstore.setTimeStamp(new Date(start));
 							user.addAlertStore(alertstore);
 						}
@@ -106,13 +105,10 @@ public class MailServiceScheduler extends HttpServlet {
 								.getId());
 
 						try {
-							String content = MailService.createMailContent(user
-									.getStores());
+							String content = MailService.parseContent(user
+									.getStores(), config);
 							mailService.sendMail(
-									MonitorConstant.ALERTSTORE_DEFAULT_NAME
-											+ ": "
-											+ MonitorUtil.parseTime(start,
-													false), content, config);
+									alertName, content, config);
 							logger.log(Level.INFO, "send mail" + content);
 						} catch (Exception e) {
 							logger.log(Level.INFO, "Can not send mail"
@@ -133,13 +129,12 @@ public class MailServiceScheduler extends HttpServlet {
 			for (SystemMonitor sys : systems) {
 				AlertStoreMonitor asm = alertDAO.getLastestAlertStore(sys);
 				if (asm == null) {
-					asm = new AlertStoreMonitor();					
+					asm = new AlertStoreMonitor();
 				}
 				asm.setCpuUsage(sys.getLastestCpuUsage());
 				asm.setMemUsage(sys.getLastestMemoryUsage());
 				asm.setSysId(sys.getId());
-				asm.setName(MonitorConstant.ALERTSTORE_DEFAULT_NAME + ": "
-						+ MonitorUtil.parseTime(start, false));
+				asm.setName(alertName);
 				asm.setTimeStamp(new Date(start));
 				alertDAO.putAlertStore(asm);
 				alertDAO.clearTempStore(sys);

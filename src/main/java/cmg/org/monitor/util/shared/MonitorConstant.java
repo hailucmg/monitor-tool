@@ -9,7 +9,7 @@ public final class MonitorConstant {
 	
 	public static final String PROJECT_HOST_NAME = "monitor.c-mg.vn";
 	
-	public static final String ALERT_MAIL_SENDER_NAME = "adminmonitor@c-mg.com";
+	public static final String ALERT_MAIL_SENDER_NAME = "admin@cmg-app-eng.appspotmail.com";
 
 	public static final int STATISTIC_HISTORY_LENGTH = 999;
 
@@ -21,7 +21,7 @@ public final class MonitorConstant {
 
 	public static final String PROJECT_NAME = "CMG Health Monitor System";
 
-	public static final String VERSION = "1.0";
+	public static final String VERSION = "1.1";
 
 	public static final String RELEASED_ON = "01/11/2011";
 

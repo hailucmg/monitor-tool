@@ -36,7 +36,7 @@ public class MonitorUtil {
 	
 
 	public static String parseTime(long millis, boolean addArrow) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS");
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss:SSS");
 		return sdf.format(millis) + (addArrow ? ARROW_STRING : "");
 	}
 
@@ -45,7 +45,7 @@ public class MonitorUtil {
 		return sdf.format(date);
 	}
 	public static String parseTimeEmail(Date date) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh-mm-ss-SSS");
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		return sdf.format(date);
 	}
 
