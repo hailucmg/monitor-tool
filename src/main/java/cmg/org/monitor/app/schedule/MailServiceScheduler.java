@@ -132,6 +132,12 @@ public class MailServiceScheduler extends HttpServlet {
 			}
 			for (SystemMonitor sys : systems) {
 				AlertStoreMonitor asm = alertDAO.getLastestAlertStore(sys);
+				if (asm == null) {
+					asm = new AlertStoreMonitor();					
+				}
+				asm.setCpuUsage(sys.getLastestCpuUsage());
+				asm.setMemUsage(sys.getLastestMemoryUsage());
+				asm.setSysId(sys.getId());
 				asm.setName(MonitorConstant.ALERTSTORE_DEFAULT_NAME + ": "
 						+ MonitorUtil.parseTime(start, false));
 				asm.setTimeStamp(new Date(start));

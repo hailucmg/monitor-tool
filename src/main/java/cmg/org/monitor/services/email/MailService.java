@@ -194,6 +194,7 @@ public class MailService {
 
 		String data = null;
 		if (o instanceof Multipart) {
+			logger.log(Level.INFO, "Parse mail. Object instanceof Multipart.");
 			Multipart mp = (Multipart) o;
 			int count = mp.getCount();
 			for (int i = 0; i < count; i++) {
@@ -203,6 +204,7 @@ public class MailService {
 				}
 			}
 		} else if (o instanceof InputStream) {
+			logger.log(Level.INFO, "Parse mail. Object instanceof InputStream.");
 			InputStream is = (InputStream) o;
 			try {
 				data = convertInputStreamtoString(is);
@@ -212,6 +214,7 @@ public class MailService {
 								+ e.getMessage());
 			}
 		} else if (o instanceof String) {
+			logger.log(Level.INFO, "Parse mail. Object instanceof String.");
 			data = (String) o;
 		}
 		return data;
@@ -257,10 +260,9 @@ public class MailService {
 				if(j>0){
 				content+="<br>";
 				}
-				content+="<UL>Time " + MonitorUtil.parseTimeEmail(alerts.get(0).getTimeStamp())+"</UL>";
+				content+="<UL>Time " + MonitorUtil.parseTimeEmail(alerts.get(j).getTimeStamp())+"</UL>";
 				content+="<UL>Error " + alerts.get(j).getError()+"</UL>";
-				content+="<UL>Detail " + alerts.get(j).getDescription()+"</UL>";
-				
+				content+="<UL>Detail " + alerts.get(j).getDescription()+"</UL>";			
 				
 			}
 			content+="</LI>";

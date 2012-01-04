@@ -1,9 +1,11 @@
 package cmg.org.monitor.module.server;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import cmg.org.monitor.dao.AlertDao;
 import cmg.org.monitor.dao.CpuDAO;
 import cmg.org.monitor.dao.FileSystemDAO;
 import cmg.org.monitor.dao.JvmDAO;
@@ -11,6 +13,7 @@ import cmg.org.monitor.dao.MemoryDAO;
 import cmg.org.monitor.dao.ServiceDAO;
 import cmg.org.monitor.dao.SystemDAO;
 import cmg.org.monitor.dao.UtilityDAO;
+import cmg.org.monitor.dao.impl.AlertDaoImpl;
 import cmg.org.monitor.dao.impl.CpuDaoImpl;
 import cmg.org.monitor.dao.impl.FileSystemDaoImpl;
 import cmg.org.monitor.dao.impl.JvmDaoImpl;
@@ -18,6 +21,7 @@ import cmg.org.monitor.dao.impl.MemoryDaoImpl;
 import cmg.org.monitor.dao.impl.ServiceDaoImpl;
 import cmg.org.monitor.dao.impl.SystemDaoImpl;
 import cmg.org.monitor.dao.impl.UtilityDaoImpl;
+import cmg.org.monitor.entity.shared.AlertStoreMonitor;
 import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
 import cmg.org.monitor.entity.shared.JvmMonitor;
@@ -30,7 +34,6 @@ import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.ext.model.shared.UserMonitor;
 import cmg.org.monitor.module.client.MonitorGwtService;
 import cmg.org.monitor.services.MonitorLoginService;
-import cmg.org.monitor.util.shared.MonitorConstant;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -234,13 +237,14 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		MonitorContainer container = new MonitorContainer();
 		MemoryDAO memDAO = new MemoryDaoImpl();
 		MemoryMonitor[] memories = null;
-		ArrayList<MemoryMonitor> list = memDAO.listMemory(sys, MemoryMonitor.MEM);
+		ArrayList<MemoryMonitor> list = memDAO.listMemory(sys,
+				MemoryMonitor.MEM);
 		if (list != null && list.size() > 0) {
 			memories = new MemoryMonitor[list.size()];
 			list.toArray(memories);
 			container.setRams(memories);
 		}
-		
+
 		list = memDAO.listMemory(sys, MemoryMonitor.SWAP);
 		if (list != null && list.size() > 0) {
 			memories = new MemoryMonitor[list.size()];
@@ -248,6 +252,42 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			container.setSwaps(memories);
 		}
 		return container;
+	}
+
+	@Override
+	public AlertStoreMonitor[] listAlertStore(SystemMonitor sys) {
+		try {
+			AlertDao alertDao = new AlertDaoImpl();
+			SystemDAO sysDAO = new SystemDaoImpl();
+			AlertStoreMonitor[] stores = null;
+			ArrayList<AlertStoreMonitor> list = alertDao.listAlertStore(sys
+					.getId());
+			AlertStoreMonitor store = alertDao.getLastestAlertStore(sys);
+
+			SystemMonitor system = sysDAO.getSystemById(sys.getId());
+			if (store == null) {
+				store = new AlertStoreMonitor();
+				store.setSysId(system.getId());
+				store.setCpuUsage(system.getLastestCpuUsage());
+				store.setMemUsage(system.getLastestMemoryUsage());
+				store.setTimeStamp(new Date(System.currentTimeMillis()));
+			}			
+			
+			if (list != null && list.size() > 0) {
+				stores = new AlertStoreMonitor[list.size() + 1];
+				for (int i = 0; i < list.size(); i ++) {
+					stores[i] = list.get(i);
+				}				
+				stores[list.size()] = store;
+			} else {
+				stores = new AlertStoreMonitor[1];
+				stores[0] = store; 
+			}
+			return stores;
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Error when list alert store");
+		}
+		return null;
 	}
 
 }

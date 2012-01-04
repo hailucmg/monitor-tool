@@ -367,6 +367,7 @@ public class MonitorParser {
 						}
 						service.setPing(pingTime);
 					}// if
+					service.setSystemDate(new Date());
 					list.add(service);
 					logger.log(Level.INFO, "END Service #" + (i + 1));
 				}// for

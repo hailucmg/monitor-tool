@@ -11,7 +11,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
+@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "false")
 public class AlertStoreMonitor implements Serializable {
 
 	/**
@@ -62,6 +62,20 @@ public class AlertStoreMonitor implements Serializable {
 		
 		alerts.add(alert);
 		return true;
+	}
+	
+	public String getErrors() {
+		StringBuffer sb = new StringBuffer();
+		if (alerts != null && alerts.size() > 0) {
+			sb.append("<ol>");
+			for (int i = 0; i < alerts.size(); i++) {
+				sb.append("<li><h5>Alert #" + i + " : " + alerts.get(i).getTimeStamp() +"</h5><ul>");
+				sb.append("<li>Error: " + alerts.get(i).getError() + "</li>");
+				sb.append("<li>Desciption: " + alerts.get(i).getDescription() + "</li></ul></li>");
+			}
+			sb.append("</ol>");
+		}
+		return sb.toString();
 	}
 	
 	@Override

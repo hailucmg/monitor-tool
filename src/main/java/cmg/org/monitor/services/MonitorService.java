@@ -119,6 +119,7 @@ public class MonitorService {
 					}//if
 
 				}// if-else
+				aSystem.setTimeStamp(new Date(System.currentTimeMillis()));
 				try {
 					systemDao.updateSystem(aSystem, false);
 				} catch (Exception ex) {

@@ -1,5 +1,6 @@
 package cmg.org.monitor.module.client;
 
+import cmg.org.monitor.entity.shared.AlertStoreMonitor;
 import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
 import cmg.org.monitor.entity.shared.JvmMonitor;
@@ -45,4 +46,6 @@ public interface MonitorGwtService extends RemoteService {
 	CpuMonitor[] listCpus(SystemMonitor sys);
 	
 	MonitorContainer listMems(SystemMonitor sys);
+	
+	AlertStoreMonitor[] listAlertStore(SystemMonitor sys);
 }

@@ -6,7 +6,7 @@ import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
 public class MonitorMemcache {
 
-	private static final String MEMCACHE_NAMESPACE = "monitor";
+	private static final String MEMCACHE_NAMESPACE = "monitor_tool";
 	/**
 	 * @param key
 	 *            The key of store

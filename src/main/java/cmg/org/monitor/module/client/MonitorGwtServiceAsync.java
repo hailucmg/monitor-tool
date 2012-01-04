@@ -1,11 +1,9 @@
 package cmg.org.monitor.module.client;
 
-import java.util.ArrayList;
-
+import cmg.org.monitor.entity.shared.AlertStoreMonitor;
 import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
 import cmg.org.monitor.entity.shared.JvmMonitor;
-import cmg.org.monitor.entity.shared.MemoryMonitor;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorContainer;
@@ -51,5 +49,8 @@ public interface MonitorGwtServiceAsync {
 			AsyncCallback<ServiceMonitor[]> callback);
 
 	void listMems(SystemMonitor sys, AsyncCallback<MonitorContainer> callback);
+
+	void listAlertStore(SystemMonitor sys,
+			AsyncCallback<AlertStoreMonitor[]> callback);
 
 }

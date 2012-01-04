@@ -36,6 +36,8 @@ public class AlertDaoImpl implements AlertDao {
 			if (store == null) {
 				// if is a first time create new object
 				store = new AlertStoreMonitor();
+				store.setName(MonitorConstant.ALERTSTORE_DEFAULT_NAME + ": "
+						+ MonitorUtil.parseTime(start, false));
 				store.setCpuUsage(sys.getLastestCpuUsage());
 				store.setMemUsage(sys.getLastestMemoryUsage());
 				store.setSysId(sys.getId());
@@ -174,6 +176,7 @@ public class AlertDaoImpl implements AlertDao {
 	public void clearTempStore(SystemMonitor sys) {
 		logger.log(Level.INFO, sys.toString() + " -> Clear Alert store ...");
 		MonitorMemcache.delete(Key.create(Key.ALERT_TEMP_STORE, sys.getId()));
+		MonitorMemcache.put(Key.create(Key.ALERT_TEMP_STORE, sys.getId()), null);
 	}
 
 	public AlertStoreMonitor getTempStore(String sid) {

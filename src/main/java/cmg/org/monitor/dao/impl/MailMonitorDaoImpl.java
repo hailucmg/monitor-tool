@@ -91,6 +91,7 @@ public class MailMonitorDaoImpl implements MailMonitorDAO {
 	public void clearMailStore(String sender) {
 		logger.log(Level.INFO, "Clear mail monitor store. Sender: " +sender);
 		MonitorMemcache.delete(Key.create(Key.MAIL_STORE, sender));
+		MonitorMemcache.put(Key.create(Key.MAIL_STORE, sender), null);
 	}
 
 }
