@@ -253,7 +253,7 @@ public class EditSystem extends AncestorEntryPoint {
 							}
 
 							btnEdit = new Button();
-							btnEdit.setText("EDIT");
+							btnEdit.setText("Update");
 							btnEdit.setStyleName("margin:6px;");
 							btnEdit.addStyleName("form-button");
 
