@@ -109,7 +109,7 @@ public class MonitorService {
 						AlertDao alertDAO = new AlertDaoImpl();
 						AlertMonitor alert = new AlertMonitor(
 								AlertMonitor.CANNOT_GATHER_DATA,
-								"Cannot get data",
+								"System is down",
 								"Cannot get data from the system ("
 										+ (aSystem.getProtocol().equals(
 												MonitorConstant.HTTP_PROTOCOL) ? ("Remote URL: " + aSystem

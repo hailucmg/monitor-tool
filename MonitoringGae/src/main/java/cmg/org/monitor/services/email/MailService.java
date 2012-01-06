@@ -22,7 +22,6 @@ import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import cmg.org.monitor.common.Constant;
 import cmg.org.monitor.dao.SystemDAO;
 import cmg.org.monitor.dao.impl.AlertDaoImpl;
 import cmg.org.monitor.dao.impl.SystemDaoImpl;
@@ -32,6 +31,7 @@ import cmg.org.monitor.entity.shared.MailConfigMonitor;
 import cmg.org.monitor.entity.shared.MailMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.util.MonitorUtil;
+import cmg.org.monitor.util.shared.Constant;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 

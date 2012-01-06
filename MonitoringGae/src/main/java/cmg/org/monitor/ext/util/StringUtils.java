@@ -4,7 +4,7 @@ package cmg.org.monitor.ext.util;
 
 
 
-import cmg.org.monitor.common.Constant;
+import cmg.org.monitor.util.shared.Constant;
 
 import java.io.UnsupportedEncodingException;
 

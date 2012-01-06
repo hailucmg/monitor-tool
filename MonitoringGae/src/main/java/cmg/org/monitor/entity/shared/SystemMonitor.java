@@ -6,11 +6,10 @@ import java.util.Date;
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-
-import cmg.org.monitor.ext.model.shared.UserMonitor;
 
 /**
  * @author lamphan
@@ -88,6 +87,8 @@ public class SystemMonitor implements Serializable  {
 		this.healthStatus = STATUS_DEAD;
 		this.isActive = false;
 		this.isDeleted = false;
+		this.lastestCpuUsage = -1;
+		this.lastestMemoryUsage = -1;
 	}
 
 	public SystemMonitor(String code, String name, String url,
@@ -99,6 +100,8 @@ public class SystemMonitor implements Serializable  {
 		this.isActive = isActice;
 		this.healthStatus = STATUS_DEAD;
 		this.isDeleted = false;
+		this.lastestCpuUsage = -1;
+		this.lastestMemoryUsage = -1;
 	}
 	
 	

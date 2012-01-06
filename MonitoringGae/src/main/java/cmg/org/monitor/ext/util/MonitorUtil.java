@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cmg.org.monitor.common.Constant;
+import cmg.org.monitor.util.shared.Constant;
 
 /**
  * Please enter a short description for this class.

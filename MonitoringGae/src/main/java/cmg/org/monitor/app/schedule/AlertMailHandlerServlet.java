@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import cmg.org.monitor.common.Constant;
 import cmg.org.monitor.dao.MailMonitorDAO;
 import cmg.org.monitor.dao.UtilityDAO;
 import cmg.org.monitor.dao.impl.MailMonitorDaoImpl;
@@ -22,6 +21,7 @@ import cmg.org.monitor.entity.shared.MailMonitor;
 import cmg.org.monitor.ext.model.shared.UserMonitor;
 import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.services.email.MailService;
+import cmg.org.monitor.util.shared.Constant;
 
 public class AlertMailHandlerServlet extends HttpServlet {
 	/**
