@@ -1,19 +1,10 @@
-*	{
-	margin: 0;
-	padding-top: 15;
-	padding-right: 0;
-	padding-bottom: 15;
-	padding-left: 0;
-	}
 html, body	{
 	height: 100%;
 	}
 body	{
+	margin:0;
+	padding:0;
 	background: #fff;
-	color: #393939;
-	font-family: Arial;
-	font-size: 0px;
-	line-height: 0;
 	}
 #page-top-outer	{
 	background: url(../images/shared/top_bg.jpg) top center repeat-x;
@@ -21,7 +12,7 @@ body	{
 	height: 92px;
 	}
 #page-top	{
-	margin: 0 auto;
+	margin: -20px auto;
 	max-width: 1260px;
 	min-width: 850px;
 	position: relative;
@@ -34,7 +25,7 @@ body	{
 	margin-left: 8px;
 	}
 	#version {
-	padding: 80px 10px 0 0;
+	padding: 75px 10px 0 0;
 	font-weight:bold;	
 	font-style:italic;
 	color:white;
@@ -166,43 +157,24 @@ height:15px;
 #page-heading	{
 	margin: 0 0 15px 20px;
 	}
- h1 {
+#page-heading h1 {
 	color: #4b4b4b;
 	font-family: Tahoma;
 	font-size: 22px;
 	line-height: 24px;
 	font-weight: normal;
 	}
-h1 a {
+#page-heading h1 a {
 	color: #4b4b4b;
 	font-family: Tahoma;
 	font-size: 22px;
 	line-height: 24px;
 	font-weight: normal;
 	}
-h1 a:visited, a:hover, a:active  {
+#page-heading h1 a:visited, a:hover, a:active  {
 	color: #4b4b4b;
 }
 
-h2	{
-	color: #393939;
-	font-size: 16px;
-	font-weight: bold;
-	line-height: 20px;
-	margin-bottom: 10px;
-	}
-h3	{
-	color: #92b22c;
-	font-size: 14px;
-	font-weight: bold;
-	line-height: 18px;
-	margin-bottom: 10px;
-	}
-	
-h3	a {
-	color: #92b22c;
-	}
-	
 	
 /* MESSAGES --------------------------------------------------------------- */	
 #message-yellow	{
@@ -213,7 +185,7 @@ h3	a {
 	color: #e79300;
 	font-family: Tahoma;
 	font-weight: bold;
-	padding: 0 0 0 20px;
+	padding: 7px 0 0 15px;
 	}
 .yellow-left a {
 	color: #e79300;
@@ -246,7 +218,7 @@ h3	a {
 	color: #2e74b2;
 	font-family: Tahoma;
 	font-weight: bold;
-	padding: 0 0 0 20px;
+	padding: 10px 0 0 20px;
 	}
 .blue-left a	{
 	color: #2e74b2;
@@ -278,7 +250,7 @@ h3	a {
 	color: #ce2700;
 	font-family: Tahoma;
 	font-weight: bold;
-	padding: 0 0 0 20px;
+	padding: 10px 0 0 20px;
 	}
 .red-left a	{
 	color: #ce2700;
@@ -311,7 +283,7 @@ h3	a {
 	font-family: Tahoma;
 	font-weight: bold;
 	line-height: 12px;
-	padding: 0 0 0 20px;
+	padding: 10px 0 0 20px;
 	}
 .green-left a	{
 	color: #6da827;
@@ -688,6 +660,12 @@ a:hover.action-delete	{
 		 
 	
 /* FORM ------------------------------------------------------- */	
+.form-button{
+	float: left;
+	height: 30px;
+	margin: 0 0 0 4px;
+	width: 80px;
+}
 .form-back	{
 	background: url(../images/forms/form_back.png) no-repeat;
 	border: none;
@@ -747,6 +725,13 @@ a:hover.action-delete	{
 	text-indent: -3000px;
 	width: 80px;
 	}
+.form-reload	{
+	background: url(../images/icon/reload.png) no-repeat;
+	border:none;
+	height:20px;
+	width: 60px;
+	margin-bottom: 4px;
+	}
 .form-reset	{
 	background: url(../images/forms/form_reset.gif) no-repeat;
 	border: none;
@@ -764,7 +749,6 @@ a:hover.action-delete	{
 	border: none;
 	color: #393939;
 	height: 25px;
- 
 	padding: 6px 6px 0 6px;
 	width: 186px;
 	}
@@ -882,7 +866,7 @@ font-family: Tahoma;
 	font-weight: bold;
 }
 
-.step-light-left a{
+.step-light-left a {
 	font-size: 13px;
 	color:#cbcbcb;
 	font-weight: bold;
@@ -995,7 +979,7 @@ font-family: Tahoma;
 	color:white;
 	font-weight:bold;
 	font-size:13px;
-	margin: 16px 5px 0 5px;
+	margin: 7px 5px 0 5px;
 	}
 	
 .account-drop-inner a	{
@@ -1689,7 +1673,35 @@ a:hover.back-login	{
 	background-color: #e4edf5;
 }
 
-	
+
+#closeButton {
+	background: url(../images/icon/close-dialog.png) no-repeat;
+	border: none;
+	height: 16px;
+	width: 16px;
+  margin-top: -10px;
+}
+
+.table-popup {
+	width: 400px;
+	margin: 5px;
+}
+
+.form-details	{
+	background: url(../images/icon/details.png) no-repeat;
+	border: none;
+	height: 30px;
+	margin: 5px;
+	width: 105px;
+	}
+.form-statistic	{
+	background: url(../images/icon/statistic.png) no-repeat;
+	border: none;
+	height: 30px;
+	margin: 5px;
+	width: 105px;
+}
+
 	
 	
 
