@@ -116,7 +116,7 @@ public class UserMonitor implements Serializable {
 					groups.add(g);
 				}
 			}
-			if (g.getName().contains("admin")) {
+			if (g.getName().toLowerCase().contains(MonitorConstant.ADMIN_MONITOR_GROUP)) {
 				role = MonitorConstant.ROLE_ADMIN;
 			}
 		}
