@@ -1,4 +1,4 @@
-package cmg.org.monitor.common;
+package cmg.org.monitor.util.shared;
 
 /**
  * Short Description.

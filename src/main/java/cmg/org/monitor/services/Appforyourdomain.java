@@ -90,7 +90,7 @@ public class Appforyourdomain {
 		ArrayList<UserMonitor> list = null;
 		ArrayList<UserMonitor> users = null;
 		ArrayList<GroupMonitor> groups = listGroups();
-		if (groups != null & groups.size() > 0) {
+		if (groups != null && groups.size() > 0) {
 			list = new ArrayList<UserMonitor>();
 			for (GroupMonitor g : groups) {
 				users = listUser(g);

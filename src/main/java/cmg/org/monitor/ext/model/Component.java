@@ -5,7 +5,7 @@ package cmg.org.monitor.ext.model;
 
 import java.io.Serializable;
 
-import cmg.org.monitor.common.Constant;
+import cmg.org.monitor.util.shared.Constant;
 
 /**
  * Please enter a short description for this class.

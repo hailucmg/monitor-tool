@@ -22,10 +22,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import cmg.org.monitor.common.Constant;
 import cmg.org.monitor.dao.*;
 import cmg.org.monitor.dao.impl.*;
 import cmg.org.monitor.entity.shared.*;
+import cmg.org.monitor.util.shared.Constant;
 import cmg.org.monitor.util.shared.Utility;
 
 public class MonitorParser {
@@ -153,9 +153,10 @@ public class MonitorParser {
 		boolean checkFileSys = true;
 		boolean checkMem = true;
 		boolean isDone = false;
+		int lastestMemUsage = -1;
+		int lastestCpuUsage = -1;
 
-		if (cpu != null) {
-			cpu.setTimeStamp(timeStamp);
+		if (cpu != null) {		
 			if (cpu.getCpuUsage() > Constant.CPU_LEVEL_HISTORY_UPDATE) {
 				checkCpu = false;
 				alert = new AlertMonitor(AlertMonitor.HIGH_USAGE_LEVEL_CPU,
@@ -163,9 +164,13 @@ public class MonitorParser {
 								+ "%", timeStamp);
 				alertDAO.storeAlert(sys, alert);
 			}
-			// store CPU information
-			cpuDAO.storeCpu(sys, cpu);
+			lastestCpuUsage = cpu.getCpuUsage();
+		} else {
+			cpu = new CpuMonitor();
 		}
+		cpu.setTimeStamp(timeStamp);
+		// store CPU information
+		cpuDAO.storeCpu(sys, cpu);
 
 		if (jvm != null) {
 			isDone = true;
@@ -217,8 +222,7 @@ public class MonitorParser {
 			}// for
 			fileSysDAO.storeFileSystems(sys, fileSysList);
 		}// if
-
-		int lastestMemUsage = 0;
+		
 		if (memList != null) {
 			for (MemoryMonitor mem : memList) {
 				if (mem.getType() == MemoryMonitor.MEM) {
@@ -248,7 +252,14 @@ public class MonitorParser {
 				// store Memory information
 				memDAO.storeMemory(sys, mem);
 			}// for
-		}// if
+		} else {
+			MemoryMonitor mem = new MemoryMonitor();
+			mem.setType(MemoryMonitor.MEM);
+			mem.setTimeStamp(timeStamp);
+			memDAO.storeMemory(sys, mem);
+			mem.setType(MemoryMonitor.SWAP);
+			memDAO.storeMemory(sys, mem);
+		}
 
 		if (serviceList != null) {
 			isDone = true;
@@ -279,9 +290,9 @@ public class MonitorParser {
 			}// for
 			serviceDAO.storeServices(sys, serviceList);
 		}// if
-		sys.setStatus(isDone);		
+		sys.setStatus(isDone);
 		sys.setLastestMemoryUsage(lastestMemUsage);
-		sys.setLastestCpuUsage(cpu == null ? 0 : cpu.getCpuUsage());
+		sys.setLastestCpuUsage(lastestCpuUsage);
 		sys.setHealthStatus(sys.getStatus() && sys.isActive() ? (checkMem
 				&& checkFileSys && checkService && checkCpu && checkJvm ? SystemMonitor.STATUS_SMILE
 				: SystemMonitor.STATUS_BORED)
@@ -370,7 +381,8 @@ public class MonitorParser {
 		return list;
 	}
 
-	private static ArrayList<ServiceMonitor> getServiceComponent(String webContent) {
+	private static ArrayList<ServiceMonitor> getServiceComponent(
+			String webContent) {
 		logger.log(Level.INFO, "START Service Information");
 		ArrayList<ServiceMonitor> list = null;
 		ServiceMonitor service = null;
@@ -415,7 +427,8 @@ public class MonitorParser {
 				temp = strList.get(iC + 3);
 				logger.log(Level.INFO, " Ping: " + temp);
 				try {
-					service.setPing(Integer.parseInt(MonitorUtil.extractDigit(temp)));
+					service.setPing(Integer.parseInt(MonitorUtil
+							.extractDigit(temp)));
 				} catch (Exception ex) {
 					logger.log(
 							Level.SEVERE,
@@ -590,13 +603,16 @@ public class MonitorParser {
 	 */
 	private static CpuMonitor getOriginalCPU(Document doc) {
 		logger.log(Level.INFO, "START CPU Information");
-		CpuMonitor cpu = new CpuMonitor();
+		CpuMonitor cpu = null;
 		NodeList elementList = doc.getElementsByTagName(CPU_ITEM);
 		if (elementList.getLength() > 0) {
 			Element element = (Element) elementList.item(0);
 			String strTemp = "";
 			NodeList temp = element.getElementsByTagName("usage");
 			if (temp != null && temp.getLength() > 0) {
+				if (cpu == null) {
+					cpu = new CpuMonitor();
+				}
 				strTemp = getCharacterDataFromElement((Element) temp.item(0));
 				logger.log(Level.INFO, " Usage: " + strTemp);
 				try {
@@ -611,6 +627,9 @@ public class MonitorParser {
 			}// if
 			temp = element.getElementsByTagName("vendor");
 			if (temp != null && temp.getLength() > 0) {
+				if (cpu == null) {
+					cpu = new CpuMonitor();
+				}
 				strTemp = getCharacterDataFromElement((Element) temp.item(0));
 				logger.log(Level.INFO, " Vendor: " + strTemp);
 				cpu.setVendor(strTemp);
@@ -618,6 +637,9 @@ public class MonitorParser {
 
 			temp = element.getElementsByTagName("model");
 			if (temp != null && temp.getLength() > 0) {
+				if (cpu == null) {
+					cpu = new CpuMonitor();
+				}
 				strTemp = getCharacterDataFromElement((Element) temp.item(0));
 				logger.log(Level.INFO, " Model: " + strTemp);
 				cpu.setModel(strTemp);
@@ -625,6 +647,9 @@ public class MonitorParser {
 
 			temp = element.getElementsByTagName("total");
 			if (temp != null && temp.getLength() > 0) {
+				if (cpu == null) {
+					cpu = new CpuMonitor();
+				}
 				strTemp = getCharacterDataFromElement((Element) temp.item(0));
 				logger.log(Level.INFO, " Total CPU: " + strTemp);
 				try {
@@ -644,13 +669,16 @@ public class MonitorParser {
 
 	private static CpuMonitor getOriginalCPU(String webContent) {
 		logger.log(Level.INFO, "START CPU Information");
-		CpuMonitor cpu = new CpuMonitor();
+		CpuMonitor cpu = null;
 		try {
 			Matcher matcher = Pattern.compile(Constant.PATTERN_CPU_USAGE)
 					.matcher(webContent);
 			// Finds value for CPU Usage
 			String value = null;
 			if (matcher.find()) {
+				if (cpu == null) {
+					cpu = new CpuMonitor();
+				}
 				value = matcher.group(2).replace("%", "");
 				logger.log(Level.INFO, " Usage: " + value);
 				try {
@@ -666,6 +694,9 @@ public class MonitorParser {
 			matcher = Pattern.compile(Constant.PATTERN_CPU_VENDOR).matcher(
 					webContent);
 			if (matcher.find()) {
+				if (cpu == null) {
+					cpu = new CpuMonitor();
+				}
 				value = matcher.group(2);
 				logger.log(Level.INFO, " Vendor: " + value);
 				cpu.setVendor(value);
@@ -674,6 +705,9 @@ public class MonitorParser {
 			matcher = Pattern.compile(Constant.PATTERN_CPU_MODEL).matcher(
 					webContent);
 			if (matcher.find()) {
+				if (cpu == null) {
+					cpu = new CpuMonitor();
+				}
 				value = matcher.group(2);
 				logger.log(Level.INFO, " Model: " + value);
 				cpu.setModel(value);
@@ -682,6 +716,9 @@ public class MonitorParser {
 			matcher = Pattern.compile(Constant.PATTERN_CPU_TOTAL).matcher(
 					webContent);
 			if (matcher.find()) {
+				if (cpu == null) {
+					cpu = new CpuMonitor();
+				}
 				value = matcher.group(2);
 				logger.log(Level.INFO, " Total: " + value);
 				try {
@@ -855,13 +892,14 @@ public class MonitorParser {
 	 */
 	private static ArrayList<MemoryMonitor> getMemories(Document doc) {
 		logger.log(Level.INFO, "START Memory Information");
-		ArrayList<MemoryMonitor> list = new ArrayList<MemoryMonitor>();
+		ArrayList<MemoryMonitor> list = null;
 		MemoryMonitor mem = null;
 		Element element = null;
 		String strTemp = "";
 		NodeList elementList = doc.getElementsByTagName("cpu_physical");
 
 		if (elementList.getLength() > 0) {
+			list = new ArrayList<MemoryMonitor>();
 			for (int i = 0; i < elementList.getLength(); i++) {
 				logger.log(Level.INFO, " -> START Memory #" + (i + 1));
 				mem = new MemoryMonitor();
@@ -907,10 +945,7 @@ public class MonitorParser {
 				list.add(mem);
 				logger.log(Level.INFO, " -> END Memory #" + (i + 1));
 			}// for
-		} else {
-			list.add(new MemoryMonitor(MemoryMonitor.SWAP));
-			list.add(new MemoryMonitor(MemoryMonitor.MEM));
-		}
+		}// if
 		logger.log(Level.INFO, "END Memory Information");
 		return list;
 	}

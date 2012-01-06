@@ -23,7 +23,7 @@ import javax.servlet.http.Cookie;
 
 import com.sun.net.ssl.X509TrustManager;
 
-import cmg.org.monitor.common.Constant;
+import cmg.org.monitor.util.shared.Constant;
 
 /**
  * Please enter a short description for this class.

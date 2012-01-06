@@ -1,6 +1,7 @@
 package cmg.org.monitor.module.client;
 
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.util.shared.Constant;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
@@ -139,7 +140,7 @@ public class DashBoard extends AncestorEntryPoint {
 				setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
 				setOnload(false);
 				systems = result;
-				drawTable(systems);				
+				drawTable(systems);
 			}
 		});
 	}
@@ -154,26 +155,22 @@ public class DashBoard extends AncestorEntryPoint {
 			for (int i = 0; i < result.length; i++) {
 				dataListSystem.setValue(i, 0, HTMLControl.getLinkSystemDetail(
 						result[i].getId(), result[i].getCode()));
+				dataListSystem.setValue(i, 1, result[i].getName());
+				dataListSystem.setValue(i, 2, result[i].getUrl());
+				dataListSystem.setValue(i, 3, result[i].getIp());
 				dataListSystem.setValue(
 						i,
-						1,
-						result[i].getName());
+						4,
+						HTMLControl
+								.getPercentBar(result[i].getLastestCpuUsage(),
+										Constant.CPU_LEVEL_HISTORY_UPDATE));
 				dataListSystem.setValue(
 						i,
-						2,
-						result[i].getUrl());
-				dataListSystem
-						.setValue(i, 3, result[i].getIp());
-				dataListSystem
-						.setValue(
-								i,
-								4,
-								result[i].getLastestCpuUsage());
-				dataListSystem
-						.setValue(
-								i,
-								5,
-								result[i].getLastestMemoryUsage());
+						5,
+						HTMLControl
+								.getPercentBar(
+										result[i].getLastestMemoryUsage(),
+										Constant.MEMORY_LEVEL_HISTORY_UPDATE));
 				dataListSystem.setValue(i, 6, HTMLControl.getHTMLStatusImage(
 						result[i].getId(), result[i].getHealthStatus()));
 				dataListSystem.setValue(i, 7,
@@ -216,8 +213,8 @@ public class DashBoard extends AncestorEntryPoint {
 		dataListSystem.addColumn(ColumnType.STRING, "System");
 		dataListSystem.addColumn(ColumnType.STRING, "URL");
 		dataListSystem.addColumn(ColumnType.STRING, "IP");
-		dataListSystem.addColumn(ColumnType.NUMBER, "CPU Usage (%)");
-		dataListSystem.addColumn(ColumnType.NUMBER, "Memory Usage (%)");
+		dataListSystem.addColumn(ColumnType.STRING, "CPU Usage");
+		dataListSystem.addColumn(ColumnType.STRING, "Memory Usage");
 		dataListSystem.addColumn(ColumnType.STRING, "Health Status");
 		dataListSystem.addColumn(ColumnType.STRING, "Monitor Status");
 
@@ -233,8 +230,9 @@ public class DashBoard extends AncestorEntryPoint {
 		ops.setMax(100);
 		ops.setMin(0);
 		ops.setWidth(200);
-		BarFormat bf = BarFormat.create(ops);
-		bf.format(dataListSystem, 4);
-		bf.format(dataListSystem, 5);
+		/*
+		 * BarFormat bf = BarFormat.create(ops); bf.format(dataListSystem, 4);
+		 * bf.format(dataListSystem, 5);
+		 */
 	}
 }

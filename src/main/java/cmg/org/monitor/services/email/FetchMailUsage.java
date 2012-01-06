@@ -12,8 +12,8 @@ import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
 
-import cmg.org.monitor.common.Constant;
 import cmg.org.monitor.ext.util.URLMonitor;
+import cmg.org.monitor.util.shared.Constant;
 
 public class FetchMailUsage {
 	
