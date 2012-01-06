@@ -1,11 +1,6 @@
 package cmg.org.monitor.module.client;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import cmg.org.monitor.ext.model.shared.UserDto;
+import cmg.org.monitor.ext.model.shared.UserMonitor;
 import cmg.org.monitor.util.shared.HTMLControl;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -27,92 +22,63 @@ public class UserManagement extends AncestorEntryPoint {
 	}
 
 	private void initContent() {
-		monitorGwtSv.listUser(new AsyncCallback<Map<String, UserDto>>() {
+		monitorGwtSv.listAllUsers(new AsyncCallback<UserMonitor[]>() {
 
 			@Override
-			public void onSuccess(Map<String, UserDto> result) {
+			public void onSuccess(UserMonitor[] result) {
 				if (result != null) {
 					setVisibleLoadingImage(false);
 					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
-					drawTable(result);					
+					drawTable(result);
 				} else {
 					showMessage("Oops! Error.",
 							HTMLControl.HTML_DASHBOARD_NAME,
-							"Goto Dashboard. ",
-							HTMLControl.RED_MESSAGE, true);
+							"Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
 				}
 			}
 
 			@Override
 			public void onFailure(Throwable caught) {
-				showMessage("Oops! Error.",
-						HTMLControl.HTML_DASHBOARD_NAME,
-						"Goto Dashboard. ",
-						HTMLControl.RED_MESSAGE, true);
+				showMessage("Oops! Error.", HTMLControl.HTML_DASHBOARD_NAME,
+						"Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
 			}
 		});
 	}
 
-	@SuppressWarnings({ "rawtypes" })
-	private AbstractDataTable createData(Map<String, UserDto> listUser) {
+	private AbstractDataTable createData(UserMonitor[] listUser) {
 		DataTable data = DataTable.create();
 		data.addColumn(ColumnType.STRING, "Username");
-		data.addColumn(ColumnType.STRING, "Email");
 		data.addColumn(ColumnType.STRING, "Group");
 		data.addColumn(ColumnType.STRING, "Permission");
-		data.addRows(listUser.size());
-		Set set = listUser.entrySet();
-		Iterator iter = set.iterator();
-		ArrayList<UserDto> user = new ArrayList<UserDto>();		
-		while (iter.hasNext()) {
-			Map.Entry entry = (Map.Entry) iter.next();
-			UserDto u = (UserDto) entry.getValue();
-			user.add(u);
-		/*	String permission = "N/A";
-			if (u.getGroup().contains("admin")) {
-				permission = "Admin";
-			} else if (u.getGroup().startsWith("monitor")) {
-				permission = "Normal user";
-			}
-			data.setValue(i, 0, u.getUsername());
-			data.setValue(i, 1, u.getEmail());
-			data.setValue(i, 2, u.getGroup());
-			data.setValue(i, 3, permission);
-			i++;*/
-		}
-		
-		ArrayList<UserDto> sortUser = sortByname(user);
-		for(int j = 0; j < sortUser.size();j++){
-			String permission = "N/A";
-			if (sortUser.get(j).getGroup().contains("admin")) {
-				permission = "Admin";
-			} else if (sortUser.get(j).getGroup().startsWith("monitor")) {
-				permission = "Normal user";
-			}
-			data.setValue(j, 0, sortUser.get(j).getUsername());
-			data.setValue(j, 1, sortUser.get(j).getEmail());
-			data.setValue(j, 2, sortUser.get(j).getGroup());
-			data.setValue(j, 3, permission);
+		data.addRows(listUser.length);
+
+		UserMonitor[] sortUser = sortByname(listUser);
+		for (int j = 0; j < sortUser.length; j++) {
+
+			data.setValue(j, 0, sortUser[j].getId());
+			data.setValue(j, 1, sortUser[j].getGroupsName());
+			data.setValue(j, 2, sortUser[j].getRoleName());
 		}
 		return data;
 	}
 
-	 public ArrayList<UserDto> sortByname(ArrayList<UserDto> user) {
-	       for (int i = 1; i < user.size(); i++) {
-	           int j;
-	           UserDto val = user.get(i);
-	           for (j = i-1; j > -1; j--) {
-	        	   UserDto temp = user.get(j);
-	                   if (temp.compareByName(val) <= 0) {
-	                          break;
-	                   }
-	                   user.set(j+1, temp);
-	            }
-	           user.set(j+1, val);
-	       }
-	       return user;
-	     }
-	
+	public UserMonitor[] sortByname(UserMonitor[] users) {
+		UserMonitor temp = null;
+		for (int i = 1; i < users.length; i++) {
+			int j;
+			UserMonitor val = users[i];
+			for (j = i - 1; j > -1; j--) {
+				temp = users[j];
+				if (temp.compareByName(val) <= 0) {
+					break;
+				}
+				users[j + 1] = temp;
+			}
+			users[j + 1] = val;
+		}
+		return users;
+	}
+
 	private Options option() {
 		Options option = Options.create();
 		option.setAllowHtml(true);
@@ -121,7 +87,7 @@ public class UserManagement extends AncestorEntryPoint {
 
 	}
 
-	private void drawTable(Map<String, UserDto> listUser) {
+	private void drawTable(UserMonitor[] listUser) {
 		myTable.draw(createData(listUser), option());
 
 	}

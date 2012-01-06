@@ -1,14 +1,17 @@
 package cmg.org.monitor.module.client;
 
-import java.util.ArrayList;
-
 import cmg.org.monitor.entity.shared.SystemMonitor;
-import cmg.org.monitor.memcache.shared.SystemMonitorDto;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.formatters.BarFormat;
@@ -25,11 +28,23 @@ public class DashBoard extends AncestorEntryPoint {
 	// Options of table list system
 	private Options opsTableListSystem;
 
+	private static HTML popupContent;
+
+	private static HTML buttonDetails;
+
+	private static HTML buttonStatistic;
+
+	private SystemMonitor[] systems;
+
+	private FlexTable flexTable;
+
 	protected void init() {
+		DashBoard.exportStaticMethod();
 		if (currentPage == HTMLControl.PAGE_DASHBOARD) {
 			tableListSystem = new Table();
 			createOptionsTableListSystem();
 			addWidget(HTMLControl.ID_BODY_CONTENT, tableListSystem);
+			initDialogBox();
 			timerReload = new Timer() {
 				@Override
 				public void run() {
@@ -42,63 +57,127 @@ public class DashBoard extends AncestorEntryPoint {
 
 	}
 
+	public static native void exportStaticMethod() /*-{
+	$wnd.showStatusDialogBox =
+	$entry(@cmg.org.monitor.module.client.DashBoard::showStatusDialogBox(Ljava/lang/String;Ljava/lang/String;))
+	}-*/;
+
+	public static void showStatusDialogBox(String sysId, String healthStatus) {
+		String mes = "";
+		if (healthStatus.equals("dead")) {
+			mes = "<h4>The system is dead.</h4> Cannot gather data from this system.";
+		} else if (healthStatus.equals("bored")) {
+			mes = "<h4>Not good health.</h4>";
+			mes += "<p>CPU or Memory is running at 90%";
+			mes += "<br>Ping time is too long, or one of a service is Dead such as Database server.</p>";
+		} else if (healthStatus.equals("smile")) {
+			mes += "<h4>Good health</h4>";
+		}
+		try {
+			popupContent.setHTML(mes);
+			buttonDetails.setHTML(HTMLControl.getButtonHtml(sysId, true));
+			buttonStatistic.setHTML(HTMLControl.getButtonHtml(sysId, false));
+			dialogBox.center();
+		} catch (Exception ex) {
+			// do nothing
+		}
+	}
+
+	void initDialogBox() {
+		dialogBox.setAnimationEnabled(true);
+		Button close = new Button();
+		close.setStyleName("");
+		close.getElement().setId("closeButton");
+		close.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				dialogBox.hide();
+			}
+		});
+		popupContent = new HTML();
+		flexTable = new FlexTable();
+		flexTable.setWidget(0, 0, popupContent);
+		flexTable.setStyleName("table-popup");
+		FlexTable flexButton = new FlexTable();
+		buttonDetails = new HTML();
+		buttonStatistic = new HTML();
+		flexButton.setCellPadding(5);
+		flexButton.setCellSpacing(5);
+		flexButton.setWidget(0, 0, buttonDetails);
+		flexButton.setWidget(0, 1, buttonStatistic);
+		VerticalPanel dialogVPanel = new VerticalPanel();
+
+		dialogVPanel.addStyleName("dialogVPanel");
+
+		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
+		dialogVPanel.add(close);
+		dialogVPanel.add(flexTable);
+		dialogVPanel.add(flexButton);
+		dialogBox.setWidget(dialogVPanel);
+	}
+
 	/*
 	 * Create callback to server via RPC
 	 */
 	void callBack() {
-		monitorGwtSv
-				.listSystems(new AsyncCallback<ArrayList<SystemMonitorDto>>() {
-					@Override
-					public void onFailure(Throwable caught) {
-						caught.printStackTrace();
-						showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
-						showMessage("Server error. ",
-								HTMLControl.HTML_DASHBOARD_NAME, "Try again.",
-								HTMLControl.RED_MESSAGE, true);
-					}
+		monitorGwtSv.listSystems(new AsyncCallback<SystemMonitor[]>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
+				showMessage("Server error. ", HTMLControl.HTML_DASHBOARD_NAME,
+						"Try again.", HTMLControl.RED_MESSAGE, true);
+				setVisibleLoadingImage(false);
+				setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+				setOnload(false);
+			}
 
-					@Override
-					public void onSuccess(ArrayList<SystemMonitorDto> result) {
-						showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
-						setVisibleLoadingImage(false);
-						setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
-						drawTable(result);
-					}
-				});
+			@Override
+			public void onSuccess(SystemMonitor[] result) {
+				showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
+				setVisibleLoadingImage(false);
+				setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+				setOnload(false);
+				systems = result;
+				drawTable(systems);				
+			}
+		});
 	}
 
 	/*
 	 * Draw table ui with result callback from server via RPC
 	 */
-	void drawTable(ArrayList<SystemMonitorDto> result) {
-		if (result != null) {
+	void drawTable(SystemMonitor[] result) {
+		if (result != null && result.length > 0) {
 			createDataListSystem();
-			dataListSystem.addRows(result.size());
-			SystemMonitorDto sys = null;
-			for (int i = 0; i < result.size(); i++) {
-				sys = result.get(i);
+			dataListSystem.addRows(result.length);
+			for (int i = 0; i < result.length; i++) {
+				dataListSystem.setValue(i, 0, HTMLControl.getLinkSystemDetail(
+						result[i].getId(), result[i].getCode()));
 				dataListSystem.setValue(
 						i,
-						0,
-						HTMLControl.getLinkSystemDetail(sys.getId(),
-								sys.getCode()));
-				dataListSystem.setValue(i, 1, (sys.getName() == null) ? "N/A"
-						: sys.getName());
-				dataListSystem.setValue(i, 2, (sys.getUrl() == null) ? "N/A"
-						: sys.getUrl());
-				dataListSystem.setValue(i, 3, (sys.getIp() == null) ? "N/A"
-						: sys.getIp());
-				dataListSystem.setValue(i, 4, (sys.getLastestCpu() == null) ? 0
-						: (sys.isActive() && sys.isStatus() ? sys
-								.getLastestCpu().getCpuUsage() : 0));
-				dataListSystem.setValue(i, 5,
-						(sys.getLastestMemory() == null) ? 0 : (sys.isActive()
-								&& sys.isStatus() ? sys.getLastestMemory()
-								.getPercentUsage() : 0));
-				dataListSystem.setValue(i, 6,
-						HTMLControl.getHTMLStatusImage(sys.getHealthStatus()));
+						1,
+						result[i].getName());
+				dataListSystem.setValue(
+						i,
+						2,
+						result[i].getUrl());
+				dataListSystem
+						.setValue(i, 3, result[i].getIp());
+				dataListSystem
+						.setValue(
+								i,
+								4,
+								result[i].getLastestCpuUsage());
+				dataListSystem
+						.setValue(
+								i,
+								5,
+								result[i].getLastestMemoryUsage());
+				dataListSystem.setValue(i, 6, HTMLControl.getHTMLStatusImage(
+						result[i].getId(), result[i].getHealthStatus()));
 				dataListSystem.setValue(i, 7,
-						HTMLControl.getHTMLActiveImage(sys.isActive()));
+						HTMLControl.getHTMLActiveImage(result[i].isActive()));
 			}
 			createFormatDataTableListSystem();
 			setVisibleMessage(false, HTMLControl.RED_MESSAGE);

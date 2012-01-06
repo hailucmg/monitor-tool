@@ -45,6 +45,7 @@ public class LoginServlet extends HttpServlet {
 	}
 	
 	private void validLogin(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		
 		UserService userService = UserServiceFactory.getUserService();
 		User user = userService.getCurrentUser();
 		try {

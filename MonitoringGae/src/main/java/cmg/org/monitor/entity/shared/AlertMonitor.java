@@ -1,5 +1,6 @@
 package cmg.org.monitor.entity.shared;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.jdo.annotations.Extension;
@@ -9,24 +10,33 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import cmg.org.monitor.ext.model.shared.AlertDto;
-
 /**
  * @author lamphan
  * @version 1.0
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-public class AlertMonitor implements Model {
-
+public class AlertMonitor implements Serializable {
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	public static final int CANNOT_GATHER_DATA = 0x001;
+	public static final int HIGH_USAGE_LEVEL_CPU = 0x002;
+	public static final int HIGH_USAGE_LEVEL_JVM = 0x003;
+	public static final int HIGH_USAGE_LEVEL_MEMORY = 0x004;
+	public static final int HIGH_USAGE_LEVEL_FILESYSTEM = 0x005;
+	public static final int SERVICE_HIGH_LEVEL_PING_TIME = 0x006;
+	public static final int SERVICE_ERROR_STATUS = 0x007;
+
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	@Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
 	private String id;
+
+	@Persistent
+	private int type;
 
 	@Persistent
 	private String error;
@@ -35,11 +45,10 @@ public class AlertMonitor implements Model {
 	private String description;
 
 	@Persistent
-	private Date timeStamp;
+	private AlertStoreMonitor alertStore;
 
-	@SuppressWarnings("unused")
 	@Persistent
-	private SystemMonitor systemMonitor;
+	private Date timeStamp;
 
 	/**
 	 * Default constructor.<br>
@@ -48,69 +57,25 @@ public class AlertMonitor implements Model {
 
 	}
 
-	/**
-	 * Constructor with parameters.
-	 * 
-	 * @param alertDto
-	 */
-	public AlertMonitor(AlertDto alertDto) {
-
-		this();
-		this.setBasicInfo(alertDto.getError(), alertDto.getDescription(),
-				alertDto.getTimeStamp());
-	}
-
-	/**
-	 * @param alertDto
-	 * @param system
-	 * @param pm
-	 */
-	public AlertMonitor(AlertDto alertDto, SystemMonitor system
-			) {
-		this();
-		this.setBasicInfo(alertDto.getError(), alertDto.getDescription(),
-				alertDto.getTimeStamp());
-		system.getAlerts().add(this);
-		
-	}
-
-	/**
-	 * Method 'setBasicInfo' set basic class properties.<br>
-	 * @param error
-	 * @param description
-	 * @param timeStamp
-	 */
-	public void setBasicInfo(String error, String description, Date timeStamp) {
-
+	public AlertMonitor(int type, String error, String description,
+			Date timeStamp) {
+		super();
+		this.type = type;
 		this.error = error;
 		this.description = description;
 		this.timeStamp = timeStamp;
 	}
-
-	/**
-	 * @return
-	 */
-	public AlertDto toDTO() {
-		AlertDto alertDTO = new AlertDto(this.getError(),
-				this.getDescription(), this.getTimeStamp());
-		alertDTO.setId(this.getId());
-
-		return alertDTO;
+	
+	@Override
+	public String toString() {
+		StringBuffer sf = new StringBuffer();
+		sf.append("\r\nType: " + type);
+		sf.append("\r\nError: " + error);
+		sf.append("\r\nDescription: " + description);
+		sf.append("\r\nTimestamp: " + timeStamp + "\r\n");
+		return sf.toString();
 	}
 
-	/**
-	 * update existing alert object based on Alert DTO id
-	 * 
-	 * @param alertDTO
-	 */
-	public void updateFromDTO(AlertDto alertDTO) {
-		this.error = alertDTO.getError();
-		this.description = alertDTO.getDescription();
-		this.timeStamp = alertDTO.getTimeStamp();
-
-	}
-	
-	
 	public String getId() {
 		return id;
 	}
@@ -139,5 +104,21 @@ public class AlertMonitor implements Model {
 		this.timeStamp = timeStamp;
 	}
 
-	
+	public AlertStoreMonitor getAlertStore() {
+		return alertStore;
+	}
+
+	public void setAlertStore(AlertStoreMonitor alertStore) {
+		this.alertStore = alertStore;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
+	}
+
+
 } // End class

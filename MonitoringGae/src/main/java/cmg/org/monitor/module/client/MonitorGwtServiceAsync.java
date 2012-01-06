@@ -1,14 +1,14 @@
 package cmg.org.monitor.module.client;
 
-import java.util.ArrayList;
-import java.util.Map;
-
-import cmg.org.monitor.entity.shared.CpuMemory;
+import cmg.org.monitor.entity.shared.AlertStoreMonitor;
+import cmg.org.monitor.entity.shared.CpuMonitor;
+import cmg.org.monitor.entity.shared.FileSystemMonitor;
+import cmg.org.monitor.entity.shared.JvmMonitor;
+import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
-import cmg.org.monitor.ext.model.shared.MonitorEditDto;
-import cmg.org.monitor.ext.model.shared.UserDto;
+import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
-import cmg.org.monitor.memcache.shared.SystemMonitorDto;
+import cmg.org.monitor.ext.model.shared.UserMonitor;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -16,28 +16,41 @@ public interface MonitorGwtServiceAsync {
 
 	void deleteSystem(String id, AsyncCallback<Boolean> callback);
 
-	void editSystembyID(SystemMonitorDto system, AsyncCallback<String> callback);
-
-	void getSystembyID(String id, AsyncCallback<SystemMonitorDto> callback);
-
-	void getUserLogin(AsyncCallback<UserLoginDto> callback);
-	
-	void listUser(AsyncCallback<Map<String, UserDto>> callback);
-
-	void validSystemId(String sysID, AsyncCallback<Boolean> callback);
-
-	void addSystem(SystemMonitorDto system, String url,
-			AsyncCallback<String> callback);
-
 	void getAboutContent(AsyncCallback<String> callback);
 
 	void getHelpContent(AsyncCallback<String> callback);
 
-	void listSystems(AsyncCallback<ArrayList<SystemMonitorDto>> callback);
+	void getUserLogin(AsyncCallback<UserLoginDto> callback);
 
-	void groups(AsyncCallback<String[]> callback);
+	void listSystems(AsyncCallback<SystemMonitor[]> callback);
 
-	void getLastestDataMonitor(String sid,
-			AsyncCallback<SystemMonitorDto> callback);
+	void validSystemId(String sysID, AsyncCallback<SystemMonitor> callback);
+
+	void getSystemMonitorContainer(String sysId,
+			AsyncCallback<MonitorContainer> callback);
+
+	void getSystemMonitorContainer(AsyncCallback<MonitorContainer> callback);
+
+	void addSystem(SystemMonitor system, AsyncCallback<Boolean> callback);
+
+	void listAllUsers(AsyncCallback<UserMonitor[]> callback);
+
+	void editSystem(SystemMonitor sys, AsyncCallback<Boolean> callback);
+
+	void listJvms(SystemMonitor sys, AsyncCallback<JvmMonitor[]> callback);
+
+	void listCpus(SystemMonitor sys,
+			AsyncCallback<CpuMonitor[]> callback);
+
+	void listFileSystems(SystemMonitor sys,
+			AsyncCallback<FileSystemMonitor[]> callback);
+
+	void listServices(SystemMonitor sys,
+			AsyncCallback<ServiceMonitor[]> callback);
+
+	void listMems(SystemMonitor sys, AsyncCallback<MonitorContainer> callback);
+
+	void listAlertStore(SystemMonitor sys,
+			AsyncCallback<AlertStoreMonitor[]> callback);
 
 }

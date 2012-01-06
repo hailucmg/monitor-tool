@@ -1,7 +1,11 @@
 package cmg.org.monitor.dao;
 
-import cmg.org.monitor.ext.model.shared.AlertDto;
-import cmg.org.monitor.ext.model.shared.SystemDto;
+import java.util.ArrayList;
+
+import cmg.org.monitor.entity.shared.AlertMonitor;
+import cmg.org.monitor.entity.shared.AlertStoreMonitor;
+import cmg.org.monitor.entity.shared.SystemMonitor;
+
 
 /**
  * @author lamphan
@@ -9,17 +13,13 @@ import cmg.org.monitor.ext.model.shared.SystemDto;
  */
 public interface AlertDao {
 	
-	/**
-	 * @param alertDTO
-	 * @return
-	 */
-	public AlertDto updateAlert(AlertDto alertDTO, SystemDto entityDto);
+	public void storeAlert(SystemMonitor sys, AlertMonitor alert);
 	
-	/**
-	 * @param id
-	 * @return
-	 */
-	public AlertDto getAlert(String id) ;
+	public ArrayList<AlertStoreMonitor> listAlertStore(String sysId);
 	
+	public AlertStoreMonitor getLastestAlertStore(SystemMonitor sys);
 	
+	public void clearTempStore(SystemMonitor sys);
+	
+	public void putAlertStore(AlertStoreMonitor store);
 }

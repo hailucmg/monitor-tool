@@ -1,41 +1,51 @@
 package cmg.org.monitor.module.client;
 
-import java.util.ArrayList;
-import java.util.Map;
-
-import cmg.org.monitor.entity.shared.CpuMemory;
+import cmg.org.monitor.entity.shared.AlertStoreMonitor;
+import cmg.org.monitor.entity.shared.CpuMonitor;
+import cmg.org.monitor.entity.shared.FileSystemMonitor;
+import cmg.org.monitor.entity.shared.JvmMonitor;
+import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
-import cmg.org.monitor.ext.model.shared.MonitorEditDto;
-import cmg.org.monitor.ext.model.shared.UserDto;
+import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
-import cmg.org.monitor.memcache.shared.SystemMonitorDto;
+import cmg.org.monitor.ext.model.shared.UserMonitor;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 @RemoteServiceRelativePath("MonitorGwtService")
 public interface MonitorGwtService extends RemoteService {
-	String addSystem(SystemMonitorDto system, String url) throws Exception;
-
-	String[] groups() throws Exception;
-
+	boolean addSystem(SystemMonitor system);
+	
 	UserLoginDto getUserLogin();
+	
+	SystemMonitor[] listSystems();
 
-	ArrayList<SystemMonitorDto> listSystems();
-
-	SystemMonitorDto getSystembyID(String id) throws Exception;
-
-	String editSystembyID(SystemMonitorDto system) throws Exception;
-
-	boolean validSystemId(String sysID);
+	SystemMonitor validSystemId(String sysID);
 
 	boolean deleteSystem(String id) throws Exception;
 
-	Map<String, UserDto> listUser() throws Exception;
-	
 	String getAboutContent();
 	
 	String getHelpContent();
 	
-	SystemMonitorDto getLastestDataMonitor(String sid);
+	MonitorContainer getSystemMonitorContainer();
+	
+	UserMonitor[] listAllUsers();
+	
+	MonitorContainer getSystemMonitorContainer(String sysId);
+	
+	boolean editSystem(SystemMonitor sys);
+	
+	JvmMonitor[] listJvms(SystemMonitor sys);
+	
+	ServiceMonitor[] listServices(SystemMonitor sys);
+	
+	FileSystemMonitor[] listFileSystems(SystemMonitor sys);
+	
+	CpuMonitor[] listCpus(SystemMonitor sys);
+	
+	MonitorContainer listMems(SystemMonitor sys);
+	
+	AlertStoreMonitor[] listAlertStore(SystemMonitor sys);
 }
