@@ -400,7 +400,7 @@ public class HTMLControl {
 					+ ((page == PAGE_SYSTEM_STATISTIC) ? "dark" : "light")
 					+ "-left\">");
 			temp.append("<a href=\"" + HTML_SYSTEM_STATISTIC_NAME + "/" + sid
-					+ "\">Statistic System</a>");
+					+ "\">System Statistic</a>");
 			temp.append("</div>");
 			temp.append("<div class=\"step-"
 					+ ((page == PAGE_SYSTEM_STATISTIC) ? "dark" : "light")
