@@ -315,14 +315,21 @@ public class MailService {
 			}
 			sb.append("<li><b>IP Address: </b> " + sys.getIp()
 					+ "</li></ul><br/>");
-			sb.append("<table cellpadding=\"5\" cellspacing=\"5\"><tbody><tr><th>No.</th><th>Time</th><th>Title</th><th>Description</th></tr>");
+			sb.append("<table cellpadding=\"5\" cellspacing=\"5\"><tbody><tr><th>No.</th><th>Time</th><th>Severity</th><th>Title</th><th>Description</th></tr>");
 			ArrayList<AlertMonitor> alerts = store.getAlerts();
+			
 			if (alerts != null && alerts.size() > 0) {
 				for (int i = 0; i < alerts.size(); i++) {
 					sb.append("<tr><td>" + (i + 1) + "</td>");
 					sb.append("<td>"
 							+ MonitorUtil.parseTimeEmail(alerts.get(i)
 									.getTimeStamp()) + "</td>");
+					if (alerts.get(i).getType() == AlertMonitor.CANNOT_GATHER_DATA || alerts.get(i).getType() == AlertMonitor.SERVICE_ERROR_STATUS) {
+						sb.append("<td bgcolor=\"red\">Critical</td>");
+					} else {
+						sb.append("<td>High</td>");
+					}
+					
 					sb.append("<td>" + alerts.get(i).getError() + "</td>");
 					sb.append("<td>" + alerts.get(i).getDescription()
 							+ "</td></tr>");
