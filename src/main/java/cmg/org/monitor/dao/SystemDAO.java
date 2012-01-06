@@ -2,6 +2,8 @@ package cmg.org.monitor.dao;
 
 import java.util.ArrayList;
 
+import cmg.org.monitor.entity.shared.ChangeLogMonitor;
+import cmg.org.monitor.entity.shared.NotifyMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 
 public interface SystemDAO {
@@ -32,5 +34,14 @@ public interface SystemDAO {
 	public boolean editSystem(SystemMonitor sys) throws Exception ;
 	
 	public boolean updateStatus(SystemMonitor sys, boolean status, String healthStatus) throws Exception ;
-
+	
+	public NotifyMonitor getNotifyOption(String sid) throws Exception;
+	
+	public boolean setNotifyOption(String sid, NotifyMonitor notify) throws Exception;
+	
+	public boolean addChangeLog(ChangeLogMonitor log) throws Exception;
+	
+	public ArrayList<ChangeLogMonitor> listChangeLog(String sid, int start, int end) throws Exception;
+	
+	public int getCountChangeLog(String sid) throws Exception;
 }
