@@ -6,9 +6,9 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.HTML;
 
 public class HTMLControl {
-	
-	public static final String NOTIFY_OPTION= "<h3 align =\"center\">Notify Option</h3>";
-	
+
+	public static final String NOTIFY_OPTION = "<h3 align =\"center\">Notify Option</h3>";
+
 	public static final String LOGIN_SERVLET_NAME = "login";
 
 	public static final String HTML_INDEX_NAME = "Index.html";
@@ -293,6 +293,7 @@ public class HTMLControl {
 				+ "style=\"display: block; margin-left: auto; margin-right: autso\" />";
 
 	}
+
 	public static String getHTMLActiveImage(boolean b) {
 		return "<img src=\"images/icon/p_"
 				+ (b ? "online" : "offline")
@@ -305,12 +306,14 @@ public class HTMLControl {
 				+ "\"  class='system-id' ><span>" + code + "</span></a>";
 
 	}
+
 	public static String getLinkSystemStatistic(SystemMonitor sys) {
-		return "<a href=\""+MonitorConstant.PROJECT_HOST_NAME+"/Index.html" + HTML_SYSTEM_STATISTIC_NAME + "/" + sys.getId()
-				+ "\" ><span>" + sys + "</span></a>";
+		return "<a href=\"" + MonitorConstant.PROJECT_HOST_NAME + "/Index.html"
+				+ HTML_SYSTEM_STATISTIC_NAME + "/" + sys.getId() + "\" ><span>"
+				+ sys + "</span></a>";
 
 	}
-	
+
 	public static String getLinkEditSystem(String id, String code) {
 		return "<a href=\"" + HTML_EDIT_NAME + "/" + id + "\">" + code + "</a>";
 
@@ -379,6 +382,26 @@ public class HTMLControl {
 		}
 		temp.append("</h1>");
 		return new HTML(temp.toString());
+	}
+
+	public static String getPercentBar(int percent, int redRangeValue) {
+		StringBuffer sb = new StringBuffer();
+		String startImg = "<img style=\"padding: 0\" src=\"http://ajax.googleapis.com/ajax/static/modules/gviz/1.0/util/";
+		sb.append("<span style=\"padding: 0; float: left; white-space: nowrap;\">");
+		sb.append(startImg + "bar_s.png\" height=\"12\" width=\"1\">");
+		if (percent > 0) {
+			sb.append(startImg + "bar_"
+					+ (percent >= redRangeValue ? "r" : "b")
+					+ ".png\" height=\"12\" width=\"" + 2 * percent + "\">");
+		}
+		sb.append(startImg
+				+ "bar_w.png\" "
+				+ (percent == -1 ? "title=\"Has no data from the system\" alt=\"Has no data from the system\""
+						: "") + " height=\"12\" width=\"" + 2 * (100 - percent)
+				+ "\">");
+		sb.append(startImg + "bar_s.png\" height=\"12\" width=\"1\">"
+				+ (percent == -1 ? "" : ("&nbsp;" + percent + "%")) + "</span>");
+		return sb.toString();
 	}
 
 	public static HTML getStepHolder(int page, String sid) {
