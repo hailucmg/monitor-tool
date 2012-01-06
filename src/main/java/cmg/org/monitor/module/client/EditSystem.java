@@ -14,6 +14,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
@@ -43,6 +44,14 @@ public class EditSystem extends AncestorEntryPoint {
 	Label labelprotocol;
 	Label labelmailgroup;
 	Label labelEmail;
+	Label lblNotifyCpu;
+	Label lblNotifyMemory;
+	Label lblNotifyServices;
+	Label lblNotifyServicesConnection;
+	CheckBox cbNotifyCpu;
+	CheckBox cbNotifyMemory;
+	CheckBox cbNotifyServices;
+	CheckBox cbNotifyServicesConnection;
 	AbsolutePanel panelAdding;
 	AbsolutePanel panelValidateName;
 	AbsolutePanel panelValidateURL;
@@ -53,6 +62,7 @@ public class EditSystem extends AncestorEntryPoint {
 	AbsolutePanel panelButton;
 	AbsolutePanel panelValidateEmail;
 	private static FlexTable tableForm;
+	private static FlexTable tableNotify;
 
 	protected void init() {
 		if (currentPage == HTMLControl.PAGE_EDIT_SYSTEM) {
@@ -102,6 +112,33 @@ public class EditSystem extends AncestorEntryPoint {
 						if (result != null) {
 							system = result.getSys();
 							container = result;
+							
+							tableNotify= new FlexTable();
+							tableNotify.getFlexCellFormatter().setWidth(0, 0, "280px");
+							tableNotify.getFlexCellFormatter().setWidth(0, 1, "19px");
+							tableNotify.getFlexCellFormatter().setWidth(1, 0, "280px");
+							tableNotify.getFlexCellFormatter().setWidth(1, 1, "19px");
+							tableNotify.getFlexCellFormatter().setWidth(2, 0, "280px");
+							tableNotify.getFlexCellFormatter().setWidth(2, 1, "19px");
+							tableNotify.getFlexCellFormatter().setWidth(3, 0, "280px");
+							tableNotify.getFlexCellFormatter().setWidth(3, 1, "19px");
+							cbNotifyCpu = new CheckBox();
+							cbNotifyMemory = new CheckBox();
+							cbNotifyServices = new CheckBox();
+							cbNotifyServicesConnection = new CheckBox();
+							lblNotifyCpu = new Label(MonitorConstant.Notify_Cpu);
+							lblNotifyMemory = new Label(MonitorConstant.Notify_Memory);
+							lblNotifyServices = new Label(MonitorConstant.Notify_Service);
+							lblNotifyServicesConnection = new Label(MonitorConstant.Notify_ServiceConnection);
+							tableNotify.setWidget(0, 0, lblNotifyCpu);
+							tableNotify.setWidget(0, 1, cbNotifyCpu);
+							tableNotify.setWidget(1, 0, lblNotifyMemory);
+							tableNotify.setWidget(1, 1, cbNotifyMemory);
+							tableNotify.setWidget(2, 0, lblNotifyServices);
+							tableNotify.setWidget(2, 1, cbNotifyServices);
+							tableNotify.setWidget(3, 0, lblNotifyServicesConnection);
+							tableNotify.setWidget(3, 1, cbNotifyServicesConnection);
+							
 							labelEmail = new Label();
 							labelEmail.setText("Email");
 							txtEmail = new TextBox();
@@ -109,26 +146,18 @@ public class EditSystem extends AncestorEntryPoint {
 							txtEmail.setHeight("30px");
 							tableForm.setCellPadding(3);
 							tableForm.setCellSpacing(3);
-							tableForm.getFlexCellFormatter().setWidth(0, 0,
-									"100px");
-							tableForm.getFlexCellFormatter().setWidth(1, 0,
-									"100px");
-							tableForm.getFlexCellFormatter().setWidth(2, 0,
-									"100px");
-							tableForm.getFlexCellFormatter().setWidth(3, 0,
-									"100px");
-							tableForm.getFlexCellFormatter().setWidth(4, 0,
-									"100px");
-							tableForm.getFlexCellFormatter().setWidth(5, 0,
-									"100px");
-							tableForm.getFlexCellFormatter().setWidth(6, 0,
-									"100px");
-							tableForm.getFlexCellFormatter().setWidth(7, 0,
-									"100px");
-							tableForm.getFlexCellFormatter().setWidth(8, 0,
-									"100px");
-							tableForm.getFlexCellFormatter().setWidth(9, 0,
-									"100px");
+							tableForm.getFlexCellFormatter().setWidth(0, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(1, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(2, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(3, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(4, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(5, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(6, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(7, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(8, 0, "250px");
+							tableForm.getFlexCellFormatter().setWidth(9, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(10, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(11, 0, "100px");
 
 							labelName = new Label();
 							labelName.setText("Name");
@@ -280,12 +309,14 @@ public class EditSystem extends AncestorEntryPoint {
 							tableForm.setWidget(7, 0, labelremoteurl);
 							tableForm.setWidget(7, 1, txtRemote);
 							tableForm.setWidget(7, 2, panelValidateRemoteURL);
-							tableForm.getFlexCellFormatter()
-									.setColSpan(8, 0, 2);
-							tableForm.setWidget(8, 0, panelAdding);
-							tableForm.getFlexCellFormatter()
-									.setColSpan(9, 0, 3);
-							tableForm.setWidget(9, 0, panelButton);
+							tableForm.getFlexCellFormatter().setColSpan(8, 0, 2);
+							tableForm.setWidget(8, 0, new HTML(HTMLControl.NOTIFY_OPTION));
+							tableForm.getFlexCellFormatter().setColSpan(9, 0, 2);
+							tableForm.setWidget(9, 0, tableNotify);
+							tableForm.getFlexCellFormatter().setColSpan(10, 0, 2);
+							tableForm.setWidget(10, 0, panelAdding);
+							tableForm.getFlexCellFormatter().setColSpan(11, 0, 3);
+							tableForm.setWidget(11, 0, panelButton);
 							initHandler();
 							setVisibleLoadingImage(false);
 							setOnload(false);
