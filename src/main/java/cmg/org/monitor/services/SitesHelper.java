@@ -3,6 +3,7 @@ package cmg.org.monitor.services;
 import java.io.IOException;
 import java.net.URL;
 
+import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
 import com.google.gdata.client.sites.SitesService;
@@ -15,7 +16,7 @@ import com.google.gdata.util.ServiceException;
 
 public class SitesHelper {
 
-	public String getSiteEntryContent(String entryID) {
+	public static String getSiteEntryContent(String entryID) {
 		String temp = "";		
 		SitesService service = new SitesService(MonitorConstant.SITES_APP_NAME);		
 		try {
@@ -39,7 +40,7 @@ public class SitesHelper {
 		return temp;
 	}
 	
-	public String getContentBlob(BaseContentEntry<?> entry) {
+	public static String getContentBlob(BaseContentEntry<?> entry) {
 		return ((XhtmlTextConstruct) entry.getTextContent().getContent())
 				.getXhtml().getBlob();
 	}
@@ -47,14 +48,9 @@ public class SitesHelper {
 	/**
 	 * Returns an entry's numeric ID.
 	 */
-	private String getEntryId(BaseContentEntry<?> entry) {
+	private static String getEntryId(BaseContentEntry<?> entry) {
 		String selfLink = entry.getSelfLink().getHref();
 		return selfLink.substring(selfLink.lastIndexOf("/") + 1);
 	}
-		
-	public static void main(String[] args) {
-		SitesHelper  s= new SitesHelper();
-		System.out.print(s.getSiteEntryContent(MonitorConstant.SITES_HELP_CONTENT_ID));
-	}
-	
+			
 }

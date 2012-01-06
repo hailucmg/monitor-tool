@@ -14,7 +14,7 @@ public class MonitorException extends Exception implements Serializable {
      * Creates a new MonitorException object.
      */
     public MonitorException() {
-        // TODO Auto-generated constructor stub
+      
     }
     
 	/**
@@ -24,7 +24,7 @@ public class MonitorException extends Exception implements Serializable {
      */
     public MonitorException(String message) {
         super(message);
-        // TODO Auto-generated constructor stub
+       
     }
     
     /**

@@ -1,6 +1,6 @@
 package cmg.org.monitor.util.shared;
 
-import cmg.org.monitor.memcache.shared.SystemMonitorDto;
+import cmg.org.monitor.entity.shared.SystemMonitor;
 
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.HTML;
@@ -59,6 +59,17 @@ public class HTMLControl {
 			+ " style=\"display: block; margin-left: auto; margin-right: auto\"/>";
 
 	public static final String HTML_ARROW_IMAGE = "<img src=\"images/icon/right_arrow.png\" />";
+
+	public static String getButtonHtml(String sid, boolean type) {
+		StringBuffer tmp = new StringBuffer();
+		tmp.append("<a href=\""
+				+ (type ? HTML_SYSTEM_DETAIL_NAME : HTML_SYSTEM_STATISTIC_NAME)
+				+ "/" + sid + "\">");
+		tmp.append("<input type=\"button\" class=\""
+				+ (type ? "form-details" : "form-statistic") + "\">");
+		tmp.append("</a>");
+		return tmp.toString();
+	}
 
 	public static String getAboutContent() {
 		StringBuffer tmp = new StringBuffer();
@@ -124,7 +135,7 @@ public class HTMLControl {
 					.startsWith(HTML_EDIT_NAME));
 	}
 
-	public static HTML getSystemInfo(SystemMonitorDto sys) {
+	public static HTML getSystemInfo(SystemMonitor sys) {
 		StringBuffer temp = new StringBuffer();
 		temp.append("<h3>SID: " + sys.getCode() + "</h3>");
 		temp.append("<h3>Name: " + sys.getName() + "</h3>");
@@ -252,21 +263,33 @@ public class HTMLControl {
 						+ "_blue.gif' /></a></td></tr></table></div>");
 	}
 
-	public static String getHTMLStatusImage(String healthStatus) {
+	public static String getHTMLStatusImage(String sid, String healthStatus) {
+		String mes = "";
+		if (healthStatus.equals("dead")) {
+			mes = "System is not working.\nClick the Icon to see more information!";
+		} else if (healthStatus.equals("bored")) {
+			mes = "Insufficient data.\nClick the Icon to see more information!";
+		} else if (healthStatus.equals("smile")) {
+			mes = "All is working correctly.\nClick the Icon to see more information!";
+		} else {
+			mes = "Click the Icon to see more information!";
+		}
 		return "<img src=\"images/icon/"
 				+ healthStatus
 				+ "_status_icon.png\" width=\"24\" height=\"24\" "
-				+ "style=\"display: block; margin-left: auto; margin-right: auto\" />";
+				+ "style=\"display: block; margin-left: auto; margin-right: auto\""
+				+ " onClick=\"javascript:showStatusDialogBox('" + sid + "','"
+				+ healthStatus + "');\"" + " title='" + mes + "'" + " alt='"
+				+ mes + "'/>";
 	}
 
 	public static String getHTMLStatusImage(boolean b) {
 		return "<img src=\"images/icon/"
 				+ Boolean.toString(b)
 				+ "_icon.png\" width=\"24\" height=\"24\" "
-				+ "style=\"display: block; margin-left: auto; margin-right: auto\" />";
+				+ "style=\"display: block; margin-left: auto; margin-right: autso\" />";
 
 	}
-
 	public static String getHTMLActiveImage(boolean b) {
 		return "<img src=\"images/icon/p_"
 				+ (b ? "online" : "offline")
@@ -275,11 +298,16 @@ public class HTMLControl {
 	}
 
 	public static String getLinkSystemDetail(String id, String code) {
-		return "<a href=\"" + HTML_SYSTEM_DETAIL_NAME + "/" + id + "\">" + code
-				+ "</a>";
+		return "<a href=\"" + HTML_SYSTEM_DETAIL_NAME + "/" + id
+				+ "\"  class='system-id' ><span>" + code + "</span></a>";
 
 	}
+	public static String getLinkSystemStatistic(SystemMonitor sys) {
+		return "<a href=\""+MonitorConstant.PROJECT_HOST_NAME+"/Index.html" + HTML_SYSTEM_STATISTIC_NAME + "/" + sys.getId()
+				+ "\" ><span>" + sys + "</span></a>";
 
+	}
+	
 	public static String getLinkEditSystem(String id, String code) {
 		return "<a href=\"" + HTML_EDIT_NAME + "/" + id + "\">" + code + "</a>";
 
@@ -292,6 +320,18 @@ public class HTMLControl {
 				+ (minutes < 10 ? "0" : "") + minutes + ":"
 				+ (seconds < 10 ? "0" : "") + seconds);
 		return time;
+	}
+
+	public static HTML getPageHeading(SystemMonitor sys) {
+		StringBuffer temp = new StringBuffer();
+		temp.append("<h1>");
+		temp.append("<a href=\"" + HTML_DASHBOARD_NAME + "\">Dashboard</a> ");
+		temp.append(HTML_ARROW_IMAGE);
+		temp.append(" <a ");
+		temp.append("\">");
+		temp.append(sys.getCode() + " - " + sys.getName());
+		temp.append("</a> ");
+		return new HTML(temp.toString());
 	}
 
 	public static HTML getPageHeading(int page) {
@@ -329,12 +369,10 @@ public class HTMLControl {
 					+ "\">User List</a> ");
 		}
 		if (page == PAGE_ABOUT) {
-			temp.append("<a href=\"" + HTML_ABOUT_NAME
-					+ "\">About Us</a> ");
+			temp.append("<a href=\"" + HTML_ABOUT_NAME + "\">About Us</a> ");
 		}
 		if (page == PAGE_HELP) {
-			temp.append("<a href=\"" + HTML_HELP_NAME
-					+ "\">Help Content</a> ");
+			temp.append("<a href=\"" + HTML_HELP_NAME + "\">Help Content</a> ");
 		}
 		temp.append("</h1>");
 		return new HTML(temp.toString());
@@ -362,7 +400,7 @@ public class HTMLControl {
 					+ ((page == PAGE_SYSTEM_STATISTIC) ? "dark" : "light")
 					+ "-left\">");
 			temp.append("<a href=\"" + HTML_SYSTEM_STATISTIC_NAME + "/" + sid
-					+ "\">Statistic System</a>");
+					+ "\">System Statistic</a>");
 			temp.append("</div>");
 			temp.append("<div class=\"step-"
 					+ ((page == PAGE_SYSTEM_STATISTIC) ? "dark" : "light")
