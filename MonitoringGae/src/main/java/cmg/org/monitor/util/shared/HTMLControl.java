@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.HTML;
 
 public class HTMLControl {
 
-	public static final String NOTIFY_OPTION = "Notify Option";
+	public static final String NOTIFY_OPTION = "Notify Options";
 
 	public static final String LOGIN_SERVLET_NAME = "login";
 

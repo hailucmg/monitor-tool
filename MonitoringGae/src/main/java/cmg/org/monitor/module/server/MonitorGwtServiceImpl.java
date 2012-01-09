@@ -81,7 +81,9 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 				clm.setDatetime(date);
 				clm.setType(1);
 				if(sysDAO.addChangeLog(clm)){
-					check = true;
+					if(sysDAO.createCountChangeLog(sid)){
+						check = true;
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -259,7 +261,10 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 				clm.setType(2);
 				clm.setDatetime(new Date());
 				if(sysDAO.addChangeLog(clm)){
-					check=true;
+					if(sysDAO.updateCountChangeLog(sys.getSys().getId())){
+						check=true;
+					}
+				
 				}
 			}
 		} catch (Exception ex) {
