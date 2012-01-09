@@ -15,7 +15,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 @RemoteServiceRelativePath("MonitorGwtService")
 public interface MonitorGwtService extends RemoteService {
-	boolean addSystem(MonitorContainer system);
+	boolean addSystem(SystemMonitor system);
 	
 	UserLoginDto getUserLogin();
 	
@@ -35,7 +35,7 @@ public interface MonitorGwtService extends RemoteService {
 	
 	MonitorContainer getSystemMonitorContainer(String sysId);
 	
-	boolean editSystem(MonitorContainer sys);
+	boolean editSystem(SystemMonitor sys);
 	
 	JvmMonitor[] listJvms(SystemMonitor sys);
 	

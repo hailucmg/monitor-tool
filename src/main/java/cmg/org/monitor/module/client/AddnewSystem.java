@@ -67,6 +67,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 	AbsolutePanel panelTextEmail;
 	MonitorContainer container;
 	DisclosurePanel advancedDisclosure;
+
 	@Override
 	protected void init() {
 		if (currentPage == HTMLControl.PAGE_ADD_SYSTEM) {
@@ -200,7 +201,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 	}
 
 	void initUi() {
-		tableNotify = new Grid(5,2);
+		tableNotify = new Grid(5, 2);
 		tableNotify.setCellSpacing(3);
 		cbNotifyCpu = new CheckBox();
 		cbNotifyCpu.setValue(true);
@@ -215,7 +216,8 @@ public class AddnewSystem extends AncestorEntryPoint {
 		lblNotifyCpu = new Label(MonitorConstant.Notify_Cpu);
 		lblNotifyMemory = new Label(MonitorConstant.Notify_Memory);
 		lblNotifyServices = new Label(MonitorConstant.Notify_Service);
-		lblNotifyServicesConnection = new Label(MonitorConstant.Notify_ServiceConnection);
+		lblNotifyServicesConnection = new Label(
+				MonitorConstant.Notify_ServiceConnection);
 		lblNotifyJVM = new Label(MonitorConstant.Notify_JVM);
 		tableNotify.setWidget(0, 0, lblNotifyCpu);
 		tableNotify.setWidget(0, 1, cbNotifyCpu);
@@ -228,9 +230,9 @@ public class AddnewSystem extends AncestorEntryPoint {
 		tableNotify.setWidget(4, 0, lblNotifyJVM);
 		tableNotify.setWidget(4, 1, cbNotifyJVM);
 		advancedDisclosure = new DisclosurePanel(HTMLControl.NOTIFY_OPTION);
-		advancedDisclosure.setAnimationEnabled(true); 
+		advancedDisclosure.setAnimationEnabled(true);
 		advancedDisclosure.setContent(tableNotify);
-		
+
 		tableForm = new FlexTable();
 		tableForm.setCellPadding(3);
 		tableForm.setCellSpacing(3);
@@ -246,7 +248,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 		tableForm.getFlexCellFormatter().setWidth(9, 0, "100px");
 		tableForm.getFlexCellFormatter().setWidth(10, 0, "100px");
 		tableForm.getFlexCellFormatter().setWidth(11, 0, "100px");
-		
+
 		labelName = new Label();
 		labelName.setText("Name");
 
@@ -498,7 +500,6 @@ public class AddnewSystem extends AncestorEntryPoint {
 				panelValidateName.setVisible(false);
 				panelValidateURL.setVisible(false);
 				panelValidateEmail.setVisible(false);
-				MonitorContainer mc = new MonitorContainer();
 				SystemMonitor system = new SystemMonitor();
 				system.setName(txtName.getText().toString());
 				system.setUrl(txtURL.getText().toString());
@@ -511,15 +512,17 @@ public class AddnewSystem extends AncestorEntryPoint {
 				system.setIp(txtIP.getText());
 				system.setRemoteUrl(txtRemote.getText());
 				panelAdding.setVisible(true);
-				mc.setSys(system);
+
 				NotifyMonitor nm = new NotifyMonitor();
 				nm.setNotifyCpu(cbNotifyCpu.getValue());
 				nm.setNotifyMemory(cbNotifyMemory.getValue());
 				nm.setNotifyServices(cbNotifyServices.getValue());
-				nm.setNotifyServicesConnection(cbNotifyServicesConnection.getValue());
+				nm.setNotifyServicesConnection(cbNotifyServicesConnection
+						.getValue());
 				nm.setJVM(cbNotifyJVM.getValue());
-				mc.setNotify(nm);
-				sendData(mc);
+				system.setNotify(nm);
+
+				sendData(system);
 
 			} else if (listProtocol
 					.getItemText(listProtocol.getSelectedIndex()).equals(
@@ -583,7 +586,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 				panelValidateName.setVisible(false);
 				panelValidateURL.setVisible(false);
 				panelValidateEmail.setVisible(false);
-				MonitorContainer mc = new MonitorContainer();
+
 				SystemMonitor system = new SystemMonitor();
 				system.setName(txtName.getText().toString());
 				system.setUrl(txtURL.getText().toString());
@@ -595,16 +598,16 @@ public class AddnewSystem extends AncestorEntryPoint {
 						.getSelectedIndex()));
 				system.setIp(txtIP.getText());
 				system.setEmailRevice(txtEmail.getText());
-				panelAdding.setVisible(true);
-				mc.setSys(system);
 				NotifyMonitor nm = new NotifyMonitor();
 				nm.setNotifyCpu(cbNotifyCpu.getValue());
 				nm.setNotifyMemory(cbNotifyMemory.getValue());
 				nm.setNotifyServices(cbNotifyServices.getValue());
-				nm.setNotifyServicesConnection(cbNotifyServicesConnection.getValue());
+				nm.setNotifyServicesConnection(cbNotifyServicesConnection
+						.getValue());
 				nm.setJVM(cbNotifyJVM.getValue());
-				mc.setNotify(nm);
-				sendData(mc);
+				system.setNotify(nm);
+				panelAdding.setVisible(true);
+				sendData(system);
 			}
 		}
 
@@ -612,7 +615,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 		 * @param system
 		 * @param url
 		 */
-		private void sendData(MonitorContainer system) {
+		private void sendData(SystemMonitor system) {
 			panelAdding.setVisible(false);
 			monitorGwtSv.addSystem(system, new AsyncCallback<Boolean>() {
 
@@ -648,7 +651,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 	 * 
 	 */
 	class myReset implements ClickHandler {
-	
+
 		@Override
 		public void onClick(ClickEvent event) {
 			txtName.setText("");
@@ -667,7 +670,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 			panelValidateIP.setVisible(false);
 			panelValidateName.setVisible(false);
 			panelValidateURL.setVisible(false);
-			
+
 		}
 	}
 

@@ -31,11 +31,11 @@ public interface MonitorGwtServiceAsync {
 
 	void getSystemMonitorContainer(AsyncCallback<MonitorContainer> callback);
 
-	void addSystem(MonitorContainer system, AsyncCallback<Boolean> callback);
+	void addSystem(SystemMonitor system, AsyncCallback<Boolean> callback);
 
 	void listAllUsers(AsyncCallback<UserMonitor[]> callback);
 
-	void editSystem(MonitorContainer sys, AsyncCallback<Boolean> callback);
+	void editSystem(SystemMonitor sys, AsyncCallback<Boolean> callback);
 
 	void listJvms(SystemMonitor sys, AsyncCallback<JvmMonitor[]> callback);
 

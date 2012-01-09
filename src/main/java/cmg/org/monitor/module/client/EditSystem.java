@@ -516,14 +516,14 @@ public class EditSystem extends AncestorEntryPoint {
 					panelValidateIP.setVisible(false);
 					panelValidateURL.setVisible(false);
 					panelAdding.setVisible(true);
-					MonitorContainer mc = new MonitorContainer();
+	
 					NotifyMonitor nm = new NotifyMonitor();
 					nm.setNotifyCpu(cbNotifyCpu.getValue());
 					nm.setNotifyMemory(cbNotifyMemory.getValue());
 					nm.setNotifyServices(cbNotifyServices.getValue());
 					nm.setNotifyServicesConnection(cbNotifyServicesConnection.getValue());
 					nm.setJVM(cbNotifyJVM.getValue());
-					mc.setNotify(nm);
+					
 					SystemMonitor sysNew = new SystemMonitor();
 					sysNew.setId(system.getId());
 					sysNew.setName(txtName.getText());
@@ -537,8 +537,8 @@ public class EditSystem extends AncestorEntryPoint {
 					sysNew.setEmailRevice(txtEmail.getText());
 					sysNew.setActive(isActive(listActive.getItemText(listActive
 							.getSelectedIndex())));
-					mc.setSys(sysNew);
-					editSystem(mc);
+					sysNew.setNotify(nm);
+					editSystem(sysNew);
 				} else if (listProtocol.getItemText(
 						listProtocol.getSelectedIndex()).equals(
 						MonitorConstant.SMTP_PROTOCOL)) {
@@ -603,14 +603,13 @@ public class EditSystem extends AncestorEntryPoint {
 					panelValidateIP.setVisible(false);
 					panelValidateURL.setVisible(false);
 					panelAdding.setVisible(true);
-					MonitorContainer mc = new MonitorContainer();
+					
 					NotifyMonitor nm = new NotifyMonitor();
 					nm.setNotifyCpu(cbNotifyCpu.getValue());
 					nm.setNotifyMemory(cbNotifyMemory.getValue());
 					nm.setNotifyServices(cbNotifyServices.getValue());
 					nm.setNotifyServicesConnection(cbNotifyServicesConnection.getValue());
 					nm.setJVM(cbNotifyJVM.getValue());
-					mc.setNotify(nm);
 					SystemMonitor sysNew = new SystemMonitor();
 					sysNew.setId(system.getId());
 					sysNew.setName(txtName.getText());
@@ -624,14 +623,14 @@ public class EditSystem extends AncestorEntryPoint {
 					sysNew.setRemoteUrl(txtRemote.getText());
 					sysNew.setActive(isActive(listActive.getItemText(listActive
 							.getSelectedIndex())));
-					mc.setSys(sysNew);
-					editSystem(mc);
+					sysNew.setNotify(nm);
+					editSystem(sysNew);
 				}
 			}
 		});
 	}
 
-	private void editSystem(MonitorContainer sys) {
+	private void editSystem(SystemMonitor sys) {
 		panelAdding.setVisible(false);
 		monitorGwtSv.editSystem(sys, new AsyncCallback<Boolean>() {
 			@Override
