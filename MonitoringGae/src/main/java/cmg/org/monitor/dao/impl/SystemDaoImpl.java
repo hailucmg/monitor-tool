@@ -1,6 +1,7 @@
 package cmg.org.monitor.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,8 +14,10 @@ import cmg.org.monitor.entity.shared.ChangeLogMonitor;
 import cmg.org.monitor.entity.shared.CounterChangeLog;
 import cmg.org.monitor.entity.shared.NotifyMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.memcache.Key;
 import cmg.org.monitor.memcache.MonitorMemcache;
+import cmg.org.monitor.services.MonitorLoginService;
 import cmg.org.monitor.services.PMF;
 
 public class SystemDaoImpl implements SystemDAO {
@@ -115,6 +118,15 @@ public class SystemDaoImpl implements SystemDAO {
 				listSystems(false);
 			}
 		}
+		
+		ChangeLogMonitor clm = new ChangeLogMonitor();
+		UserLoginDto user = MonitorLoginService.getUserLogin();
+		clm.setUsername(user.getEmail());
+		clm.setDescription(sys.isDeleted() ? "Delete " :("Update information of ") + sys.getName());
+		clm.setType(sys.isDeleted() ? ChangeLogMonitor.LOG_DELETE  : ChangeLogMonitor.LOG_UPDATE);
+		clm.setDatetime(new Date());
+		addChangeLog(clm);
+		setNotifyOption(sys.getId(), sys.getNotify());
 		return check;
 	}
 
@@ -141,6 +153,7 @@ public class SystemDaoImpl implements SystemDAO {
 			throws Exception {
 		initPersistence();
 		boolean check = false;
+		String sid = null;
 		try {
 			pm.currentTransaction().begin();
 			SystemMonitor tempSys = new SystemMonitor();
@@ -157,6 +170,22 @@ public class SystemDaoImpl implements SystemDAO {
 			pm.close();
 			listSystems(false);
 		}
+		ArrayList<SystemMonitor> list = listSystemsFromMemcache(false);
+		for(int i = 0 ; i < list.size() ; i++){
+			if(system.getName().equals(list.get(i).getName())){
+				sid = list.get(i).getId();
+			}
+		}
+		ChangeLogMonitor clm = new ChangeLogMonitor();
+		UserLoginDto user =  MonitorLoginService.getUserLogin();
+		clm.setUsername(user.getEmail());
+		clm.setSid(sid);
+		clm.setDescription("Add new System Monitor : " + system.getName());
+		Date date = new Date();
+		clm.setDatetime(date);
+		clm.setType(ChangeLogMonitor.LOG_ADD);
+		addChangeLog(clm);
+		setNotifyOption(sid, system.getNotify());
 		return check;
 	}
 
@@ -292,13 +321,7 @@ public class SystemDaoImpl implements SystemDAO {
 			temp = (List<NotifyMonitor>) query.execute(sid);
 			if (temp != null && temp.size() > 0) {
 				nm = new NotifyMonitor();
-				nm.setSid(sid);
-				nm.setNotifyCpu(temp.get(0).isNotifyCpu());
-				nm.setNotifyMemory(temp.get(0).isNotifyMemory());
-				nm.setNotifyServices(temp.get(0).isNotifyServices());
-				nm.setNotifyServicesConnection(temp.get(0)
-						.isNotifyServicesConnection());
-				nm.setJVM(temp.get(0).isJVM());
+				nm.swapValue(temp.get(0));
 			}
 			pm.currentTransaction().commit();
 		} catch (Exception e) {
@@ -320,24 +343,23 @@ public class SystemDaoImpl implements SystemDAO {
 		initPersistence();
 		boolean check = false;
 		SystemDAO sysDAO = new SystemDaoImpl();
+		NotifyMonitor temp = sysDAO.getNotifyOption(sid);
 		try {
-			NotifyMonitor temp = sysDAO.getNotifyOption(sid);
+			pm.currentTransaction().begin();			
 			if (temp != null) {
-				temp.setNotifyCpu(notify.isNotifyCpu());
-				temp.setNotifyMemory(notify.isNotifyMemory());
-				temp.setNotifyServices(notify.isNotifyServices());
-				temp.setNotifyServicesConnection(notify
-						.isNotifyServicesConnection());
-				temp.setJVM(notify.isJVM());
-				pm.currentTransaction().begin();
-				pm.makePersistent(temp);
+				NotifyMonitor nm = pm.getObjectById(NotifyMonitor.class,temp.getId());
+				nm.setJVM(notify.isJVM());
+				nm.setNotifyCpu(notify.isNotifyCpu());
+				nm.setNotifyMemory(notify.isNotifyMemory());
+				nm.setNotifyServices(notify.isNotifyServices());
+				nm.setNotifyServicesConnection(notify.isNotifyServicesConnection());
+				pm.makePersistent(nm);
 				pm.currentTransaction().commit();
 				check = true;
 			} else {
 				notify.setSid(sid);
 				NotifyMonitor nm = new NotifyMonitor();
 				nm.swapValue(notify);
-				pm.currentTransaction().begin();
 				pm.makePersistent(nm);
 				pm.currentTransaction().commit();
 				check = true;
@@ -372,6 +394,7 @@ public class SystemDaoImpl implements SystemDAO {
 		} finally {
 			pm.close();
 		}
+		setCountChangeLog(log.getSid());
 		return check;
 	}
 
@@ -464,31 +487,11 @@ public class SystemDaoImpl implements SystemDAO {
 		return count;
 	}
 
-	@Override
-	public boolean createCountChangeLog(String sid) throws Exception {
-		initPersistence();
-		boolean check = false;
-		try {
-			CounterChangeLog ccl = new CounterChangeLog();
-			ccl.setSid(sid);
-			ccl.setCount(1);
-			pm.currentTransaction().begin();
-			pm.makePersistent(ccl);
-			pm.currentTransaction().commit();
-			check = true;
-		} catch (Exception e) {
-			logger.log(
-					Level.SEVERE,
-					" ERROR when get CountChangeLog JDO. Message: "
-							+ e.getMessage());
-			pm.currentTransaction().rollback();
-		}
-		return check;
-	}
+
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean updateCountChangeLog(String sid) throws Exception {
+	public boolean setCountChangeLog(String sid) throws Exception {
 		initPersistence();
 		boolean check = false;
 		Query query = pm.newQuery(CounterChangeLog.class);
@@ -499,12 +502,18 @@ public class SystemDaoImpl implements SystemDAO {
 			pm.currentTransaction().begin();
 			temp = (List<CounterChangeLog>) query.execute(sid);
 			if (temp != null && temp.size() > 0) {
-				CounterChangeLog ccl = temp.get(0);
+				CounterChangeLog ccl = (CounterChangeLog) pm.getObjectById(temp.get(0).getId());
 				ccl.setCount(temp.get(0).getCount() + 1);
 				pm.makePersistent(ccl);
+				pm.currentTransaction().commit();
+			}else{
+				CounterChangeLog ccl = new CounterChangeLog();
+				ccl.setSid(sid);
+				ccl.setCount(1);
+				pm.makePersistent(ccl);
+				pm.currentTransaction().commit();
+				check = true;
 			}
-			pm.currentTransaction().commit();
-			check = true;
 		} catch (Exception e) {
 			logger.log(
 					Level.SEVERE,
@@ -518,7 +527,7 @@ public class SystemDaoImpl implements SystemDAO {
 	@SuppressWarnings("unchecked")
 	@Override
 	public ArrayList<ChangeLogMonitor> listChangeLog() throws Exception {
-		// TODO Auto-generated method stub
+		
 		initPersistence();
 		ArrayList<ChangeLogMonitor> listAll = null;
 		ArrayList<ChangeLogMonitor> temp = null;

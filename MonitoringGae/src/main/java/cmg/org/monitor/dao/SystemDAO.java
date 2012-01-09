@@ -47,9 +47,7 @@ public interface SystemDAO {
 	
 	public int getCountAllChangeLog() throws Exception;
 	
-	public boolean createCountChangeLog(String sid) throws Exception;
-	
-	public boolean updateCountChangeLog(String sid) throws Exception;
+	public boolean setCountChangeLog(String sid) throws Exception;
 	
 	public ArrayList<ChangeLogMonitor> listChangeLog() throws Exception;
 }

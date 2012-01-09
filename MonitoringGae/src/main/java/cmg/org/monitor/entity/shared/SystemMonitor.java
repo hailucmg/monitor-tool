@@ -79,6 +79,17 @@ public class SystemMonitor implements Serializable  {
 
 	@Persistent
 	private int lastestMemoryUsage;
+	
+	@NotPersistent
+	private NotifyMonitor notify;
+
+	public NotifyMonitor getNotify() {
+		return notify;
+	}
+
+	public void setNotify(NotifyMonitor notify) {
+		this.notify = notify;
+	}
 
 	/**
 	 * Default constructor.<br>

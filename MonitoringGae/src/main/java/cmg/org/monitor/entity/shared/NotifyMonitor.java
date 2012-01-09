@@ -43,6 +43,7 @@ public class NotifyMonitor implements Serializable {
 	public NotifyMonitor() {
 	}
 
+	
 	public NotifyMonitor(String sid, boolean isNotifyCpu,
 			boolean isNotifyMemory,
 			boolean isNotifyServices, boolean isNotifyServicesConnection, boolean isJVM) {
@@ -111,5 +112,6 @@ public class NotifyMonitor implements Serializable {
 		this.isNotifyServices = nf.isNotifyServices;
 		this.isNotifyServicesConnection = nf.isNotifyServicesConnection;
 		this.sid = nf.getSid();
+		this.id = nf.getId();
 	}
 }
