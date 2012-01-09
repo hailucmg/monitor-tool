@@ -1,5 +1,6 @@
 package cmg.org.monitor.module.client;
 
+import cmg.org.monitor.entity.shared.NotifyMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.GroupMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorContainer;
@@ -15,7 +16,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -48,6 +51,8 @@ public class EditSystem extends AncestorEntryPoint {
 	Label lblNotifyMemory;
 	Label lblNotifyServices;
 	Label lblNotifyServicesConnection;
+	Label lblNotifyJVM;
+	CheckBox cbNotifyJVM;
 	CheckBox cbNotifyCpu;
 	CheckBox cbNotifyMemory;
 	CheckBox cbNotifyServices;
@@ -62,7 +67,9 @@ public class EditSystem extends AncestorEntryPoint {
 	AbsolutePanel panelButton;
 	AbsolutePanel panelValidateEmail;
 	private static FlexTable tableForm;
-	private static FlexTable tableNotify;
+	private static Grid tableNotify;
+	private DisclosurePanel advancedDisclosure;
+	private NotifyMonitor notify;
 
 	protected void init() {
 		if (currentPage == HTMLControl.PAGE_EDIT_SYSTEM) {
@@ -107,38 +114,53 @@ public class EditSystem extends AncestorEntryPoint {
 	void initFlexTable(String sysID) {
 		monitorGwtSv.getSystemMonitorContainer(sysID,
 				new AsyncCallback<MonitorContainer>() {
+					
 					@Override
 					public void onSuccess(MonitorContainer result) {
 						if (result != null) {
 							system = result.getSys();
+							notify = result.getNotify();
 							container = result;
-							
-							tableNotify= new FlexTable();
-							tableNotify.getFlexCellFormatter().setWidth(0, 0, "280px");
-							tableNotify.getFlexCellFormatter().setWidth(0, 1, "19px");
-							tableNotify.getFlexCellFormatter().setWidth(1, 0, "280px");
-							tableNotify.getFlexCellFormatter().setWidth(1, 1, "19px");
-							tableNotify.getFlexCellFormatter().setWidth(2, 0, "280px");
-							tableNotify.getFlexCellFormatter().setWidth(2, 1, "19px");
-							tableNotify.getFlexCellFormatter().setWidth(3, 0, "280px");
-							tableNotify.getFlexCellFormatter().setWidth(3, 1, "19px");
+							tableNotify = new Grid(5, 2);
+							tableNotify.setCellSpacing(3);
 							cbNotifyCpu = new CheckBox();
+							cbNotifyCpu.setValue(notify.isNotifyCpu());
 							cbNotifyMemory = new CheckBox();
+							cbNotifyMemory.setValue(notify.isNotifyMemory());
 							cbNotifyServices = new CheckBox();
+							cbNotifyServices.setValue(notify
+									.isNotifyServices());
+							cbNotifyJVM = new CheckBox();
+							cbNotifyJVM.setValue(notify.isJVM());
 							cbNotifyServicesConnection = new CheckBox();
+							cbNotifyServicesConnection.setValue(notify
+									.isNotifyServicesConnection());
+							lblNotifyJVM = new Label(MonitorConstant.Notify_JVM);
 							lblNotifyCpu = new Label(MonitorConstant.Notify_Cpu);
-							lblNotifyMemory = new Label(MonitorConstant.Notify_Memory);
-							lblNotifyServices = new Label(MonitorConstant.Notify_Service);
-							lblNotifyServicesConnection = new Label(MonitorConstant.Notify_ServiceConnection);
+							lblNotifyMemory = new Label(
+									MonitorConstant.Notify_Memory);
+							lblNotifyServices = new Label(
+									MonitorConstant.Notify_Service);
+							lblNotifyServicesConnection = new Label(
+									MonitorConstant.Notify_ServiceConnection);
 							tableNotify.setWidget(0, 0, lblNotifyCpu);
 							tableNotify.setWidget(0, 1, cbNotifyCpu);
 							tableNotify.setWidget(1, 0, lblNotifyMemory);
 							tableNotify.setWidget(1, 1, cbNotifyMemory);
 							tableNotify.setWidget(2, 0, lblNotifyServices);
 							tableNotify.setWidget(2, 1, cbNotifyServices);
-							tableNotify.setWidget(3, 0, lblNotifyServicesConnection);
-							tableNotify.setWidget(3, 1, cbNotifyServicesConnection);
-							
+							tableNotify.setWidget(3, 0,
+									lblNotifyServicesConnection);
+							tableNotify.setWidget(3, 1,
+									cbNotifyServicesConnection);
+							tableNotify.setWidget(4, 0, lblNotifyJVM);
+							tableNotify.setWidget(4, 1, cbNotifyJVM);
+							advancedDisclosure = new DisclosurePanel(
+									HTMLControl.NOTIFY_OPTION);
+							advancedDisclosure.setAnimationEnabled(true);
+							advancedDisclosure.setContent(tableNotify);
+							advancedDisclosure.setOpen(true);
+
 							labelEmail = new Label();
 							labelEmail.setText("Email");
 							txtEmail = new TextBox();
@@ -146,18 +168,30 @@ public class EditSystem extends AncestorEntryPoint {
 							txtEmail.setHeight("30px");
 							tableForm.setCellPadding(3);
 							tableForm.setCellSpacing(3);
-							tableForm.getFlexCellFormatter().setWidth(0, 0, "100px");
-							tableForm.getFlexCellFormatter().setWidth(1, 0, "100px");
-							tableForm.getFlexCellFormatter().setWidth(2, 0, "100px");
-							tableForm.getFlexCellFormatter().setWidth(3, 0, "100px");
-							tableForm.getFlexCellFormatter().setWidth(4, 0, "100px");
-							tableForm.getFlexCellFormatter().setWidth(5, 0, "100px");
-							tableForm.getFlexCellFormatter().setWidth(6, 0, "100px");
-							tableForm.getFlexCellFormatter().setWidth(7, 0, "100px");
-							tableForm.getFlexCellFormatter().setWidth(8, 0, "250px");
-							tableForm.getFlexCellFormatter().setWidth(9, 0, "100px");
-							tableForm.getFlexCellFormatter().setWidth(10, 0, "100px");
-							tableForm.getFlexCellFormatter().setWidth(11, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(0, 0,
+									"100px");
+							tableForm.getFlexCellFormatter().setWidth(1, 0,
+									"100px");
+							tableForm.getFlexCellFormatter().setWidth(2, 0,
+									"100px");
+							tableForm.getFlexCellFormatter().setWidth(3, 0,
+									"100px");
+							tableForm.getFlexCellFormatter().setWidth(4, 0,
+									"100px");
+							tableForm.getFlexCellFormatter().setWidth(5, 0,
+									"100px");
+							tableForm.getFlexCellFormatter().setWidth(6, 0,
+									"100px");
+							tableForm.getFlexCellFormatter().setWidth(7, 0,
+									"100px");
+							tableForm.getFlexCellFormatter().setWidth(8, 0,
+									"298px");
+							tableForm.getFlexCellFormatter().setWidth(9, 0,
+									"100px");
+							tableForm.getFlexCellFormatter().setWidth(10, 0,
+									"100px");
+							tableForm.getFlexCellFormatter().setWidth(11, 0,
+									"100px");
 
 							labelName = new Label();
 							labelName.setText("Name");
@@ -239,13 +273,14 @@ public class EditSystem extends AncestorEntryPoint {
 							listGroup = new ListBox();
 							listGroup.setWidth("198px");
 							listGroup.setHeight("28px");
-							GroupMonitor[] groups = container
-									.getGroups();
+							GroupMonitor[] groups = container.getGroups();
 							if (groups != null && groups.length > 0) {
-								
+
 								for (int i = 0; i < groups.length; i++) {
 									listGroup.addItem(groups[i].getName());
-									if (system.getGroupEmail().equalsIgnoreCase(groups[i].getName())) {
+									if (system.getGroupEmail()
+											.equalsIgnoreCase(
+													groups[i].getName())) {
 										index = i;
 									}
 								}
@@ -309,14 +344,15 @@ public class EditSystem extends AncestorEntryPoint {
 							tableForm.setWidget(7, 0, labelremoteurl);
 							tableForm.setWidget(7, 1, txtRemote);
 							tableForm.setWidget(7, 2, panelValidateRemoteURL);
-							tableForm.getFlexCellFormatter().setColSpan(8, 0, 2);
-							tableForm.setWidget(8, 0, new HTML(HTMLControl.NOTIFY_OPTION));
-							tableForm.getFlexCellFormatter().setColSpan(9, 0, 2);
-							tableForm.setWidget(9, 0, tableNotify);
-							tableForm.getFlexCellFormatter().setColSpan(10, 0, 2);
-							tableForm.setWidget(10, 0, panelAdding);
-							tableForm.getFlexCellFormatter().setColSpan(11, 0, 3);
-							tableForm.setWidget(11, 0, panelButton);
+							tableForm.getFlexCellFormatter()
+									.setColSpan(8, 0, 2);
+							tableForm.setWidget(8, 0, advancedDisclosure);
+							tableForm.getFlexCellFormatter()
+									.setColSpan(9, 0, 2);
+							tableForm.setWidget(9, 0, panelAdding);
+							tableForm.getFlexCellFormatter().setColSpan(10, 0,
+									3);
+							tableForm.setWidget(10, 0, panelButton);
 							initHandler();
 							setVisibleLoadingImage(false);
 							setOnload(false);
@@ -343,6 +379,7 @@ public class EditSystem extends AncestorEntryPoint {
 			public void onClick(ClickEvent event) {
 				if (listProtocol.getSelectedIndex() == 0) {
 					txtRemote.setEnabled(true);
+					txtRemote.setText(system.getRemoteUrl());
 					panelLabelEmail.setVisible(false);
 					paneltxtEmail.setVisible(false);
 					txtEmail.setText("");
@@ -352,11 +389,13 @@ public class EditSystem extends AncestorEntryPoint {
 					txtRemote.setEnabled(false);
 					panelLabelEmail.setVisible(true);
 					paneltxtEmail.setVisible(true);
+					txtEmail.setText(system.getEmail());
 					panelValidateRemoteURL.setVisible(false);
 				}
 			}
 		});
 		bttReset.addClickHandler(new ClickHandler() {
+			
 			@Override
 			public void onClick(ClickEvent event) {
 				panelValidateEmail.setVisible(false);
@@ -388,7 +427,16 @@ public class EditSystem extends AncestorEntryPoint {
 					txtEmail.setText(system.getEmail());
 
 				}
+				
+				cbNotifyCpu.setValue(notify.isNotifyCpu());
 
+				cbNotifyMemory.setValue(notify.isNotifyMemory());
+
+				cbNotifyServices.setValue(notify.isNotifyServices());
+
+				cbNotifyServicesConnection.setValue(notify
+						.isNotifyServicesConnection());
+				cbNotifyJVM.setValue(notify.isJVM());
 			}
 		});
 		bttBack.addClickHandler(new ClickHandler() {
@@ -407,8 +455,8 @@ public class EditSystem extends AncestorEntryPoint {
 					String validateName = validateName(txtName.getText());
 					String validateURL = validateURL(txtURL.getText());
 					String validateIp = validateIP(txtIP.getText());
-					String validateRemoteURL = validateRemoteURL(
-							txtRemote.getText());
+					String validateRemoteURL = validateRemoteURL(txtRemote
+							.getText());
 					panelValidateEmail.setVisible(false);
 					panelValidateIP.setVisible(false);
 					panelValidateName.setVisible(false);
@@ -468,6 +516,14 @@ public class EditSystem extends AncestorEntryPoint {
 					panelValidateIP.setVisible(false);
 					panelValidateURL.setVisible(false);
 					panelAdding.setVisible(true);
+					MonitorContainer mc = new MonitorContainer();
+					NotifyMonitor nm = new NotifyMonitor();
+					nm.setNotifyCpu(cbNotifyCpu.getValue());
+					nm.setNotifyMemory(cbNotifyMemory.getValue());
+					nm.setNotifyServices(cbNotifyServices.getValue());
+					nm.setNotifyServicesConnection(cbNotifyServicesConnection.getValue());
+					nm.setJVM(cbNotifyJVM.getValue());
+					mc.setNotify(nm);
 					SystemMonitor sysNew = new SystemMonitor();
 					sysNew.setId(system.getId());
 					sysNew.setName(txtName.getText());
@@ -481,7 +537,8 @@ public class EditSystem extends AncestorEntryPoint {
 					sysNew.setEmailRevice(txtEmail.getText());
 					sysNew.setActive(isActive(listActive.getItemText(listActive
 							.getSelectedIndex())));
-					editSystem(sysNew);
+					mc.setSys(sysNew);
+					editSystem(mc);
 				} else if (listProtocol.getItemText(
 						listProtocol.getSelectedIndex()).equals(
 						MonitorConstant.SMTP_PROTOCOL)) {
@@ -546,6 +603,14 @@ public class EditSystem extends AncestorEntryPoint {
 					panelValidateIP.setVisible(false);
 					panelValidateURL.setVisible(false);
 					panelAdding.setVisible(true);
+					MonitorContainer mc = new MonitorContainer();
+					NotifyMonitor nm = new NotifyMonitor();
+					nm.setNotifyCpu(cbNotifyCpu.getValue());
+					nm.setNotifyMemory(cbNotifyMemory.getValue());
+					nm.setNotifyServices(cbNotifyServices.getValue());
+					nm.setNotifyServicesConnection(cbNotifyServicesConnection.getValue());
+					nm.setJVM(cbNotifyJVM.getValue());
+					mc.setNotify(nm);
 					SystemMonitor sysNew = new SystemMonitor();
 					sysNew.setId(system.getId());
 					sysNew.setName(txtName.getText());
@@ -559,13 +624,14 @@ public class EditSystem extends AncestorEntryPoint {
 					sysNew.setRemoteUrl(txtRemote.getText());
 					sysNew.setActive(isActive(listActive.getItemText(listActive
 							.getSelectedIndex())));
-					editSystem(sysNew);
+					mc.setSys(sysNew);
+					editSystem(mc);
 				}
 			}
 		});
 	}
 
-	private void editSystem(SystemMonitor sys) {
+	private void editSystem(MonitorContainer sys) {
 		panelAdding.setVisible(false);
 		monitorGwtSv.editSystem(sys, new AsyncCallback<Boolean>() {
 			@Override

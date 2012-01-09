@@ -9,6 +9,8 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import cmg.org.monitor.dao.SystemDAO;
+import cmg.org.monitor.entity.shared.ChangeLogMonitor;
+import cmg.org.monitor.entity.shared.NotifyMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.memcache.Key;
 import cmg.org.monitor.memcache.MonitorMemcache;
@@ -272,6 +274,116 @@ public class SystemDaoImpl implements SystemDAO {
 		temp.setHealthStatus(healthStatus);
 		updateSystem(temp, false);
 		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public NotifyMonitor getNotifyOption(String sid) throws Exception {
+		
+		initPersistence();
+		Query query = pm.newQuery(NotifyMonitor.class);
+		query.setFilter("sid == sidPara");
+		query.declareParameters("String sidPara");
+		NotifyMonitor nm = null;
+		List<NotifyMonitor> temp = null;
+		try {
+			pm.currentTransaction().begin();
+			temp = (List<NotifyMonitor>) query.execute(sid);
+			if(temp!=null && temp.size() > 0){
+				nm = new NotifyMonitor();
+				nm.setSid(sid);
+				nm.setNotifyCpu(temp.get(0).isNotifyCpu());
+				nm.setNotifyMemory(temp.get(0).isNotifyMemory());
+				nm.setNotifyServices(temp.get(0).isNotifyServices());
+				nm.setNotifyServicesConnection(temp.get(0).isNotifyServicesConnection());
+				nm.setJVM(temp.get(0).isJVM());
+			}
+			pm.currentTransaction().commit();
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, " ERROR when get NOTIFY JDO. Message: "
+					+ e.getMessage());
+			pm.currentTransaction().rollback();
+			throw e;
+		} finally {
+			query.closeAll();
+			pm.close();
+		}
+
+		return nm;
+	}
+
+	@Override
+	public boolean setNotifyOption(String sid, NotifyMonitor notify)
+			throws Exception {
+		initPersistence();
+		boolean check = false;
+		SystemDAO sysDAO = new SystemDaoImpl();
+		try {
+			NotifyMonitor temp = sysDAO.getNotifyOption(sid);
+			if (temp != null) {
+				temp.setNotifyCpu(notify.isNotifyCpu());
+				temp.setNotifyMemory(notify.isNotifyMemory());
+				temp.setNotifyServices(notify.isNotifyServices());
+				temp.setNotifyServicesConnection(notify
+						.isNotifyServicesConnection());
+				temp.setJVM(notify.isJVM());
+				pm.currentTransaction().begin();
+				pm.makePersistent(temp);
+				pm.currentTransaction().commit();
+				check = true;
+			} else {
+				notify.setSid(sid);
+				NotifyMonitor nm = new NotifyMonitor();
+				nm.swapValue(notify);
+				pm.currentTransaction().begin();
+				pm.makePersistent(nm);
+				pm.currentTransaction().commit();
+				check = true;
+			}
+			
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, " ERROR when update NOTIFY JDO. Message: "
+					+ e.getMessage());
+			pm.currentTransaction().rollback();
+			throw e;
+		} finally {
+			pm.close();
+		}
+		return check;
+	}
+
+	@Override
+	public boolean addChangeLog(ChangeLogMonitor log) throws Exception {
+		// TODO Auto-generated method stub
+		initPersistence();
+		boolean check = false;
+		try {
+			pm.currentTransaction().begin();
+			pm.makePersistent(log);
+			pm.currentTransaction().commit();
+			check = true;
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, " ERROR when add ChangeLog JDO. Message: "
+					+ e.getMessage());
+			pm.currentTransaction().rollback();
+			throw e;
+		}finally{
+			pm.close();
+		}
+		return check;
+	}
+
+	@Override
+	public ArrayList<ChangeLogMonitor> listChangeLog(String sid, int start,
+			int end) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getCountChangeLog(String sid) throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

@@ -22,10 +22,12 @@ import cmg.org.monitor.dao.impl.ServiceDaoImpl;
 import cmg.org.monitor.dao.impl.SystemDaoImpl;
 import cmg.org.monitor.dao.impl.UtilityDaoImpl;
 import cmg.org.monitor.entity.shared.AlertStoreMonitor;
+import cmg.org.monitor.entity.shared.ChangeLogMonitor;
 import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
 import cmg.org.monitor.entity.shared.JvmMonitor;
 import cmg.org.monitor.entity.shared.MemoryMonitor;
+import cmg.org.monitor.entity.shared.NotifyMonitor;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.GroupMonitor;
@@ -49,13 +51,39 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			.getLogger(MonitorGwtServiceImpl.class.getCanonicalName());
 
 	@Override
-	public boolean addSystem(SystemMonitor system) {
+	public boolean addSystem(MonitorContainer system) {
 
 		boolean check = false;
+		boolean checkNotify = false;
+		String sid = null;
 		SystemDAO sysDAO = new SystemDaoImpl();
 		try {
 			String code = sysDAO.createSID();
-			check = sysDAO.addSystem(system, code);
+			SystemMonitor sys = system.getSys();
+			boolean checkAdd = sysDAO.addSystem(sys, code);
+			if(checkAdd){
+				ArrayList<SystemMonitor> list = sysDAO.listSystemsFromMemcache(false);
+				for(int i = 0 ; i < list.size() ; i++){
+					if(sys.getName().equals(list.get(i).getName())){
+						sid = list.get(i).getId();
+					}
+				}
+				
+				checkNotify = sysDAO.setNotifyOption(sid, system.getNotify());
+			}
+			if(checkNotify){
+				ChangeLogMonitor clm = new ChangeLogMonitor();
+				UserLoginDto user =  MonitorLoginService.getUserLogin();
+				clm.setUsername(user.getEmail());
+				clm.setSid(sid);
+				clm.setDescription("Add new System Monitor : " + sys.getName());
+				Date date = new Date();
+				clm.setDatetime(date);
+				clm.setType(1);
+				if(sysDAO.addChangeLog(clm)){
+					check = true;
+				}
+			}
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, " ERROR when add new system. Message: "
 					+ e.getCause().getMessage());
@@ -130,7 +158,21 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public boolean deleteSystem(String id) throws Exception {
 		SystemDAO sysDAO = new SystemDaoImpl();
-		return sysDAO.deleteSystem(id);
+		boolean checkdelete = false;
+		if(sysDAO.deleteSystem(id)){
+			ChangeLogMonitor clm = new ChangeLogMonitor();
+			UserLoginDto user =  MonitorLoginService.getUserLogin();
+			clm.setUsername(user.getEmail());
+			clm.setSid(id);
+			clm.setDescription("Delete System : " + sysDAO.getSystemById(id).getName());
+			Date date = new Date();
+			clm.setDatetime(date);
+			clm.setType(3);
+			if(sysDAO.addChangeLog(clm)){
+				checkdelete = true;
+			}
+		}
+		return checkdelete;
 	}
 
 	@Override
@@ -160,6 +202,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 				container.setGroups(listGroups);
 			}
 			container.setEmails(sysDAO.listEmails());
+			
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE,
 					"ERROR when load system container information. Message: "
@@ -175,6 +218,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		try {
 			if (container != null) {
 				container.setSys(sysDAO.getSystemById(sysId));
+				container.setNotify(sysDAO.getNotifyOption(sysId));
 			}
 
 		} catch (Exception ex) {
@@ -198,16 +242,31 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public boolean editSystem(SystemMonitor sys) {
+	public boolean editSystem(MonitorContainer sys) {
 		SystemDAO sysDAO = new SystemDaoImpl();
-		boolean b = false;
+		boolean check = false;
+		boolean checkNotify = false;
 		try {
-			b = sysDAO.editSystem(sys);
+			boolean checkEdit = sysDAO.editSystem(sys.getSys());
+			if(checkEdit){
+				NotifyMonitor nm = sys.getNotify();
+				checkNotify = sysDAO.setNotifyOption(sys.getSys().getId(), nm);
+			}if(checkNotify){
+				ChangeLogMonitor clm = new ChangeLogMonitor();
+				UserLoginDto user = MonitorLoginService.getUserLogin();
+				clm.setUsername(user.getEmail());
+				clm.setDescription("Update information of " + sys.getSys().getName());
+				clm.setType(2);
+				clm.setDatetime(new Date());
+				if(sysDAO.addChangeLog(clm)){
+					check=true;
+				}
+			}
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE,
 					"ERROR when edit system. Message: " + ex.getMessage());
 		}
-		return b;
+		return check;
 	}
 
 	@Override
