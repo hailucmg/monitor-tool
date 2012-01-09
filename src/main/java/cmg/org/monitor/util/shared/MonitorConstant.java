@@ -3,12 +3,14 @@ package cmg.org.monitor.util.shared;
 public final class MonitorConstant {	
 	
 	public static final String Notify_Cpu = "When system uses more than 90% CPU :";
+	
 	public static final String Notify_JVM = "When system user more than 90% JVM :";
+	
 	public static final String Notify_Memory = "When system uses more than 90% Memory :";
 	
-	public static final String Notify_Service = "When any service are down :";
+	public static final String Notify_Service = "When any services are down :";
 	
-	public static final String Notify_ServiceConnection = "When any service connection are too slow :";
+	public static final String Notify_ServiceConnection = "When any service connections are too slow :";
 	
 	public static final int CPU_MEMORY_REFRESH_RATE = 1000;
 	// Alert mail sender service
