@@ -3,8 +3,10 @@ package cmg.org.monitor.ext.model.shared;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import cmg.org.monitor.entity.shared.ChangeLogMonitor;
 import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.MemoryMonitor;
+import cmg.org.monitor.entity.shared.NotifyMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 
 public class MonitorContainer implements Serializable {
@@ -25,6 +27,10 @@ public class MonitorContainer implements Serializable {
 	private MemoryMonitor[] rams;
 	
 	private MemoryMonitor[] swaps;
+	
+	private NotifyMonitor notify;
+	
+	private ChangeLogMonitor changelog;
 
 	public GroupMonitor[] getGroups() {
 		return groups;
@@ -72,6 +78,22 @@ public class MonitorContainer implements Serializable {
 
 	public void setSwaps(MemoryMonitor[] swaps) {
 		this.swaps = swaps;
+	}
+
+	public NotifyMonitor getNotify() {
+		return notify;
+	}
+
+	public void setNotify(NotifyMonitor notify) {
+		this.notify = notify;
+	}
+
+	public ChangeLogMonitor getChangelog() {
+		return changelog;
+	}
+
+	public void setChangelog(ChangeLogMonitor changelog) {
+		this.changelog = changelog;
 	}
 	
 	

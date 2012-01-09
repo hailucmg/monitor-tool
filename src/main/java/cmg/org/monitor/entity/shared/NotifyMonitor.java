@@ -31,7 +31,9 @@ public class NotifyMonitor implements Serializable {
 	@Persistent
 	private boolean isNotifyMemory;
 
-	
+	@Persistent
+	private boolean isJVM;
+
 	@Persistent
 	private boolean isNotifyServices;
 
@@ -43,12 +45,13 @@ public class NotifyMonitor implements Serializable {
 
 	public NotifyMonitor(String sid, boolean isNotifyCpu,
 			boolean isNotifyMemory,
-			boolean isNotifyServices, boolean isNotifyServicesConnection) {
+			boolean isNotifyServices, boolean isNotifyServicesConnection, boolean isJVM) {
 		this.sid = sid;
 		this.isNotifyCpu = isNotifyCpu;
 		this.isNotifyMemory = isNotifyMemory;
 		this.isNotifyServices = isNotifyServices;
 		this.isNotifyServicesConnection = isNotifyServicesConnection;
+		this.isJVM = isJVM;
 	}
 
 	public String getSid() {
@@ -94,5 +97,19 @@ public class NotifyMonitor implements Serializable {
 	public String getId() {
 		return id;
 	}
+	public boolean isJVM() {
+		return isJVM;
+	}
 
+	public void setJVM(boolean isJVM) {
+		this.isJVM = isJVM;
+	}
+	public void swapValue(NotifyMonitor nf){
+		this.isJVM = nf.isJVM;
+		this.isNotifyCpu = nf.isNotifyCpu;
+		this.isNotifyMemory = nf.isNotifyMemory;
+		this.isNotifyServices = nf.isNotifyServices;
+		this.isNotifyServicesConnection = nf.isNotifyServicesConnection;
+		this.sid = nf.getSid();
+	}
 }
