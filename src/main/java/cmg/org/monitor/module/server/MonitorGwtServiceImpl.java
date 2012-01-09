@@ -52,15 +52,11 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public boolean addSystem(SystemMonitor system) {
-
 		boolean check = false;
-		boolean checkNotify = false;
-		String sid = null;
 		SystemDAO sysDAO = new SystemDaoImpl();
 		try {
 			String code = sysDAO.createSID();
-		
-			boolean checkAdd = sysDAO.addSystem(system,code);
+			check = sysDAO.addSystem(system,code);
 			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, " ERROR when add new system. Message: "
