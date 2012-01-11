@@ -50,4 +50,6 @@ public interface SystemDAO {
 	public boolean setCountChangeLog(String sid) throws Exception;
 	
 	public ArrayList<ChangeLogMonitor> listChangeLog() throws Exception;
+	
+	public boolean setCounterChangeLogByID(String c_id) throws Exception;
 }
