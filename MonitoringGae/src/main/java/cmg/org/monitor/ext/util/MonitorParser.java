@@ -22,11 +22,26 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import cmg.org.monitor.dao.*;
-import cmg.org.monitor.dao.impl.*;
-import cmg.org.monitor.entity.shared.*;
+import cmg.org.monitor.dao.AlertDao;
+import cmg.org.monitor.dao.CpuDAO;
+import cmg.org.monitor.dao.FileSystemDAO;
+import cmg.org.monitor.dao.JvmDAO;
+import cmg.org.monitor.dao.MemoryDAO;
+import cmg.org.monitor.dao.ServiceDAO;
+import cmg.org.monitor.dao.impl.AlertDaoImpl;
+import cmg.org.monitor.dao.impl.CpuDaoImpl;
+import cmg.org.monitor.dao.impl.FileSystemDaoImpl;
+import cmg.org.monitor.dao.impl.JvmDaoImpl;
+import cmg.org.monitor.dao.impl.MemoryDaoImpl;
+import cmg.org.monitor.dao.impl.ServiceDaoImpl;
+import cmg.org.monitor.entity.shared.AlertMonitor;
+import cmg.org.monitor.entity.shared.CpuMonitor;
+import cmg.org.monitor.entity.shared.FileSystemMonitor;
+import cmg.org.monitor.entity.shared.JvmMonitor;
+import cmg.org.monitor.entity.shared.MemoryMonitor;
+import cmg.org.monitor.entity.shared.ServiceMonitor;
+import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.util.shared.Constant;
-import cmg.org.monitor.util.shared.Utility;
 
 public class MonitorParser {
 
@@ -156,7 +171,7 @@ public class MonitorParser {
 		int lastestMemUsage = -1;
 		int lastestCpuUsage = -1;
 
-		if (cpu != null) {		
+		if (cpu != null) {
 			if (cpu.getCpuUsage() > Constant.CPU_LEVEL_HISTORY_UPDATE) {
 				checkCpu = false;
 				alert = new AlertMonitor(AlertMonitor.HIGH_USAGE_LEVEL_CPU,
@@ -222,7 +237,7 @@ public class MonitorParser {
 			}// for
 			fileSysDAO.storeFileSystems(sys, fileSysList);
 		}// if
-		
+
 		if (memList != null) {
 			for (MemoryMonitor mem : memList) {
 				if (mem.getType() == MemoryMonitor.MEM) {
@@ -276,7 +291,8 @@ public class MonitorParser {
 					checkService = false;
 				}// if
 				if (service.getPing() > Constant.PING_LEVEL_RESPONSE) {
-					alert = new AlertMonitor(AlertMonitor.SERVICE_ERROR_STATUS,
+					alert = new AlertMonitor(
+							AlertMonitor.SERVICE_HIGH_LEVEL_PING_TIME,
 							"High service ping time",
 							(service.getName() == null ? "N/A"
 									: service.getName())
@@ -371,7 +387,8 @@ public class MonitorParser {
 						}
 						service.setPing(pingTime);
 					}// if
-					service.setSystemDate(new Date());
+					service.setSystemDate(MonitorUtil.parseDate(service
+							.getStrSystemDate()));
 					list.add(service);
 					logger.log(Level.INFO, "END Service #" + (i + 1));
 				}// for
@@ -437,6 +454,8 @@ public class MonitorParser {
 				}
 
 				iC += 4;
+				service.setSystemDate(MonitorUtil.parseDate(service
+						.getStrSystemDate()));
 				list.add(service);
 				logger.log(Level.INFO, "END Service #" + count);
 			}
@@ -467,7 +486,8 @@ public class MonitorParser {
 				strTemp = getCharacterDataFromElement((Element) temp.item(0));
 				logger.log(Level.INFO, " Free memory: " + strTemp);
 				try {
-					jvm.setFreeMemory(Double.parseDouble(strTemp));
+					jvm.setFreeMemory(Double.parseDouble(MonitorUtil
+							.extractDigit(strTemp)));
 				} catch (Exception ex) {
 					logger.log(Level.SEVERE,
 							" -> ERROR: parseDouble " + ex.getMessage());
@@ -481,7 +501,8 @@ public class MonitorParser {
 				strTemp = getCharacterDataFromElement((Element) temp.item(0));
 				logger.log(Level.INFO, " Total memory: " + strTemp);
 				try {
-					jvm.setTotalMemory(Double.parseDouble(strTemp));
+					jvm.setTotalMemory(Double.parseDouble(MonitorUtil
+							.extractDigit(strTemp)));
 				} catch (Exception ex) {
 					logger.log(Level.SEVERE,
 							" -> ERROR: parseDouble " + ex.getMessage());
@@ -496,7 +517,8 @@ public class MonitorParser {
 				strTemp = getCharacterDataFromElement((Element) temp.item(0));
 				logger.log(Level.INFO, " Max memory: " + strTemp);
 				try {
-					jvm.setMaxMemory(Double.parseDouble(strTemp));
+					jvm.setMaxMemory(Double.parseDouble(MonitorUtil
+							.extractDigit(strTemp)));
 				} catch (Exception ex) {
 					logger.log(Level.SEVERE,
 							" -> ERROR: parseDouble " + ex.getMessage());
@@ -511,7 +533,8 @@ public class MonitorParser {
 				strTemp = getCharacterDataFromElement((Element) temp.item(0));
 				logger.log(Level.INFO, " Used memory: " + strTemp);
 				try {
-					jvm.setUsedMemory(Double.parseDouble(strTemp));
+					jvm.setUsedMemory(Double.parseDouble(MonitorUtil
+							.extractDigit(strTemp)));
 				} catch (Exception ex) {
 					logger.log(Level.SEVERE,
 							" -> ERROR: parseDouble " + ex.getMessage());
@@ -653,7 +676,8 @@ public class MonitorParser {
 				strTemp = getCharacterDataFromElement((Element) temp.item(0));
 				logger.log(Level.INFO, " Total CPU: " + strTemp);
 				try {
-					cpu.setTotalCpu(Integer.parseInt(strTemp));
+					cpu.setTotalCpu(Integer.parseInt(MonitorUtil
+							.extractDigit(strTemp)));
 				} catch (Exception ex) {
 					logger.log(
 							Level.SEVERE,
@@ -682,7 +706,8 @@ public class MonitorParser {
 				value = matcher.group(2).replace("%", "");
 				logger.log(Level.INFO, " Usage: " + value);
 				try {
-					cpu.setCpuUsage(Integer.parseInt(value));
+					cpu.setCpuUsage(Integer.parseInt(MonitorUtil
+							.extractDigit(value)));
 				} catch (Exception ex) {
 					logger.log(
 							Level.SEVERE,
@@ -722,7 +747,8 @@ public class MonitorParser {
 				value = matcher.group(2);
 				logger.log(Level.INFO, " Total: " + value);
 				try {
-					cpu.setTotalCpu(Integer.parseInt(value.trim()));
+					cpu.setTotalCpu(Integer.parseInt(MonitorUtil
+							.extractDigit(value)));
 				} catch (Exception ex) {
 					logger.log(
 							Level.SEVERE,
@@ -851,17 +877,19 @@ public class MonitorParser {
 					temp = strList.get(i + 1);
 					logger.log(Level.INFO, " Size: " + temp);
 					try {
-						fileSystem.setSize(Long.parseLong(temp));
+						fileSystem.setSize(Long.parseLong(MonitorUtil
+								.extractDigit(temp)));
 					} catch (Exception ex) {
 						logger.log(Level.SEVERE,
 								" -> ERROR: parseLong file system size. Message: "
 										+ ex.getMessage());
 					}
 
-					temp = strList.get(i + 4);
+					temp = strList.get(i + 2);
 					logger.log(Level.INFO, " Used: " + temp);
 					try {
-						fileSystem.setUsed(Long.parseLong(temp));
+						fileSystem.setUsed(Long.parseLong(MonitorUtil
+								.extractDigit(temp)));
 					} catch (Exception ex) {
 						logger.log(Level.SEVERE,
 								" -> ERROR: parseLong file system used. Message: "
@@ -979,7 +1007,8 @@ public class MonitorParser {
 				temp = strList.get(1).trim();
 				logger.log(Level.INFO, " Total memory: " + temp);
 				try {
-					mem.setTotalMemory(Double.parseDouble(temp) * 1024);
+					mem.setTotalMemory(Double.parseDouble(MonitorUtil
+							.extractDigit(temp)) * 1024);
 				} catch (Exception ex) {
 					logger.log(Level.SEVERE,
 							" -> ERROR parseDouble total memory. Message: "
@@ -989,7 +1018,8 @@ public class MonitorParser {
 				temp = strList.get(2).trim();
 				logger.log(Level.INFO, " Used memory: " + temp);
 				try {
-					mem.setUsedMemory(Double.parseDouble(temp) * 1024);
+					mem.setUsedMemory(Double.parseDouble(MonitorUtil
+							.extractDigit(temp)) * 1024);
 				} catch (Exception ex) {
 					logger.log(
 							Level.SEVERE,
@@ -1004,13 +1034,14 @@ public class MonitorParser {
 				mem = new MemoryMonitor();
 				temp = strList.get(4).trim();
 				logger.log(Level.INFO, " Type: " + temp);
-				mem.setType(temp.toLowerCase().equals(MemoryMonitor.SWAP) ? MemoryMonitor.SWAP
+				mem.setType(temp.toLowerCase().equals("swap") ? MemoryMonitor.SWAP
 						: MemoryMonitor.MEM);
 
 				temp = strList.get(5).trim();
 				logger.log(Level.INFO, " Total memory: " + temp);
 				try {
-					mem.setTotalMemory(Double.parseDouble(temp) * 1024);
+					mem.setTotalMemory(Double.parseDouble(MonitorUtil
+							.extractDigit(temp)) * 1024);
 				} catch (Exception ex) {
 					logger.log(Level.SEVERE,
 							" -> ERROR parseDouble total memory. Message: "
@@ -1020,7 +1051,8 @@ public class MonitorParser {
 				temp = strList.get(6).trim();
 				logger.log(Level.INFO, " Used memory: " + temp);
 				try {
-					mem.setUsedMemory(Double.parseDouble(temp) * 1024);
+					mem.setUsedMemory(Double.parseDouble(MonitorUtil
+							.extractDigit(temp)) * 1024);
 				} catch (Exception ex) {
 					logger.log(
 							Level.SEVERE,

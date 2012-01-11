@@ -260,6 +260,7 @@ public class MailService {
 			MailConfigMonitor mailConfig) {
 		SystemDAO sysDao = new SystemDaoImpl();
 		SystemMonitor sys = null;
+		
 		StringBuffer sb = new StringBuffer();
 		sb.append("<p align=\"center\"><img src=\"http://"
 				+ MonitorConstant.PROJECT_HOST_NAME
@@ -317,7 +318,6 @@ public class MailService {
 					+ "</li></ul><br/>");
 			sb.append("<table cellpadding=\"5\" cellspacing=\"5\"><tbody><tr><th>No.</th><th>Time</th><th>Severity</th><th>Title</th><th>Description</th></tr>");
 			ArrayList<AlertMonitor> alerts = store.getAlerts();
-			
 			if (alerts != null && alerts.size() > 0) {
 				for (int i = 0; i < alerts.size(); i++) {
 					sb.append("<tr><td>" + (i + 1) + "</td>");
@@ -334,9 +334,9 @@ public class MailService {
 					sb.append("<td>" + alerts.get(i).getDescription()
 							+ "</td></tr>");
 				}
-			}
+			}//if
 			sb.append("</tbody></table><hr/></li>");
-		}
+		}//for
 
 		sb.append("</ol><h4>(*) <i>Reply with following content to configure the notification emails.</i></h4>");
 		sb.append("<b>Your current configuration: </b>");

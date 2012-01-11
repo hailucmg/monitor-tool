@@ -28,6 +28,10 @@ public class MonitorContainer implements Serializable {
 	
 	private MemoryMonitor[] swaps;
 	
+	private ChangeLogMonitor[] changelogs;
+	
+	private int changelogCount;
+	
 	private NotifyMonitor notify;
 	
 	private ChangeLogMonitor changelog;
@@ -80,6 +84,23 @@ public class MonitorContainer implements Serializable {
 		this.swaps = swaps;
 	}
 
+	public ChangeLogMonitor[] getChangelogs() {
+		return changelogs;
+	}
+
+	public void setChangelogs(ChangeLogMonitor[] changelogs) {
+		this.changelogs = changelogs;
+	}
+
+	public int getChangelogCount() {
+		return changelogCount;
+	}
+
+	public void setChangelogCount(int changelogCount) {
+		this.changelogCount = changelogCount;
+	}
+
+
 	public NotifyMonitor getNotify() {
 		return notify;
 	}
@@ -94,7 +115,6 @@ public class MonitorContainer implements Serializable {
 
 	public void setChangelog(ChangeLogMonitor changelog) {
 		this.changelog = changelog;
-	}
-	
+	}	
 	
 }

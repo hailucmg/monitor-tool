@@ -53,4 +53,7 @@ public interface MonitorGwtServiceAsync {
 	void listAlertStore(SystemMonitor sys,
 			AsyncCallback<AlertStoreMonitor[]> callback);
 
+	void listChangeLog(SystemMonitor sys, int start, int end,
+			AsyncCallback<MonitorContainer> callback);
+
 }

@@ -29,10 +29,10 @@ public class AlertStoreMonitor implements Serializable {
 
 	@Persistent
 	private String sysId;
-	
+
 	@Persistent
 	private String name;
-	
+
 	public String getName() {
 		return name;
 	}
@@ -54,30 +54,64 @@ public class AlertStoreMonitor implements Serializable {
 		return id;
 	}
 
-	public boolean addAlert(AlertMonitor alert) {		
+	public void fixAlertList(NotifyMonitor notify) {
+		if (alerts != null && alerts.size() > 0) {
+			ArrayList<AlertMonitor> temp = new ArrayList<AlertMonitor>();
+			for (int i = 0; i < alerts.size(); i++) {
+				boolean check = false;
+				if (!notify.isJVM() && alerts.get(i).getType() == AlertMonitor.HIGH_USAGE_LEVEL_JVM) {
+					check = true;
+				} 
+				if (!notify.isNotifyCpu() && alerts.get(i).getType() == AlertMonitor.HIGH_USAGE_LEVEL_CPU) {
+					check = true;
+				} 
+				if (!notify.isNotifyMemory() && alerts.get(i).getType() == AlertMonitor.HIGH_USAGE_LEVEL_MEMORY) {
+					check = true;
+				} 
+				if (!notify.isNotifyServices() && alerts.get(i).getType() == AlertMonitor.SERVICE_ERROR_STATUS) {
+					check = true;
+				} 
+				if (!notify.isNotifyServicesConnection() && alerts.get(i).getType() == AlertMonitor.SERVICE_HIGH_LEVEL_PING_TIME) {
+					check = true;
+				} 					
+				if (check) {
+					temp.add(alerts.get(i));
+				}
+			}
+			if (temp.size() > 0) {
+				for (AlertMonitor alert : temp) {
+					alerts.remove(alert);
+				}
+			}
+		}
+	}
+
+	public boolean addAlert(AlertMonitor alert) {
 		if (alerts == null) {
 			alerts = new ArrayList<AlertMonitor>();
 		}
-		alert.setAlertStore(this);		
-		
+		alert.setAlertStore(this);
+
 		alerts.add(alert);
 		return true;
 	}
-	
+
 	public String getErrors() {
 		StringBuffer sb = new StringBuffer();
 		if (alerts != null && alerts.size() > 0) {
 			sb.append("<ol>");
 			for (int i = 0; i < alerts.size(); i++) {
-				sb.append("<li><h5>Alert #" + i + " : " + alerts.get(i).getTimeStamp() +"</h5><ul>");
+				sb.append("<li><h5>Alert #" + i + " : "
+						+ alerts.get(i).getTimeStamp() + "</h5><ul>");
 				sb.append("<li>Error: " + alerts.get(i).getError() + "</li>");
-				sb.append("<li>Desciption: " + alerts.get(i).getDescription() + "</li></ul></li>");
+				sb.append("<li>Desciption: " + alerts.get(i).getDescription()
+						+ "</li></ul></li>");
 			}
 			sb.append("</ol>");
 		}
 		return sb.toString();
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuffer sf = new StringBuffer();
@@ -87,7 +121,6 @@ public class AlertStoreMonitor implements Serializable {
 		sf.append("\r\nTimestamp: " + timeStamp + "\r\n");
 		return sf.toString();
 	}
-
 
 	public ArrayList<AlertMonitor> getAlerts() {
 		return alerts;
@@ -128,7 +161,5 @@ public class AlertStoreMonitor implements Serializable {
 	public void setSysId(String sysId) {
 		this.sysId = sysId;
 	}
-
-
 
 }
