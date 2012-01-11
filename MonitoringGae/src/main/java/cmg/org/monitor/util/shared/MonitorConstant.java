@@ -2,9 +2,11 @@ package cmg.org.monitor.util.shared;
 
 public final class MonitorConstant {	
 	
+	public static final int MAX_ROW_COUNT_CHANGELOG = 10;
+	
 	public static final String Notify_Cpu = "When system uses more than 90% CPU :";
 	
-	public static final String Notify_JVM = "When system uses more than 90% JVM :";
+	public static final String Notify_JVM = "When system user more than 90% JVM :";
 	
 	public static final String Notify_Memory = "When system uses more than 90% Memory :";
 	
