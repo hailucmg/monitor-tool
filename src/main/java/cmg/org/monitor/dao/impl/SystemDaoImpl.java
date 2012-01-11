@@ -125,8 +125,9 @@ public class SystemDaoImpl implements SystemDAO {
 		clm.setDescription(sys.isDeleted() ? "Delete " :("Update information of ") + sys.getName());
 		clm.setType(sys.isDeleted() ? ChangeLogMonitor.LOG_DELETE  : ChangeLogMonitor.LOG_UPDATE);
 		clm.setDatetime(new Date());
+		clm.setSid(sys.getCode());
 		addChangeLog(clm);
-		setNotifyOption(sys.getId(), sys.getNotify());
+		setNotifyOption(sys.getCode(), sys.getNotify());
 		return check;
 	}
 
@@ -153,7 +154,6 @@ public class SystemDaoImpl implements SystemDAO {
 			throws Exception {
 		initPersistence();
 		boolean check = false;
-		String sid = null;
 		try {
 			pm.currentTransaction().begin();
 			SystemMonitor tempSys = new SystemMonitor();
@@ -170,22 +170,16 @@ public class SystemDaoImpl implements SystemDAO {
 			pm.close();
 			listSystems(false);
 		}
-		ArrayList<SystemMonitor> list = listSystemsFromMemcache(false);
-		for(int i = 0 ; i < list.size() ; i++){
-			if(system.getName().equals(list.get(i).getName())){
-				sid = list.get(i).getId();
-			}
-		}
 		ChangeLogMonitor clm = new ChangeLogMonitor();
 		UserLoginDto user =  MonitorLoginService.getUserLogin();
 		clm.setUsername(user.getEmail());
-		clm.setSid(sid);
+		clm.setSid(code);
 		clm.setDescription("Add new System Monitor : " + system.getName());
 		Date date = new Date();
 		clm.setDatetime(date);
 		clm.setType(ChangeLogMonitor.LOG_ADD);
 		addChangeLog(clm);
-		setNotifyOption(sid, system.getNotify());
+		setNotifyOption(code, system.getNotify());
 		return check;
 	}
 
@@ -378,7 +372,7 @@ public class SystemDaoImpl implements SystemDAO {
 
 	@Override
 	public boolean addChangeLog(ChangeLogMonitor log) throws Exception {
-		// TODO Auto-generated method stub
+		
 		initPersistence();
 		boolean check = false;
 		try {
@@ -499,14 +493,13 @@ public class SystemDaoImpl implements SystemDAO {
 		query.declareParameters("String sidPara");
 		List<CounterChangeLog> temp = null;
 		try {
-			pm.currentTransaction().begin();
+			//pm.currentTransaction().begin();
 			temp = (List<CounterChangeLog>) query.execute(sid);
+			//pm.currentTransaction().commit();
 			if (temp != null && temp.size() > 0) {
-				CounterChangeLog ccl = (CounterChangeLog) pm.getObjectById(temp.get(0).getId());
-				ccl.setCount(temp.get(0).getCount() + 1);
-				pm.makePersistent(ccl);
-				pm.currentTransaction().commit();
+				check = setCounterChangeLogByID(temp.get(0).getId());
 			}else{
+				pm.currentTransaction().begin();
 				CounterChangeLog ccl = new CounterChangeLog();
 				ccl.setSid(sid);
 				ccl.setCount(1);
@@ -520,6 +513,7 @@ public class SystemDaoImpl implements SystemDAO {
 					" ERROR when update CounterChangeLog JDO. Message: "
 							+ e.getMessage());
 			pm.currentTransaction().rollback();
+			e.printStackTrace();
 		}
 		return check;
 	}
@@ -527,14 +521,14 @@ public class SystemDaoImpl implements SystemDAO {
 	@SuppressWarnings("unchecked")
 	@Override
 	public ArrayList<ChangeLogMonitor> listChangeLog() throws Exception {
-		
 		initPersistence();
 		ArrayList<ChangeLogMonitor> listAll = null;
-		ArrayList<ChangeLogMonitor> temp = null;
+		List<ChangeLogMonitor> temp = null;
 		Query query = pm.newQuery(ChangeLogMonitor.class);
+		query.setOrdering("datetime desc");
 		try {
 			pm.currentTransaction().begin();
-			temp = (ArrayList<ChangeLogMonitor>) query.execute();
+			temp = (List<ChangeLogMonitor>) query.execute();
 			if (temp.size() > 0 && temp != null) {
 				listAll = new ArrayList<ChangeLogMonitor>();
 				for (int i = 0; i < temp.size(); i++) {
@@ -548,11 +542,33 @@ public class SystemDaoImpl implements SystemDAO {
 					" ERROR when get allChangeLog JDO. Message: "
 							+ e.getMessage());
 			pm.currentTransaction().rollback();
+			e.printStackTrace();
 		} finally {
 			query.closeAll();
 			pm.close();
 		}
 		return listAll;
+	}
+
+	@Override
+	public boolean setCounterChangeLogByID(
+			String c_id) throws Exception {
+		// TODO Auto-generated method stub
+		initPersistence();
+		CounterChangeLog ccl = null;
+		boolean check = false;
+		try {
+			pm.currentTransaction().begin();
+			ccl = pm.getObjectById(CounterChangeLog.class,c_id);
+			ccl.setCount(ccl.getCount()+1);
+			pm.currentTransaction().commit();
+			check = true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		return check;
 	}
 
 }

@@ -22,12 +22,10 @@ import cmg.org.monitor.dao.impl.ServiceDaoImpl;
 import cmg.org.monitor.dao.impl.SystemDaoImpl;
 import cmg.org.monitor.dao.impl.UtilityDaoImpl;
 import cmg.org.monitor.entity.shared.AlertStoreMonitor;
-import cmg.org.monitor.entity.shared.ChangeLogMonitor;
 import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
 import cmg.org.monitor.entity.shared.JvmMonitor;
 import cmg.org.monitor.entity.shared.MemoryMonitor;
-import cmg.org.monitor.entity.shared.NotifyMonitor;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.GroupMonitor;
@@ -57,7 +55,6 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		try {
 			String code = sysDAO.createSID();
 			check = sysDAO.addSystem(system,code);
-			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, " ERROR when add new system. Message: "
 					+ e.getCause().getMessage());
@@ -180,8 +177,9 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		SystemDAO sysDAO = new SystemDaoImpl();
 		try {
 			if (container != null) {
-				container.setSys(sysDAO.getSystemById(sysId));
-				container.setNotify(sysDAO.getNotifyOption(sysId));
+				SystemMonitor sys = sysDAO.getSystemById(sysId);
+				container.setSys(sys);
+				container.setNotify(sysDAO.getNotifyOption(sys.getCode()));
 			}
 
 		} catch (Exception ex) {

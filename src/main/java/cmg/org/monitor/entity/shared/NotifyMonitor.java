@@ -41,6 +41,11 @@ public class NotifyMonitor implements Serializable {
 	private boolean isNotifyServicesConnection;
 
 	public NotifyMonitor() {
+		this.isNotifyCpu = false;
+		this.isNotifyMemory = false;
+		this.isNotifyServices = false;
+		this.isNotifyServicesConnection = false;
+		this.isJVM = false;
 	}
 
 	

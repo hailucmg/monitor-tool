@@ -248,7 +248,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 		tableForm.getFlexCellFormatter().setWidth(9, 0, "100px");
 		tableForm.getFlexCellFormatter().setWidth(10, 0, "100px");
 		tableForm.getFlexCellFormatter().setWidth(11, 0, "100px");
-
+		
 		labelName = new Label();
 		labelName.setText("Name");
 
