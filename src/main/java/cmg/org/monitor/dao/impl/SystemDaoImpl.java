@@ -9,6 +9,8 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import net.sourceforge.htmlunit.corejs.javascript.ast.ThrowStatement;
+
 import cmg.org.monitor.dao.SystemDAO;
 import cmg.org.monitor.entity.shared.ChangeLogMonitor;
 import cmg.org.monitor.entity.shared.CounterChangeLog;
@@ -118,12 +120,14 @@ public class SystemDaoImpl implements SystemDAO {
 				listSystems(false);
 			}
 		}
-		
+
 		ChangeLogMonitor clm = new ChangeLogMonitor();
 		UserLoginDto user = MonitorLoginService.getUserLogin();
 		clm.setUsername(user.getEmail());
-		clm.setDescription(sys.isDeleted() ? "Delete " :("Update information of ") + sys.getName());
-		clm.setType(sys.isDeleted() ? ChangeLogMonitor.LOG_DELETE  : ChangeLogMonitor.LOG_UPDATE);
+		clm.setDescription(sys.isDeleted() ? "Delete "
+				: ("Update information of ") + sys.getName());
+		clm.setType(sys.isDeleted() ? ChangeLogMonitor.LOG_DELETE
+				: ChangeLogMonitor.LOG_UPDATE);
 		clm.setDatetime(new Date());
 		clm.setSid(sys.getCode());
 		addChangeLog(clm);
@@ -171,7 +175,7 @@ public class SystemDaoImpl implements SystemDAO {
 			listSystems(false);
 		}
 		ChangeLogMonitor clm = new ChangeLogMonitor();
-		UserLoginDto user =  MonitorLoginService.getUserLogin();
+		UserLoginDto user = MonitorLoginService.getUserLogin();
 		clm.setUsername(user.getEmail());
 		clm.setSid(code);
 		clm.setDescription("Add new System Monitor : " + system.getName());
@@ -287,6 +291,7 @@ public class SystemDaoImpl implements SystemDAO {
 		temp.setEmailRevice(sys.getEmailRevice());
 		temp.setRemoteUrl(sys.getRemoteUrl());
 		temp.setActive(sys.isActive());
+		temp.setNotify(sys.getNotify());
 		return updateSystem(temp, true);
 	}
 
@@ -300,7 +305,6 @@ public class SystemDaoImpl implements SystemDAO {
 		return false;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public NotifyMonitor getNotifyOption(String sid) throws Exception {
 
@@ -339,14 +343,16 @@ public class SystemDaoImpl implements SystemDAO {
 		SystemDAO sysDAO = new SystemDaoImpl();
 		NotifyMonitor temp = sysDAO.getNotifyOption(sid);
 		try {
-			pm.currentTransaction().begin();			
+			pm.currentTransaction().begin();
 			if (temp != null) {
-				NotifyMonitor nm = pm.getObjectById(NotifyMonitor.class,temp.getId());
+				NotifyMonitor nm = pm.getObjectById(NotifyMonitor.class,
+						temp.getId());
 				nm.setJVM(notify.isJVM());
 				nm.setNotifyCpu(notify.isNotifyCpu());
 				nm.setNotifyMemory(notify.isNotifyMemory());
 				nm.setNotifyServices(notify.isNotifyServices());
-				nm.setNotifyServicesConnection(notify.isNotifyServicesConnection());
+				nm.setNotifyServicesConnection(notify
+						.isNotifyServicesConnection());
 				pm.makePersistent(nm);
 				pm.currentTransaction().commit();
 				check = true;
@@ -372,7 +378,6 @@ public class SystemDaoImpl implements SystemDAO {
 
 	@Override
 	public boolean addChangeLog(ChangeLogMonitor log) throws Exception {
-		
 		initPersistence();
 		boolean check = false;
 		try {
@@ -388,103 +393,182 @@ public class SystemDaoImpl implements SystemDAO {
 		} finally {
 			pm.close();
 		}
+		// add to memcache
+		ArrayList<ChangeLogMonitor> changelogs = null;
+		Object obj = MonitorMemcache.get(Key.create(Key.CHANGE_LOG,
+				log.getSid()));
+		if (obj != null && obj instanceof ArrayList<?>) {
+			changelogs = (ArrayList<ChangeLogMonitor>) obj;
+			changelogs.add(0, log);
+			MonitorMemcache.put(Key.create(Key.CHANGE_LOG, log.getSid()),
+					changelogs);
+		}
+
+		obj = MonitorMemcache.get(Key.create(Key.CHANGE_LOG));
+		if (obj != null && obj instanceof ArrayList<?>) {
+			changelogs = (ArrayList<ChangeLogMonitor>) obj;
+			changelogs.add(0, log);
+			MonitorMemcache.put(Key.create(Key.CHANGE_LOG), changelogs);
+		}
+
+		int countAll = getCountAllChangeLog();
+		MonitorMemcache.put(Key.create(Key.CHANGE_LOG_COUNT), new Integer(
+				countAll + 1));
 		setCountChangeLog(log.getSid());
+
 		return check;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public ArrayList<ChangeLogMonitor> listChangeLog(String sid, int start,
 			int end) throws Exception {
-		initPersistence();
-		Query query = pm.newQuery(ChangeLogMonitor.class);
-		query.setFilter("sid == sidPara");
-		query.declareParameters("String sidPara");
-		query.setOrdering("datetime desc");
-		query.setRange(start, end);
-		List<ChangeLogMonitor> temp = null;
 		ArrayList<ChangeLogMonitor> list = null;
-		try {
-			pm.currentTransaction().begin();
-			temp = (List<ChangeLogMonitor>) query.execute(sid);
-			if (temp != null && temp.size() > 0) {
+		// get list from memcache
+		Object obj = MonitorMemcache.get((sid == null || sid.equals("")) ? Key
+				.create(Key.CHANGE_LOG) : Key.create(Key.CHANGE_LOG, sid));
+		if (obj != null && obj instanceof ArrayList<?>) {
+			ArrayList<ChangeLogMonitor> temp = (ArrayList<ChangeLogMonitor>) obj;
+			if (temp.size() > start) {
+				if (end > temp.size()) {
+					end = temp.size();
+				}
 				list = new ArrayList<ChangeLogMonitor>();
-				for (int i = 0; i < temp.size(); i++) {
-					list.add(temp.get(i));
+				for (int i = 0; i < end - start; i++) {
+					list.add(temp.get(i + start));
 				}
 			}
-			pm.currentTransaction().commit();
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, " ERROR when get ChangeLog JDO. Message: "
-					+ e.getMessage());
-			pm.currentTransaction().rollback();
-		} finally {
-			query.closeAll();
-			pm.close();
+		}
+		// try to load from JDO if no list found
+		if (list == null) {
+			initPersistence();
+			Query query = pm.newQuery(ChangeLogMonitor.class);
+			if (sid != null && sid.trim().length() > 0) {
+				query.setFilter("sid == sidPara");
+				query.declareParameters("String sidPara");
+			}
+			query.setOrdering("datetime desc");
+			// query.setRange(start, end);
+			List<ChangeLogMonitor> temp = null;
+			try {
+				pm.currentTransaction().begin();
+				if (sid != null && sid.trim().length() > 0) {
+					temp = (List<ChangeLogMonitor>) query.execute(sid);
+				} else {
+					temp = (List<ChangeLogMonitor>) query.execute();
+				}
+				if (temp != null && temp.size() > 0) {
+					list = new ArrayList<ChangeLogMonitor>();
+					for (int i = 0; i < temp.size(); i++) {
+						list.add(temp.get(i));
+					}
+				}
+				pm.currentTransaction().commit();
+			} catch (Exception e) {
+				logger.log(
+						Level.SEVERE,
+						" ERROR when get ChangeLog JDO. Message: "
+								+ e.getMessage());
+				pm.currentTransaction().rollback();
+				throw e;
+			} finally {
+				query.closeAll();
+				pm.close();
+			}			
+			temp = list;
+			if (temp != null) {
+				MonitorMemcache.put(
+						(sid == null || sid.equals("")) ? Key
+								.create(Key.CHANGE_LOG) : Key.create(
+								Key.CHANGE_LOG, sid), list);
+				if (temp.size() > start) {
+					if (end > temp.size()) {
+						end = temp.size();
+					}
+					list = new ArrayList<ChangeLogMonitor>();
+					for (int i = 0; i < end - start; i++) {
+						list.add(temp.get(i + start));
+					}
+				}
+			}
 		}
 		return list;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public int getCounterChangeLog(String sid) throws Exception {
 		initPersistence();
-		int count = 0;
-		Query query = pm.newQuery(CounterChangeLog.class);
-		query.setFilter("sid == sidPara");
-		query.declareParameters("String sidPara");
-		List<CounterChangeLog> temp = null;
-		try {
-			pm.currentTransaction().begin();
-			temp = (List<CounterChangeLog>) query.execute(sid);
-			if (temp != null && temp.size() > 0) {
-				count = temp.get(0).getCount();
+		int count = -1;
+		Object obj = null;
+		if (sid == null || sid.trim().length() == 0) {
+			count = getCountAllChangeLog();
+		} else {
+			obj = MonitorMemcache.get(Key.create(Key.CHANGE_LOG_COUNT, sid));
+			if (obj != null && obj instanceof Integer) {
+				count = (Integer) obj;
+			} else {
+				Query query = pm.newQuery(CounterChangeLog.class);
+				query.setFilter("sid == sidPara");
+				query.declareParameters("String sidPara");
+				List<CounterChangeLog> temp = null;
+				try {
+					pm.currentTransaction().begin();
+					temp = (List<CounterChangeLog>) query.execute(sid);
+					if (temp != null && temp.size() > 0) {
+						count = temp.get(0).getCount();
+					}
+					pm.currentTransaction().commit();
+				} catch (Exception e) {
+					logger.log(
+							Level.SEVERE,
+							" ERROR when get CountChangeLog JDO. Message: "
+									+ e.getMessage());
+					pm.currentTransaction().rollback();
+					throw e;
+				}
+				MonitorMemcache.put(Key.create(Key.CHANGE_LOG_COUNT, sid),
+						new Integer(count));
 			}
-			pm.currentTransaction().commit();
-		} catch (Exception e) {
-			logger.log(
-					Level.SEVERE,
-					" ERROR when get CountChangeLog JDO. Message: "
-							+ e.getMessage());
-			pm.currentTransaction().rollback();
 		}
 		return count;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
 	public int getCountAllChangeLog() throws Exception {
 		int count = 0;
-		initPersistence();
-		List<Integer> counterAll = null;
-		Query q = pm.newQuery("select count from "
-				+ CounterChangeLog.class.getName());
-		try {
-			pm.currentTransaction().begin();
-			counterAll = (List<Integer>) q.execute();
-			if (counterAll != null && counterAll.size() > 0) {
-				for (int i = 0; i < counterAll.size(); i++) {
-					count = count + counterAll.get(i);
+		Object obj = MonitorMemcache.get(Key.create(Key.CHANGE_LOG_COUNT));
+		if (obj != null && obj instanceof Integer) {
+			count = (Integer) obj;
+		} else {
+			initPersistence();
+			List<Integer> counterAll = null;
+			Query q = pm.newQuery("select count from "
+					+ CounterChangeLog.class.getName());
+			try {
+				pm.currentTransaction().begin();
+				counterAll = (List<Integer>) q.execute();
+				if (counterAll != null && counterAll.size() > 0) {
+					for (int i = 0; i < counterAll.size(); i++) {
+						count = count + counterAll.get(i);
+					}
 				}
+				pm.currentTransaction().commit();
+			} catch (Exception e) {
+				logger.log(
+						Level.SEVERE,
+						" ERROR when get allCounter JDO. Message: "
+								+ e.getMessage());
+				pm.currentTransaction().rollback();
+				throw e;
+			} finally {
+				q.closeAll();
+				pm.close();
 			}
-			pm.currentTransaction().commit();
-		} catch (Exception e) {
-			logger.log(
-					Level.SEVERE,
-					" ERROR when get allCounter JDO. Message: "
-							+ e.getMessage());
-			pm.currentTransaction().rollback();
-		} finally {
-			q.closeAll();
-			pm.close();
+			MonitorMemcache.put(Key.create(Key.CHANGE_LOG_COUNT), new Integer(
+					count));
 		}
+
 		return count;
 	}
 
-
-
-	@SuppressWarnings("unchecked")
-	@Override
 	public boolean setCountChangeLog(String sid) throws Exception {
 		initPersistence();
 		boolean check = false;
@@ -493,12 +577,10 @@ public class SystemDaoImpl implements SystemDAO {
 		query.declareParameters("String sidPara");
 		List<CounterChangeLog> temp = null;
 		try {
-			//pm.currentTransaction().begin();
 			temp = (List<CounterChangeLog>) query.execute(sid);
-			//pm.currentTransaction().commit();
 			if (temp != null && temp.size() > 0) {
-				check = setCounterChangeLogByID(temp.get(0).getId());
-			}else{
+				check = setCounterChangeLogByID(sid, temp.get(0).getId());
+			} else {
 				pm.currentTransaction().begin();
 				CounterChangeLog ccl = new CounterChangeLog();
 				ccl.setSid(sid);
@@ -506,68 +588,40 @@ public class SystemDaoImpl implements SystemDAO {
 				pm.makePersistent(ccl);
 				pm.currentTransaction().commit();
 				check = true;
+				MonitorMemcache.put(Key.create(Key.CHANGE_LOG_COUNT, sid), 1);
+				pm.close();
 			}
 		} catch (Exception e) {
 			logger.log(
 					Level.SEVERE,
 					" ERROR when update CounterChangeLog JDO. Message: "
 							+ e.getMessage());
-			pm.currentTransaction().rollback();
-			e.printStackTrace();
+			throw e;
 		}
+
 		return check;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public ArrayList<ChangeLogMonitor> listChangeLog() throws Exception {
-		initPersistence();
-		ArrayList<ChangeLogMonitor> listAll = null;
-		List<ChangeLogMonitor> temp = null;
-		Query query = pm.newQuery(ChangeLogMonitor.class);
-		query.setOrdering("datetime desc");
-		try {
-			pm.currentTransaction().begin();
-			temp = (List<ChangeLogMonitor>) query.execute();
-			if (temp.size() > 0 && temp != null) {
-				listAll = new ArrayList<ChangeLogMonitor>();
-				for (int i = 0; i < temp.size(); i++) {
-					listAll.add(temp.get(i));
-				}
-			}
-			pm.currentTransaction().commit();
-		} catch (Exception e) {
-			logger.log(
-					Level.SEVERE,
-					" ERROR when get allChangeLog JDO. Message: "
-							+ e.getMessage());
-			pm.currentTransaction().rollback();
-			e.printStackTrace();
-		} finally {
-			query.closeAll();
-			pm.close();
-		}
-		return listAll;
-	}
-
-	@Override
-	public boolean setCounterChangeLogByID(
-			String c_id) throws Exception {
-		// TODO Auto-generated method stub
+	public boolean setCounterChangeLogByID(String sid, String c_id)
+			throws Exception {
 		initPersistence();
 		CounterChangeLog ccl = null;
 		boolean check = false;
 		try {
 			pm.currentTransaction().begin();
-			ccl = pm.getObjectById(CounterChangeLog.class,c_id);
-			ccl.setCount(ccl.getCount()+1);
+			ccl = pm.getObjectById(CounterChangeLog.class, c_id);
+			ccl.setCount(ccl.getCount() + 1);
 			pm.currentTransaction().commit();
 			check = true;
+			MonitorMemcache.put(Key.create(Key.CHANGE_LOG_COUNT, sid),
+					ccl.getCount());
 		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
+			pm.currentTransaction().rollback();
+			throw e;
+		} finally {
+			pm.close();
 		}
-		
+
 		return check;
 	}
 

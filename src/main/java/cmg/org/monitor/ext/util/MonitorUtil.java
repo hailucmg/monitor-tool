@@ -33,6 +33,16 @@ public class MonitorUtil {
 	private static final Logger logger = Logger.getLogger(MonitorUtil.class
 			.getCanonicalName());
 
+	public static Date parseDate(String date) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		Date d = new Date();
+		try {
+			d = sdf.parse(date);
+		} catch (Exception ex) {
+			// do nothing
+		}
+		return d;
+	}
 	
 
 	public static String parseTime(long millis, boolean addArrow) {
@@ -119,10 +129,9 @@ public class MonitorUtil {
 	 * @return String value
 	 */
 	public static String extractDigit(String str) {
-		Pattern p = Pattern.compile(DIGIT_PATTERN);
-		Matcher m = p.matcher(str);
+		Matcher m = Pattern.compile(DIGIT_PATTERN).matcher(str);
 		if (m.find())
-			return m.group();
+			return m.group(0);
 		return null;
 	}
 

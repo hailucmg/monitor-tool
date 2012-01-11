@@ -48,4 +48,7 @@ public interface MonitorGwtService extends RemoteService {
 	MonitorContainer listMems(SystemMonitor sys);
 	
 	AlertStoreMonitor[] listAlertStore(SystemMonitor sys);
+	
+	MonitorContainer listChangeLog(SystemMonitor sys, int start, int end);
+	
 }

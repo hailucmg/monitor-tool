@@ -84,6 +84,9 @@ public class SystemMonitor implements Serializable  {
 	private NotifyMonitor notify;
 
 	public NotifyMonitor getNotify() {
+		if (notify == null) {
+			notify = new NotifyMonitor();
+		}
 		return notify;
 	}
 

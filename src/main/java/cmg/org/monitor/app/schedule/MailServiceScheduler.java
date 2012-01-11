@@ -18,8 +18,10 @@ import cmg.org.monitor.dao.impl.AlertDaoImpl;
 import cmg.org.monitor.dao.impl.MailMonitorDaoImpl;
 import cmg.org.monitor.dao.impl.SystemDaoImpl;
 import cmg.org.monitor.dao.impl.UtilityDaoImpl;
+import cmg.org.monitor.entity.shared.AlertMonitor;
 import cmg.org.monitor.entity.shared.AlertStoreMonitor;
 import cmg.org.monitor.entity.shared.MailConfigMonitor;
+import cmg.org.monitor.entity.shared.NotifyMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.GroupMonitor;
 import cmg.org.monitor.ext.model.shared.UserMonitor;
@@ -85,13 +87,23 @@ public class MailServiceScheduler extends HttpServlet {
 						.getSystems();
 				if (allSystem != null) {
 					for (int j = 0; j < allSystem.size(); j++) {
+						SystemMonitor tempSys = allSystem.get(j);
 						AlertStoreMonitor alertstore = alertDAO
-								.getLastestAlertStore(allSystem.get(j));
+								.getLastestAlertStore(tempSys);
 						if (alertstore != null) {
-							alertstore
-									.setName(alertName);
+							alertstore.setName(alertName);
 							alertstore.setTimeStamp(new Date(start));
-							user.addAlertStore(alertstore);
+							NotifyMonitor notify = null;
+							try {
+								notify = sysDAO.getNotifyOption(tempSys
+										.getCode());
+							} catch (Exception e) {
+								notify = new NotifyMonitor();
+							}
+							alertstore.fixAlertList(notify);
+							if (alertstore.getAlerts().size() > 0) {
+								user.addAlertStore(alertstore);
+							}
 						}
 					}
 				}
@@ -103,12 +115,10 @@ public class MailServiceScheduler extends HttpServlet {
 					if (user.getStores() != null && user.getStores().size() > 0) {
 						MailConfigMonitor config = mailDAO.getMailConfig(user
 								.getId());
-
 						try {
-							String content = MailService.parseContent(user
-									.getStores(), config);
-							mailService.sendMail(
-									alertName, content, config);
+							String content = MailService.parseContent(
+									user.getStores(), config);
+						//	mailService.sendMail(alertName, content, config);
 							logger.log(Level.INFO, "send mail" + content);
 						} catch (Exception e) {
 							logger.log(Level.INFO, "Can not send mail"

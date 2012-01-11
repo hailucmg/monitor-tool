@@ -22,10 +22,12 @@ import cmg.org.monitor.dao.impl.ServiceDaoImpl;
 import cmg.org.monitor.dao.impl.SystemDaoImpl;
 import cmg.org.monitor.dao.impl.UtilityDaoImpl;
 import cmg.org.monitor.entity.shared.AlertStoreMonitor;
+import cmg.org.monitor.entity.shared.ChangeLogMonitor;
 import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
 import cmg.org.monitor.entity.shared.JvmMonitor;
 import cmg.org.monitor.entity.shared.MemoryMonitor;
+import cmg.org.monitor.entity.shared.NotifyMonitor;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.GroupMonitor;
@@ -53,14 +55,11 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		boolean check = false;
 		SystemDAO sysDAO = new SystemDaoImpl();
 		try {
-			String code = sysDAO.createSID();
-			check = sysDAO.addSystem(system,code);
+			check = sysDAO.addSystem(system, sysDAO.createSID());
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, " ERROR when add new system. Message: "
 					+ e.getCause().getMessage());
-			e.printStackTrace();
 		}
-
 		return check;
 	}
 
@@ -80,14 +79,14 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 					" ERROR when load all systems from memcache. Message: "
 							+ ex.getCause().getMessage());
 		}
-		if(systems==null){
+		if (systems == null) {
 			return systems;
-		}else{
+		} else {
 			return sortByname(systems);
 		}
-		
+
 	}
-	
+
 	/**
 	 * @param sys
 	 * @return
@@ -108,7 +107,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		}
 		return sys;
 	}
-	
+
 	@Override
 	public UserLoginDto getUserLogin() {
 		return MonitorLoginService.getUserLogin();
@@ -128,10 +127,14 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public boolean deleteSystem(String id) throws Exception {
+	public boolean deleteSystem(String id) {
 		SystemDAO sysDAO = new SystemDaoImpl();
 		boolean checkdelete = false;
-		checkdelete = sysDAO.deleteSystem(id);
+		try {
+			checkdelete = sysDAO.deleteSystem(id);
+		} catch (Exception ex) {
+			logger.log(Level.SEVERE, "ERROR when delete system. Message: " + ex.getMessage());
+		}
 		return checkdelete;
 	}
 
@@ -162,7 +165,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 				container.setGroups(listGroups);
 			}
 			container.setEmails(sysDAO.listEmails());
-			
+
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE,
 					"ERROR when load system container information. Message: "
@@ -179,7 +182,11 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			if (container != null) {
 				SystemMonitor sys = sysDAO.getSystemById(sysId);
 				container.setSys(sys);
-				container.setNotify(sysDAO.getNotifyOption(sys.getCode()));
+				NotifyMonitor nm = sysDAO.getNotifyOption(sys.getCode());
+				if (nm == null) {
+					nm = new NotifyMonitor();
+				}
+				container.setNotify(nm);
 			}
 
 		} catch (Exception ex) {
@@ -206,7 +213,6 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	public boolean editSystem(SystemMonitor sys) {
 		SystemDAO sysDAO = new SystemDaoImpl();
 		boolean check = false;
-		boolean checkNotify = false;
 		try {
 			check = sysDAO.editSystem(sys);
 		} catch (Exception ex) {
@@ -303,17 +309,17 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 				store.setCpuUsage(system.getLastestCpuUsage());
 				store.setMemUsage(system.getLastestMemoryUsage());
 				store.setTimeStamp(new Date(System.currentTimeMillis()));
-			}			
-			
+			}
+
 			if (list != null && list.size() > 0) {
 				stores = new AlertStoreMonitor[list.size() + 1];
-				for (int i = 0; i < list.size(); i ++) {
+				for (int i = 0; i < list.size(); i++) {
 					stores[i] = list.get(i);
-				}				
+				}
 				stores[list.size()] = store;
 			} else {
 				stores = new AlertStoreMonitor[1];
-				stores[0] = store; 
+				stores[0] = store;
 			}
 			return stores;
 		} catch (Exception e) {
@@ -322,4 +328,30 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		return null;
 	}
 
+	@Override
+	public MonitorContainer listChangeLog(SystemMonitor sys, int start, int end) {
+		MonitorContainer container = new MonitorContainer();
+		SystemDAO sysDAO = new SystemDaoImpl();
+
+		ArrayList<ChangeLogMonitor> changelogs = null;
+		int count = -1;
+		try {
+			changelogs = sysDAO.listChangeLog(sys == null ? null : sys.getCode(),
+					start, end);
+			count = sysDAO
+					.getCounterChangeLog(sys == null ? null : sys.getCode());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.log(Level.SEVERE,
+					"ERROR when list changelog. Message: " + e.getMessage());
+		}
+		ChangeLogMonitor[] list = null;
+		if (changelogs != null && changelogs.size() > 0) {
+			list = new ChangeLogMonitor[changelogs.size()];
+			changelogs.toArray(list);
+		}
+		container.setChangelogCount(count);
+		container.setChangelogs(list);
+		return container;
+	}
 }

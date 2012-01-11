@@ -116,7 +116,7 @@ public class MonitorService {
 												.getRemoteUrl())
 												: ("Remote mail: " + aSystem
 														.getEmailRevice()))
-										+ ") , it maybe not working at the moment, please check the system immediately",
+										+ ") , it might not working at the moment, please check the system immediately",
 								new Date());
 						alertDAO.storeAlert(aSystem, alert);
 					}// if
