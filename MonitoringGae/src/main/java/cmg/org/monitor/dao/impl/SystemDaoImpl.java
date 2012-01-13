@@ -660,40 +660,40 @@ public class SystemDaoImpl implements SystemDAO {
 			return description.toString();
 		}
 		if (sysNew.getIp() != sysOld.getIp()) {
-			description.append("Change value of IP field from "
-					+ sysOld.getIp() + " to " + sysNew.getIp() + "!");
+			description.append("<p>Change value of IP field from "
+					+ sysOld.getIp() + " to " + sysNew.getIp() + "</p>");
 		}
 		if (sysNew.getName() != sysOld.getName()) {
-			description.append("Change value of Name field from "
-					+ sysOld.getName() + " to " + sysNew.getName() + "!");
+			description.append("<p>Change value of Name field from "
+					+ sysOld.getName() + " to " + sysNew.getName() + "</p>");
 		}
 		if (sysNew.getEmail() != sysOld.getEmail()) {
-			description.append("Change value of Email field from"
-					+ sysOld.getEmail() + " to " + sysNew.getEmail() + "!");
+			description.append("<p>Change value of Email field from"
+					+ sysOld.getEmail() + " to " + sysNew.getEmail() + "</p>");
 		}
 		if (sysNew.isActive() != sysOld.isActive()) {
-			description.append("Change value of Active field from "
+			description.append("<p>Change value of Active field from "
 					+ Boolean.toString(sysOld.isActive()) + " to "
-					+ Boolean.toString(sysNew.isActive()) + "!");
+					+ Boolean.toString(sysNew.isActive()) + "</p>");
 		}
 		if (sysNew.getProtocol() != sysOld.getProtocol()) {
-			description.append("Change value of Protocol field from "
+			description.append("<p>Change value of Protocol field from "
 					+ sysOld.getProtocol() + " to " + sysNew.getProtocol()
-					+ "!");
+					+ "</p>");
 		}
 		if (sysNew.getGroupEmail() != sysOld.getGroupEmail()) {
-			description.append("Change value of Notify Group mail from "
+			description.append("<p>Change value of Notify Group mail from "
 					+ sysOld.getGroupEmail() + " to " + sysNew.getGroupEmail()
-					+ "!");
+					+ "</p>");
 		}
 		if (sysNew.getUrl() != sysOld.getUrl()) {
-			description.append("Change value of URL field from "
-					+ sysOld.getUrl() + " to " + sysNew.getUrl() + "!");
+			description.append("<p>Change value of URL field from "
+					+ sysOld.getUrl() + " to " + sysNew.getUrl() + "</p>");
 		}
 		if (sysNew.getRemoteUrl() != sysOld.getRemoteUrl()) {
-			description.append("Change value of Remote-URL from "
+			description.append("<p>Change value of Remote-URL from "
 					+ sysOld.getRemoteUrl() + " to " + sysNew.getRemoteUrl()
-					+ "!");
+					+ "</p>");
 		}
 		if (setChangeLogNotify(sysNew, sysOld) != null
 				&& setChangeLogNotify(sysNew, sysOld) != "") {
@@ -702,52 +702,53 @@ public class SystemDaoImpl implements SystemDAO {
 		return description.toString();
 	}
 
+	
 	private String setChangeLogNotify(SystemMonitor sysNew, SystemMonitor sysOld) {
 
 		StringBuffer description = new StringBuffer();
 
 		if (sysNew.getNotify().isJVM() != sysOld.getNotify().isJVM()) {
-			description.append("Change value of tickbox "
+			description.append("<p>Change value of tickbox "
 					+ MonitorConstant.Notify_JVM + " from "
 					+ Boolean.toString(sysOld.getNotify().isJVM()) + " to "
-					+ Boolean.toString(sysNew.getNotify().isJVM()) + "!");
+					+ Boolean.toString(sysNew.getNotify().isJVM()) + "</p>");
 		}
 		if (sysNew.getNotify().isNotifyCpu() != sysOld.getNotify()
 				.isNotifyCpu()) {
-			description.append("Change value of tickbox "
+			description.append("<p>Change value of tickbox "
 					+ MonitorConstant.Notify_Cpu + " from "
 					+ Boolean.toString(sysOld.getNotify().isNotifyCpu())
 					+ " to "
-					+ Boolean.toString(sysNew.getNotify().isNotifyCpu()) + "!");
+					+ Boolean.toString(sysNew.getNotify().isNotifyCpu()) + "</p>");
 		}
 		if (sysNew.getNotify().isNotifyMemory() != sysOld.getNotify()
 				.isNotifyMemory()) {
-			description.append("Change value of tickbox "
+			description.append("<p>Change value of tickbox "
 					+ MonitorConstant.Notify_Memory + " from "
 					+ Boolean.toString(sysOld.getNotify().isNotifyMemory())
 					+ " to "
 					+ Boolean.toString(sysNew.getNotify().isNotifyMemory())
-					+ "!");
+					+ "</p>");
 		}
 		if (sysNew.getNotify().isNotifyServices() != sysOld.getNotify()
 				.isNotifyServices()) {
-			description.append("Change value of tickbox "
+			description.append("<p>Change value of tickbox "
 					+ MonitorConstant.Notify_Service + " from "
 					+ Boolean.toString(sysOld.getNotify().isNotifyServices())
 					+ " to "
 					+ Boolean.toString(sysNew.getNotify().isNotifyServices())
-					+ "!");
+					+ "</p>");
 		}
 		if (sysNew.getNotify().isNotifyServicesConnection() != sysOld
 				.getNotify().isNotifyServicesConnection()) {
-			description.append("Change value of tickbox "
+			description.append("<p>Change value of tickbox "
 					+ MonitorConstant.Notify_ServiceConnection
 					+ " from "
 					+ Boolean.toString(sysOld.getNotify()
 							.isNotifyServicesConnection())
 					+ " to "
 					+ Boolean.toString(sysNew.getNotify()
-							.isNotifyServicesConnection()) + "!");
+							.isNotifyServicesConnection()) + "</p>");
 		}
 		return description.toString();
 	}
