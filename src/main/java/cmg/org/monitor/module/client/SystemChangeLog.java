@@ -189,22 +189,7 @@ public class SystemChangeLog extends AncestorEntryPoint {
 
 					@Override
 					public void onSuccess(MonitorContainer result) {
-						drawTableChangeLog(result.getChangelogs());
-						if (result != null) {
-							totalRows = result.getChangelogCount();
-							if (totalRows
-									% numberOfRows == 0) {
-								totalPage = totalRows
-										/ numberOfRows;
-							} else {
-								totalPage = Math
-										.round(totalRows
-												/ numberOfRows) + 1;
-							}
-
-							pageInfo.setText("Page " + currentLogPage + "/"
-									+ totalPage);
-						}
+						drawTableChangeLog(result);						
 					}
 
 					@Override
@@ -214,9 +199,27 @@ public class SystemChangeLog extends AncestorEntryPoint {
 				});
 	}
 
-	static void drawTableChangeLog(ChangeLogMonitor[] list) {
-		tableChangeLog.draw(createDataListChangeLog(list),
-				createOptionsTableListSystem());
+	static void drawTableChangeLog(MonitorContainer result) {
+		if (result != null) {
+			totalRows = result.getChangelogCount();
+			if (totalRows
+					% numberOfRows == 0) {
+				totalPage = totalRows
+						/ numberOfRows;
+			} else {
+				totalPage = Math
+						.round(totalRows
+								/ numberOfRows) + 1;
+			}
+
+			pageInfo.setText("Page " + currentLogPage + "/"
+					+ totalPage);
+			tableChangeLog.draw(createDataListChangeLog(result.getChangelogs()),
+					createOptionsTableListSystem());			
+		} else {
+			tableChangeLog.draw(createDataListChangeLog(null),
+					createOptionsTableListSystem());
+		}
 	}
 
 	private static void initContent() {
@@ -292,8 +295,9 @@ public class SystemChangeLog extends AncestorEntryPoint {
 			}
 		} else {
 			data.addRows(1);
-			data.setValue(0, 1, "N/A");
-			data.setValue(0, 2, "No changelog found");
+			data.setValue(0, 0, "N/A");
+			data.setValue(0, 2, "N/A");
+			data.setValue(0, 3, "No changelog found");
 		}
 		return data;
 
