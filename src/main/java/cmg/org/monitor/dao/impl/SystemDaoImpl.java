@@ -124,6 +124,7 @@ public class SystemDaoImpl implements SystemDAO {
 		ChangeLogMonitor clm = new ChangeLogMonitor();
 		UserLoginDto user = MonitorLoginService.getUserLogin();
 		clm.setUsername(user.getEmail());
+		clm.setSystemName(sys.getName());
 		clm.setDescription((sys.isDeleted() ? "Delete system "
 				: ("Update information of ")) + sys.getName());
 		clm.setType(sys.isDeleted() ? ChangeLogMonitor.LOG_DELETE
@@ -177,6 +178,7 @@ public class SystemDaoImpl implements SystemDAO {
 		ChangeLogMonitor clm = new ChangeLogMonitor();
 		UserLoginDto user = MonitorLoginService.getUserLogin();
 		clm.setUsername(user.getEmail());
+		clm.setSystemName(system.getName());
 		clm.setSid(code);
 		clm.setDescription("Add new System Monitor : " + system.getName());
 		Date date = new Date();

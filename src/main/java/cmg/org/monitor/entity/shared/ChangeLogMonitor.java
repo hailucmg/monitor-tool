@@ -41,6 +41,9 @@ public class ChangeLogMonitor implements Serializable{
 	private String sid;
 	
 	@Persistent
+	private String systemName;
+	
+	@Persistent
 	private int type;
 	
 	
@@ -99,6 +102,14 @@ public class ChangeLogMonitor implements Serializable{
 
 	public String getId() {
 		return id;
+	}
+
+	public String getSystemName() {
+		return systemName;
+	}
+
+	public void setSystemName(String systemName) {
+		this.systemName = systemName;
 	}
 
 	
