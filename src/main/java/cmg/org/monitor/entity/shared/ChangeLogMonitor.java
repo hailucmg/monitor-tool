@@ -10,6 +10,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import com.google.appengine.api.datastore.Text;
+
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
 public class ChangeLogMonitor implements Serializable{
@@ -29,7 +31,7 @@ public class ChangeLogMonitor implements Serializable{
 	private String id;
 	
 	@Persistent
-	private String description;
+	private Text description;
 	
 	@Persistent
 	private Date datetime;
@@ -52,7 +54,7 @@ public class ChangeLogMonitor implements Serializable{
 		
 	}
 	
-	public ChangeLogMonitor(String sid,int type, Date datetime, String description, String username){
+	public ChangeLogMonitor(String sid,int type, Date datetime, Text description, String username){
 		this.sid = sid;
 		this.type = type;
 		this.datetime = datetime;
@@ -69,11 +71,11 @@ public class ChangeLogMonitor implements Serializable{
 	}
 
 	public String getDescription() {
-		return description;
+		return description.getValue();
 	}
 
 	public void setDescription(String description) {
-		this.description = description;
+		this.description = new Text(description);
 	}
 
 	public Date getDatetime() {

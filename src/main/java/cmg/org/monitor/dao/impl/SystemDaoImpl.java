@@ -9,8 +9,6 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import com.sun.crypto.provider.DESCipher;
-
 import cmg.org.monitor.dao.SystemDAO;
 import cmg.org.monitor.entity.shared.ChangeLogMonitor;
 import cmg.org.monitor.entity.shared.CounterChangeLog;
@@ -311,6 +309,7 @@ public class SystemDaoImpl implements SystemDAO {
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public NotifyMonitor getNotifyOption(String sid) throws Exception {
 
@@ -324,7 +323,7 @@ public class SystemDaoImpl implements SystemDAO {
 			pm.currentTransaction().begin();
 			temp = (List<NotifyMonitor>) query.execute(sid);
 			if (temp != null && temp.size() > 0) {
-				nm = new NotifyMonitor();
+				nm = temp.get(0);
 				nm.swapValue(temp.get(0));
 			}
 			pm.currentTransaction().commit();
@@ -337,7 +336,6 @@ public class SystemDaoImpl implements SystemDAO {
 			query.closeAll();
 			pm.close();
 		}
-
 		return nm;
 	}
 
@@ -659,46 +657,52 @@ public class SystemDaoImpl implements SystemDAO {
 			description.append("Delete System Name : " + sysNew.getName());
 			return description.toString();
 		}
-		if (sysNew.getIp() != sysOld.getIp()) {
-			description.append("<p>Change value of IP field from "
-					+ sysOld.getIp() + " to " + sysNew.getIp() + "</p>");
+		description.append("<UL style=\"margin:0 0 0 20px\">");
+		if (!sysNew.getIp().equals(sysOld.getIp())) {
+			description.append("<LI>Change value of IP field from "
+					+ sysOld.getIp() + " to " + sysNew.getIp() + "</LI>");
 		}
-		if (sysNew.getName() != sysOld.getName()) {
-			description.append("<p>Change value of Name field from "
-					+ sysOld.getName() + " to " + sysNew.getName() + "</p>");
+		if (!sysNew.getName().equals(sysOld.getName())) {
+			description.append("<LI>Change value of Name field from "
+					+ sysOld.getName() + " to " + sysNew.getName() + "</LI>");
 		}
-		if (sysNew.getEmail() != sysOld.getEmail()) {
-			description.append("<p>Change value of Email field from"
-					+ sysOld.getEmail() + " to " + sysNew.getEmail() + "</p>");
+		String newEmail = sysNew.getEmail() == null ?"": sysNew.getEmail();
+		String oldEmail = sysOld.getEmail()== null ?"": sysOld.getEmail();
+		if (!newEmail.equals(oldEmail)) {
+			description.append("<LI>Change value of Email field from"
+					+ sysOld.getEmail() + " to " + sysNew.getEmail() + "</LI>");
 		}
 		if (sysNew.isActive() != sysOld.isActive()) {
-			description.append("<p>Change value of Active field from "
+			description.append("<LI>Change value of Active field from "
 					+ Boolean.toString(sysOld.isActive()) + " to "
-					+ Boolean.toString(sysNew.isActive()) + "</p>");
+					+ Boolean.toString(sysNew.isActive()) + "</LI>");
 		}
-		if (sysNew.getProtocol() != sysOld.getProtocol()) {
-			description.append("<p>Change value of Protocol field from "
+		if (!sysNew.getProtocol().equals(sysOld.getProtocol())) {
+			description.append("<LI>Change value of Protocol field from "
 					+ sysOld.getProtocol() + " to " + sysNew.getProtocol()
-					+ "</p>");
+					+ "</LI>");
 		}
-		if (sysNew.getGroupEmail() != sysOld.getGroupEmail()) {
-			description.append("<p>Change value of Notify Group mail from "
+		if (!sysNew.getGroupEmail().equals(sysOld.getGroupEmail())) {
+			description.append("<LI>Change value of Notify Group mail from "
 					+ sysOld.getGroupEmail() + " to " + sysNew.getGroupEmail()
-					+ "</p>");
+					+ "</LI>");
 		}
-		if (sysNew.getUrl() != sysOld.getUrl()) {
-			description.append("<p>Change value of URL field from "
-					+ sysOld.getUrl() + " to " + sysNew.getUrl() + "</p>");
+		if (!sysNew.getUrl().equals(sysOld.getUrl())) {
+			description.append("<LI>Change value of URL field from "
+					+ sysOld.getUrl() + " to " + sysNew.getUrl() + "</LI>");
 		}
-		if (sysNew.getRemoteUrl() != sysOld.getRemoteUrl()) {
-			description.append("<p>Change value of Remote-URL from "
+			String newRemoteURL = sysNew.getRemoteUrl() == null ?"": sysNew.getRemoteUrl();
+			String oldRemoteURL = sysOld.getRemoteUrl() == null ?"": sysOld.getRemoteUrl();
+		if (!newRemoteURL.equals(oldRemoteURL)) {
+			description.append("<LI>Change value of Remote-URL from "
 					+ sysOld.getRemoteUrl() + " to " + sysNew.getRemoteUrl()
-					+ "</p>");
+					+ "</LI>");
 		}
 		if (setChangeLogNotify(sysNew, sysOld) != null
 				&& setChangeLogNotify(sysNew, sysOld) != "") {
 			description.append(setChangeLogNotify(sysNew, sysOld));
 		}
+		description.append("</UL>");
 		return description.toString();
 	}
 
@@ -708,47 +712,47 @@ public class SystemDaoImpl implements SystemDAO {
 		StringBuffer description = new StringBuffer();
 
 		if (sysNew.getNotify().isJVM() != sysOld.getNotify().isJVM()) {
-			description.append("<p>Change value of tickbox "
+			description.append("<LI>Change value of tickbox "
 					+ MonitorConstant.Notify_JVM + " from "
 					+ Boolean.toString(sysOld.getNotify().isJVM()) + " to "
-					+ Boolean.toString(sysNew.getNotify().isJVM()) + "</p>");
+					+ Boolean.toString(sysNew.getNotify().isJVM()) + "</LI>");
 		}
 		if (sysNew.getNotify().isNotifyCpu() != sysOld.getNotify()
 				.isNotifyCpu()) {
-			description.append("<p>Change value of tickbox "
+			description.append("<LI>Change value of tickbox "
 					+ MonitorConstant.Notify_Cpu + " from "
 					+ Boolean.toString(sysOld.getNotify().isNotifyCpu())
 					+ " to "
-					+ Boolean.toString(sysNew.getNotify().isNotifyCpu()) + "</p>");
+					+ Boolean.toString(sysNew.getNotify().isNotifyCpu()) + "</LI>");
 		}
 		if (sysNew.getNotify().isNotifyMemory() != sysOld.getNotify()
 				.isNotifyMemory()) {
-			description.append("<p>Change value of tickbox "
+			description.append("<LI>Change value of tickbox "
 					+ MonitorConstant.Notify_Memory + " from "
 					+ Boolean.toString(sysOld.getNotify().isNotifyMemory())
 					+ " to "
 					+ Boolean.toString(sysNew.getNotify().isNotifyMemory())
-					+ "</p>");
+					+ "</LI>");
 		}
 		if (sysNew.getNotify().isNotifyServices() != sysOld.getNotify()
 				.isNotifyServices()) {
-			description.append("<p>Change value of tickbox "
+			description.append("<LI>Change value of tickbox "
 					+ MonitorConstant.Notify_Service + " from "
 					+ Boolean.toString(sysOld.getNotify().isNotifyServices())
 					+ " to "
 					+ Boolean.toString(sysNew.getNotify().isNotifyServices())
-					+ "</p>");
+					+ "</LI>");
 		}
 		if (sysNew.getNotify().isNotifyServicesConnection() != sysOld
 				.getNotify().isNotifyServicesConnection()) {
-			description.append("<p>Change value of tickbox "
+			description.append("<LI>Change value of tickbox "
 					+ MonitorConstant.Notify_ServiceConnection
 					+ " from "
 					+ Boolean.toString(sysOld.getNotify()
 							.isNotifyServicesConnection())
 					+ " to "
 					+ Boolean.toString(sysNew.getNotify()
-							.isNotifyServicesConnection()) + "</p>");
+							.isNotifyServicesConnection()) + "</LI>");
 		}
 		return description.toString();
 	}
