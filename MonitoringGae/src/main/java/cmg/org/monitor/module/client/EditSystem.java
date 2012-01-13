@@ -628,7 +628,6 @@ public class EditSystem extends AncestorEntryPoint {
 					sysNew.setActive(isActive(listActive.getItemText(listActive
 							.getSelectedIndex())));
 					sysNew.setNotify(nm);
-				
 					editSystem(sysNew);
 				}
 			}
@@ -671,28 +670,20 @@ public class EditSystem extends AncestorEntryPoint {
 		if (active.equals("Yes")) {
 			isActive = true;
 		}
-		if (isActive != system.isActive()) {
-			description.append("Change value of ListActive field from "
-					+ Boolean.toString(system.isActive()) + " to" + active
-					+ "!");
-		}
+		
 		return isActive;
 	}
 
 	private String validateName(String name) {
 		String msg = "";
-		boolean check = true;
+		
 		if (name == null || name.trim().length() == 0) {
 			msg = "This field is required ";
-			check = false;
+			
 		} else if (name.contains("$") || name.contains("%")
 				|| name.contains("*")) {
 			msg = "name is not validate";
-			check = false;
-		}
-		if (check) {
-			description.append("Change value of Name field from "
-					+ system.getName() + " to" + name + "!");
+			
 		}
 		return msg;
 
@@ -709,10 +700,7 @@ public class EditSystem extends AncestorEntryPoint {
 			msg = "URL is not validate";
 			check = false;
 		}
-		if (check) {
-			description.append("Change value of URL field from "
-					+ system.getUrl() + " to" + url + "!");
-		}
+		
 		return msg;
 	}
 
@@ -730,10 +718,7 @@ public class EditSystem extends AncestorEntryPoint {
 			msg = "ip is not validate";
 			check = false;
 		}
-		if (check) {
-			description.append("Change value of IP field from "
-					+ system.getIp() + " to" + ip + "!");
-		}
+		
 		return msg;
 	}
 
@@ -763,8 +748,7 @@ public class EditSystem extends AncestorEntryPoint {
 							}
 						}
 					}
-					description.append("Change value of RemoteURL field from "
-							+ system.getRemoteUrl() + " to" + remoteUrl + "!");
+				
 				}
 
 			}
@@ -804,8 +788,7 @@ public class EditSystem extends AncestorEntryPoint {
 							}
 						}
 					}
-					description.append("Change value of Email field from "
-							+ system.getEmail() + " to" + email + "!");
+					
 				}
 			}
 		}
