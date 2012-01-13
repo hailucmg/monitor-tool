@@ -214,7 +214,7 @@ public class HTMLControl {
 			temp.append((page == PAGE_SYSTEM_CHANGE_LOG) ? " class='sub_show'"
 					: "");
 			temp.append("><a href='" + HTML_SYSTEM_CHANGELOG
-					+ "'>System Changelog</a></li>");
+					+ "'>System Change Log</a></li>");
 			temp.append("<li");
 			temp.append((page == PAGE_USER_MANAGEMENT) ? " class='sub_show'"
 					: "");
@@ -382,7 +382,7 @@ public class HTMLControl {
 		}
 		if (page == PAGE_SYSTEM_CHANGE_LOG) {
 			temp.append("<a href=\"" + HTML_SYSTEM_CHANGELOG
-					+ "\">Changelog</a> ");
+					+ "\">Change Log</a> ");
 		}
 		if (page == PAGE_USER_MANAGEMENT) {
 			temp.append("<a href=\"" + HTML_USER_MANAGEMENT_NAME
