@@ -101,10 +101,11 @@ public class SystemDaoImpl implements SystemDAO {
 	@Override
 	public boolean updateSystem(SystemMonitor sys, boolean reloadMemcache)
 			throws Exception {
+		SystemMonitor sysOld = getSystemById(sys.getId());
+		sysOld.setNotify(getNotifyOption(sysOld.getCode()));
 		initPersistence();
 		boolean check = false;
 		String description = new String();
-		SystemMonitor sysOld = getSystemById(sys.getId());
 		description = getDescriptionChangelog(sys, sysOld);
 		try {
 			pm.currentTransaction().begin();
@@ -312,7 +313,6 @@ public class SystemDaoImpl implements SystemDAO {
 	@SuppressWarnings("unchecked")
 	@Override
 	public NotifyMonitor getNotifyOption(String sid) throws Exception {
-
 		initPersistence();
 		Query query = pm.newQuery(NotifyMonitor.class);
 		query.setFilter("sid == sidPara");
