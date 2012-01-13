@@ -124,8 +124,8 @@ public class SystemDaoImpl implements SystemDAO {
 		ChangeLogMonitor clm = new ChangeLogMonitor();
 		UserLoginDto user = MonitorLoginService.getUserLogin();
 		clm.setUsername(user.getEmail());
-		clm.setDescription(sys.isDeleted() ? "Delete "
-				: ("Update information of ") + sys.getName());
+		clm.setDescription((sys.isDeleted() ? "Delete system "
+				: ("Update information of ")) + sys.getName());
 		clm.setType(sys.isDeleted() ? ChangeLogMonitor.LOG_DELETE
 				: ChangeLogMonitor.LOG_UPDATE);
 		clm.setDatetime(new Date());
@@ -622,6 +622,26 @@ public class SystemDaoImpl implements SystemDAO {
 			pm.close();
 		}
 
+		return check;
+	}
+
+	@Override
+	public boolean updateSystem(SystemMonitor system) throws Exception {
+		initPersistence();
+		boolean check = false;
+		try {
+			pm.currentTransaction().begin();
+			pm.makePersistent(system);
+			pm.currentTransaction().commit();
+			check = true;
+		} catch (Exception ex) {
+			logger.log(Level.SEVERE, " ERROR when update system JDO. Message: "
+					+ ex.getMessage());
+			pm.currentTransaction().rollback();
+			throw ex;
+		} finally {
+			pm.close();			
+		}
 		return check;
 	}
 
