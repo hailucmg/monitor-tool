@@ -17,6 +17,7 @@ body	{
 	min-width: 850px;
 	position: relative;
 	}
+	
 #logo	{
 	float: left;
 	margin-top: 8px;
@@ -565,33 +566,39 @@ ul.greyarrow li a:hover	{
 }	
 .page-far-left	{
 	background: url(../images/table/paging_far_left.gif) no-repeat;
+	border:0;
 	display: block;
 	float: left;
 	height: 24px;
-	margin: 0 4px 0 0;
+	margin: 0 4px;
 	width: 24px;
 	}
 .page-left	{
-	background: url(../images/table/paging_far_left.gif) no-repeat;
+	background: url(../images/table/paging_left.gif) no-repeat;
+	border:0;
 	display: block;
 	float: left;
 	height: 24px;
+	margin: 0 4px;
 	width: 24px;
 	}
 .page-far-right	{
 	background: url(../images/table/paging_far_right.gif) no-repeat;
+	border:0;
 	display: block;
 	float: left;
 	height: 24px;
-	margin: 0 4px 0 4px;
+	margin: 0 4px;
 	width: 24px;
 	}
 .page-right	{
-	background: url(../images/table/paging_far_right.gif) no-repeat;
+	background: url(../images/table/paging_right.gif) no-repeat;
+	border:0;
 	display: block;
 	float: left;
 	height: 24px;
 	width: 24px;
+	margin: 0 4px;
 	}
 #page-info	{
 	float: left;
