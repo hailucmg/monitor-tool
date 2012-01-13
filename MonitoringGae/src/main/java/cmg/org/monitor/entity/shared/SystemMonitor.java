@@ -82,6 +82,8 @@ public class SystemMonitor implements Serializable  {
 	
 	@NotPersistent
 	private NotifyMonitor notify;
+	
+
 
 	public NotifyMonitor getNotify() {
 		if (notify == null) {
@@ -284,5 +286,6 @@ public class SystemMonitor implements Serializable  {
 	public int compareByCode(SystemMonitor sys) {
 		return code.compareTo(sys.getCode());
 	}
+
 
 }
