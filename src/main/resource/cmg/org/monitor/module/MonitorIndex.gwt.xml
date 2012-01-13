@@ -17,6 +17,7 @@
 	<entry-point class="cmg.org.monitor.module.client.MonitorAbout" />
 	<entry-point class="cmg.org.monitor.module.client.DashBoard" />
 	<entry-point class="cmg.org.monitor.module.client.SystemManagement" />
+	<entry-point class="cmg.org.monitor.module.client.SystemChangeLog" />
 	<entry-point class="cmg.org.monitor.module.client.UserManagement" />
 	<entry-point class="cmg.org.monitor.module.client.AddnewSystem" />	
 	<entry-point class="cmg.org.monitor.module.client.EditSystem" />
