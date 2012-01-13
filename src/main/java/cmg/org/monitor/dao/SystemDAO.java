@@ -46,4 +46,6 @@ public interface SystemDAO {
 	public ArrayList<ChangeLogMonitor> listChangeLog(String sid, int start, int end) throws Exception;
 	
 	public int getCounterChangeLog(String sid) throws Exception;
+	
+	public String getDescriptionChangelog(SystemMonitor sysNew, SystemMonitor sysOld);
 }

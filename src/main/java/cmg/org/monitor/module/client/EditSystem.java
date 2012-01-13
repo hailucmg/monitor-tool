@@ -70,6 +70,7 @@ public class EditSystem extends AncestorEntryPoint {
 	private static Grid tableNotify;
 	private DisclosurePanel advancedDisclosure;
 	private NotifyMonitor notify;
+	StringBuffer description;
 
 	protected void init() {
 		if (currentPage == HTMLControl.PAGE_EDIT_SYSTEM) {
@@ -114,7 +115,7 @@ public class EditSystem extends AncestorEntryPoint {
 	void initFlexTable(String sysID) {
 		monitorGwtSv.getSystemMonitorContainer(sysID,
 				new AsyncCallback<MonitorContainer>() {
-					
+
 					@Override
 					public void onSuccess(MonitorContainer result) {
 						if (result != null) {
@@ -128,8 +129,7 @@ public class EditSystem extends AncestorEntryPoint {
 							cbNotifyMemory = new CheckBox();
 							cbNotifyMemory.setValue(notify.isNotifyMemory());
 							cbNotifyServices = new CheckBox();
-							cbNotifyServices.setValue(notify
-									.isNotifyServices());
+							cbNotifyServices.setValue(notify.isNotifyServices());
 							cbNotifyJVM = new CheckBox();
 							cbNotifyJVM.setValue(notify.isJVM());
 							cbNotifyServicesConnection = new CheckBox();
@@ -395,7 +395,7 @@ public class EditSystem extends AncestorEntryPoint {
 			}
 		});
 		bttReset.addClickHandler(new ClickHandler() {
-			
+
 			@Override
 			public void onClick(ClickEvent event) {
 				panelValidateEmail.setVisible(false);
@@ -427,7 +427,7 @@ public class EditSystem extends AncestorEntryPoint {
 					txtEmail.setText(system.getEmail());
 
 				}
-				
+
 				cbNotifyCpu.setValue(notify.isNotifyCpu());
 
 				cbNotifyMemory.setValue(notify.isNotifyMemory());
@@ -452,6 +452,7 @@ public class EditSystem extends AncestorEntryPoint {
 			public void onClick(ClickEvent event) {
 				if (listProtocol.getItemText(listProtocol.getSelectedIndex())
 						.equals(MonitorConstant.HTTP_PROTOCOL)) {
+					
 					String validateName = validateName(txtName.getText());
 					String validateURL = validateURL(txtURL.getText());
 					String validateIp = validateIP(txtIP.getText());
@@ -516,12 +517,13 @@ public class EditSystem extends AncestorEntryPoint {
 					panelValidateIP.setVisible(false);
 					panelValidateURL.setVisible(false);
 					panelAdding.setVisible(true);
-	
+
 					NotifyMonitor nm = new NotifyMonitor();
 					nm.setNotifyCpu(cbNotifyCpu.getValue());
 					nm.setNotifyMemory(cbNotifyMemory.getValue());
 					nm.setNotifyServices(cbNotifyServices.getValue());
-					nm.setNotifyServicesConnection(cbNotifyServicesConnection.getValue());
+					nm.setNotifyServicesConnection(cbNotifyServicesConnection
+							.getValue());
 					nm.setJVM(cbNotifyJVM.getValue());
 					
 					SystemMonitor sysNew = new SystemMonitor();
@@ -538,6 +540,7 @@ public class EditSystem extends AncestorEntryPoint {
 					sysNew.setActive(isActive(listActive.getItemText(listActive
 							.getSelectedIndex())));
 					sysNew.setNotify(nm);
+				
 					editSystem(sysNew);
 				} else if (listProtocol.getItemText(
 						listProtocol.getSelectedIndex()).equals(
@@ -603,12 +606,13 @@ public class EditSystem extends AncestorEntryPoint {
 					panelValidateIP.setVisible(false);
 					panelValidateURL.setVisible(false);
 					panelAdding.setVisible(true);
-					
+
 					NotifyMonitor nm = new NotifyMonitor();
 					nm.setNotifyCpu(cbNotifyCpu.getValue());
 					nm.setNotifyMemory(cbNotifyMemory.getValue());
 					nm.setNotifyServices(cbNotifyServices.getValue());
-					nm.setNotifyServicesConnection(cbNotifyServicesConnection.getValue());
+					nm.setNotifyServicesConnection(cbNotifyServicesConnection
+							.getValue());
 					nm.setJVM(cbNotifyJVM.getValue());
 					SystemMonitor sysNew = new SystemMonitor();
 					sysNew.setId(system.getId());
@@ -624,6 +628,7 @@ public class EditSystem extends AncestorEntryPoint {
 					sysNew.setActive(isActive(listActive.getItemText(listActive
 							.getSelectedIndex())));
 					sysNew.setNotify(nm);
+				
 					editSystem(sysNew);
 				}
 			}
@@ -659,23 +664,36 @@ public class EditSystem extends AncestorEntryPoint {
 
 	}
 
+	
+
 	private boolean isActive(String active) {
 		boolean isActive = false;
 		if (active.equals("Yes")) {
 			isActive = true;
+		}
+		if (isActive != system.isActive()) {
+			description.append("Change value of ListActive field from "
+					+ Boolean.toString(system.isActive()) + " to" + active
+					+ "!");
 		}
 		return isActive;
 	}
 
 	private String validateName(String name) {
 		String msg = "";
+		boolean check = true;
 		if (name == null || name.trim().length() == 0) {
 			msg = "This field is required ";
+			check = false;
 		} else if (name.contains("$") || name.contains("%")
 				|| name.contains("*")) {
 			msg = "name is not validate";
+			check = false;
 		}
-
+		if (check) {
+			description.append("Change value of Name field from "
+					+ system.getName() + " to" + name + "!");
+		}
 		return msg;
 
 	}
@@ -683,24 +701,38 @@ public class EditSystem extends AncestorEntryPoint {
 	// validate URL
 	private String validateURL(String url) {
 		String msg = "";
+		boolean check = true;
 		if (url == null || url.trim().length() == 0) {
 			msg = "This field is required ";
+			check = false;
 		} else if (url.length() < 3) {
 			msg = "URL is not validate";
+			check = false;
+		}
+		if (check) {
+			description.append("Change value of URL field from "
+					+ system.getUrl() + " to" + url + "!");
 		}
 		return msg;
 	}
 
 	private String validateIP(String ip) {
 		String msg = "";
+		boolean check = true;
 		if (ip == "" || ip == null) {
 			msg = "This field is required";
+			check = false;
 		}
 		String patternStr = "^([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}$";
 		RegExp regExp = RegExp.compile(patternStr);
 		boolean matchFound = regExp.test(ip);
 		if (matchFound == false) {
 			msg = "ip is not validate";
+			check = false;
+		}
+		if (check) {
+			description.append("Change value of IP field from "
+					+ system.getIp() + " to" + ip + "!");
 		}
 		return msg;
 	}
@@ -731,6 +763,8 @@ public class EditSystem extends AncestorEntryPoint {
 							}
 						}
 					}
+					description.append("Change value of RemoteURL field from "
+							+ system.getRemoteUrl() + " to" + remoteUrl + "!");
 				}
 
 			}
@@ -770,6 +804,8 @@ public class EditSystem extends AncestorEntryPoint {
 							}
 						}
 					}
+					description.append("Change value of Email field from "
+							+ system.getEmail() + " to" + email + "!");
 				}
 			}
 		}
