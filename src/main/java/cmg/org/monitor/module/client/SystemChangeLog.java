@@ -6,20 +6,22 @@ import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
-import com.google.gwt.core.client.JsArray;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.ToggleButton;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
-import com.google.gwt.visualization.client.Selection;
-import com.google.gwt.visualization.client.events.SelectHandler;
 import com.google.gwt.visualization.client.visualizations.Table;
 import com.google.gwt.visualization.client.visualizations.Table.Options;
 
@@ -29,9 +31,11 @@ public class SystemChangeLog extends AncestorEntryPoint {
 	static private Table tableListSystem;
 	static private Table tableChangeLog;
 	static private FlexTable tableContent;
+	static VerticalPanel vPanel;
 	static DialogBox dialogBox;
 	static ToggleButton togBtnAll;
 	static ToggleButton togBtnSys;
+	static ListBox listSystems;
 	static boolean isAll;
 	static boolean isSys;
 
@@ -47,61 +51,27 @@ public class SystemChangeLog extends AncestorEntryPoint {
 
 	protected void init() {
 		if (currentPage == HTMLControl.PAGE_SYSTEM_CHANGE_LOG) {
-			isAll = true;
-			isSys = false;
-			HorizontalPanel hPanel = new HorizontalPanel();
-			togBtnAll = new ToggleButton("All systems", new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {
-					togBtnSys.setVisible(false);
-					if (!togBtnSys.isVisible()) {
-						togBtnAll.setDown(true);
-					}
-					currentLogPage = 1;
-					viewChangeLog(null);
-				}
-			});
-			togBtnAll.setDown(true);
-			togBtnSys = new ToggleButton("S003", new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {
-					togBtnAll.setDown(!togBtnSys.isDown());
-				}
-			});
-			togBtnSys.setVisible(false);
-			hPanel.add(togBtnAll);
-			hPanel.add(togBtnSys);
-
-			tableContent = new FlexTable();
-			tableContent.setCellPadding(10);
-			tableContent.setCellSpacing(10);
-			
+			vPanel = new VerticalPanel();
+			vPanel.setSpacing(20);
+		    vPanel.ensureDebugId("cwVerticalPanel");
+		    vPanel.setWidth("100%");
 			tableChangeLog = new Table();
-			tableListSystem = new Table();
-			tableListSystem.addSelectHandler(new SelectHandler() {
+			listSystems = new ListBox();
+			listSystems.addItem("All systems");
+			listSystems.addChangeHandler(new ChangeHandler() {
+
 				@Override
-				public void onSelect(SelectEvent event) {
+				public void onChange(ChangeEvent event) {
 					if (systems != null && systems.length > 0) {
-						JsArray<Selection> selections = tableListSystem
-								.getSelections();
-						if (selections.length() == 1) {
-							Selection selection = selections.get(0);
-							if (selection.isRow()) {
-								selectedSystem = systems[selection.getRow()];
-								togBtnAll.setDown(false);
-								togBtnSys.setDown(true);
-								togBtnSys.setVisible(true);
-								togBtnSys.setText(selectedSystem.getCode());
-								currentLogPage = 1;
-								viewChangeLog(selectedSystem);
-							}
-						}
+						currentLogPage = 1;
+						viewChangeLog();
 					}
 				}
 			});
-			
+
 			// START paging zone
 			HorizontalPanel hPanelPage = new HorizontalPanel();
+			hPanelPage.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 			pageInfo = new Button("Page 1/1");
 			pageInfo.setEnabled(false);
 			// new HTML("<h4>Page 1/1</h4>");
@@ -113,8 +83,7 @@ public class SystemChangeLog extends AncestorEntryPoint {
 				public void onClick(ClickEvent event) {
 					if (totalPage != 1) {
 						currentLogPage = 1;
-						viewChangeLog(togBtnSys.isVisible() ? selectedSystem
-								: null);
+						viewChangeLog();
 					}
 				}
 			});
@@ -127,8 +96,7 @@ public class SystemChangeLog extends AncestorEntryPoint {
 				public void onClick(ClickEvent event) {
 					if (currentLogPage > 1 && totalPage > 1) {
 						currentLogPage--;
-						viewChangeLog(togBtnSys.isVisible() ? selectedSystem
-								: null);
+						viewChangeLog();
 					}
 				}
 			});
@@ -141,8 +109,7 @@ public class SystemChangeLog extends AncestorEntryPoint {
 				public void onClick(ClickEvent event) {
 					if (currentLogPage < totalPage) {
 						currentLogPage++;
-						viewChangeLog(togBtnSys.isVisible() ? selectedSystem
-								: null);
+						viewChangeLog();
 					}
 				}
 			});
@@ -156,8 +123,7 @@ public class SystemChangeLog extends AncestorEntryPoint {
 				public void onClick(ClickEvent event) {
 					if (totalPage > 1) {
 						currentLogPage = totalPage;
-						viewChangeLog(togBtnSys.isVisible() ? selectedSystem
-								: null);
+						viewChangeLog();
 					}
 				}
 			});
@@ -165,24 +131,32 @@ public class SystemChangeLog extends AncestorEntryPoint {
 			btnLast.setStyleName("page-far-right");
 			hPanelPage.add(btnLast);
 			// END paging zone
-			 
-			tableContent.getFlexCellFormatter().setRowSpan(0, 0, 3);
-			tableContent.setWidget(0, 0, tableListSystem);
-			tableContent.setWidget(0, 1, hPanel);
-			tableContent.setWidget(1, 0, tableChangeLog);
-			tableContent.setWidget(2, 0, hPanelPage);
+			
+			vPanel.add(listSystems);
+			vPanel.add(tableChangeLog);
+			vPanel.add(hPanelPage);
 
-			addWidget(HTMLControl.ID_BODY_CONTENT, tableContent);
+			addWidget(HTMLControl.ID_BODY_CONTENT, vPanel);
 			initContent();
 			currentLogPage = 1;
-			viewChangeLog(null);
+			viewChangeLog();
 		}
 	}
 
-	static void viewChangeLog(SystemMonitor sys) {
-		int start = (currentLogPage - 1) * MonitorConstant.MAX_ROW_COUNT_CHANGELOG;
+	static void viewChangeLog() {
+		int start = (currentLogPage - 1)
+				* MonitorConstant.MAX_ROW_COUNT_CHANGELOG;
 		int end = (currentLogPage) * MonitorConstant.MAX_ROW_COUNT_CHANGELOG;
-		monitorGwtSv.listChangeLog(sys, start, end,
+		int index = listSystems.getSelectedIndex();
+
+		if (index == 0) {
+			selectedSystem = null;
+		} else {
+			if (systems != null && systems.length > 0) {
+				selectedSystem = systems[index - 1];
+			}
+		}
+		monitorGwtSv.listChangeLog(selectedSystem, start, end,
 				new AsyncCallback<MonitorContainer>() {
 
 					@Override
@@ -190,14 +164,16 @@ public class SystemChangeLog extends AncestorEntryPoint {
 						drawTableChangeLog(result.getChangelogs());
 						if (result != null) {
 							totalRows = result.getChangelogCount();
-							if (totalRows % MonitorConstant.MAX_ROW_COUNT_CHANGELOG == 0) {
+							if (totalRows
+									% MonitorConstant.MAX_ROW_COUNT_CHANGELOG == 0) {
 								totalPage = totalRows
 										/ MonitorConstant.MAX_ROW_COUNT_CHANGELOG;
 							} else {
-								totalPage = Math.round(totalRows
-										/ MonitorConstant.MAX_ROW_COUNT_CHANGELOG) + 1;
+								totalPage = Math
+										.round(totalRows
+												/ MonitorConstant.MAX_ROW_COUNT_CHANGELOG) + 1;
 							}
-							
+
 							pageInfo.setText("Page " + currentLogPage + "/"
 									+ totalPage);
 						}
@@ -215,20 +191,24 @@ public class SystemChangeLog extends AncestorEntryPoint {
 				createOptionsTableListSystem());
 	}
 
-	
 	private static void initContent() {
 		monitorGwtSv.listSystems(new AsyncCallback<SystemMonitor[]>() {
 			@Override
 			public void onSuccess(SystemMonitor[] result) {
 				systems = result;
-				if (result != null) {
+				if (result != null && result.length > 0) {
+					selectedSystem = result[0];
 					setVisibleLoadingImage(false);
 					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
-					drawTable(systems);
+					listSystems.clear();
+					listSystems.addItem("All Systems");
+					for (int i = 0; i < result.length; i++) {
+						listSystems.addItem(result[i].toString());
+					}
+
 				} else {
-					showMessage("No system found. ",
-							"",
-							"", HTMLControl.RED_MESSAGE, true);
+					showMessage("No system found. ", "", "",
+							HTMLControl.RED_MESSAGE, true);
 					setVisibleLoadingImage(false);
 				}
 				setOnload(false);
@@ -238,14 +218,14 @@ public class SystemChangeLog extends AncestorEntryPoint {
 			public void onFailure(Throwable caught) {
 				showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
 				showMessage("Server error. ",
-						HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME, "Go to System management.",
-						HTMLControl.RED_MESSAGE, true);
+						HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
+						"Go to System management.", HTMLControl.RED_MESSAGE,
+						true);
 				setOnload(false);
 			}
 		});
 
 	}
-
 
 	static void drawTable(SystemMonitor[] result) {
 		if (result != null && result.length > 0) {
@@ -253,9 +233,8 @@ public class SystemChangeLog extends AncestorEntryPoint {
 					createOptionsTableListSystem());
 
 		} else {
-			showMessage("No system found. ",
-					"", "",
-					HTMLControl.RED_MESSAGE, true);			
+			showMessage("No system found. ", "", "", HTMLControl.RED_MESSAGE,
+					true);
 		}
 	}
 
@@ -275,7 +254,7 @@ public class SystemChangeLog extends AncestorEntryPoint {
 		data.addColumn(ColumnType.DATETIME, "Date Change");
 		data.addColumn(ColumnType.STRING, "Changed By");
 		data.addColumn(ColumnType.STRING, "Description");
-		if (result != null) {
+		if (result != null && result.length > 0) {
 			data.addRows(result.length);
 			for (int i = 0; i < result.length; i++) {
 				data.setValue(i, 0, result[i].getSystemName());
@@ -303,25 +282,13 @@ public class SystemChangeLog extends AncestorEntryPoint {
 		dataListSystem.addColumn(ColumnType.STRING, "System");
 		dataListSystem.addColumn(ColumnType.STRING, "URL");
 		dataListSystem.addColumn(ColumnType.STRING, "IP");
-		dataListSystem.addColumn(ColumnType.STRING, "Health Status");
-		dataListSystem.addColumn(ColumnType.STRING, "Monitor Status");
 		dataListSystem.addRows(result.length);
 		for (int i = 0; i < result.length; i++) {
-			dataListSystem.setValue(
-					i,
-					0,
-					result[i].getCode());
+			dataListSystem.setValue(i, 0, result[i].getCode());
 			dataListSystem.setValue(i, 1, result[i].getName());
 			dataListSystem.setValue(i, 2, result[i].getUrl());
 			dataListSystem.setValue(i, 3, result[i].getIp());
-			dataListSystem.setValue(
-					i,
-					4,
-					HTMLControl.getHTMLStatusImage(result[i].getId(),
-							result[i].getHealthStatus()));
-			dataListSystem.setValue(i, 5,
-					HTMLControl.getHTMLActiveImage(result[i].isActive()));			
-		}		
+		}
 		return dataListSystem;
 	}
 
