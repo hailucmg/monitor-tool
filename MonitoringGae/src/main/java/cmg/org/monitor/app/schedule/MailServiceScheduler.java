@@ -118,7 +118,7 @@ public class MailServiceScheduler extends HttpServlet {
 						try {
 							String content = MailService.parseContent(
 									user.getStores(), config);
-						//	mailService.sendMail(alertName, content, config);
+						 	mailService.sendMail(alertName, content, config);
 							logger.log(Level.INFO, "send mail" + content);
 						} catch (Exception e) {
 							logger.log(Level.INFO, "Can not send mail"
