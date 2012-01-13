@@ -27,8 +27,8 @@ public class Key implements Serializable {
 	public static final int LIST_GROUP = 0x013;
 	public static final int LIST_ALL_USERS = 0x014;
 	public static final int LIST_USERS_IN_GROUP = 0x015;
-	public static final int CHANGE_LOG = 0x022;
-	public static final int CHANGE_LOG_COUNT = 0x023;
+	public static final int CHANGE_LOG = 0x016;
+	public static final int CHANGE_LOG_COUNT = 0x017;
 	
 	
 	private int type;
