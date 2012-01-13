@@ -30,12 +30,12 @@ public class SystemChangeLog extends AncestorEntryPoint {
 	static SystemMonitor selectedSystem;
 	static private Table tableListSystem;
 	static private Table tableChangeLog;
-	static private FlexTable tableContent;
 	static VerticalPanel vPanel;
 	static DialogBox dialogBox;
 	static ToggleButton togBtnAll;
 	static ToggleButton togBtnSys;
 	static ListBox listSystems;
+	static ListBox listRows;
 	static boolean isAll;
 	static boolean isSys;
 
@@ -48,6 +48,7 @@ public class SystemChangeLog extends AncestorEntryPoint {
 	static private int currentLogPage = 1;
 	static private int totalPage = 1;
 	static private int totalRows = 1;
+	static private int numberOfRows;
 
 	protected void init() {
 		if (currentPage == HTMLControl.PAGE_SYSTEM_CHANGE_LOG) {
@@ -72,6 +73,7 @@ public class SystemChangeLog extends AncestorEntryPoint {
 			// START paging zone
 			HorizontalPanel hPanelPage = new HorizontalPanel();
 			hPanelPage.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+			hPanelPage.add(listSystems);
 			pageInfo = new Button("Page 1/1");
 			pageInfo.setEnabled(false);
 			// new HTML("<h4>Page 1/1</h4>");
@@ -130,11 +132,23 @@ public class SystemChangeLog extends AncestorEntryPoint {
 			btnLast.setStyleName("");
 			btnLast.setStyleName("page-far-right");
 			hPanelPage.add(btnLast);
+			listRows = new ListBox();
+			listRows.addItem("Number of rows");
+			listRows.addItem("10");
+			listRows.addItem("20");
+			listRows.addItem("50");
+			listRows.addChangeHandler(new ChangeHandler() {				
+				@Override
+				public void onChange(ChangeEvent event) {
+					currentLogPage = 1;
+					viewChangeLog();
+				}
+			});
+			hPanelPage.add(listRows);
 			// END paging zone
 			
-			vPanel.add(listSystems);
-			vPanel.add(tableChangeLog);
 			vPanel.add(hPanelPage);
+			vPanel.add(tableChangeLog);	
 
 			addWidget(HTMLControl.ID_BODY_CONTENT, vPanel);
 			initContent();
@@ -143,10 +157,24 @@ public class SystemChangeLog extends AncestorEntryPoint {
 		}
 	}
 
-	static void viewChangeLog() {
+	static void viewChangeLog() {		
+		switch (listRows.getSelectedIndex()) {
+		case 1:		
+			numberOfRows = 10;
+			break;
+		case 2:		
+			numberOfRows = 20;
+			break;
+		case 3:		
+			numberOfRows = 50;
+			break;
+		default:
+			numberOfRows = MonitorConstant.MAX_ROW_COUNT_CHANGELOG;
+			break;
+		}
 		int start = (currentLogPage - 1)
-				* MonitorConstant.MAX_ROW_COUNT_CHANGELOG;
-		int end = (currentLogPage) * MonitorConstant.MAX_ROW_COUNT_CHANGELOG;
+				* numberOfRows;
+		int end = (currentLogPage) * numberOfRows;
 		int index = listSystems.getSelectedIndex();
 
 		if (index == 0) {
@@ -165,13 +193,13 @@ public class SystemChangeLog extends AncestorEntryPoint {
 						if (result != null) {
 							totalRows = result.getChangelogCount();
 							if (totalRows
-									% MonitorConstant.MAX_ROW_COUNT_CHANGELOG == 0) {
+									% numberOfRows == 0) {
 								totalPage = totalRows
-										/ MonitorConstant.MAX_ROW_COUNT_CHANGELOG;
+										/ numberOfRows;
 							} else {
 								totalPage = Math
 										.round(totalRows
-												/ MonitorConstant.MAX_ROW_COUNT_CHANGELOG) + 1;
+												/ numberOfRows) + 1;
 							}
 
 							pageInfo.setText("Page " + currentLogPage + "/"
