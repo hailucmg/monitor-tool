@@ -7,7 +7,6 @@ import com.google.gwt.user.client.ui.HTML;
 
 public class HTMLControl {
 
-
 	public static final String NOTIFY_OPTION = "Notify Options";
 
 	public static final String LOGIN_SERVLET_NAME = "login";
@@ -24,6 +23,7 @@ public class HTMLControl {
 	public static final String HTML_HELP_NAME = "#help";
 	public static final String HTML_EDIT_NAME = "#management/system/edit";
 	public static final String HTML_DELETE_SYSTEM_NAME = "#management/system/delete";
+	public static final String HTML_SYSTEM_CHANGELOG = "#management/system/changelog";
 
 	public static final String ID_STEP_HOLDER = "step-holder";
 	public static final String ID_PAGE_HEADING = "page-heading";
@@ -55,6 +55,7 @@ public class HTMLControl {
 	public static final int PAGE_ADD_SYSTEM = 0x008;
 	public static final int PAGE_DELETE_SYSTEM = 0x009;
 	public static final int PAGE_EDIT_SYSTEM = 0x010;
+	public static final int PAGE_SYSTEM_CHANGE_LOG = 0x011;
 
 	public static final int ERROR_NORMAL = 0x000;
 	public static final int ERROR_SYSTEM_ID = 0x001;
@@ -122,6 +123,8 @@ public class HTMLControl {
 			index = PAGE_EDIT_SYSTEM;
 		} else if (hash.startsWith(HTML_DELETE_SYSTEM_NAME)) {
 			index = PAGE_DELETE_SYSTEM;
+		} else if (hash.equals(HTML_SYSTEM_CHANGELOG)) {
+			index = PAGE_SYSTEM_CHANGE_LOG;
 		}
 		return index;
 	}
@@ -136,7 +139,8 @@ public class HTMLControl {
 				|| hash.startsWith(HTML_SYSTEM_STATISTIC_NAME)
 				|| hash.startsWith(HTML_DELETE_SYSTEM_NAME)
 				|| hash.equals(HTML_ADD_NEW_SYSTEM_NAME) || hash
-					.startsWith(HTML_EDIT_NAME));
+					.startsWith(HTML_EDIT_NAME))
+				|| hash.equals(HTML_SYSTEM_CHANGELOG);
 	}
 
 	public static HTML getSystemInfo(SystemMonitor sys) {
@@ -188,7 +192,7 @@ public class HTMLControl {
 		if (role == MonitorConstant.ROLE_ADMIN) {
 			temp.append("<div class='nav-divider'>&nbsp;</div>");
 			temp.append("<ul class='");
-			temp.append((page == PAGE_USER_MANAGEMENT
+			temp.append((page == PAGE_USER_MANAGEMENT || page == PAGE_SYSTEM_CHANGE_LOG
 					|| page == PAGE_SYSTEM_MANAGEMENT
 					|| page == PAGE_ADD_SYSTEM || page == PAGE_EDIT_SYSTEM) ? "current"
 					: "select");
@@ -196,7 +200,7 @@ public class HTMLControl {
 					+ "'><b>");
 			temp.append("Administration");
 			temp.append("</b></a><div class='select_sub");
-			temp.append((page == PAGE_SYSTEM_MANAGEMENT
+			temp.append((page == PAGE_SYSTEM_MANAGEMENT || page == PAGE_SYSTEM_CHANGE_LOG
 					|| page == PAGE_USER_MANAGEMENT || page == PAGE_ADD_SYSTEM || page == PAGE_EDIT_SYSTEM) ? " show"
 					: "");
 			temp.append("'><ul class='sub'>");
@@ -206,6 +210,11 @@ public class HTMLControl {
 					: "");
 			temp.append("><a href='" + HTML_SYSTEM_MANAGEMENT_NAME
 					+ "'>System Management</a></li>");
+			temp.append("<li");
+			temp.append((page == PAGE_SYSTEM_CHANGE_LOG) ? " class='sub_show'"
+					: "");
+			temp.append("><a href='" + HTML_SYSTEM_CHANGELOG
+					+ "'>System Changelog</a></li>");
 			temp.append("<li");
 			temp.append((page == PAGE_USER_MANAGEMENT) ? " class='sub_show'"
 					: "");
@@ -370,6 +379,10 @@ public class HTMLControl {
 			temp.append(page == PAGE_EDIT_SYSTEM ? "Edit System" : "");
 			temp.append(page == PAGE_ADD_SYSTEM ? "Add New System" : "");
 			temp.append("</a> ");
+		}
+		if (page == PAGE_SYSTEM_CHANGE_LOG) {
+			temp.append("<a href=\"" + HTML_SYSTEM_CHANGELOG
+					+ "\">Changelog</a> ");
 		}
 		if (page == PAGE_USER_MANAGEMENT) {
 			temp.append("<a href=\"" + HTML_USER_MANAGEMENT_NAME
