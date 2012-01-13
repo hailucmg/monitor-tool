@@ -124,7 +124,7 @@ public class MonitorService {
 				}// if-else
 				aSystem.setTimeStamp(new Date(System.currentTimeMillis()));
 				try {
-					systemDao.updateSystem(aSystem, false);
+					systemDao.updateSystem(aSystem);
 				} catch (Exception ex) {
 					logger.log(
 							Level.SEVERE,

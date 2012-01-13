@@ -51,7 +51,7 @@ import com.google.gdata.util.ServiceException;
  * @version 1.0
  */
 public class MailService {
-	public static final String DELIVERED_TO = "admin@c-mg.com";
+	public static final String DELIVERED_TO = "admin@c-mg.vn";
 	public static final String CONTENT_DISPOSITION = "inline";
 	public static final String CONTENT_TRANSFER_ENCODING = "7bit";
 	public static final String FORMAT = "flowed";

@@ -20,6 +20,8 @@ public interface SystemDAO {
 	public boolean removeSystem(SystemMonitor system) throws Exception;
 
 	public boolean updateSystem(SystemMonitor system, boolean reloadMemcache) throws Exception;
+	
+	public boolean updateSystem(SystemMonitor system) throws Exception;
 
 	public SystemMonitor getSystemById(String id) throws Exception;
 

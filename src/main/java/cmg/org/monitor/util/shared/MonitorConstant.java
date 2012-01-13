@@ -6,7 +6,7 @@ public final class MonitorConstant {
 	
 	public static final String Notify_Cpu = "When system uses more than 90% CPU :";
 	
-	public static final String Notify_JVM = "When system user more than 90% JVM :";
+	public static final String Notify_JVM = "When system uses more than 90% JVM :";
 	
 	public static final String Notify_Memory = "When system uses more than 90% Memory :";
 	
@@ -34,7 +34,7 @@ public final class MonitorConstant {
 
 	public static final String PROJECT_NAME = "CMG Health Monitor System";
 
-	public static final String VERSION = "1.1";
+	public static final String VERSION = "2.0";
 
 	public static final String RELEASED_ON = "01/11/2011";
 
@@ -51,7 +51,7 @@ public final class MonitorConstant {
 
 	public static final String ADMIN_PASSWORD = "31102011";
 	
-	public static final String ADMIN_MONITOR_GROUP = "adminmonitor";
+	public static final String ADMIN_MONITOR_GROUP = "admin";
 
 	public static final int ROLE_ADMIN = 0x001;
 	public static final int ROLE_NORMAL_USER = 0x002;
