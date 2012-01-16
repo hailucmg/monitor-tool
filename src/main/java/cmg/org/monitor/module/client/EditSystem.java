@@ -126,23 +126,28 @@ public class EditSystem extends AncestorEntryPoint {
 							tableNotify.setCellSpacing(3);
 							cbNotifyCpu = new CheckBox();
 							cbNotifyCpu.setValue(notify.isNotifyCpu());
+							cbNotifyCpu.setStyleName("");
 							cbNotifyCpu.setStyleName("checkbox-size");
 							
 							cbNotifyMemory = new CheckBox();
 							cbNotifyMemory.setValue(notify.isNotifyMemory());
+							cbNotifyMemory.setStyleName("");
 							cbNotifyMemory.setStyleName("checkbox-size");
 							
 							cbNotifyServices = new CheckBox();
 							cbNotifyServices.setValue(notify.isNotifyServices());
+							cbNotifyServices.setStyleName("");
 							cbNotifyServices.setStyleName("checkbox-size");
 							
 							cbNotifyJVM = new CheckBox();
 							cbNotifyJVM.setValue(notify.isJVM());
+							cbNotifyJVM.setStyleName("");
 							cbNotifyJVM.setStyleName("checkbox-size");
 							
 							cbNotifyServicesConnection = new CheckBox();
 							cbNotifyServicesConnection.setValue(notify
 									.isNotifyServicesConnection());
+							cbNotifyServicesConnection.setStyleName("");
 							cbNotifyServicesConnection.setStyleName("checkbox-size");
 							
 							lblNotifyJVM = new Label(MonitorConstant.Notify_JVM);
