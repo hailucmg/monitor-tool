@@ -207,26 +207,31 @@ public class AddnewSystem extends AncestorEntryPoint {
 		
 		cbNotifyCpu = new CheckBox();
 		cbNotifyCpu.setValue(true);
+		cbNotifyCpu.setStyleName("");
 		cbNotifyCpu.setStyleName("checkbox-size");
 		lblNotifyCpu = new Label(MonitorConstant.Notify_Cpu);
 		
 		cbNotifyMemory = new CheckBox();
 		cbNotifyMemory.setValue(true);
+		cbNotifyMemory.setStyleName("");
 		cbNotifyMemory.setStyleName("checkbox-size");
 		lblNotifyMemory = new Label(MonitorConstant.Notify_Memory);
 		
 		cbNotifyServices = new CheckBox();
 		cbNotifyServices.setValue(true);
+		cbNotifyServices.setStyleName("");
 		cbNotifyServices.setStyleName("checkbox-size");
 		lblNotifyServices = new Label(MonitorConstant.Notify_Service);
 		
 		cbNotifyServicesConnection = new CheckBox();
 		cbNotifyServicesConnection.setValue(true);
+		cbNotifyServicesConnection.setStyleName("");
 		cbNotifyServicesConnection.setStyleName("checkbox-size");
 		lblNotifyServicesConnection = new Label(
 				MonitorConstant.Notify_ServiceConnection);
 		
 		cbNotifyJVM = new CheckBox();
+		cbNotifyJVM.setStyleName("");
 		cbNotifyJVM.setStyleName("checkbox-size");
 		cbNotifyJVM.setValue(true);
 		lblNotifyJVM = new Label(MonitorConstant.Notify_JVM);
