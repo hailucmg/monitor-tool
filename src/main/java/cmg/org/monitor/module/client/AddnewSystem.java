@@ -10,6 +10,7 @@ import cmg.org.monitor.util.shared.MonitorConstant;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.regexp.shared.RegExp;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -203,22 +204,37 @@ public class AddnewSystem extends AncestorEntryPoint {
 	void initUi() {
 		tableNotify = new Grid(5, 2);
 		tableNotify.setCellSpacing(3);
+		
 		cbNotifyCpu = new CheckBox();
 		cbNotifyCpu.setValue(true);
+		cbNotifyCpu.setStyleName("checkbox-size");
+		lblNotifyCpu = new Label(MonitorConstant.Notify_Cpu);
+		
 		cbNotifyMemory = new CheckBox();
 		cbNotifyMemory.setValue(true);
+		cbNotifyMemory.setStyleName("checkbox-size");
+		lblNotifyMemory = new Label(MonitorConstant.Notify_Memory);
+		
 		cbNotifyServices = new CheckBox();
 		cbNotifyServices.setValue(true);
+		cbNotifyServices.setStyleName("checkbox-size");
+		lblNotifyServices = new Label(MonitorConstant.Notify_Service);
+		
 		cbNotifyServicesConnection = new CheckBox();
 		cbNotifyServicesConnection.setValue(true);
-		cbNotifyJVM = new CheckBox();
-		cbNotifyJVM.setValue(true);
-		lblNotifyCpu = new Label(MonitorConstant.Notify_Cpu);
-		lblNotifyMemory = new Label(MonitorConstant.Notify_Memory);
-		lblNotifyServices = new Label(MonitorConstant.Notify_Service);
+		cbNotifyServicesConnection.setStyleName("checkbox-size");
 		lblNotifyServicesConnection = new Label(
 				MonitorConstant.Notify_ServiceConnection);
+		
+		cbNotifyJVM = new CheckBox();
+		cbNotifyJVM.setStyleName("checkbox-size");
+		cbNotifyJVM.setValue(true);
 		lblNotifyJVM = new Label(MonitorConstant.Notify_JVM);
+		
+		
+		
+		
+		
 		tableNotify.setWidget(0, 0, lblNotifyCpu);
 		tableNotify.setWidget(0, 1, cbNotifyCpu);
 		tableNotify.setWidget(1, 0, lblNotifyMemory);
@@ -229,6 +245,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 		tableNotify.setWidget(3, 1, cbNotifyServicesConnection);
 		tableNotify.setWidget(4, 0, lblNotifyJVM);
 		tableNotify.setWidget(4, 1, cbNotifyJVM);
+		
 		advancedDisclosure = new DisclosurePanel(HTMLControl.NOTIFY_OPTION);
 		advancedDisclosure.setAnimationEnabled(true);
 		advancedDisclosure.setContent(tableNotify);
