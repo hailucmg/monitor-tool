@@ -97,7 +97,9 @@ public class MailServiceScheduler extends HttpServlet {
 							try {
 								notify = sysDAO.getNotifyOption(tempSys
 										.getCode());
-							} catch (Exception e) {
+							} catch (Exception e) {								
+							}
+							if (notify == null) {
 								notify = new NotifyMonitor();
 							}
 							alertstore.fixAlertList(notify);
