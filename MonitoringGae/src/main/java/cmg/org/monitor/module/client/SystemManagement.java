@@ -189,7 +189,9 @@ public class SystemManagement extends AncestorEntryPoint {
 					HTMLControl.getLinkEditSystem(result[i].getId(),
 							result[i].getCode()));
 			dataListSystem.setValue(i, 1, result[i].getName());
-			dataListSystem.setValue(i, 2, result[i].getUrl());
+			dataListSystem.setValue(i, 2, "<a href=\"" + result[i].getUrl()
+					+ "\"" + " target=\"_blank\">" + result[i].getUrl()
+					+ "</a>");
 			dataListSystem.setValue(i, 3, result[i].getIp());
 			dataListSystem.setValue(
 					i,

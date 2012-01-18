@@ -15,7 +15,6 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
-import com.google.gwt.visualization.client.formatters.BarFormat;
 import com.google.gwt.visualization.client.formatters.BarFormat.Color;
 import com.google.gwt.visualization.client.visualizations.Table;
 import com.google.gwt.visualization.client.visualizations.Table.Options;
@@ -156,21 +155,16 @@ public class DashBoard extends AncestorEntryPoint {
 				dataListSystem.setValue(i, 0, HTMLControl.getLinkSystemDetail(
 						result[i].getId(), result[i].getCode()));
 				dataListSystem.setValue(i, 1, result[i].getName());
-				dataListSystem.setValue(i, 2, result[i].getUrl());
+				dataListSystem.setValue(i, 2, "<a href=\"" + result[i].getUrl()
+						+ "\"" + " target=\"_blank\">" + result[i].getUrl()
+						+ "</a>");
 				dataListSystem.setValue(i, 3, result[i].getIp());
-				dataListSystem.setValue(
-						i,
-						4,
-						HTMLControl
-								.getPercentBar(result[i].getLastestCpuUsage(),
-										Constant.CPU_LEVEL_HISTORY_UPDATE));
-				dataListSystem.setValue(
-						i,
-						5,
-						HTMLControl
-								.getPercentBar(
-										result[i].getLastestMemoryUsage(),
-										Constant.MEMORY_LEVEL_HISTORY_UPDATE));
+				dataListSystem.setValue(i, 4, HTMLControl.getPercentBar(
+						result[i].getLastestCpuUsage(),
+						Constant.CPU_LEVEL_HISTORY_UPDATE));
+				dataListSystem.setValue(i, 5, HTMLControl.getPercentBar(
+						result[i].getLastestMemoryUsage(),
+						Constant.MEMORY_LEVEL_HISTORY_UPDATE));
 				dataListSystem.setValue(i, 6, HTMLControl.getHTMLStatusImage(
 						result[i].getId(), result[i].getHealthStatus()));
 				dataListSystem.setValue(i, 7,
