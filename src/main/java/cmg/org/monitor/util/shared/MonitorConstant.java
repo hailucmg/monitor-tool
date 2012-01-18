@@ -15,6 +15,7 @@ public final class MonitorConstant {
 	public static final String Notify_ServiceConnection = "When any service connections are too slow :";
 	
 	public static final int CPU_MEMORY_REFRESH_RATE = 1000;
+	
 	// Alert mail sender service
 	public static final String IMAGES_FOR_EMAIL ="monitor.c-mg.vn\\images\\logo\\c-mg_logo.png" ;
 	
@@ -58,9 +59,9 @@ public final class MonitorConstant {
 	public static final int ROLE_GUEST = 0x003;
 
 	// / Information google sites content
-	public static final String SITES_USERNAME = "hai.lu@c-mg.com";
+	public static final String SITES_USERNAME = "monitor@c-mg.com";
 
-	public static final String SITES_PASSWORD = "123hurricane";
+	public static final String SITES_PASSWORD = "w3lcom3back";
 
 	public static final String SITES_CONTENT_FEED_URL = "https://sites.google.com/feeds/content/c-mg.com/monitor-tool/";
 
