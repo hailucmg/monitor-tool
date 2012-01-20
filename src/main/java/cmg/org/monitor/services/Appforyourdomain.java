@@ -37,6 +37,7 @@ public class Appforyourdomain {
 		try {
 			userService = new UserService("monitor-tool-user-service");
 			userService.setUserCredentials(adminEmail, adminPassword);
+			//userService.get
 			groupService = new AppsGroupsService(adminEmail, adminPassword,
 					domain, "monitor-tool-app-group-service");
 		} catch (AuthenticationException e) {
