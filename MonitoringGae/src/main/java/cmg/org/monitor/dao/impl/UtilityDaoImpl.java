@@ -81,6 +81,7 @@ public class UtilityDaoImpl implements UtilityDAO {
 			Appforyourdomain app = new Appforyourdomain(
 					MonitorConstant.ADMIN_EMAIL,
 					MonitorConstant.ADMIN_PASSWORD, MonitorConstant.DOMAIN);
+			
 			list = app.listAllUsers();
 			MonitorMemcache.put(Key.create(Key.LIST_ALL_USERS), list);
 		}
