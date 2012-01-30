@@ -19,6 +19,15 @@
     <url-pattern>/monitoringgae/job</url-pattern>
   </servlet-mapping>
   
+   <servlet>
+    <servlet-name>scheduleToken</servlet-name>
+    <servlet-class>cmg.org.monitor.app.schedule.TokenScheduler</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>scheduleToken</servlet-name>
+    <url-pattern>/monitoringgae/token</url-pattern>
+  </servlet-mapping>
+  
   <servlet>
     <servlet-name>gatherSchedule</servlet-name>
     <servlet-class>cmg.org.monitor.app.schedule.GatherScheduler</servlet-class>

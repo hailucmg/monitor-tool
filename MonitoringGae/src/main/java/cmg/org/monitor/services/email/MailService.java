@@ -31,6 +31,8 @@ import cmg.org.monitor.entity.shared.MailConfigMonitor;
 import cmg.org.monitor.entity.shared.MailMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.util.MonitorUtil;
+import cmg.org.monitor.memcache.Key;
+import cmg.org.monitor.memcache.MonitorMemcache;
 import cmg.org.monitor.util.shared.Constant;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
@@ -70,15 +72,23 @@ public class MailService {
 	public MailService() {
 		// Set up the mail item service.
 		mailItemService = new MailItemService(MonitorConstant.SITES_APP_NAME);
-
-		try {
-			mailItemService.setUserCredentials(MonitorConstant.ADMIN_EMAIL,
-					MonitorConstant.ADMIN_PASSWORD);
-		} catch (AuthenticationException ae) {
-			logger.log(Level.SEVERE,
-					" -> ERROR: Sending mail ... AuthenticationException: "
-							+ ae.getMessage());
+		Object obj = MonitorMemcache.get(Key.create(Key.TOKEN_MAIL));
+		if(obj != null){
+			if(obj instanceof String){
+				logger.log(Level.INFO,"getting token mail : " + obj.toString());
+				mailItemService.setUserToken(obj.toString());
+			}
+		}else{
+			try {
+				mailItemService.setUserCredentials(MonitorConstant.ADMIN_EMAIL,
+						MonitorConstant.ADMIN_PASSWORD);
+			} catch (AuthenticationException ae) {
+				logger.log(Level.SEVERE,
+						" -> ERROR: Sending mail ... AuthenticationException: "
+								+ ae.getMessage());
+			}
 		}
+		
 	}
 
 	public boolean sendMail(String subject, String content,
