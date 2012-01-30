@@ -24,4 +24,9 @@ public interface UtilityDAO {
 	
 	public void putAllUsers();
 	
+	public void putTokenSite();
+	
+	public void putTokenMail();
+	
+	
 }
