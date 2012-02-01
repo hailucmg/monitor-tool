@@ -42,6 +42,7 @@ public class TokenScheduler extends HttpServlet {
 			UtilityDAO uDAO = new UtilityDaoImpl();
 			uDAO.putTokenMail();
 			uDAO.putTokenSite();
+			uDAO.putTokenGroup();
 			// END LOG
 			long end = System.currentTimeMillis();
 			long time = end - start;
