@@ -21,7 +21,7 @@ public final class MonitorConstant {
 	
 	public static final String ALERTSTORE_DEFAULT_NAME = "Issue Warning";
 	
-	public static final String PROJECT_HOST_NAME = "monitor.c-mg.vn";
+	public static final String PROJECT_HOST_NAME = "monitor.c-mg.com";
 	
 	public static final String ALERT_MAIL_SENDER_NAME = "admin@future-monitor.appspotmail.com";
 
@@ -45,14 +45,14 @@ public final class MonitorConstant {
 
 	public static final int REDIRECT_WAIT_TIME = 5000;
 
-	public static final String DOMAIN = "c-mg.vn";
+	public static final String DOMAIN = "c-mg.com";
 
-	public static final String ADMIN_EMAIL = "monitor@c-mg.vn";
+	public static final String ADMIN_EMAIL = "monitor@c-mg.com";
 	public static final String ADMIN_EMAIL_ID = "monitor";
 
-	public static final String ADMIN_PASSWORD = "31102011";
+	public static final String ADMIN_PASSWORD = "w3lcom3back";
 	
-	public static final String ADMIN_MONITOR_GROUP = "admin";
+	public static final String ADMIN_MONITOR_GROUP = "adminmonitor";
 
 	public static final int ROLE_ADMIN = 0x001;
 	public static final int ROLE_NORMAL_USER = 0x002;
