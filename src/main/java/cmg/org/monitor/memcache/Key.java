@@ -31,6 +31,7 @@ public class Key implements Serializable {
 	public static final int CHANGE_LOG_COUNT = 0x017;
 	public static final int TOKEN_SITES = 0x018;
 	public static final int TOKEN_MAIL= 0x019;
+	public static final int TOKEN_GROUP = 0x020;
 	private int type;
 
 	private String sid;

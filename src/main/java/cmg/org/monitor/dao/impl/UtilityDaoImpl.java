@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import org.mortbay.log.Log;
 
 import com.google.gdata.client.GoogleAuthTokenFactory.UserToken;
+import com.google.gdata.client.appsforyourdomain.AppsGroupsService;
 import com.google.gdata.client.appsforyourdomain.migration.MailItemService;
 import com.google.gdata.client.sites.SitesService;
 import com.google.gdata.util.AuthenticationException;
@@ -22,8 +23,9 @@ import cmg.org.monitor.services.SitesHelper;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
 public class UtilityDaoImpl implements UtilityDAO {
-	private static final Logger logger = Logger
-			.getLogger(UtilityDaoImpl.class.getCanonicalName());
+	private static final Logger logger = Logger.getLogger(UtilityDaoImpl.class
+			.getCanonicalName());
+
 	@Override
 	public void putHelpContent(String content) {
 		MonitorMemcache.put(Key.create(Key.HELP_CONTENT), content);
@@ -179,7 +181,10 @@ public class UtilityDaoImpl implements UtilityDAO {
 			token = us.getValue();
 		} catch (AuthenticationException e) {
 			e.printStackTrace();
-			logger.log(Level.INFO,"getting exception from memcache token site:" + e.getMessage());
+			logger.log(
+					Level.INFO,
+					"getting exception from memcache token site:"
+							+ e.getMessage());
 		}
 		if (token != null) {
 			MonitorMemcache.put(Key.create(Key.TOKEN_SITES), token);
@@ -199,10 +204,34 @@ public class UtilityDaoImpl implements UtilityDAO {
 			token = us.getValue();
 		} catch (AuthenticationException e) {
 			e.printStackTrace();
-			logger.log(Level.INFO,"getting exception from memcache token mail:" + e.getMessage());
+			logger.log(
+					Level.INFO,
+					"getting exception from memcache token mail:"
+							+ e.getMessage());
 		}
 		if (token != null) {
 			MonitorMemcache.put(Key.create(Key.TOKEN_MAIL), token);
+		}
+	}
+
+	@Override
+	public void putTokenGroup() {
+		String token = null;
+		try {
+			AppsGroupsService groupService = new AppsGroupsService(
+					MonitorConstant.ADMIN_EMAIL, MonitorConstant.ADMIN_PASSWORD,
+					MonitorConstant.DOMAIN, "monitor-tool-app-group-service");
+			UserToken us = (UserToken) groupService.getAuthTokenFactory().getAuthToken();
+			token = us.getValue();
+		} catch (AuthenticationException e) {
+			logger.log(
+					Level.INFO,
+					"getting exception from memcache token group:"
+							+ e.getMessage());
+			e.printStackTrace();
+		}
+		if(token!=null){
+			MonitorMemcache.put(Key.create(Key.TOKEN_GROUP), token);
 		}
 	}
 }

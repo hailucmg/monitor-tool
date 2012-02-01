@@ -12,10 +12,11 @@ import java.util.logging.Logger;
 
 import cmg.org.monitor.ext.model.shared.GroupMonitor;
 import cmg.org.monitor.ext.model.shared.UserMonitor;
+import cmg.org.monitor.memcache.Key;
+import cmg.org.monitor.memcache.MonitorMemcache;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
 import com.google.gdata.client.appsforyourdomain.AppsGroupsService;
-import com.google.gdata.client.appsforyourdomain.UserService;
 import com.google.gdata.data.appsforyourdomain.AppsForYourDomainException;
 import com.google.gdata.data.appsforyourdomain.generic.GenericEntry;
 import com.google.gdata.data.appsforyourdomain.generic.GenericFeed;
@@ -28,23 +29,34 @@ public class Appforyourdomain {
 			.getLogger(Appforyourdomain.class.getCanonicalName());
 
 	private AppsGroupsService groupService;
-
-	private UserService userService;
+	private String token = null;
 
 	public Appforyourdomain(String adminEmail, String adminPassword,
 			String domain) {
 
 		try {
-			userService = new UserService("monitor-tool-user-service");
-			userService.setUserCredentials(adminEmail, adminPassword);
+			Object obj = MonitorMemcache.get(Key.create(Key.TOKEN_GROUP));
+			if(obj!=null){
+				if(obj instanceof String){
+					logger.log(Level.INFO,"getting token from memcache :" +obj.toString());
+					groupService = new AppsGroupsService(domain, "monitor-tool-app-group-service");
+					token = (String) obj;
+				}
+			}else{
+				groupService = new AppsGroupsService(adminEmail,adminPassword,
+						domain, "monitor-tool-app-group-service");
+			}
+		/*	userService = new UserService("monitor-tool-user-service");
+			userService.setUserCredentials(adminEmail, adminPassword);*/
 			//userService.get
-			groupService = new AppsGroupsService(adminEmail, adminPassword,
-					domain, "monitor-tool-app-group-service");
+		
+			
 		} catch (AuthenticationException e) {
 			logger.log(
 					Level.SEVERE,
 					"ERROR when list group. AuthenticationException: "
 							+ e.getMessage());
+			e.printStackTrace();
 		}
 
 	}
@@ -53,6 +65,10 @@ public class Appforyourdomain {
 		ArrayList<GroupMonitor> list = null;
 		GroupMonitor group = null;
 		try {
+			if(token!=null){
+				logger.log(Level.INFO,"getting token from memcache :" +token.toString());
+				groupService.setUserToken(token);
+			}
 			GenericFeed groupFeed = groupService.retrieveAllGroups();
 			Iterator<GenericEntry> groupsEntryIterator = groupFeed.getEntries()
 					.iterator();
@@ -70,11 +86,13 @@ public class Appforyourdomain {
 					Level.SEVERE,
 					"ERROR when list group. AppsForYourDomainException: "
 							+ e.getMessage());
+			e.printStackTrace();
 		} catch (MalformedURLException e) {
 			logger.log(
 					Level.SEVERE,
 					"ERROR when list group. MalformedURLException: "
 							+ e.getMessage());
+			e.printStackTrace();
 		} catch (IOException e) {
 			logger.log(Level.SEVERE,
 					"ERROR when list group. IOException: " + e.getMessage());
@@ -83,6 +101,7 @@ public class Appforyourdomain {
 					Level.SEVERE,
 					"ERROR when list group. ServiceException: "
 							+ e.getMessage());
+			e.printStackTrace();
 		}
 		return list;
 	}
@@ -125,6 +144,10 @@ public class Appforyourdomain {
 		ArrayList<UserMonitor> list = null;
 		UserMonitor user = null;
 		try {
+			if(token!=null){
+				logger.log(Level.INFO,"getting token from memcache :" +token.toString());
+				groupService.setUserToken(token);
+			}
 			GenericFeed groupsFeed = groupService.retrieveAllMembers(group
 					.getName());
 			Iterator<GenericEntry> groupsEntryIterator = groupsFeed
@@ -146,6 +169,7 @@ public class Appforyourdomain {
 					Level.SEVERE,
 					"ERROR when list group. AppsForYourDomainException: "
 							+ e.getMessage());
+			e.printStackTrace();
 		} catch (MalformedURLException e) {
 			logger.log(
 					Level.SEVERE,
@@ -159,6 +183,7 @@ public class Appforyourdomain {
 					Level.SEVERE,
 					"ERROR when list group. ServiceException: "
 							+ e.getMessage());
+			e.printStackTrace();
 		}
 		return list;
 	}

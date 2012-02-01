@@ -28,5 +28,6 @@ public interface UtilityDAO {
 	
 	public void putTokenMail();
 	
+	public void putTokenGroup();
 	
 }
