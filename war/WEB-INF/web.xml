@@ -1,0 +1,90 @@
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee                http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+ <servlet>
+    <servlet-name>MonitorGwtService</servlet-name>
+    <servlet-class>cmg.org.monitor.module.server.MonitorGwtServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>MonitorGwtService</servlet-name>
+    <url-pattern>/index/MonitorGwtService</url-pattern>
+  </servlet-mapping>
+
+<!-- Application Servlets -->
+  <servlet>
+    <servlet-name>schedule</servlet-name>
+    <servlet-class>cmg.org.monitor.app.schedule.GlobalScheduler</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>schedule</servlet-name>
+    <url-pattern>/monitoringgae/job</url-pattern>
+  </servlet-mapping>
+  
+   <servlet>
+    <servlet-name>scheduleToken</servlet-name>
+    <servlet-class>cmg.org.monitor.app.schedule.TokenScheduler</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>scheduleToken</servlet-name>
+    <url-pattern>/monitoringgae/token</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>gatherSchedule</servlet-name>
+    <servlet-class>cmg.org.monitor.app.schedule.GatherScheduler</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>gatherSchedule</servlet-name>
+    <url-pattern>/monitoringgae/gather</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>mailSchedule</servlet-name>
+    <servlet-class>cmg.org.monitor.app.schedule.MailServiceScheduler</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>mailSchedule</servlet-name>
+    <url-pattern>/monitoringgae/mail</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>LoginServlet</servlet-name>
+    <servlet-class>cmg.org.monitor.module.server.LoginServlet</servlet-class>
+  </servlet>
+  
+   <servlet-mapping>
+    <servlet-name>LoginServlet</servlet-name>
+    <url-pattern>/login</url-pattern>
+  </servlet-mapping>
+
+	<servlet>
+		<servlet-name>mailMonitorHandler</servlet-name>
+		<servlet-class>cmg.org.monitor.app.schedule.MonitorMailHandlerServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>mailMonitorHandler</servlet-name>
+		<url-pattern>/_ah/mail/*</url-pattern>
+	</servlet-mapping>
+<!-- 
+	<servlet>
+		<servlet-name>mailAlertHandler</servlet-name>
+		<servlet-class>cmg.org.monitor.app.schedule.AlertMailHandlerServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>mailAlertHandler</servlet-name>
+		<url-pattern>/_ah/mail/alert*</url-pattern>
+	</servlet-mapping>
+ -->
+<security-constraint>
+  <web-resource-collection>
+    <url-pattern>/_ah/mail/*</url-pattern>
+  </web-resource-collection>
+  <auth-constraint>
+    <role-name>admin</role-name>
+  </auth-constraint>
+</security-constraint>
+<!-- Default page to server -->
+<welcome-file-list>
+    <welcome-file>login</welcome-file>
+</welcome-file-list>
+
+</web-app>
