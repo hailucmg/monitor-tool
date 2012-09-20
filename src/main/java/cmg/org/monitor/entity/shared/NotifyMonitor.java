@@ -9,13 +9,12 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-public class NotifyMonitor implements Serializable {
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
+public class NotifyMonitor implements IsSerializable {
+
+	
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)

@@ -1,10 +1,16 @@
 package cmg.org.monitor.dao.impl;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import cmg.org.monitor.dao.ServiceDAO;
+import cmg.org.monitor.entity.shared.MemoryMonitor;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.util.MonitorUtil;
@@ -17,16 +23,16 @@ public class ServiceDaoImpl implements ServiceDAO {
 
 	@Override
 	public void storeServices(SystemMonitor sys,
-			ArrayList<ServiceMonitor> services) {
+			ArrayList services) {
 		if (services != null && services.size() > 0) {
-			logger.log(Level.INFO,
-					MonitorUtil.parseTime(System.currentTimeMillis(), true)
-							+ " -> START Put Services information ... Size: " + services.size());
-			for (int i = 0; i < services.size(); i++) {
-				logger.log(Level.INFO, "Service #" + (i + 1) + services.get(i));
-			}			
+			
+			Gson gson = new Gson();
+			try {
 			MonitorMemcache.put(Key.create(Key.SERVICE_STORE, sys.getId()),
-					services);
+					gson.toJson(services));
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error:" + ex.getMessage());
+			}
 		}
 	}
 
@@ -35,16 +41,18 @@ public class ServiceDaoImpl implements ServiceDAO {
 		ArrayList<ServiceMonitor> list = null;
 		Object obj = MonitorMemcache.get(Key.create(Key.SERVICE_STORE,
 				sys.getId()));
-		if (obj != null) {
-			if (obj instanceof ArrayList<?>) {
-				try {
-					list = (ArrayList<ServiceMonitor>) obj;
-				} catch (Exception ex) {
-					logger.log(Level.WARNING, " -> ERROR: "
-							+ ex.fillInStackTrace().toString());
-				}
+		if (obj != null && obj instanceof String) {
+			Gson gson = new Gson();
+			Type type = new TypeToken<Collection<ServiceMonitor>>() {
+			}.getType();
+			try {
+				list = (ArrayList<ServiceMonitor>) gson.fromJson(String.valueOf(obj), type);
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, " -> ERROR: "
+						+ ex.getMessage());
 			}
 		}
+		
 		return list;
 	}
 

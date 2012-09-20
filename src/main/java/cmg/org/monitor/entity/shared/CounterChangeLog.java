@@ -8,13 +8,10 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-public class CounterChangeLog implements Serializable{
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2524523334637839598L;
+public class CounterChangeLog implements IsSerializable{
 	
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)

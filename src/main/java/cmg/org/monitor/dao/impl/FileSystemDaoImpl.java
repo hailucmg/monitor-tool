@@ -1,8 +1,13 @@
 package cmg.org.monitor.dao.impl;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import cmg.org.monitor.dao.FileSystemDAO;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
@@ -20,15 +25,16 @@ public class FileSystemDaoImpl implements FileSystemDAO {
 
 	@Override
 	public void storeFileSystems(SystemMonitor sys,
-			ArrayList<FileSystemMonitor> fileSystems) {
+			ArrayList fileSystems) {
 		if (fileSystems != null && fileSystems.size() > 0) {
-			logger.log(Level.INFO,
-					"Put file system list to memcache ... Size: " + fileSystems.size());
-			for (int i = 0; i < fileSystems.size(); i++) {
-				logger.log(Level.INFO, "Filesystem #" + (i +1) + fileSystems.get(i));
-			}
+			
+			Gson gson = new Gson();
+			try {
 			MonitorMemcache.put(Key.create(Key.FILE_SYSTEM_STORE, sys.getId()),
-					fileSystems);
+					gson.toJson(fileSystems));
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error:" + ex.getMessage());
+			}
 		}
 	}
 
@@ -37,16 +43,18 @@ public class FileSystemDaoImpl implements FileSystemDAO {
 		ArrayList<FileSystemMonitor> list = null;
 		Object obj = MonitorMemcache.get(Key.create(Key.FILE_SYSTEM_STORE,
 				sys.getId()));
-		if (obj != null) {
-			if (obj instanceof ArrayList<?>) {
-				try {
-					list = (ArrayList<FileSystemMonitor>) obj;
-				} catch (Exception ex) {
-					logger.log(Level.WARNING, " -> ERROR: "
-							+ ex.fillInStackTrace().toString());
-				}
+		if (obj != null && obj instanceof String) {
+			Type type = new TypeToken<Collection<FileSystemMonitor>>() {
+			}.getType(); 
+			Gson gson = new Gson();
+			try {
+				list = (ArrayList<FileSystemMonitor>) gson.fromJson(String.valueOf(obj), type);
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, " -> ERROR: "
+						+ ex.getMessage());
 			}
 		}
+		
 		return list;
 	}
 

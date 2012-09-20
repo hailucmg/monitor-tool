@@ -1,8 +1,13 @@
 package cmg.org.monitor.dao.impl;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import cmg.org.monitor.dao.CpuDAO;
 import cmg.org.monitor.entity.shared.CpuMonitor;
@@ -23,34 +28,30 @@ public class CpuDaoImpl implements CpuDAO {
 		if (cpu != null) {
 			// BEGIN LOG
 			long start = System.currentTimeMillis();
-			logger.log(Level.INFO,
-					MonitorUtil.parseTime(start, true) + sys.toString()
-							+ " -> START: put Cpu Information ... " + cpu);
+			
 			// BEGIN LOG
 			ArrayList<CpuMonitor> list = listCpu(sys);
 			if (list == null) {
 				list = new ArrayList<CpuMonitor>();
 			}
 
-			logger.log(Level.INFO,
-					"Start put to memcache. List size: " + list.size());
+		
 
 			list.add(cpu);
 			if (list.size() > MonitorConstant.CPU_MEMORY_HISTORY_LENGTH) {
 				list.remove(0);
 			}
-			MonitorMemcache.put(Key.create(Key.CPU__STORE, sys.getId()), list);
+			Gson gson = new Gson();
+			try {
+			MonitorMemcache.put(Key.create(Key.CPU__STORE, sys.getId()), gson.toJson(list));
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error:" + ex.getMessage());
+			}
 
-			logger.log(Level.INFO,
-					"End put to memcache. List size: " + list.size());
-
+		
 			// END LOG
 			long end = System.currentTimeMillis();
-			logger.log(Level.INFO,
-					MonitorUtil.parseTime(end, true) + sys.toString()
-							+ " -> END: put Cpu Information. Time executed: "
-							+ (end - start) + " ms.");
-			// END LOG
+		
 		}
 	}
 
@@ -69,16 +70,17 @@ public class CpuDaoImpl implements CpuDAO {
 		ArrayList<CpuMonitor> list = null;
 		Object obj = MonitorMemcache
 				.get(Key.create(Key.CPU__STORE, sys.getId()));
-		if (obj != null) {
-			if (obj instanceof ArrayList<?>) {
-				try {
-					list = (ArrayList<CpuMonitor>) obj;
-				} catch (Exception ex) {
-					logger.log(Level.WARNING, " -> ERROR: "
-							+ ex.fillInStackTrace().toString());
-				}
+		if (obj != null && obj instanceof String) {
+			Type type = new TypeToken<Collection<CpuMonitor>>() {
+			}.getType();
+			Gson gson = new Gson();
+			try {
+				list = (ArrayList<CpuMonitor>) gson.fromJson(String.valueOf(obj), type);
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, " -> ERROR: "
+						+ ex.getMessage());
 			}
-		}
+		}		
 		return list;
 	}
 }

@@ -9,14 +9,10 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-public class MailConfigMonitor implements Serializable {
-
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class MailConfigMonitor implements IsSerializable {
 
 	public static final String DEFAULT_LABEL = "Monitor Alert";
 
@@ -93,16 +89,6 @@ public class MailConfigMonitor implements Serializable {
 		this.isMarkAsUnread = isMarkAsUnread;
 	}
 	
-	@Override
-	public String toString() {
-		StringBuffer sf = new StringBuffer();
-		sf.append("\r\nMail ID: " + mailId);
-		sf.append("\r\nLabel: " + label);
-		sf.append("\r\nStarred: " + isStarred);
-		sf.append("\r\nInbox: " + isInbox);
-		sf.append("\r\nMark as Unread: " + isMarkAsUnread + "\r\n");
-		return sf.toString();
-	}
-
+	
 	
 }

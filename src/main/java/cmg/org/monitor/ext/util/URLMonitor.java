@@ -51,7 +51,7 @@ public class URLMonitor {
 		super();
 	}
 
-	public static String retrievesContent(String remoteUrl) {
+	public static String retrievesContent(String remoteUrl) throws Exception {
 		String webContent = "";
 		// Processes page
 		Page page = null;
@@ -91,6 +91,7 @@ public class URLMonitor {
 				logger.log(Level.SEVERE, "The monitoring failed, try to update"
 						+ " project's status but not success, error details: " + e.getMessage());
 			}
+			
 		}		
 		return webContent;
 	}

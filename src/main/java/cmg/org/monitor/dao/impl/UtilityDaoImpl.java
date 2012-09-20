@@ -1,6 +1,8 @@
 package cmg.org.monitor.dao.impl;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,6 +13,8 @@ import com.google.gdata.client.appsforyourdomain.AppsGroupsService;
 import com.google.gdata.client.appsforyourdomain.migration.MailItemService;
 import com.google.gdata.client.sites.SitesService;
 import com.google.gdata.util.AuthenticationException;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import cmg.org.monitor.app.schedule.MailServiceScheduler;
 import cmg.org.monitor.dao.UtilityDAO;
@@ -28,7 +32,11 @@ public class UtilityDaoImpl implements UtilityDAO {
 
 	@Override
 	public void putHelpContent(String content) {
+		try {
 		MonitorMemcache.put(Key.create(Key.HELP_CONTENT), content);
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, "Error:" + ex.getMessage());
+		}
 	}
 
 	@Override
@@ -48,7 +56,11 @@ public class UtilityDaoImpl implements UtilityDAO {
 
 	@Override
 	public void putAboutContent(String content) {
+		try {
 		MonitorMemcache.put(Key.create(Key.ABOUT_CONTENT), content);
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, "Error:" + ex.getMessage());
+		}
 	}
 
 	@Override
@@ -69,10 +81,18 @@ public class UtilityDaoImpl implements UtilityDAO {
 	@Override
 	public ArrayList<GroupMonitor> listGroups() {
 		ArrayList<GroupMonitor> list = null;
+		Gson gson = new Gson();
+		Type type = new TypeToken<Collection<GroupMonitor>>() {
+		}.getType();
 		Object obj = MonitorMemcache.get(Key.create(Key.LIST_GROUP));
-		if (obj != null && obj instanceof ArrayList<?>) {
-			list = (ArrayList<GroupMonitor>) obj;
+		if (obj != null && obj instanceof String) {
+			try {
+				list = (ArrayList<GroupMonitor>) gson.fromJson(String.valueOf(obj), type);
+			} catch (Exception e) {
+				logger.log(Level.WARNING, "Error:" + e.getMessage());
+			}
 		}
+		
 		if (list == null || list.size() <= 0) {
 			Appforyourdomain app = new Appforyourdomain(
 					MonitorConstant.ADMIN_EMAIL,
@@ -86,17 +106,29 @@ public class UtilityDaoImpl implements UtilityDAO {
 	@Override
 	public ArrayList<UserMonitor> listAllUsers() {
 		ArrayList<UserMonitor> list = null;
+		Gson gson = new Gson();
+		Type type = new TypeToken<Collection<UserMonitor>>() {
+		}.getType();
 		Object obj = MonitorMemcache.get(Key.create(Key.LIST_ALL_USERS));
-		if (obj != null && obj instanceof ArrayList<?>) {
-			list = (ArrayList<UserMonitor>) obj;
+		if (obj != null && obj instanceof String) {
+			try {
+				list = (ArrayList<UserMonitor>) gson.fromJson(String.valueOf(obj), type);
+			} catch (Exception e) {
+				logger.log(Level.WARNING, "Error:" + e.getMessage());
+			}
 		}
+		
 		if (list == null || list.size() <= 0) {
 			Appforyourdomain app = new Appforyourdomain(
 					MonitorConstant.ADMIN_EMAIL,
 					MonitorConstant.ADMIN_PASSWORD, MonitorConstant.DOMAIN);
 
 			list = app.listAllUsers();
-			MonitorMemcache.put(Key.create(Key.LIST_ALL_USERS), list);
+			try {
+			MonitorMemcache.put(Key.create(Key.LIST_ALL_USERS), gson.toJson(list));
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error:" + ex.getMessage());
+			}
 		}
 		return list;
 	}
@@ -104,10 +136,17 @@ public class UtilityDaoImpl implements UtilityDAO {
 	@Override
 	public ArrayList<UserMonitor> listUsersInGroup(GroupMonitor group) {
 		ArrayList<UserMonitor> list = null;
+		Gson gson = new Gson();
+		Type type = new TypeToken<Collection<UserMonitor>>() {
+		}.getType();
 		Object obj = MonitorMemcache.get(Key.create(Key.LIST_USERS_IN_GROUP,
 				group.getName()));
-		if (obj != null && obj instanceof ArrayList<?>) {
-			list = (ArrayList<UserMonitor>) obj;
+		if (obj != null && obj instanceof String) {
+			try {
+				list = (ArrayList<UserMonitor>) gson.fromJson(String.valueOf(obj), type);
+			} catch (Exception e) {
+				logger.log(Level.WARNING, "Error:" + e.getMessage());
+			}
 		}
 		if (list == null || list.size() <= 0) {
 			Appforyourdomain app = new Appforyourdomain(
@@ -125,7 +164,12 @@ public class UtilityDaoImpl implements UtilityDAO {
 				MonitorConstant.ADMIN_EMAIL, MonitorConstant.ADMIN_PASSWORD,
 				MonitorConstant.DOMAIN);
 		ArrayList<GroupMonitor> list = app.listGroups();
-		MonitorMemcache.put(Key.create(Key.LIST_GROUP), list);
+		Gson gson = new Gson();
+		try {
+		MonitorMemcache.put(Key.create(Key.LIST_GROUP), gson.toJson(list));
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, "Error:" + ex.getMessage());
+		}
 
 		if (list != null && list.size() > 0) {
 			for (GroupMonitor g : list) {
@@ -136,7 +180,12 @@ public class UtilityDaoImpl implements UtilityDAO {
 	}
 
 	public void putGroups(ArrayList<GroupMonitor> groups) {
-		MonitorMemcache.put(Key.create(Key.LIST_GROUP), groups);
+		Gson gson = new Gson();
+		try {
+		MonitorMemcache.put(Key.create(Key.LIST_GROUP), gson.toJson(groups));
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, "Error:" + ex.getMessage());
+		}
 
 		if (groups != null && groups.size() > 0) {
 			for (GroupMonitor g : groups) {
@@ -152,7 +201,12 @@ public class UtilityDaoImpl implements UtilityDAO {
 				MonitorConstant.ADMIN_EMAIL, MonitorConstant.ADMIN_PASSWORD,
 				MonitorConstant.DOMAIN);
 		ArrayList<UserMonitor> list = app.listAllUsers();
-		MonitorMemcache.put(Key.create(Key.LIST_ALL_USERS), list);
+		Gson gson = new Gson();
+		try {
+		MonitorMemcache.put(Key.create(Key.LIST_ALL_USERS), gson.toJson(list));
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, "Error:" + ex.getMessage());
+		}
 	}
 
 	public void putUsers(GroupMonitor group) {
@@ -160,13 +214,23 @@ public class UtilityDaoImpl implements UtilityDAO {
 				MonitorConstant.ADMIN_EMAIL, MonitorConstant.ADMIN_PASSWORD,
 				MonitorConstant.DOMAIN);
 		ArrayList<UserMonitor> list = app.listUser(group);
+		Gson gson = new Gson();
+		try {
 		MonitorMemcache.put(
-				Key.create(Key.LIST_USERS_IN_GROUP, group.getName()), list);
+				Key.create(Key.LIST_USERS_IN_GROUP, group.getName()), gson.toJson(list));
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, "Error:" + ex.getMessage());
+		}
 	}
 
 	public void putUsers(ArrayList<UserMonitor> users, GroupMonitor group) {
+		Gson gson = new Gson();
+		try {
 		MonitorMemcache.put(
-				Key.create(Key.LIST_USERS_IN_GROUP, group.getName()), users);
+				Key.create(Key.LIST_USERS_IN_GROUP, group.getName()), gson.toJson(users));
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, "Error:" + ex.getMessage());
+		}
 	}
 
 	@Override
@@ -180,14 +244,17 @@ public class UtilityDaoImpl implements UtilityDAO {
 					.getAuthToken();
 			token = us.getValue();
 		} catch (AuthenticationException e) {
-			e.printStackTrace();
 			logger.log(
 					Level.INFO,
 					"getting exception from memcache token site:"
 							+ e.getMessage());
 		}
 		if (token != null) {
+			try {
 			MonitorMemcache.put(Key.create(Key.TOKEN_SITES), token);
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error:" + ex.getMessage());
+			}
 		}
 	}
 
@@ -203,14 +270,17 @@ public class UtilityDaoImpl implements UtilityDAO {
 					.getAuthToken();
 			token = us.getValue();
 		} catch (AuthenticationException e) {
-			e.printStackTrace();
 			logger.log(
 					Level.INFO,
 					"getting exception from memcache token mail:"
 							+ e.getMessage());
 		}
 		if (token != null) {
+			try {
 			MonitorMemcache.put(Key.create(Key.TOKEN_MAIL), token);
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error:" + ex.getMessage());
+			}
 		}
 	}
 
@@ -228,10 +298,13 @@ public class UtilityDaoImpl implements UtilityDAO {
 					Level.INFO,
 					"getting exception from memcache token group:"
 							+ e.getMessage());
-			e.printStackTrace();
 		}
 		if(token!=null){
+			try {
 			MonitorMemcache.put(Key.create(Key.TOKEN_GROUP), token);
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error:" + ex.getMessage());
+			}
 		}
 	}
 }

@@ -11,13 +11,10 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "false")
-public class AlertStoreMonitor implements Serializable {
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "false")
+public class AlertStoreMonitor implements IsSerializable {
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -110,16 +107,6 @@ public class AlertStoreMonitor implements Serializable {
 			sb.append("</ol>");
 		}
 		return sb.toString();
-	}
-
-	@Override
-	public String toString() {
-		StringBuffer sf = new StringBuffer();
-		sf.append("\r\nSystem ID: " + sysId);
-		sf.append("\r\nCPU Usage: " + cpuUsage);
-		sf.append("\r\nMemory Usage: " + memUsage);
-		sf.append("\r\nTimestamp: " + timeStamp + "\r\n");
-		return sf.toString();
 	}
 
 	public ArrayList<AlertMonitor> getAlerts() {

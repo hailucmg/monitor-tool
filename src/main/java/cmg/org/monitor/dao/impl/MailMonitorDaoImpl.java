@@ -7,6 +7,8 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import com.google.gson.Gson;
+
 import cmg.org.monitor.dao.MailMonitorDAO;
 import cmg.org.monitor.entity.shared.MailConfigMonitor;
 import cmg.org.monitor.entity.shared.MailMonitor;
@@ -21,13 +23,18 @@ public class MailMonitorDaoImpl implements MailMonitorDAO {
 
 	@Override
 	public MailConfigMonitor getMailConfig(String mailId) {
-		logger.log(Level.INFO, "START get mail configuration. Mail ID: " + mailId);
+	
 		MailConfigMonitor mailConfig = null;
 		// get from memcache
 		Object obj = MonitorMemcache.get(Key.create(Key.MAIL_CONFIG_STORE,
 				mailId));
 		if (obj != null && obj instanceof MailConfigMonitor) {
-			mailConfig = (MailConfigMonitor) obj;
+			Gson gson = new Gson();
+			try {
+				mailConfig = gson.fromJson(String.valueOf(obj), MailConfigMonitor.class); 
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error:" + ex.getMessage());
+			}
 		}
 		//get from JDO
 		if (obj == null) {
@@ -58,18 +65,21 @@ public class MailMonitorDaoImpl implements MailMonitorDAO {
 			mailConfig = new MailConfigMonitor();
 			mailConfig.setMailId(mailId);
 		}
-		logger.log(Level.INFO, "END get mail configuration. " + mailConfig);
+	
 		return mailConfig;
 	}
 
 	@Override
 	public void putMailMonitor(MailMonitor mail) {
 		if (mail != null) {
-			logger.log(Level.INFO,
-					MonitorUtil.parseTime(System.currentTimeMillis(), true)
-							+ " -> START: put Mail Information ... " + mail);
+		
+			Gson gson = new Gson();
+			try {
 			MonitorMemcache.put(Key.create(Key.MAIL_STORE, mail.getSender()),
-					mail);
+					gson.toJson(mail));
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error:" + ex.getMessage());
+			}
 		}
 	}
 
@@ -77,9 +87,12 @@ public class MailMonitorDaoImpl implements MailMonitorDAO {
 	public MailMonitor getMailMonitor(String sender) {
 		MailMonitor mail = null;
 		Object obj = MonitorMemcache.get(Key.create(Key.MAIL_STORE, sender));
-		if (obj != null) {
-			if (obj instanceof MailMonitor) {
-				mail = (MailMonitor) obj;
+		if (obj != null && obj instanceof String) {
+			Gson gson = new Gson();
+			try {
+				mail = gson.fromJson(String.valueOf(obj), MailMonitor.class);
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error: " + ex.getMessage());
 			}
 		}
 		return mail;
@@ -88,14 +101,16 @@ public class MailMonitorDaoImpl implements MailMonitorDAO {
 	@Override
 	public void putMailConfig(MailConfigMonitor mailConfig) {
 		if (mailConfig != null) {
-			logger.log(Level.INFO,
-					MonitorUtil.parseTime(System.currentTimeMillis(), true)
-							+ " -> START Put mail configuration ... "
-							+ mailConfig);
+		
 			// put to memcache
+			Gson gson = new Gson();
+			try {
 			MonitorMemcache.put(
 					Key.create(Key.MAIL_CONFIG_STORE,
-							mailConfig.getMailId(true)), mailConfig);
+							mailConfig.getMailId(true)), gson.toJson(mailConfig));
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error:" + ex.getMessage());
+			}
 
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			try {
@@ -113,9 +128,13 @@ public class MailMonitorDaoImpl implements MailMonitorDAO {
 	}
 
 	public void clearMailStore(String sender) {
-		logger.log(Level.INFO, "Clear mail monitor store. Sender: " + sender);
+	
 		MonitorMemcache.delete(Key.create(Key.MAIL_STORE, sender));
+		try {
 		MonitorMemcache.put(Key.create(Key.MAIL_STORE, sender), null);
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, "Error:" + ex.getMessage());
+		}
 	}
 
 }
