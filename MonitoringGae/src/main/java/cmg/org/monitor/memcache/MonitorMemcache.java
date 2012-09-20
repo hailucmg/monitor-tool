@@ -6,7 +6,7 @@ import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
 public class MonitorMemcache {
 
-	private static final String MEMCACHE_NAMESPACE = "monitor_tool";
+	private static final String MEMCACHE_NAMESPACE = "monitor_tool_mig";
 	/**
 	 * @param key
 	 *            The key of store
@@ -15,7 +15,7 @@ public class MonitorMemcache {
 	 */
 	public static void put(Key key, Object obj) {
 		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService(MEMCACHE_NAMESPACE);
-		syncCache.put(key, obj, null, SetPolicy.SET_ALWAYS);
+		syncCache.put(key.toString(), obj, null, SetPolicy.SET_ALWAYS);
 	}
 
 	/**
@@ -25,7 +25,7 @@ public class MonitorMemcache {
 	 */
 	public static Object get(Key key) {
 		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService(MEMCACHE_NAMESPACE);
-		return syncCache.get(key);
+		return syncCache.get(key.toString());
 	}
 
 	/**
@@ -35,7 +35,7 @@ public class MonitorMemcache {
 	 */
 	public static boolean delete(Key key) {
 		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService(MEMCACHE_NAMESPACE);
-		return syncCache.delete(key);
+		return syncCache.delete(key.toString());
 	}
 
 }

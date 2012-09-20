@@ -1,34 +1,34 @@
 package cmg.org.monitor.memcache;
 
-import java.io.Serializable;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class Key implements Serializable {
+public class Key implements IsSerializable {
 	/**
 	 * 
 	 */
 
 	private static final long serialVersionUID = 1L;
 
-	public static final int FILE_SYSTEM_STORE = 0x001;
-	public static final int CPU__STORE = 0x002;
-	public static final int MEMORY_STORE = 0x003;
-	public static final int ALERT_STORE = 0x004;
-	public static final int JVM_STORE = 0x005;
-	public static final int SERVICE_STORE = 0x006;
-	public static final int SYSTEM_MONITOR_STORE = 0x007;
+	public static final int FILE_SYSTEM_STORE = 0x101;
+	public static final int CPU__STORE = 0x102;
+	public static final int MEMORY_STORE = 0x103;
+	public static final int ALERT_STORE = 0x104;
+	public static final int JVM_STORE = 0x105;
+	public static final int SERVICE_STORE = 0x106;
+	public static final int SYSTEM_MONITOR_STORE = 0x107;
 	
-	public static final int ALERT_TEMP_STORE = 0x008;
-	public static final int MAIL_STORE = 0x009;
-	public static final int MAIL_CONFIG_STORE = 0x010;
+	public static final int ALERT_TEMP_STORE = 0x108;
+	public static final int MAIL_STORE = 0x109;
+	public static final int MAIL_CONFIG_STORE = 0x110;
 	
-	public static final int ABOUT_CONTENT = 0x011;
-	public static final int HELP_CONTENT = 0x012;
+	public static final int ABOUT_CONTENT = 0x111;
+	public static final int HELP_CONTENT = 0x112;
 	
-	public static final int LIST_GROUP = 0x013;
-	public static final int LIST_ALL_USERS = 0x014;
-	public static final int LIST_USERS_IN_GROUP = 0x015;
-	public static final int CHANGE_LOG = 0x016;
-	public static final int CHANGE_LOG_COUNT = 0x017;
+	public static final int LIST_GROUP = 0x113;
+	public static final int LIST_ALL_USERS = 0x114;
+	public static final int LIST_USERS_IN_GROUP = 0x115;
+	public static final int CHANGE_LOG = 0x116;
+	public static final int CHANGE_LOG_COUNT = 0x117;
 	public static final int TOKEN_SITES = 0x018;
 	public static final int TOKEN_MAIL= 0x019;
 	public static final int TOKEN_GROUP = 0x020;
@@ -42,6 +42,18 @@ public class Key implements Serializable {
 
 	protected Key() {
 
+	}
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(type);
+		sb.append("-");
+		sb.append(sid);
+		sb.append("-");
+		sb.append(options);
+		sb.append("-");
+		sb.append(memType);
+		return sb.toString();
 	}
 
 	public static Key create(int type) {

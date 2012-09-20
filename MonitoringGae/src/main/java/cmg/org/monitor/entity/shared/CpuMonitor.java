@@ -3,13 +3,10 @@ package cmg.org.monitor.entity.shared;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class CpuMonitor implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -796804579167614290L;
+public class CpuMonitor implements IsSerializable {
 
 	private int cpuUsage;
 
@@ -23,17 +20,6 @@ public class CpuMonitor implements Serializable {
 	
 	public CpuMonitor() {
 		cpuUsage = 0;
-	}
-	
-	@Override
-	public String toString() {
-		StringBuffer sf = new StringBuffer();
-		sf.append("\r\nUsage: " + cpuUsage);
-		sf.append("\r\nTotal CPU: " + totalCpu);
-		sf.append("\r\nVendor: " + vendor);
-		sf.append("\r\nModel: " + model);
-		sf.append("\r\nTimestamp: " + timeStamp + "\r\n");
-		return sf.toString();
 	}
 	
 	public int getCpuUsage() {

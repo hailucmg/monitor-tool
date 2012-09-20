@@ -11,17 +11,15 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
  * @author lamphan
  * @version 1.0
  */
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-public class SystemMonitor implements Serializable  {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class SystemMonitor implements IsSerializable  {
 	
 	public static final String STATUS_SMILE = "smile";
 	public static final String STATUS_BORED = "bored";
@@ -245,10 +243,6 @@ public class SystemMonitor implements Serializable  {
 
 	public void setEmail(String email) {
 		this.email = email;
-	}
-	@Override
-	public String toString() {
-		return code + " - " + name;
 	}
 
 	public int getLastestCpuUsage() {

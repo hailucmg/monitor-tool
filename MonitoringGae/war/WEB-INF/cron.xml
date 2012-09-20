@@ -14,13 +14,13 @@
 
 	<cron>
 		<url>/monitoringgae/job</url>
-		<description>Repopulate the cache every 10 minutes</description>
-		<schedule>every 10 minutes</schedule>
+		<description>Repopulate the cache every 30 minutes</description>
+		<schedule>every 30 minutes</schedule>
 	</cron>
 	
 	<cron>
 		<url>/monitoringgae/token</url>
-		<description>Repopulate the cache every 1 minutes</description>
+		<description>Repopulate the token every 6 hours</description>
 		<schedule>every 6 hours</schedule>
 	</cron>
 	

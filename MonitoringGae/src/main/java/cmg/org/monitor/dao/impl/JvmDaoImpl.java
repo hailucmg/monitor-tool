@@ -1,8 +1,13 @@
 package cmg.org.monitor.dao.impl;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import cmg.org.monitor.dao.JvmDAO;
 import cmg.org.monitor.entity.shared.JvmMonitor;
@@ -23,31 +28,28 @@ public class JvmDaoImpl implements JvmDAO {
 		if (jvm != null) {
 			// BEGIN LOG
 			long start = System.currentTimeMillis();
-			logger.log(Level.INFO,
-					MonitorUtil.parseTime(start, true) + sys.toString()
-							+ " -> START: put Jvm Information ... " + jvm);
+		
 			// BEGIN LOG
 
 			ArrayList<JvmMonitor> list = listJvm(sys);
 			if (list == null) {
 				list = new ArrayList<JvmMonitor>();
 			}
-			logger.log(Level.INFO,
-					"Start put to memcache. List size: " + list.size());
 			list.add(jvm);
 			if (list.size() > MonitorConstant.CPU_MEMORY_HISTORY_LENGTH) {
 				list.remove(0);
 			}
-			MonitorMemcache.put(Key.create(Key.JVM_STORE, sys.getId()), list);
+			Gson gson = new Gson();
+			try {
+			MonitorMemcache.put(Key.create(Key.JVM_STORE, sys.getId()), gson.toJson(list));
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error:" + ex.getMessage());
+			}
 
-			logger.log(Level.INFO,
-					"End put to memcache. List size: " + list.size());
+		
 			// END LOG
 			long end = System.currentTimeMillis();
-			logger.log(Level.INFO,
-					MonitorUtil.parseTime(end, true) + sys.toString()
-							+ " -> END: put Jvm Information. Time executed: "
-							+ (end - start) + " ms.");
+		
 			// END LOG
 		}
 	}
@@ -67,16 +69,18 @@ public class JvmDaoImpl implements JvmDAO {
 		ArrayList<JvmMonitor> list = null;
 		Object obj = MonitorMemcache
 				.get(Key.create(Key.JVM_STORE, sys.getId()));
-		if (obj != null) {
-			if (obj instanceof ArrayList<?>) {
-				try {
-					list = (ArrayList<JvmMonitor>) obj;
-				} catch (Exception ex) {
-					logger.log(Level.WARNING, " -> ERROR: "
-							+ ex.fillInStackTrace().toString());
-				}
+		if (obj != null && obj instanceof String) {
+			Gson gson = new Gson();
+			Type type = new TypeToken<Collection<JvmMonitor>>() {
+			}.getType();
+			try {
+				list = (ArrayList<JvmMonitor>) gson.fromJson(String.valueOf(obj), type);
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, " -> ERROR: "
+						+ ex.getMessage());
 			}
 		}
+		
 		return list;
 	}
 

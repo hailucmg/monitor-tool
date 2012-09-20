@@ -11,16 +11,12 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Text;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-public class ChangeLogMonitor implements Serializable{
+public class ChangeLogMonitor implements IsSerializable{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
 	public static final int LOG_ADD = 0x001;
 	public static final int LOG_UPDATE = 0x002;
 	public static final int LOG_DELETE = 0x003;

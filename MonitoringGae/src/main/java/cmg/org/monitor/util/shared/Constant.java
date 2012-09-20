@@ -166,4 +166,9 @@ public interface Constant {
 	 * remained.
 	 */
 	public static int NUMBER_DAY_TO_DELETE = 30;
+	
+	
+	
+	
+	public final static String REDIRECTOR_WORKER_URL = "http://c-mg.vn:8180/URLRedirector/handler";
 }

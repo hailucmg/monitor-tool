@@ -9,6 +9,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,9 +23,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.servlet.http.Cookie;
 
-import com.sun.net.ssl.X509TrustManager;
 
 import cmg.org.monitor.util.shared.Constant;
 
@@ -432,7 +443,8 @@ public abstract class HttpUtils {
 				}
 
 				// make untrusted SSL certificates work
-				/*if (url.getProtocol().equals("https")) {
+				/**
+				if (url.getProtocol().equals("https")) {
 					try {
 						java.security.Security
 								.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
@@ -457,8 +469,8 @@ public abstract class HttpUtils {
 						e2.initCause(e);
 						throw e2;
 					}
-				}*/
-
+				}
+				*/
 				// setup the connection
 				connection = (HttpURLConnection) url.openConnection();
 				connection.setRequestMethod(mMethod);
@@ -509,20 +521,29 @@ public abstract class HttpUtils {
 		}
 	}
 
-	/*
-	 * static class MyHostnameVerifier implements HostnameVerifier { public
-	 * boolean verify(String urlHostname, SSLSession session) { return true; } }
-	 * 
-	 * static class MyX509TrustManager implements X509TrustManager { public void
-	 * checkClientTrusted(X509Certificate[] chain, String authType) throws
-	 * CertificateException { }
-	 * 
-	 * public void checkServerTrusted(X509Certificate[] chain, String authType)
-	 * throws CertificateException { }
-	 * 
-	 * public java.security.cert.X509Certificate[] getAcceptedIssuers() { return
-	 * new X509Certificate[0]; } }
-	 */
+	static class MyHostnameVerifier implements HostnameVerifier {		
+		@Override
+		public boolean verify(String arg0, SSLSession arg1) {
+			return true;
+		}
+	}
+
+	static class MyX509TrustManager implements X509TrustManager {
+		public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+			return new X509Certificate[0];
+		}
+
+		@Override
+		public void checkClientTrusted(X509Certificate[] arg0, String arg1)
+				throws CertificateException {
+		}
+
+		@Override
+		public void checkServerTrusted(X509Certificate[] arg0, String arg1)
+				throws CertificateException {
+			
+		}
+	}
 
 	public static class Page {
 		private String mContent = null;

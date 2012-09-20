@@ -3,13 +3,11 @@ package cmg.org.monitor.entity.shared;
 import java.io.Serializable;
 import java.util.Date;
 
-public class JvmMonitor implements Serializable {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 5027602085427688515L;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
+public class JvmMonitor implements IsSerializable {
+	
+	
 	private double freeMemory;
 
 	private double totalMemory;
@@ -30,17 +28,7 @@ public class JvmMonitor implements Serializable {
 		usedMemory = 0;
 	}
 	
-	@Override
-	public String toString() {
-		StringBuffer sf = new StringBuffer();
-		sf.append("\r\nFree memory: " + freeMemory);
-		sf.append("\r\nTotal memory: " + totalMemory);
-		sf.append("\r\nMax memory: " + maxMemory);
-		sf.append("\r\nUsed memory: " + usedMemory);
-		sf.append("\r\nTimestamp: " + timeStamp + "\r\n");
-		return sf.toString();
-	}
-	
+		
 	public int getPercentUsage() {
 		if (totalMemory == 0)
 			return 0;

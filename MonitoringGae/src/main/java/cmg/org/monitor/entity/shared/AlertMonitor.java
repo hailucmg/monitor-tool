@@ -10,17 +10,16 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
  * @author lamphan
  * @version 1.0
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-public class AlertMonitor implements Serializable {
+public class AlertMonitor implements IsSerializable {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	
 	public static final int CANNOT_GATHER_DATA = 0x001;
 	public static final int HIGH_USAGE_LEVEL_CPU = 0x002;
 	public static final int HIGH_USAGE_LEVEL_JVM = 0x003;
@@ -66,16 +65,6 @@ public class AlertMonitor implements Serializable {
 		this.timeStamp = timeStamp;
 	}
 	
-	@Override
-	public String toString() {
-		StringBuffer sf = new StringBuffer();
-		sf.append("\r\nType: " + type);
-		sf.append("\r\nError: " + error);
-		sf.append("\r\nDescription: " + description);
-		sf.append("\r\nTimestamp: " + timeStamp + "\r\n");
-		return sf.toString();
-	}
-
 	public String getId() {
 		return id;
 	}

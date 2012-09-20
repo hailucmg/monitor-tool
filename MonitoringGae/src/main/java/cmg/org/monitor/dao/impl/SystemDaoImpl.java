@@ -1,6 +1,8 @@
 package cmg.org.monitor.dao.impl;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -8,6 +10,9 @@ import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import cmg.org.monitor.dao.SystemDAO;
 import cmg.org.monitor.entity.shared.ChangeLogMonitor;
@@ -245,32 +250,31 @@ public class SystemDaoImpl implements SystemDAO {
 	@Override
 	public ArrayList<SystemMonitor> listSystemsFromMemcache(boolean isDeleted) {
 		ArrayList<SystemMonitor> list = null;
+		Gson gson = new Gson();
+		Type type = new TypeToken<Collection<SystemMonitor>>() {
+		}.getType();
 		Object obj = MonitorMemcache.get(Key.create(Key.SYSTEM_MONITOR_STORE));
-		if (obj != null) {
-			if (obj instanceof ArrayList<?>) {
-				try {
-					list = (ArrayList<SystemMonitor>) obj;
-				} catch (Exception ex) {
-					// do nothing
-				}
+		if (obj != null && obj instanceof String) {
+			try {
+				list = (ArrayList<SystemMonitor>) gson.fromJson(String.valueOf(obj), type);
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error: " + ex.getMessage());
 			}
 		}
+		
 		// try to load from JDO if list is null
 		if (list == null) {
 			try {
 				list = listSystems(isDeleted);
 			} catch (Exception ex) {
 				logger.log(Level.WARNING, "ERROR: "
-						+ ex.fillInStackTrace().toString());
+						+ ex.getMessage());
 			}
 		}
 		return list;
 	}
 
-	@Override
-	public void storeSysList(ArrayList<SystemMonitor> list) {
-		MonitorMemcache.put(Key.create(Key.SYSTEM_MONITOR_STORE), list);
-	}
+	
 
 	@Override
 	public String[] listEmails() {
@@ -398,21 +402,39 @@ public class SystemDaoImpl implements SystemDAO {
 			pm.close();
 		}
 		// add to memcache
+		Gson gson = new Gson();
+		Type typeTokenLog = new TypeToken<Collection<ChangeLogMonitor>>() {
+		}.getType();
+		
 		ArrayList<ChangeLogMonitor> changelogs = null;
 		Object obj = MonitorMemcache.get(Key.create(Key.CHANGE_LOG,
 				log.getSid()));
-		if (obj != null && obj instanceof ArrayList<?>) {
-			changelogs = (ArrayList<ChangeLogMonitor>) obj;
+		if (obj != null && obj instanceof String) {
+			try {
+				changelogs = (ArrayList<ChangeLogMonitor>) gson.fromJson(String.valueOf(obj), typeTokenLog);
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error:" + ex.getMessage());
+			}
+			if (changelogs == null) {
+				changelogs = new ArrayList<ChangeLogMonitor>();
+			}
 			changelogs.add(0, log);
 			MonitorMemcache.put(Key.create(Key.CHANGE_LOG, log.getSid()),
-					changelogs);
+					gson.toJson(changelogs));
 		}
-
+		changelogs = null;
 		obj = MonitorMemcache.get(Key.create(Key.CHANGE_LOG));
-		if (obj != null && obj instanceof ArrayList<?>) {
-			changelogs = (ArrayList<ChangeLogMonitor>) obj;
+		if (obj != null && obj instanceof String) {
+			try {
+				changelogs = (ArrayList<ChangeLogMonitor>) gson.fromJson(String.valueOf(obj), typeTokenLog);
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error:" + ex.getMessage());
+			}
+			if (changelogs == null) {
+				changelogs = new ArrayList<ChangeLogMonitor>();
+			}
 			changelogs.add(0, log);
-			MonitorMemcache.put(Key.create(Key.CHANGE_LOG), changelogs);
+			MonitorMemcache.put(Key.create(Key.CHANGE_LOG), gson.toJson(changelogs));
 		}
 
 		int countAll = getCountAllChangeLog();
@@ -426,13 +448,21 @@ public class SystemDaoImpl implements SystemDAO {
 	@Override
 	public ArrayList<ChangeLogMonitor> listChangeLog(String sid, int start,
 			int end) throws Exception {
+		Gson gson = new Gson();
+		Type typeTokenLog = new TypeToken<Collection<ChangeLogMonitor>>() {
+		}.getType();
 		ArrayList<ChangeLogMonitor> list = null;
 		// get list from memcache
 		Object obj = MonitorMemcache.get((sid == null || sid.equals("")) ? Key
 				.create(Key.CHANGE_LOG) : Key.create(Key.CHANGE_LOG, sid));
-		if (obj != null && obj instanceof ArrayList<?>) {
-			ArrayList<ChangeLogMonitor> temp = (ArrayList<ChangeLogMonitor>) obj;
-			if (temp.size() > start) {
+		if (obj != null && obj instanceof String) {
+			ArrayList<ChangeLogMonitor> temp = new ArrayList<ChangeLogMonitor>();
+			try {
+				temp = (ArrayList<ChangeLogMonitor>) gson.fromJson(String.valueOf(obj), typeTokenLog);
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error:" + ex.getMessage());
+			}
+			if (temp != null && temp.size() > start) {
 				if (end > temp.size()) {
 					end = temp.size();
 				}
@@ -479,11 +509,12 @@ public class SystemDaoImpl implements SystemDAO {
 				pm.close();
 			}
 			temp = list;
+			
 			if (temp != null) {
 				MonitorMemcache.put(
 						(sid == null || sid.equals("")) ? Key
 								.create(Key.CHANGE_LOG) : Key.create(
-								Key.CHANGE_LOG, sid), list);
+								Key.CHANGE_LOG, sid), gson.toJson(list));
 				if (temp.size() > start) {
 					if (end > temp.size()) {
 						end = temp.size();
@@ -566,8 +597,12 @@ public class SystemDaoImpl implements SystemDAO {
 				q.closeAll();
 				pm.close();
 			}
+			try {
 			MonitorMemcache.put(Key.create(Key.CHANGE_LOG_COUNT), new Integer(
 					count));
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error:" + ex.getMessage());
+			}
 		}
 
 		return count;
@@ -592,7 +627,11 @@ public class SystemDaoImpl implements SystemDAO {
 				pm.makePersistent(ccl);
 				pm.currentTransaction().commit();
 				check = true;
+				try {
 				MonitorMemcache.put(Key.create(Key.CHANGE_LOG_COUNT, sid), 1);
+				} catch (Exception ex) {
+					logger.log(Level.WARNING, "Error:" + ex.getMessage());
+				}
 				pm.close();
 			}
 		} catch (Exception e) {
@@ -617,8 +656,12 @@ public class SystemDaoImpl implements SystemDAO {
 			ccl.setCount(ccl.getCount() + 1);
 			pm.currentTransaction().commit();
 			check = true;
+			try {
 			MonitorMemcache.put(Key.create(Key.CHANGE_LOG_COUNT, sid),
 					ccl.getCount());
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error:" + ex.getMessage());
+			}
 		} catch (Exception e) {
 			pm.currentTransaction().rollback();
 			throw e;
@@ -755,5 +798,14 @@ public class SystemDaoImpl implements SystemDAO {
 							.isNotifyServicesConnection()) + "</LI>");
 		}
 		return description.toString();
+	}
+
+	public void storeSysList(ArrayList list) {		
+		Gson gson = new Gson();
+		try {
+		MonitorMemcache.put(Key.create(Key.SYSTEM_MONITOR_STORE), gson.toJson(list));
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, "Error:" + ex.getMessage());
+		}
 	}
 }

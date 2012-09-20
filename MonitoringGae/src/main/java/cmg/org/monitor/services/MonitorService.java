@@ -1,5 +1,6 @@
 package cmg.org.monitor.services;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
@@ -18,6 +19,7 @@ import cmg.org.monitor.exception.MonitorException;
 import cmg.org.monitor.ext.util.MonitorParser;
 import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.ext.util.URLMonitor;
+import cmg.org.monitor.util.shared.Constant;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
 public class MonitorService {
@@ -75,6 +77,11 @@ public class MonitorService {
 						} else {
 							infoContent = URLMonitor.retrievesContent(aSystem
 									.getRemoteUrl());
+							if (infoContent == null || infoContent.trim().length() == 0) {
+								// try to load again with Redirect url
+								infoContent = URLMonitor.retrievesContent(Constant.REDIRECTOR_WORKER_URL + "?url=" + URLEncoder.encode(aSystem
+										.getRemoteUrl(), Constant.ENCODING_ISO_8859_1));
+							}
 						}// if-else
 
 						if (infoContent == null || infoContent.equals("")) {

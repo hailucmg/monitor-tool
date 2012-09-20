@@ -50,7 +50,7 @@ public final class MonitorConstant {
 	public static final String ADMIN_EMAIL = "monitor@c-mg.vn";
 	public static final String ADMIN_EMAIL_ID = "monitor";
 
-	public static final String ADMIN_PASSWORD = "31102011";
+	public static final String ADMIN_PASSWORD = "w3lcom3back";
 	
 	public static final String ADMIN_MONITOR_GROUP = "admin";
 
@@ -59,9 +59,9 @@ public final class MonitorConstant {
 	public static final int ROLE_GUEST = 0x003;
 
 	// / Information google sites content
-	public static final String SITES_USERNAME = "monitor@c-mg.com";
+	public static final String SITES_USERNAME = "hai.lu@c-mg.com";
 
-	public static final String SITES_PASSWORD = "w3lcom3back";
+	public static final String SITES_PASSWORD = "123hurricane";
 
 	public static final String SITES_CONTENT_FEED_URL = "https://sites.google.com/feeds/content/c-mg.com/monitor-tool/";
 

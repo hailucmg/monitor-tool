@@ -3,16 +3,15 @@ package cmg.org.monitor.entity.shared;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
  * @author lamphan, Hong Hai
  * @version 1.0
  */
 
-public class MemoryMonitor implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6844172067376445464L;
+public class MemoryMonitor implements IsSerializable {
+	
 	public static final int MEM = 0x001;
 	public static final int SWAP = 0x002;
 
