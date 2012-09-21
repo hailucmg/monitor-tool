@@ -49,7 +49,17 @@ public class FileSystemMonitor implements IsSerializable {
 		this.type = type;
 		this.timeStamp = timeStamp;
 	}
-	
+	@Override
+	public String toString() {
+		StringBuffer sf = new StringBuffer();
+		sf.append("\r\nName: " + name);
+		sf.append("\r\nMount: " + mount);
+		sf.append("\r\nSize: " + size);
+		sf.append("\r\nUsed: " + used);
+		sf.append("\r\nType: " + type);
+		sf.append("\r\nTimestamp: " + timeStamp + "\r\n");
+		return sf.toString();
+	}
 	
 	public int getPercentUsage() {
 		if (size == 0)
