@@ -64,7 +64,15 @@ public class AlertMonitor implements IsSerializable {
 		this.description = description;
 		this.timeStamp = timeStamp;
 	}
-	
+	@Override
+	public String toString() {
+		StringBuffer sf = new StringBuffer();
+		sf.append("\r\nType: " + type);
+		sf.append("\r\nError: " + error);
+		sf.append("\r\nDescription: " + description);
+		sf.append("\r\nTimestamp: " + timeStamp + "\r\n");
+		return sf.toString();
+	}
 	public String getId() {
 		return id;
 	}

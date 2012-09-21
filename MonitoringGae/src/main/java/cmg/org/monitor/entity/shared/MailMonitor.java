@@ -13,7 +13,16 @@ public class MailMonitor implements IsSerializable {
 	private String content;
 	private Date timeStamp;
 	
-	
+	@Override
+	public String toString() {
+		StringBuffer sf = new StringBuffer();
+		sf.append("\r\nSender: " + sender);
+		sf.append("\r\nSubject: " + subject);
+		sf.append("\r\nContent Type: " + contentType);
+		sf.append("\r\nContent: " + content);
+		sf.append("\r\nTimestamp: " + timeStamp + "\r\n");
+		return sf.toString();
+	}
 	public String getSender() {
 		return sender.toLowerCase();
 	}

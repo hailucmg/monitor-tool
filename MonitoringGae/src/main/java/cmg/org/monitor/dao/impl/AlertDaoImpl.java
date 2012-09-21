@@ -67,9 +67,22 @@ public class AlertDaoImpl implements AlertDao {
 			Type type = new TypeToken<Collection<AlertStoreMonitor>>() {
 			}.getType();
 			try {
-				list = (ArrayList<AlertStoreMonitor>) gson.fromJson(
+				ArrayList<AlertStoreMonitor> listData = (ArrayList<AlertStoreMonitor>) gson.fromJson(
 						String.valueOf(obj), type);
-				if (list != null) {
+				if (listData != null && listData.size() > 0) {
+					list = new ArrayList<AlertStoreMonitor>();
+					for (AlertStoreMonitor alertStore : listData) {
+						ArrayList<AlertMonitor> alerts = alertStore.getAlerts();
+						ArrayList<AlertMonitor> tempAlerts = new ArrayList<AlertMonitor>();
+						if (alerts != null && alerts.size() > 0) {
+							for (AlertMonitor alert : alerts) {
+								alert.setAlertStore(null);
+								tempAlerts.add(alert);
+							}
+						}
+						alertStore.setAlerts(tempAlerts);						
+						list.add(alertStore);
+					}// for
 				}// if
 			} catch (Exception ex) {
 				logger.log(Level.WARNING, " -> ERROR: " + ex.getMessage());
@@ -90,6 +103,15 @@ public class AlertDaoImpl implements AlertDao {
 				if (listData != null && listData.size() > 0) {
 					list = new ArrayList<AlertStoreMonitor>();
 					for (AlertStoreMonitor alertStore : listData) {
+						ArrayList<AlertMonitor> alerts = alertStore.getAlerts();
+						ArrayList<AlertMonitor> tempAlerts = new ArrayList<AlertMonitor>();
+						if (alerts != null && alerts.size() > 0) {
+							for (AlertMonitor alert : alerts) {
+								alert.setAlertStore(null);
+								tempAlerts.add(alert);
+							}
+						}
+						alertStore.setAlerts(tempAlerts);						
 						list.add(alertStore);
 					}// for
 				}// if
@@ -97,7 +119,7 @@ public class AlertDaoImpl implements AlertDao {
 			
 			} catch (Exception ex) {
 				logger.log(Level.WARNING, " -> ERROR: "
-						+ ex.fillInStackTrace().toString());
+						+ ex.getMessage());
 			} finally {
 				query.closeAll();
 				pm.close();
@@ -135,6 +157,15 @@ public class AlertDaoImpl implements AlertDao {
 
 
 			// Store to JDO
+			ArrayList<AlertMonitor> alerts = store.getAlerts();
+			ArrayList<AlertMonitor> tempAlerts = new ArrayList<AlertMonitor>();
+			if (alerts!= null && alerts.size() > 0) {
+				for (AlertMonitor alert : alerts) {
+					alert.setAlertStore(store);
+					tempAlerts.add(alert);
+				}
+			}
+			store.setAlerts(tempAlerts);
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			try {
 				pm.currentTransaction().begin();
@@ -174,8 +205,14 @@ public class AlertDaoImpl implements AlertDao {
 		if (obj != null && obj instanceof String) {
 			Gson gson = new Gson();
 			try {
-				return gson.fromJson(String.valueOf(obj),
+				AlertStoreMonitor store = gson.fromJson(String.valueOf(obj),
 						AlertStoreMonitor.class);
+				ArrayList<AlertMonitor> alerts = store.getAlerts();
+				for (AlertMonitor alert : alerts) {
+					alert.setAlertStore(null);
+				}
+				store.setAlerts(alerts);
+				return store;
 			} catch (Exception ex) {
 				logger.log(Level.INFO,
 						"Cast json string. Message:" + ex.getMessage());

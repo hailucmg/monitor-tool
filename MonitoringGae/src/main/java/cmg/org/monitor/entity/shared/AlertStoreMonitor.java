@@ -87,7 +87,7 @@ public class AlertStoreMonitor implements IsSerializable {
 		if (alerts == null) {
 			alerts = new ArrayList<AlertMonitor>();
 		}
-		alert.setAlertStore(this);
+		//alert.setAlertStore(this);
 
 		alerts.add(alert);
 		return true;

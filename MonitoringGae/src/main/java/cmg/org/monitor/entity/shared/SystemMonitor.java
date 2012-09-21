@@ -118,6 +118,10 @@ public class SystemMonitor implements IsSerializable  {
 		this.lastestMemoryUsage = -1;
 	}
 	
+	@Override
+	public String toString() {
+		return code + " - " + name;
+	}
 	
 	public void swapValue(SystemMonitor sys) {
 		code = sys.getCode();

@@ -42,6 +42,18 @@ public class MailConfigMonitor implements IsSerializable {
 		this.isInbox = true;
 		this.isMarkAsUnread = true;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuffer sf = new StringBuffer();
+		sf.append("\r\nMail ID: " + mailId);
+		sf.append("\r\nLabel: " + label);
+		sf.append("\r\nStarred: " + isStarred);
+		sf.append("\r\nInbox: " + isInbox);
+		sf.append("\r\nMark as Unread: " + isMarkAsUnread + "\r\n");
+		return sf.toString();
+	}
+
 
 	public String getId() {
 		return id;
