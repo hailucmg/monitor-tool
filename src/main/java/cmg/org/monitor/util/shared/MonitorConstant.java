@@ -35,7 +35,7 @@ public final class MonitorConstant {
 
 	public static final String PROJECT_NAME = "CMG Health Monitor System";
 
-	public static final String VERSION = "2.0";
+	public static final String VERSION = "3.0";
 
 	public static final String RELEASED_ON = "01/11/2011";
 
