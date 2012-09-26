@@ -5,6 +5,7 @@ import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
 import cmg.org.monitor.entity.shared.JvmMonitor;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
+import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
@@ -56,4 +57,8 @@ public interface MonitorGwtService extends RemoteService {
 	void editLink(String link);
 	
 	String getLink();
+	
+	SystemGroup getGroupById(String id);
+	boolean addnewGroup(String name, String description);
+	SystemGroup[] getAllGroup();
 }
