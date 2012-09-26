@@ -32,6 +32,7 @@ public class Key implements IsSerializable {
 	public static final int TOKEN_SITES = 0x018;
 	public static final int TOKEN_MAIL= 0x019;
 	public static final int TOKEN_GROUP = 0x020;
+	public static final int LINK_DEFAULT = 0x021;
 	private int type;
 
 	private String sid;
