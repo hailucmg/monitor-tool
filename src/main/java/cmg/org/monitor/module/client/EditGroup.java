@@ -1,6 +1,7 @@
 package cmg.org.monitor.module.client;
 
 
+import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.util.shared.HTMLControl;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -34,25 +35,26 @@ public class EditGroup extends AncestorEntryPoint {
 	protected void init() {
 		if (currentPage == HTMLControl.PAGE_EDIT_GROUP) {
 			final String sysID = HTMLControl.getSystemId(History.getToken());
-			monitorGwtSv.getDefaultContent(new AsyncCallback<String>() {
+			monitorGwtSv.getGroupById(sysID,new AsyncCallback<SystemGroup>() {
 				@Override
-				public void onSuccess(String result) {
+				public void onSuccess(SystemGroup result) {
 					if (result != null) {
-						addWidget(HTMLControl.ID_BODY_CONTENT, new HTML(result));
+						initUI(result.getName(),result.getDescription());
+						addWidget(HTMLControl.ID_BODY_CONTENT, tableForm);
 						setVisibleLoadingImage(false);
 						setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
 						
 					} else {
-						showMessage("Oops! Error.", HTMLControl.HTML_DASHBOARD_NAME,
-								"Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
+						showMessage("Oops! Error.", HTMLControl.HTML_GROUP_MANAGEMENT_NAME,
+								"Go to Group Management. ", HTMLControl.RED_MESSAGE, true);
 						setVisibleLoadingImage(false);
 					}
 				}
 
 				@Override
 				public void onFailure(Throwable caught) {
-					showMessage("Oops! Error.", HTMLControl.HTML_DASHBOARD_NAME,
-							"Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
+					showMessage("Oops! Error.", HTMLControl.HTML_GROUP_MANAGEMENT_NAME,
+							"Go to Group Management. ", HTMLControl.RED_MESSAGE, true);
 					setVisibleLoadingImage(false);
 				}
 			});
@@ -190,7 +192,7 @@ public class EditGroup extends AncestorEntryPoint {
 			panelValidateGroupName.setVisible(false);
 			panelValidateGroupDescription.setVisible(false);
 			panelAdding.setVisible(true);
-			sendData(name, groupdes);
+			/*sendData(name, groupdes);*/
 		}
 		
 	}
@@ -218,7 +220,7 @@ public class EditGroup extends AncestorEntryPoint {
 	}
 
 	
-	private void sendData(String name, String groupName){
+	private void sendData(String name, String groupName, String id){
 		panelAdding.setVisible(false);
 		
 		
