@@ -29,7 +29,6 @@ import cmg.org.monitor.entity.shared.JvmMonitor;
 import cmg.org.monitor.entity.shared.MemoryMonitor;
 import cmg.org.monitor.entity.shared.NotifyMonitor;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
-import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.GroupMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorContainer;
@@ -360,22 +359,21 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	public String getDefaultContent() {
 		return HTMLControl.getDefaultContent();
 	}
-
+	
+	/* (non-Javadoc) * @see cmg.org.monitor.module.client.MonitorGwtService#editLink(java.lang.String) */
 	@Override
-	public SystemGroup[] getAllSystemGroup() {
-		// TODO Auto-generated method stub
-		return null;
+	public void editLink(String link) {
+	    // TODO Auto-generated method stub return false;
+	    UtilityDAO dao = new UtilityDaoImpl();
+	    dao.putLinkDefault(link);
 	}
 
+	/* (non-Javadoc) * @see cmg.org.monitor.module.client.MonitorGwtService#getLink() */
 	@Override
-	public boolean addnewGroup(String name, String description) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public SystemGroup getById(String id) {
-		// TODO Auto-generated method stub
-		return null;
+	public String getLink() {
+	    // TODO Auto-generated method stub return null;
+	    UtilityDAO dao = new UtilityDaoImpl();
+	    String str = dao.getLinkDefault();
+	    return str;
 	}
 }
