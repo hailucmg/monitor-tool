@@ -59,7 +59,7 @@ public class AddNewGroup extends AncestorEntryPoint {
 
 	protected void init() {
 		if (currentPage == HTMLControl.PAGE_ADD_GROUP) {
-			monitorGwtSv.getAllSystemGroup(new AsyncCallback<SystemGroup[]>(){
+			monitorGwtSv.getAllGroup(new AsyncCallback<SystemGroup[]>(){
 				@Override
 				public void onFailure(Throwable caught) {
 					caught.printStackTrace();
