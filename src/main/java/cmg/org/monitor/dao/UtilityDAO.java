@@ -30,4 +30,7 @@ public interface UtilityDAO {
 	
 	public void putTokenGroup();
 	
+	public void putLinkDefault(String link);
+	
+	public String getLinkDefault();
 }
