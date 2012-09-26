@@ -27,7 +27,7 @@ public class MonitorLoginService {
 		userLogin.setLoginUrl(userService.createLoginURL(HTMLControl.HTML_INDEX_NAME, MonitorConstant.DOMAIN));		
 		try {
 			
-			User user = userService.getCurrentUser();
+			User user = userService.getCurrentUser();			
 			if (user != null) {
 				userLogin.setAuthDomain(user.getAuthDomain());
 				userLogin.setEmail(user.getEmail());
@@ -35,6 +35,7 @@ public class MonitorLoginService {
 				userLogin.setUserId(user.getUserId());
 				userLogin.setRole(MonitorLoginService.getSystemRole(user.getEmail()));				
 				userLogin.setLogin(true);
+				
 			}
 
 		} catch (Exception ex) {

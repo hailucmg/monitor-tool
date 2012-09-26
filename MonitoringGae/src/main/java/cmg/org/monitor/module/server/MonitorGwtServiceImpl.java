@@ -36,6 +36,7 @@ import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.ext.model.shared.UserMonitor;
 import cmg.org.monitor.module.client.MonitorGwtService;
 import cmg.org.monitor.services.MonitorLoginService;
+import cmg.org.monitor.util.shared.HTMLControl;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -353,5 +354,9 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		container.setChangelogCount(count);
 		container.setChangelogs(list);
 		return container;
+	}
+
+	public String getDefaultContent() {
+		return HTMLControl.getDefaultContent();
 	}
 }

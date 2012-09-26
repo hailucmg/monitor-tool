@@ -22,6 +22,11 @@
 	<entry-point class="cmg.org.monitor.module.client.AddnewSystem" />	
 	<entry-point class="cmg.org.monitor.module.client.EditSystem" />
 	<entry-point class="cmg.org.monitor.module.client.SystemDetail" />
+	<entry-point class="cmg.org.monitor.module.client.AddNewGroup" />
+	<entry-point class="cmg.org.monitor.module.client.EditGroup" />
+	<entry-point class="cmg.org.monitor.module.client.GoogleManagement" />
+	<entry-point class="cmg.org.monitor.module.client.GroupManagement" />
+	<entry-point class="cmg.org.monitor.module.client.UserRole" />
 		<!-- END Entry point -->
 
 	<!-- START Source -->
