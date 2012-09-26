@@ -24,7 +24,7 @@ public class EditGroup extends AncestorEntryPoint {
 	Label lblGroupDescription;
 	AbsolutePanel panelValidateGroupName;
 	AbsolutePanel panelValidateGroupDescription;
-	String[] groupNames;
+	SystemGroup[] groupNames;
 	AbsolutePanel panelButton;
 	AbsolutePanel panelAdding;
 	Button bttCreate;
@@ -32,34 +32,61 @@ public class EditGroup extends AncestorEntryPoint {
 	Button bttReset;
 	String oldGroupName;
 	String oldGroupDescription;
+	
 	protected void init() {
 		if (currentPage == HTMLControl.PAGE_EDIT_GROUP) {
 			final String sysID = HTMLControl.getSystemId(History.getToken());
-			monitorGwtSv.getGroupById(sysID,new AsyncCallback<SystemGroup>() {
-				@Override
-				public void onSuccess(SystemGroup result) {
-					if (result != null) {
-						initUI(result.getName(),result.getDescription());
-						addWidget(HTMLControl.ID_BODY_CONTENT, tableForm);
-						setVisibleLoadingImage(false);
-						setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
-						
-					} else {
+			try {
+				monitorGwtSv.getGroupById(sysID,new AsyncCallback<SystemGroup>() {
+					@Override
+					public void onSuccess(SystemGroup result) {
+						if (result != null) {
+							initSystemGroups();
+							oldGroupName = result.getName();
+							oldGroupDescription = result.getDescription();
+							initUI(result.getName(),result.getDescription());
+							addWidget(HTMLControl.ID_BODY_CONTENT, tableForm);
+							setVisibleLoadingImage(false);
+							setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+							
+						} else {
+							showMessage("Oops! Error.", HTMLControl.HTML_GROUP_MANAGEMENT_NAME,
+									"Go to Group Management. ", HTMLControl.RED_MESSAGE, true);
+							setVisibleLoadingImage(false);
+						}
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
 						showMessage("Oops! Error.", HTMLControl.HTML_GROUP_MANAGEMENT_NAME,
 								"Go to Group Management. ", HTMLControl.RED_MESSAGE, true);
 						setVisibleLoadingImage(false);
 					}
-				}
-
-				@Override
-				public void onFailure(Throwable caught) {
-					showMessage("Oops! Error.", HTMLControl.HTML_GROUP_MANAGEMENT_NAME,
-							"Go to Group Management. ", HTMLControl.RED_MESSAGE, true);
-					setVisibleLoadingImage(false);
-				}
-			});
-
+				});
+			} catch (Exception e) {
+				showMessage("Oops! Error.", HTMLControl.HTML_GROUP_MANAGEMENT_NAME,
+						"Go to Group Management. ", HTMLControl.RED_MESSAGE, true);
+				setVisibleLoadingImage(false);
+			}
 		}
+	}
+	
+	
+	
+	private void initSystemGroups(){
+		monitorGwtSv.getAllGroup(new AsyncCallback<SystemGroup[]>() {
+			@Override
+			public void onSuccess(SystemGroup[] result) {
+					groupNames = result;
+			}
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+				showMessage("Oops! Error.", HTMLControl.HTML_GROUP_MANAGEMENT_NAME,
+						"Go to Group Management. ", HTMLControl.RED_MESSAGE, true);
+				setVisibleLoadingImage(false);	
+			}
+		});
 	}
 
 	private String validateGroupName(String name){
@@ -70,8 +97,8 @@ public class EditGroup extends AncestorEntryPoint {
 				|| name.contains("*")) {
 			msg = "Name is not validate";
 		}else{
-			for(String gName : groupNames){
-				if(name.equalsIgnoreCase(gName) && !name.equalsIgnoreCase(oldGroupName)){
+			for(SystemGroup gName : groupNames){
+				if(name.equalsIgnoreCase(gName.getName()) && !name.equalsIgnoreCase(oldGroupName)){
 					msg = "This name is existed	";
 				}
 			}
