@@ -1,7 +1,5 @@
 package cmg.org.monitor.entity.shared;
 
-import java.io.Serializable;
-
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -11,6 +9,14 @@ import javax.jdo.annotations.PrimaryKey;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+/** 
+	* DOCME
+	* 
+	* @Creator Hai Lu
+	* @author $Author$
+	* @version $Revision$
+	* @Last changed: $LastChangedDate$
+*/
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
 public class NotifyMonitor implements IsSerializable {
 

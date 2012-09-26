@@ -1,11 +1,18 @@
 package cmg.org.monitor.entity.shared;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
+/** 
+	* DOCME
+	* 
+	* @Creator Hai Lu
+	* @author $Author$
+	* @version $Revision$
+	* @Last changed: $LastChangedDate$
+*/
 public class CpuMonitor implements IsSerializable {
 
 	private int cpuUsage;

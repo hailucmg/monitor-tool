@@ -1,20 +1,18 @@
 package cmg.org.monitor.entity.shared;
 
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-import java.io.Serializable;
 import java.util.Date;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-/**
- * Model/entity representation of a network.
- * 
- * @author Hai Lu
- * 
- */
 
+/** 
+	* DOCME
+	* 
+	* @Creator Hai Lu
+	* @author $Author$
+	* @version $Revision$
+	* @Last changed: $LastChangedDate$
+*/
 public class ServiceMonitor implements IsSerializable {
 
 	private String name;

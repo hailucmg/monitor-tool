@@ -1,15 +1,18 @@
 package cmg.org.monitor.entity.shared;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-/**
- * @author lamphan, Hong Hai
- * @version 1.0
- */
 
+/** 
+	* DOCME
+	* 
+	* @Creator Hai Lu
+	* @author $Author$
+	* @version $Revision$
+	* @Last changed: $LastChangedDate$
+*/
 public class MemoryMonitor implements IsSerializable {
 	
 	public static final int MEM = 0x001;

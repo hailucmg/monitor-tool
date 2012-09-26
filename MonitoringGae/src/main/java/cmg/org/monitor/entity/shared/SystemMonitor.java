@@ -12,11 +12,14 @@ import javax.jdo.annotations.PrimaryKey;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-/**
- * @author lamphan
- * @version 1.0
- */
-
+/** 
+	* DOCME
+	* 
+	* @Creator Hai Lu
+	* @author $Author$
+	* @version $Revision$
+	* @Last changed: $LastChangedDate$
+*/
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
 public class SystemMonitor implements IsSerializable  {
 	
