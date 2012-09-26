@@ -9,7 +9,7 @@ body	{
 #page-top-outer	{
 	background: url(../images/shared/top_bg.jpg) top center repeat-x;
 	border-bottom: 1px solid #7e7e7e;
-	height: 92px;
+	height: 90px;
 	}
 #page-top	{
 	margin: -20px auto;
@@ -330,10 +330,10 @@ a:hover.icon-1	{
 a.icon-2	{
 	background: url(../images/table/table_icon_2.gif) no-repeat;
 	display: block;
-	height: 24px;
+	height: 20px;
 	margin-left: auto;
 	margin-right: auto;
-	width: 24px;
+	width: 20px;
 	}
 a:hover.icon-2	{
 	background: url(../images/table/table_icon_2.gif) 0 -24px;
@@ -1709,7 +1709,9 @@ a:hover.back-login	{
 	margin: 5px;
 	width: 105px;
 }
-
+.gwt-DialogBox {
+	z-index: 1000;
+}
 	
 	
 
