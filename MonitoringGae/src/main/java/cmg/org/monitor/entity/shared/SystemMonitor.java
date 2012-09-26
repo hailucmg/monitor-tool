@@ -1,6 +1,5 @@
 package cmg.org.monitor.entity.shared;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import javax.jdo.annotations.Extension;
