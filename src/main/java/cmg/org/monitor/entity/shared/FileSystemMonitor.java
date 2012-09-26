@@ -3,23 +3,25 @@
  */
 package cmg.org.monitor.entity.shared;
 
-import java.io.Serializable;
 import java.util.Date;
-
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 import cmg.org.monitor.util.shared.Utility;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-/**
- * @author admin
- *
- */
+
+/** 
+	* DOCME
+	* 
+	* @Creator Hai Lu
+	* @author $Author$
+	* @version $Revision$
+	* @Last changed: $LastChangedDate$
+*/
 public class FileSystemMonitor implements IsSerializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -8037940537272799331L;
 
 	private String name;
 	

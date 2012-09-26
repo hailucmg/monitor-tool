@@ -1,6 +1,5 @@
 package cmg.org.monitor.entity.shared;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import javax.jdo.annotations.Extension;
@@ -14,6 +13,14 @@ import com.google.appengine.api.datastore.Text;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
+/** 
+	* DOCME
+	* 
+	* @Creator Hai Lu
+	* @author $Author$
+	* @version $Revision$
+	* @Last changed: $LastChangedDate$
+*/
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
 public class ChangeLogMonitor implements IsSerializable{
 
