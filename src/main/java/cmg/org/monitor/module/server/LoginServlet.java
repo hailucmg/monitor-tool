@@ -50,6 +50,9 @@ public class LoginServlet extends HttpServlet {
 		User user = userService.getCurrentUser();
 		try {
 			if (userService.isUserLoggedIn()) {
+				if (userService.isUserAdmin()) {
+					System.out.println("is User Admin login");
+				}
 				resp.sendRedirect(resp.encodeRedirectURL(HTMLControl.HTML_INDEX_NAME));
 			} else {
 			    resp.sendRedirect(resp.encodeRedirectURL(

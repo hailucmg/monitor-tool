@@ -29,6 +29,8 @@ public interface MonitorGwtService extends RemoteService {
 	
 	String getHelpContent();
 	
+	String getDefaultContent();
+	
 	MonitorContainer getSystemMonitorContainer();
 	
 	UserMonitor[] listAllUsers();

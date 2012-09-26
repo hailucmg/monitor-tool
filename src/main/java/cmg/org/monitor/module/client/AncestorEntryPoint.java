@@ -1,5 +1,7 @@
 package cmg.org.monitor.module.client;
 
+import org.cyberneko.html.HTMLComponent;
+
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
@@ -179,7 +181,13 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 			if (currentPage == HTMLControl.PAGE_SYSTEM_DETAIL
 					|| currentPage == HTMLControl.PAGE_SYSTEM_STATISTIC
 					|| currentPage == HTMLControl.PAGE_ADD_SYSTEM
-					|| currentPage == HTMLControl.PAGE_SYSTEM_MANAGEMENT) {
+					|| currentPage == HTMLControl.PAGE_SYSTEM_MANAGEMENT
+					|| currentPage == HTMLControl.PAGE_GOOGLE_MANAGEMENT
+					|| currentPage == HTMLControl.PAGE_GROUP_MANAGEMENT
+					|| currentPage == HTMLControl.PAGE_USER_MANAGEMENT
+					|| currentPage == HTMLControl.PAGE_USER_ROLE
+					|| currentPage == HTMLControl.PAGE_EDIT_GROUP
+					|| currentPage == HTMLControl.PAGE_ADD_GROUP) {
 
 				addWidget(
 						HTMLControl.ID_STEP_HOLDER,

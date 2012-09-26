@@ -56,4 +56,6 @@ public interface MonitorGwtServiceAsync {
 	void listChangeLog(SystemMonitor sys, int start, int end,
 			AsyncCallback<MonitorContainer> callback);
 
+	void getDefaultContent(AsyncCallback<String> callback);
+
 }

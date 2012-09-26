@@ -19,12 +19,17 @@ public class HTMLControl {
 	public static final String HTML_ADD_NEW_SYSTEM_NAME = "#management/system/add";
 	public static final String HTML_SYSTEM_MANAGEMENT_NAME = "#management/system";
 	public static final String HTML_USER_MANAGEMENT_NAME = "#management/user";
+	public static final String HTML_USER_ROLE_NAME = "#management/user/role";
+	public static final String HTML_GOOGLE_MANAGEMENT_NAME = "#management/user/google";
 	public static final String HTML_ABOUT_NAME = "#about";
 	public static final String HTML_HELP_NAME = "#help";
 	public static final String HTML_EDIT_NAME = "#management/system/edit";
 	public static final String HTML_DELETE_SYSTEM_NAME = "#management/system/delete";
 	public static final String HTML_SYSTEM_CHANGELOG = "#management/system/changelog";
-
+	public static final String HTML_GROUP_MANAGEMENT_NAME = "#management/group";
+	public static final String HTML_ADD_NEW_GROUP_NAME = "#management/group/add";
+	public static final String HTML_EDIT_GROUP_NAME = "#management/group/edit";
+	
 	public static final String ID_STEP_HOLDER = "step-holder";
 	public static final String ID_PAGE_HEADING = "page-heading";
 	public static final String ID_BODY_CONTENT = "body-content";
@@ -56,6 +61,11 @@ public class HTMLControl {
 	public static final int PAGE_DELETE_SYSTEM = 0x009;
 	public static final int PAGE_EDIT_SYSTEM = 0x010;
 	public static final int PAGE_SYSTEM_CHANGE_LOG = 0x011;
+	public static final int PAGE_USER_ROLE = 0x012;
+	public static final int PAGE_GROUP_MANAGEMENT = 0x013;
+	public static final int PAGE_ADD_GROUP = 0x014;
+	public static final int PAGE_GOOGLE_MANAGEMENT = 0x015;
+	public static final int PAGE_EDIT_GROUP = 0x016;
 
 	public static final int ERROR_NORMAL = 0x000;
 	public static final int ERROR_SYSTEM_ID = 0x001;
@@ -101,21 +111,21 @@ public class HTMLControl {
 	}
 
 	public static int getPageIndex(String hash) {
-		hash = "#" + hash;
+		hash = "#" + hash.toLowerCase();
 		int index = PAGE_DASHBOARD;
-		if (hash.equals(HTML_DASHBOARD_NAME)) {
+		if (hash.equalsIgnoreCase(HTML_DASHBOARD_NAME)) {
 			index = PAGE_DASHBOARD;
-		} else if (hash.equals(HTML_ABOUT_NAME)) {
+		} else if (hash.equalsIgnoreCase(HTML_ABOUT_NAME)) {
 			index = PAGE_ABOUT;
-		} else if (hash.equals(HTML_HELP_NAME)) {
+		} else if (hash.equalsIgnoreCase(HTML_HELP_NAME)) {
 			index = PAGE_HELP;
-		} else if (hash.equals(HTML_ADD_NEW_SYSTEM_NAME)) {
+		} else if (hash.equalsIgnoreCase(HTML_ADD_NEW_SYSTEM_NAME)) {
 			index = PAGE_ADD_SYSTEM;
 		} else if (hash.startsWith(HTML_SYSTEM_DETAIL_NAME)) {
 			index = PAGE_SYSTEM_DETAIL;
-		} else if (hash.equals(HTML_SYSTEM_MANAGEMENT_NAME)) {
+		} else if (hash.equalsIgnoreCase(HTML_SYSTEM_MANAGEMENT_NAME)) {
 			index = PAGE_SYSTEM_MANAGEMENT;
-		} else if (hash.equals(HTML_USER_MANAGEMENT_NAME)) {
+		} else if (hash.equalsIgnoreCase(HTML_USER_MANAGEMENT_NAME)) {
 			index = PAGE_USER_MANAGEMENT;
 		} else if (hash.startsWith(HTML_SYSTEM_STATISTIC_NAME)) {
 			index = PAGE_SYSTEM_STATISTIC;
@@ -125,22 +135,37 @@ public class HTMLControl {
 			index = PAGE_DELETE_SYSTEM;
 		} else if (hash.equals(HTML_SYSTEM_CHANGELOG)) {
 			index = PAGE_SYSTEM_CHANGE_LOG;
+		} else if (hash.equalsIgnoreCase(HTML_USER_ROLE_NAME)) {
+			index = PAGE_USER_ROLE;
+		} else if (hash.equalsIgnoreCase(HTML_GOOGLE_MANAGEMENT_NAME)) {
+			index = PAGE_GOOGLE_MANAGEMENT;
+		} else if (hash.equalsIgnoreCase(HTML_GROUP_MANAGEMENT_NAME)) {
+			index = PAGE_GROUP_MANAGEMENT;
+		} else if (hash.equalsIgnoreCase(HTML_ADD_NEW_GROUP_NAME)) {
+			index = PAGE_ADD_GROUP;
+		} else if (hash.startsWith(HTML_EDIT_GROUP_NAME)) {
+			index = PAGE_EDIT_GROUP;
 		}
 		return index;
 	}
 
 	public static boolean validIndex(String hash) {
-		hash = "#" + hash;
-		return (hash.equals(HTML_DASHBOARD_NAME)
-				|| hash.equals(HTML_ABOUT_NAME) || hash.equals(HTML_HELP_NAME)
-				|| hash.equals(HTML_SYSTEM_MANAGEMENT_NAME)
-				|| hash.equals(HTML_USER_MANAGEMENT_NAME)
+		hash = "#" + hash.toLowerCase();
+		return (hash.equalsIgnoreCase(HTML_DASHBOARD_NAME)
+				|| hash.equalsIgnoreCase(HTML_ABOUT_NAME) || hash.equalsIgnoreCase(HTML_HELP_NAME)
+				|| hash.equalsIgnoreCase(HTML_SYSTEM_MANAGEMENT_NAME)
+				|| hash.equalsIgnoreCase(HTML_USER_MANAGEMENT_NAME)
 				|| hash.startsWith(HTML_SYSTEM_DETAIL_NAME)
 				|| hash.startsWith(HTML_SYSTEM_STATISTIC_NAME)
 				|| hash.startsWith(HTML_DELETE_SYSTEM_NAME)
-				|| hash.equals(HTML_ADD_NEW_SYSTEM_NAME) || hash
+				|| hash.equalsIgnoreCase(HTML_ADD_NEW_SYSTEM_NAME) || hash
 					.startsWith(HTML_EDIT_NAME))
-				|| hash.equals(HTML_SYSTEM_CHANGELOG);
+				|| hash.equalsIgnoreCase(HTML_SYSTEM_CHANGELOG)
+				|| hash.equalsIgnoreCase(HTML_USER_ROLE_NAME)
+				|| hash.equalsIgnoreCase(HTML_GOOGLE_MANAGEMENT_NAME)
+				|| hash.equalsIgnoreCase(HTML_GROUP_MANAGEMENT_NAME)
+				|| hash.equalsIgnoreCase(HTML_ADD_NEW_GROUP_NAME)
+				|| hash.startsWith(HTML_EDIT_GROUP_NAME);
 	}
 
 	public static HTML getSystemInfo(SystemMonitor sys) {
@@ -194,14 +219,24 @@ public class HTMLControl {
 			temp.append("<ul class='");
 			temp.append((page == PAGE_USER_MANAGEMENT || page == PAGE_SYSTEM_CHANGE_LOG
 					|| page == PAGE_SYSTEM_MANAGEMENT
-					|| page == PAGE_ADD_SYSTEM || page == PAGE_EDIT_SYSTEM) ? "current"
+					|| page == PAGE_ADD_SYSTEM || page == PAGE_EDIT_SYSTEM
+					|| page == PAGE_USER_ROLE
+					|| page == PAGE_GOOGLE_MANAGEMENT
+					|| page == PAGE_GROUP_MANAGEMENT
+					|| page == PAGE_ADD_GROUP
+					|| page == PAGE_EDIT_GROUP) ? "current"
 					: "select");
 			temp.append("'><li><a href='" + HTML_SYSTEM_MANAGEMENT_NAME
 					+ "'><b>");
 			temp.append("Administration");
 			temp.append("</b></a><div class='select_sub");
 			temp.append((page == PAGE_SYSTEM_MANAGEMENT || page == PAGE_SYSTEM_CHANGE_LOG
-					|| page == PAGE_USER_MANAGEMENT || page == PAGE_ADD_SYSTEM || page == PAGE_EDIT_SYSTEM) ? " show"
+					|| page == PAGE_USER_MANAGEMENT || page == PAGE_ADD_SYSTEM || page == PAGE_EDIT_SYSTEM
+					|| page == PAGE_GOOGLE_MANAGEMENT
+					|| page == PAGE_GROUP_MANAGEMENT
+					|| page == PAGE_ADD_GROUP
+					|| page == PAGE_EDIT_GROUP
+					|| page == PAGE_USER_ROLE) ? " show"
 					: "");
 			temp.append("'><ul class='sub'>");
 			temp.append("<li");
@@ -216,10 +251,18 @@ public class HTMLControl {
 			temp.append("><a href='" + HTML_SYSTEM_CHANGELOG
 					+ "'>System Change Log</a></li>");
 			temp.append("<li");
-			temp.append((page == PAGE_USER_MANAGEMENT) ? " class='sub_show'"
+			temp.append((page == PAGE_GROUP_MANAGEMENT
+					|| page == PAGE_ADD_GROUP || page == PAGE_EDIT_GROUP) ? " class='sub_show'"
+					: "");
+			temp.append("><a href='" + HTML_GROUP_MANAGEMENT_NAME
+					+ "'>Group Management</a></li>");
+			
+			temp.append("<li");
+			temp.append((page == PAGE_USER_MANAGEMENT || page == PAGE_GOOGLE_MANAGEMENT
+						|| page == PAGE_USER_ROLE) ? " class='sub_show'"
 					: "");
 			temp.append("><a href='" + HTML_USER_MANAGEMENT_NAME
-					+ "'>User List</a></li></ul></div></li></ul>");
+					+ "'>User Management</a></li></ul></div></li></ul>");
 
 		}
 		// About Menu
@@ -384,10 +427,35 @@ public class HTMLControl {
 			temp.append("<a href=\"" + HTML_SYSTEM_CHANGELOG
 					+ "\">Change Log</a> ");
 		}
-		if (page == PAGE_USER_MANAGEMENT) {
-			temp.append("<a href=\"" + HTML_USER_MANAGEMENT_NAME
-					+ "\">User List</a> ");
+		
+		if (page == PAGE_GROUP_MANAGEMENT || page == PAGE_ADD_GROUP
+				|| page == PAGE_EDIT_GROUP) {
+			temp.append("<a href=\"" + HTML_GROUP_MANAGEMENT_NAME
+					+ "\">Group Management</a> ");
 		}
+		if (page == PAGE_ADD_GROUP || page == PAGE_EDIT_GROUP) {
+			temp.append(HTML_ARROW_IMAGE);
+			temp.append(" <a ");
+			temp.append("\">");
+			temp.append(page == PAGE_EDIT_GROUP ? "Edit Group" : "");
+			temp.append(page == PAGE_ADD_GROUP ? "Add New Group" : "");
+			temp.append("</a> ");
+		}
+		
+		if (page == PAGE_USER_MANAGEMENT || page == PAGE_USER_ROLE || page == PAGE_GOOGLE_MANAGEMENT) {
+			temp.append("<a href=\"" + HTML_USER_MANAGEMENT_NAME
+					+ "\">User Management</a> ");
+		}
+		
+		if (page == PAGE_USER_ROLE || page == PAGE_GOOGLE_MANAGEMENT) {
+			temp.append(HTML_ARROW_IMAGE);
+			temp.append(" <a ");
+			temp.append("\">");
+			temp.append(page == PAGE_USER_ROLE ? "User Role" : "");
+			temp.append(page == PAGE_GOOGLE_MANAGEMENT ? "Google Management" : "");
+			temp.append("</a> ");
+		}
+		
 		if (page == PAGE_ABOUT) {
 			temp.append("<a href=\"" + HTML_ABOUT_NAME + "\">About Us</a> ");
 		}
@@ -471,7 +539,70 @@ public class HTMLControl {
 					+ ((page == PAGE_ADD_SYSTEM) ? "dark" : "light")
 					+ "-round\">&nbsp;</div>");
 			temp.append("<div class=\"clear\"></div>");
+		} else if (page == PAGE_GROUP_MANAGEMENT || page == PAGE_ADD_GROUP) {
+			temp.append("<div class=\"step-no"
+					+ ((page == PAGE_GROUP_MANAGEMENT) ? "" : "-off")
+					+ "\">1</div>");
+			temp.append("<div class=\"step-"
+					+ ((page == PAGE_GROUP_MANAGEMENT) ? "dark" : "light")
+					+ "-left\">");
+			temp.append("<a href=\"" + HTML_GROUP_MANAGEMENT_NAME
+					+ "\">Group List</a>");
+			temp.append("</div>");
+			temp.append("<div class=\"step-"
+					+ ((page == PAGE_GROUP_MANAGEMENT) ? "dark" : "light")
+					+ "-right\">&nbsp;</div>");
+			temp.append("<div class=\"step-no"
+					+ ((page == PAGE_ADD_GROUP) ? "" : "-off") + "\">2</div>");
+			temp.append("<div class=\"step-"
+					+ ((page == PAGE_ADD_GROUP) ? "dark" : "light")
+					+ "-left\">");
+			temp.append("<a href=\"" + HTML_ADD_NEW_GROUP_NAME
+					+ "\">Add New Group</a>");
+			temp.append("</div>");
+			temp.append("<div class=\"step-"
+					+ ((page == PAGE_ADD_GROUP) ? "dark" : "light")
+					+ "-round\">&nbsp;</div>");
+			temp.append("<div class=\"clear\"></div>");
+		} else if (page == PAGE_USER_MANAGEMENT || page == PAGE_USER_ROLE
+					|| page == PAGE_GOOGLE_MANAGEMENT) {
+			temp.append("<div class=\"step-no"
+					+ ((page == PAGE_USER_MANAGEMENT) ? "" : "-off")
+					+ "\">1</div>");
+			temp.append("<div class=\"step-"
+					+ ((page == PAGE_USER_MANAGEMENT) ? "dark" : "light")
+					+ "-left\">");
+			temp.append("<a href=\"" + HTML_USER_MANAGEMENT_NAME
+					+ "\">User Mapping</a>");
+			temp.append("</div>");
+			temp.append("<div class=\"step-"
+					+ ((page == PAGE_USER_MANAGEMENT) ? "dark" : "light")
+					+ "-right\">&nbsp;</div>");
+			temp.append("<div class=\"step-no"
+					+ ((page == PAGE_USER_ROLE) ? "" : "-off") + "\">2</div>");
+			temp.append("<div class=\"step-"
+					+ ((page == PAGE_USER_ROLE) ? "dark" : "light")
+					+ "-left\">");
+			temp.append("<a href=\"" + HTML_USER_ROLE_NAME
+					+ "\">User Role</a>");
+			temp.append("</div>");
+			temp.append("<div class=\"step-"
+					+ ((page == PAGE_USER_ROLE) ? "dark" : "light")
+					+ "-right\">&nbsp;</div>");
+			temp.append("<div class=\"step-no"
+					+ ((page == PAGE_GOOGLE_MANAGEMENT) ? "" : "-off") + "\">3</div>");
+			temp.append("<div class=\"step-"
+					+ ((page == PAGE_GOOGLE_MANAGEMENT) ? "dark" : "light")
+					+ "-left\">");
+			temp.append("<a href=\"" + HTML_GOOGLE_MANAGEMENT_NAME
+					+ "\">Google Management</a>");
+			temp.append("</div>");
+			temp.append("<div class=\"step-"
+					+ ((page == PAGE_GOOGLE_MANAGEMENT) ? "dark" : "light")
+					+ "-round\">&nbsp;</div>");
+			temp.append("<div class=\"clear\"></div>");
 		}
+		
 		return new HTML(temp.toString());
 	}
 
@@ -531,5 +662,11 @@ public class HTMLControl {
 			}
 		}
 		return sb.toString();
+	}
+	
+	public static String getDefaultContent() {
+		StringBuffer tmp = new StringBuffer();
+		tmp.append("<h3>Page is in progress</h3>");
+		return tmp.toString();
 	}
 }
