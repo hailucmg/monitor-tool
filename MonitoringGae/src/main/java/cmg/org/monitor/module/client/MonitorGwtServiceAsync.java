@@ -5,6 +5,7 @@ import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
 import cmg.org.monitor.entity.shared.JvmMonitor;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
+import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
@@ -57,5 +58,12 @@ public interface MonitorGwtServiceAsync {
 			AsyncCallback<MonitorContainer> callback);
 
 	void getDefaultContent(AsyncCallback<String> callback);
+
+	void getAllSystemGroup(AsyncCallback<SystemGroup[]> asyncCallback);
+
+	void addnewGroup(String name, String description,
+			AsyncCallback<Boolean> callback);
+
+	void getById(String id, AsyncCallback<SystemGroup> callback);
 
 }
