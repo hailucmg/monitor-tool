@@ -29,6 +29,7 @@ import cmg.org.monitor.entity.shared.JvmMonitor;
 import cmg.org.monitor.entity.shared.MemoryMonitor;
 import cmg.org.monitor.entity.shared.NotifyMonitor;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
+import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.GroupMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorContainer;
@@ -358,5 +359,23 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 
 	public String getDefaultContent() {
 		return HTMLControl.getDefaultContent();
+	}
+
+	@Override
+	public SystemGroup[] getAllSystemGroup() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean addnewGroup(String name, String description) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public SystemGroup getById(String id) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

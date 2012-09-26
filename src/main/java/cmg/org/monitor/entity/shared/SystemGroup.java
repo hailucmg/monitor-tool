@@ -26,6 +26,17 @@ public class SystemGroup implements IsSerializable  {
 	
 	@Persistent
 	private String name;
+	
+	@Persistent
+	private String description;
+	
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
 	/** 
 	 * @return the name 
