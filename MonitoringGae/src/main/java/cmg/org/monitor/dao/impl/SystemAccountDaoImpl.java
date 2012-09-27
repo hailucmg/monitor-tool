@@ -148,7 +148,9 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		initPersistence();
 		try {
 			pm.currentTransaction().begin();
-			pm.makePersistent(account);
+			GoogleAccount temp = pm.getObjectById(GoogleAccount.class, account.getId());
+			temp.swap(account);
+			pm.makePersistent(temp);
 			pm.currentTransaction().commit();
 			check = true;
 		} catch (Exception ex) {
@@ -170,8 +172,24 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 * @see cmg.org.monitor.dao.SystemAccountDAO#createGoogleAccount(cmg.org.monitor.entity.shared.GoogleAccount)
 	 */
 	public boolean createGoogleAccount(GoogleAccount account) throws Exception {
-		// TODO Auto-generated method stub
-		return false;
+		boolean check = false;
+		initPersistence();
+		try {
+			pm.currentTransaction().begin();
+			pm.makePersistent(account);
+			pm.currentTransaction().commit();
+			check = true;
+		} catch (Exception ex) {
+			logger.log(
+					Level.SEVERE,
+					" ERROR when createGoogleAccount. Message: "
+							+ ex.getMessage());
+			pm.currentTransaction().rollback();
+			throw ex;
+		} finally {
+			pm.close();
+		}
+		return check;
 	}
 
 	/**
@@ -180,8 +198,25 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 * @see cmg.org.monitor.dao.SystemAccountDAO#deleteGoogleAccount(java.lang.String)
 	 */
 	public boolean deleteGoogleAccount(String googleAccId) throws Exception {
-		// TODO Auto-generated method stub
-		return false;
+		boolean check = false;
+		initPersistence();
+		try {
+			pm.currentTransaction().begin();
+			GoogleAccount temp = pm.getObjectById(GoogleAccount.class, googleAccId);
+			pm.deletePersistent(temp);
+			pm.currentTransaction().commit();
+			check = true;
+		} catch (Exception ex) {
+			logger.log(
+					Level.SEVERE,
+					" ERROR when deleteGoogleAccount. Message: "
+							+ ex.getMessage());
+			pm.currentTransaction().rollback();
+			throw ex;
+		} finally {
+			pm.close();
+		}
+		return check;
 	}
 
 	/**
@@ -189,9 +224,8 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 * 
 	 * @see cmg.org.monitor.dao.SystemAccountDAO#deleteGoogleAccount(cmg.org.monitor.entity.shared.GoogleAccount)
 	 */
-	public boolean deleteGoogleAccount(GoogleAccount account) throws Exception {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean deleteGoogleAccount(GoogleAccount account) throws Exception {		
+		return deleteGoogleAccount(account.getId());
 	}
 
 	/**
@@ -263,11 +297,9 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 * @see cmg.org.monitor.dao.SystemAccountDAO#getGoogleAccountById(java.lang.String)
 	 */
 	public GoogleAccount getGoogleAccountById(String id) throws Exception {
-
 		initPersistence();
-		GoogleAccount acc = null;
 		try {
-
+			return pm.getObjectById(GoogleAccount.class, id);
 		} catch (Exception ex) {
 			logger.log(
 					Level.SEVERE,
@@ -278,7 +310,6 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		} finally {
 			pm.close();
 		}
-		return acc;
 	}
 
 	/**
@@ -287,9 +318,28 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 * @see cmg.org.monitor.dao.SystemAccountDAO#listAllGoogleAccount()
 	 */
 	public List<GoogleAccount> listAllGoogleAccount() throws Exception {
-		List<GoogleAccount> list = null;
+		initPersistence();
+		Query query = pm.newQuery(GoogleAccount.class);
+		List<GoogleAccount> temp = null;
+		List<GoogleAccount> tempOut = new ArrayList<GoogleAccount>();
+		try {
+			temp = (List<GoogleAccount>) query.execute();
+			if (!temp.isEmpty()) {
+				for (GoogleAccount user : temp) {
+					tempOut.add(user);
+				}
+			}
+		} catch (Exception e) {
+			logger.log(
+					Level.SEVERE,
+					" ERROR when listAllGoogleAccount. Message: "
+							+ e.getMessage());
+			throw e;
+		} finally {
+			pm.close();
+		}
 
-		return list;
+		return tempOut;
 	}
 
 	/**
@@ -333,7 +383,6 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		SystemUser temp = getSystemUserByEmail(user.getEmail());
 		boolean check = false;
 		if (temp != null) {
-			System.out.println("Not null");
 			initPersistence();
 			temp.swap(user);
 			try {
@@ -352,9 +401,7 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 				pm.close();
 			}
 
-		} else {
-			System.out.println("Null");
-		}
+		} 
 		return check;
 	}
 
