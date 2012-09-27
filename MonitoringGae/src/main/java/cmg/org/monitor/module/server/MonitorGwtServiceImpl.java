@@ -392,7 +392,14 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public SystemGroup[] getAllGroup() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<SystemGroup> list = new ArrayList<SystemGroup>();
+		SystemGroup  group1 = new SystemGroup();
+		group1.setDescription("test");
+		group1.setName("test");
+		group1.setId("test");
+		list.add(group1);
+		SystemGroup[] sys = new SystemGroup[list.size()];
+		list.toArray(sys);
+		return sys;
 	}
 }
