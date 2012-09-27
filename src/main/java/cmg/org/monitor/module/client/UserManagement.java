@@ -89,8 +89,7 @@ public class UserManagement extends AncestorEntryPoint {
 		}
 		data.addRows(listUser.size());
 		for(int j = 0 ; j < listUser.size() ; j++){
-			data.setValue(j, 0, listUser.get(j).getUsername());
-			
+			data.setValue(j, 0,  listUser.get(j).getUsername());
 			for(int k = 0; k < indexGroup ; k++){
 				List<SystemGroup> listGroupUSer = listUser.get(j).getGroups();
 				boolean checkInGroup = false;
@@ -140,8 +139,6 @@ public class UserManagement extends AncestorEntryPoint {
 	
 	private void drawTable(List<SystemUser> listUser , List<SystemGroup> listGroup ) {
 		myTable.draw(createData(listUser,listGroup), option());
-		/*myTable.draw(createData(listUser), option());*/
-
 	}
 	public static void updateUserMapping(String email, String idGroup, boolean mapping){
 		monitorGwtSv.updateUserMapping(email, idGroup, mapping, new AsyncCallback<Boolean>() {
