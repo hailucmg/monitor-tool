@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) CMG Ltd All rights reserved.
 
@@ -32,64 +31,66 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
  * @version .Revision: # .Date:Sep 25, 2012*
  */
 public class LinkDefaultTest {
-    private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
-    LinkService linkService = new LinkService();
-    LinkDefaultMonitor link;
-    @Before
-    public void setUp() throws Exception {
-	helper.setUp();
-	//link = new LinkDefaultMonitor();
-	//link.setLinkContent("http://c-mg.vn:8180/URLRedirector/handler");
-	//linkService.updateLink(link);
-    }
+	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(
+			new LocalDatastoreServiceTestConfig());
+	LinkService linkService = new LinkService();
+	LinkDefaultMonitor link;
 
-    @After
-    public void tearDown() throws Exception {
-	helper.tearDown();
-    }
+	@Before
+	public void setUp() throws Exception {
+		helper.setUp();
+		link = new LinkDefaultMonitor();
+		link.setLinkContent("http://c-mg.vn:8180/URLRedirector/handler");
+		linkService.updateLink(link);
+	}
 
-    //@Test
-    public void test() {
-	try{
-	    LinkDefaultMonitor link1 = linkService.getLink();
-	    assertNotNull(link1);
-	    assertNotNull(link);
-	    assertEquals(link1.getLinkContent(), link.getLinkContent());
-	    System.out.println(link1.getLinkContent());
-	    System.out.println(link.getLinkContent());
-	}catch (Exception ex){
-	    ex.printStackTrace();
+	@After
+	public void tearDown() throws Exception {
+		helper.tearDown();
 	}
-    }
-    
-    //@Test
-    public void test1() {
-	try{
-	    LinkDefaultMonitor link1 = linkService.getLink();
-	    link1.setLinkContent("http://c-mg.vn:8888/URLRedirector");
-	    
-	    linkService.updateLink(link1);
-	    LinkDefaultMonitor link2 = linkService.getLink();
-	    assertEquals(link1.getLinkContent(), link2.getLinkContent());
-	    System.out.println(link2.getLinkContent());
-	}catch (Exception ex){
-	    ex.printStackTrace();
+
+	@Test
+	public void test() {
+		try {
+			LinkDefaultMonitor link1 = linkService.getLink();
+			assertNotNull(link1);
+			assertNotNull(link);
+			assertEquals(link1.getLinkContent(), link.getLinkContent());
+			System.out.println(link1.getLinkContent());
+			System.out.println(link.getLinkContent());
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
-    }
-    
-    @Test
-    public void test2() {
-	try{
-	   UtilityDAO ultility = new UtilityDaoImpl();
-	   String str = ultility.getLinkDefault();
-	   assertEquals(Constant.REDIRECTOR_WORKER_URL, str);
-	   ultility.putLinkDefault("http://c-mg.com.vn");
-	   String link = ultility.getLinkDefault();
-	   assertEquals("http://c-mg.com.vn", link);
-	   
-	}catch (Exception ex){
-	    ex.printStackTrace();
+
+	@Test
+	public void test1() {
+		try {
+			LinkDefaultMonitor link1 = linkService.getLink();
+			link1.setLinkContent("http://c-mg.vn:8888/URLRedirector");
+
+			linkService.updateLink(link1);
+			LinkDefaultMonitor link2 = linkService.getLink();
+			assertEquals(link1.getLinkContent(), link2.getLinkContent());
+			System.out.println(link2.getLinkContent());
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
-    }
+
+	@Test
+	public void test2() {
+		try {
+			UtilityDAO ultility = new UtilityDaoImpl();
+			String str = ultility.getLinkDefault();
+			assertEquals(Constant.REDIRECTOR_WORKER_URL, str);
+			ultility.putLinkDefault("http://c-mg.com.vn");
+			String link = ultility.getLinkDefault();
+			assertEquals("http://c-mg.com.vn", link);
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
 
 }
