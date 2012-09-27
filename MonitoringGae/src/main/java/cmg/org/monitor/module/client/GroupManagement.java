@@ -150,7 +150,7 @@ public class GroupManagement extends AncestorEntryPoint{
 	static Options createOptionsTableListSystem() {
 		Options ops = Options.create();
 		ops.setAllowHtml(true);
-		ops.setShowRowNumber(true);
+		ops.setShowRowNumber(false);
 		return ops;
 	}
 	
