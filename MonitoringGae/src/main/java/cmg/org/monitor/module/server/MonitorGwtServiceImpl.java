@@ -380,14 +380,20 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public SystemGroup getGroupById(String id) {
-		// TODO Auto-generated method stub
+		if(id.equalsIgnoreCase("test")){
+			SystemGroup  group1 = new SystemGroup();
+			group1.setDescription("test");
+			group1.setName("test");
+			group1.setId("test");
+			return group1;
+		}
 		return null;
 	}
 
 	@Override
 	public boolean addnewGroup(String name, String description) {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
