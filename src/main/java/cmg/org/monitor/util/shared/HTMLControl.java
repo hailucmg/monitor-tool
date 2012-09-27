@@ -371,7 +371,12 @@ public class HTMLControl {
 		return "<a href=\"" + HTML_EDIT_NAME + "/" + id + "\">" + code + "</a>";
 
 	}
-
+	
+	public static String getLinkEditGroup(String id, String name){
+		return "<a href=\"" + HTML_EDIT_GROUP_NAME + "/" + id + "\">" + name + "</a>";
+	
+	}
+	
 	public static String getStringTime(int secsIn) {
 		int hours = secsIn / 3600, remainder = secsIn % 3600, minutes = remainder / 60, seconds = remainder % 60;
 
