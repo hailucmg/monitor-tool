@@ -1,7 +1,10 @@
 package cmg.org.monitor.module.client;
 
 
+import java.util.List;
+
 import cmg.org.monitor.entity.shared.SystemGroup;
+import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.util.shared.HTMLControl;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -23,7 +26,7 @@ public class AddNewGroup extends AncestorEntryPoint {
 	Label lblGroupDescription;
 	AbsolutePanel panelValidateGroupName;
 	AbsolutePanel panelValidateGroupDescription;
-	SystemGroup[] groupNames;
+	List<SystemGroup> groupNames;
 	AbsolutePanel panelButton;
 	AbsolutePanel panelAdding;
 	Button bttCreate;
@@ -59,7 +62,7 @@ public class AddNewGroup extends AncestorEntryPoint {
 
 	protected void init() {
 		if (currentPage == HTMLControl.PAGE_ADD_GROUP) {
-			monitorGwtSv.getAllGroup(new AsyncCallback<SystemGroup[]>(){
+			monitorGwtSv.getAllGroup(new AsyncCallback<MonitorContainer>(){
 				@Override
 				public void onFailure(Throwable caught) {
 					caught.printStackTrace();
@@ -69,8 +72,8 @@ public class AddNewGroup extends AncestorEntryPoint {
 							HTMLControl.RED_MESSAGE, true);
 				}
 				@Override
-				public void onSuccess(SystemGroup[] result) {
-						groupNames = result;
+				public void onSuccess(MonitorContainer result) {
+						groupNames = result.getListSystemGroup();
 						initUI();
 						addWidget(HTMLControl.ID_BODY_CONTENT, tableForm);
 						setVisibleLoadingImage(false);
@@ -247,8 +250,6 @@ public class AddNewGroup extends AncestorEntryPoint {
 		
 	}
 	
-	private void initNames(){
-		
-	}
+	
 	
 }

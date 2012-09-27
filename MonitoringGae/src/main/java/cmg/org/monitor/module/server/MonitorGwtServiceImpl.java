@@ -2,6 +2,7 @@ package cmg.org.monitor.module.server;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,6 +32,7 @@ import cmg.org.monitor.entity.shared.NotifyMonitor;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.ext.model.shared.GroupMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
@@ -364,7 +366,6 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	/* (non-Javadoc) * @see cmg.org.monitor.module.client.MonitorGwtService#editLink(java.lang.String) */
 	@Override
 	public void editLink(String link) {
-	    // TODO Auto-generated method stub return false;
 	    UtilityDAO dao = new UtilityDaoImpl();
 	    dao.putLinkDefault(link);
 	}
@@ -372,7 +373,6 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	/* (non-Javadoc) * @see cmg.org.monitor.module.client.MonitorGwtService#getLink() */
 	@Override
 	public String getLink() {
-	    // TODO Auto-generated method stub return null;
 	    UtilityDAO dao = new UtilityDaoImpl();
 	    String str = dao.getLinkDefault();
 	    return str;
@@ -392,20 +392,73 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public boolean addnewGroup(String name, String description) {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
-	public SystemGroup[] getAllGroup() {
-		ArrayList<SystemGroup> list = new ArrayList<SystemGroup>();
-		SystemGroup  group1 = new SystemGroup();
-		group1.setDescription("test");
-		group1.setName("test");
-		group1.setId("test");
-		list.add(group1);
-		SystemGroup[] sys = new SystemGroup[list.size()];
-		list.toArray(sys);
-		return sys;
+	public MonitorContainer getAllGroup() {
+		MonitorContainer container = new MonitorContainer();
+		SystemGroup group1 = new SystemGroup();
+		group1.setId("group1");
+		group1.setName("group1");
+		SystemGroup group2 = new SystemGroup();
+		group2.setId("group2");
+		group2.setName("group2");
+		SystemGroup group3 = new SystemGroup();
+		group3.setId("group3");
+		group3.setName("group3");
+		SystemGroup group4 = new SystemGroup();
+		group4.setId("group4");
+		group4.setName("group4");
+		SystemGroup group5 = new SystemGroup();
+		group5.setId("group5");
+		group5.setName("group5");
+		
+		
+		List<SystemGroup> listGroupUser = new ArrayList<SystemGroup>();
+		listGroupUser.add(group4);
+		listGroupUser.add(group3);
+		
+		SystemUser user1 = new SystemUser();
+		user1.setUsername("user1");
+		user1.setId("test1");
+		user1.setGroups(listGroupUser);
+		
+		SystemUser user2 = new SystemUser();
+		user2.setUsername("user2");
+		user2.setId("test2");
+		user2.setGroups(listGroupUser);
+		
+		
+		List<SystemGroup> listgroup = new ArrayList<SystemGroup>();
+		listgroup.add(group5);
+		listgroup.add(group4);
+		listgroup.add(group3);
+		listgroup.add(group2);
+		listgroup.add(group1);
+		
+		List<SystemUser> listUser = new ArrayList<SystemUser>();
+		listUser.add(user2);
+		listUser.add(user1);
+		
+		container.setListSystemGroup(listgroup);
+		container.setListSystemUsers(listUser);
+		return container;
+	}
+
+	@Override
+	public boolean deleteGroup(String name, String id) {
+		return true;
+	}
+
+	@Override
+	public boolean updateUserMapping(String email, String idGroup, boolean mapp) {
+		return true;
+	}
+
+	@Override
+	public boolean updateGroup(String groupName, String groupDescription,
+			String id) {
+		return true;
 	}
 }

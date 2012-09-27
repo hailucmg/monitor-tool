@@ -1,6 +1,9 @@
 package cmg.org.monitor.module.client;
 
+import java.util.List;
+
 import cmg.org.monitor.entity.shared.SystemGroup;
+import cmg.org.monitor.ext.model.shared.MonitorContainer;
 
 import cmg.org.monitor.util.shared.HTMLControl;
 
@@ -26,49 +29,54 @@ import com.google.gwt.visualization.client.visualizations.Table;
 import com.google.gwt.visualization.client.visualizations.Table.Options;
 
 public class GroupManagement extends AncestorEntryPoint{
-	SystemGroup[] listGroup;
+	static List<SystemGroup> listGroup;
 	static private Table tableListSystem;
     static private FlexTable rootLinkDefault;
     static private FlexTable tableLinkDefault;
     static DialogBox dialogBox;
     private static HTML popupContent;
     private static FlexTable flexHTML;
+    
+    
+    
+    
 	protected void init() {
 		if (currentPage == HTMLControl.PAGE_GROUP_MANAGEMENT) {
 			GroupManagement.exportStaticMethod();
-			monitorGwtSv.getAllGroup(new AsyncCallback<SystemGroup[]>() {
-				@Override
-				public void onFailure(Throwable caught) {
-					caught.printStackTrace();
-					showMessage("Oops! Error.", HTMLControl.HTML_DASHBOARD_NAME,
-							"Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
-					setVisibleLoadingImage(false);
-					setOnload(false);
-				}
-
-				@Override
-				public void onSuccess(SystemGroup[] result) {
-					if (result != null) {
-						listGroup = result;
-						tableListSystem = new Table();
-						addWidget(HTMLControl.ID_BODY_CONTENT,tableListSystem);
-						setVisibleLoadingImage(false);
-						setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
-						drawTable(listGroup);
-					} else {
-						showMessage("Oops! Error.", HTMLControl.HTML_DASHBOARD_NAME,
-								"Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
-						setVisibleLoadingImage(false);
-					}
-					setOnload(false);
-					
-				}
-			});
-
+			initUI();	
 		}
 	}
 
-	
+	public static void initUI(){
+		monitorGwtSv.getAllGroup(new AsyncCallback<MonitorContainer>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+				showMessage("Oops! Error.", HTMLControl.HTML_DASHBOARD_NAME,
+						"Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
+				setVisibleLoadingImage(false);
+				setOnload(false);
+			}
+
+			@Override
+			public void onSuccess(MonitorContainer result) {
+				if (result != null) {
+					listGroup = result.getListSystemGroup();
+					tableListSystem = new Table();
+					addWidget(HTMLControl.ID_BODY_CONTENT,tableListSystem);
+					setVisibleLoadingImage(false);
+					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+					drawTable(listGroup);
+				} else {
+					showMessage("Oops! Error.", HTMLControl.HTML_DASHBOARD_NAME,
+							"Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
+					setVisibleLoadingImage(false);
+				}
+				setOnload(false);
+				
+			}
+		});
+	}
 	
 	 public static native void exportStaticMethod() /*-{
 		$wnd.showConfirmDialogBox =
@@ -112,9 +120,9 @@ public class GroupManagement extends AncestorEntryPoint{
 		okButton.addClickHandler(new ClickHandler() {
 		    @Override
 		    public void onClick(ClickEvent event) {
-			setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
-			setVisibleLoadingImage(true);
-			/*deleteSystem(id);*/
+		    	setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
+				setVisibleLoadingImage(true);
+				deleteGroup(name, id);
 		    }
 		});
 		closeButton.addClickHandler(new ClickHandler() {
@@ -127,8 +135,8 @@ public class GroupManagement extends AncestorEntryPoint{
 		dialogBox.center();
 	    }
 	
-	   static void drawTable(SystemGroup[] result) {
-			if (result != null && result.length > 0) {
+	   static void drawTable(List<SystemGroup> result) {
+			if (result != null && result.size() > 0) {
 			    tableListSystem.draw(createDataListSystem(result), createOptionsTableListSystem());
 			} else {
 			    showMessage("No Group found. ", HTMLControl.HTML_ADD_NEW_GROUP_NAME, "Add new group.", HTMLControl.RED_MESSAGE, true);
@@ -149,20 +157,20 @@ public class GroupManagement extends AncestorEntryPoint{
 	/*
 	 * Create data table list system without value
 	 */
-	static AbstractDataTable createDataListSystem(SystemGroup[] listGroup) {
+	static AbstractDataTable createDataListSystem(List<SystemGroup> listGroup) {
 		// create object data table
 		DataTable dataListSystem = DataTable.create();
 		// add all columns
 		dataListSystem.addColumn(ColumnType.STRING, "Group Name");
 		dataListSystem.addColumn(ColumnType.STRING, "Description");
 		dataListSystem.addColumn(ColumnType.STRING, "Delete");
-		dataListSystem.addRows(listGroup.length);
-		for (int i = 0; i < listGroup.length; i++) {
-			dataListSystem.setValue(i, 0,HTMLControl.getLinkEditGroup("test", listGroup[i].getName()));
-			dataListSystem.setValue(i, 1, listGroup[i].getDescription());
+		dataListSystem.addRows(listGroup.size());
+		for (int i = 0; i < listGroup.size(); i++) {
+			dataListSystem.setValue(i, 0,HTMLControl.getLinkEditGroup(listGroup.get(i).getId(), listGroup.get(i).getName()));
+			dataListSystem.setValue(i, 1, listGroup.get(i).getDescription());
 			dataListSystem.setValue(i,2,
-							"<a onClick=\"javascript:showConfirmDialogBox('"+ listGroup[i].getName()
-									+ "','"+ listGroup[i].getId()
+							"<a onClick=\"javascript:showConfirmDialogBox('"+ listGroup.get(i).getName()
+									+ "','"+ listGroup.get(i).getId()
 									+ "');\" title=\"Delete\" class=\"icon-2 info-tooltip\"></a>");
 		}
 
@@ -179,6 +187,25 @@ public class GroupManagement extends AncestorEntryPoint{
 		bf.format(dataListSystem, 2);
 		return dataListSystem;
 
+	}
+	
+	
+	public static void deleteGroup(String groupname, String id){
+		monitorGwtSv.deleteGroup(groupname, id, new AsyncCallback<Boolean>() {
+			
+			@Override
+			public void onSuccess(Boolean result) {
+				showMessage("Group deleted sucessfully.", "", "", HTMLControl.BLUE_MESSAGE, true);
+				dialogBox.hide();
+				initUI();
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				showMessage("Cannot delete this group.", "", "", HTMLControl.RED_MESSAGE, true);
+				dialogBox.hide();
+			}
+		});
 	}
 	
 }

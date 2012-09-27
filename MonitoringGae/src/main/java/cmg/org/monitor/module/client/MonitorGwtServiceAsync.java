@@ -68,7 +68,15 @@ public interface MonitorGwtServiceAsync {
 	void addnewGroup(String name, String description,
 			AsyncCallback<Boolean> callback);
 
-	void getAllGroup(AsyncCallback<SystemGroup[]> callback);
+	void getAllGroup(AsyncCallback<MonitorContainer> callback);
+
+	void deleteGroup(String name, String id, AsyncCallback<Boolean> callback);
+
+	void updateUserMapping(String email, String idGroup, boolean mapp,
+			AsyncCallback<Boolean> callback);
+
+	void updateGroup(String groupName, String groupDescription, String id,
+			AsyncCallback<Boolean> callback);
 
 	
 	
