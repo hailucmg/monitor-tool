@@ -38,6 +38,7 @@ public class SystemManagement extends AncestorEntryPoint {
 	SystemManagement.exportStaticMethod();
 	if (currentPage == HTMLControl.PAGE_SYSTEM_MANAGEMENT) {
 	    tableListSystem = new Table();
+	    tableListSystem.setWidth("1185px");
 	    tableLinkDefault = new FlexTable();
 	    linkTxt = new TextBox();
 	    updateBtn = new Button("Update");
@@ -184,7 +185,6 @@ public class SystemManagement extends AncestorEntryPoint {
     static void drawTable(SystemMonitor[] result) {
 	if (result != null && result.length > 0) {
 	    tableListSystem.draw(createDataListSystem(result), createOptionsTableListSystem());
-
 	} else {
 	    showMessage("No system found. ", HTMLControl.HTML_ADD_NEW_SYSTEM_NAME, "Add new system.", HTMLControl.RED_MESSAGE, true);
 	    showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);

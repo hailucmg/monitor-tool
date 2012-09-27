@@ -71,6 +71,17 @@ $(document).bind("click", function (e) {
 $(document).bind("click", function (e) {
     if (e.target.id != $(".action-slider").attr("class")) $("#actions-box-slider").slideUp();
 });
+
+$(".ckUserRole").live('click',function(){
+	username = $(this).attr('username');
+	role = $(this).attr('role');
+	if($(this).is(":checked")){
+		updateUserRole(username,role,"true");
+	}else{
+		updateUserRole(username,role,"false");
+	}
+});
+
 // END ----------------------------- 4
  
  
