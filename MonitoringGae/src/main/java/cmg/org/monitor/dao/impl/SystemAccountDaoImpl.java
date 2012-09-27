@@ -75,6 +75,7 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 * 
 	 * @see cmg.org.monitor.dao.SystemAccountDAO#createSystemUsers(java.util.List)
 	 */
+	@SuppressWarnings("rawtypes")
 	public boolean createSystemUsers(List users) throws Exception {
 		initPersistence();
 		boolean check = false;
@@ -233,6 +234,7 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 * 
 	 * @see cmg.org.monitor.dao.SystemAccountDAO#listAllSystemUser()
 	 */
+	@SuppressWarnings("unchecked")
 	public List<SystemUser> listAllSystemUser() throws Exception {
 		initPersistence();
 		Query query = pm.newQuery(SystemUser.class);
@@ -263,6 +265,7 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 * 
 	 * @see cmg.org.monitor.dao.SystemAccountDAO#listAllSystemUserByDomain(java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	public List<SystemUser> listAllSystemUserByDomain(String domain)
 			throws Exception {
 		initPersistence();
@@ -317,6 +320,7 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 * 
 	 * @see cmg.org.monitor.dao.SystemAccountDAO#listAllGoogleAccount()
 	 */
+	@SuppressWarnings("unchecked")
 	public List<GoogleAccount> listAllGoogleAccount() throws Exception {
 		initPersistence();
 		Query query = pm.newQuery(GoogleAccount.class);
@@ -410,6 +414,7 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 * 
 	 * @see cmg.org.monitor.dao.SystemAccountDAO#getSystemUserByEmail(java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	public SystemUser getSystemUserByEmail(String email) throws Exception {
 		initPersistence();
 		Query query = pm.newQuery(SystemUser.class);
