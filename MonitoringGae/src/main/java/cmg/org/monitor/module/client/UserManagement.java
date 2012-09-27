@@ -64,7 +64,7 @@ public class UserManagement extends AncestorEntryPoint {
 	}-*/;
 	
 	private static void RecipeData(String username, String groupID, String idCheckbox){
-		System.out.println("goto recipeData");
+		
 		Element cb = Document.get().getElementById(idCheckbox);
 		String check = cb.getAttribute("ischeck");
 		boolean sendServer;
