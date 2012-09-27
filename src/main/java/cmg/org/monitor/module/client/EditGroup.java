@@ -1,7 +1,10 @@
 package cmg.org.monitor.module.client;
 
 
+import java.util.List;
+
 import cmg.org.monitor.entity.shared.SystemGroup;
+import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.util.shared.HTMLControl;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -24,7 +27,7 @@ public class EditGroup extends AncestorEntryPoint {
 	Label lblGroupDescription;
 	AbsolutePanel panelValidateGroupName;
 	AbsolutePanel panelValidateGroupDescription;
-	SystemGroup[] groupNames;
+	List<SystemGroup> groupNames;
 	AbsolutePanel panelButton;
 	AbsolutePanel panelAdding;
 	Button bttCreate;
@@ -32,7 +35,7 @@ public class EditGroup extends AncestorEntryPoint {
 	Button bttReset;
 	String oldGroupName;
 	String oldGroupDescription;
-	
+	String id;
 	protected void init() {
 		if (currentPage == HTMLControl.PAGE_EDIT_GROUP) {
 			final String sysID = HTMLControl.getSystemId(History.getToken());
@@ -44,6 +47,7 @@ public class EditGroup extends AncestorEntryPoint {
 							initSystemGroups();
 							oldGroupName = result.getName();
 							oldGroupDescription = result.getDescription();
+							id = result.getId();
 							initUI(result.getName(),result.getDescription());
 							addWidget(HTMLControl.ID_BODY_CONTENT, tableForm);
 							setVisibleLoadingImage(false);
@@ -74,10 +78,10 @@ public class EditGroup extends AncestorEntryPoint {
 	
 	
 	private void initSystemGroups(){
-		monitorGwtSv.getAllGroup(new AsyncCallback<SystemGroup[]>() {
+		monitorGwtSv.getAllGroup(new AsyncCallback<MonitorContainer>() {
 			@Override
-			public void onSuccess(SystemGroup[] result) {
-					groupNames = result;
+			public void onSuccess(MonitorContainer result) {
+				groupNames = result.getListSystemGroup();
 			}
 			@Override
 			public void onFailure(Throwable caught) {
@@ -143,7 +147,7 @@ public class EditGroup extends AncestorEntryPoint {
 		panelValidateGroupDescription.setVisible(false);
 		
 		bttCreate = new Button();
-		bttCreate.setText("Create");
+		bttCreate.setText("Update");
 		bttCreate.setStyleName("margin:6px;");
 		bttCreate.addStyleName("form-button");
 
@@ -195,7 +199,6 @@ public class EditGroup extends AncestorEntryPoint {
 
 		@Override
 		public void onClick(ClickEvent event) {
-			// TODO Auto-generated method stub
 			String name = validateGroupName(txtGroupName.getText());
 			String groupdes =validateGroupDescription(txtGroupDescription.getText());
 			panelValidateGroupName.setVisible(false);
@@ -219,7 +222,7 @@ public class EditGroup extends AncestorEntryPoint {
 			panelValidateGroupName.setVisible(false);
 			panelValidateGroupDescription.setVisible(false);
 			panelAdding.setVisible(true);
-			/*sendData(name, groupdes);*/
+			sendData(name, groupdes, id);
 		}
 		
 	}
@@ -247,9 +250,37 @@ public class EditGroup extends AncestorEntryPoint {
 	}
 
 	
-	private void sendData(String name, String groupName, String id){
+	private void sendData(String name, String groupDescription, String id){
 		panelAdding.setVisible(false);
-		
+		monitorGwtSv.updateGroup(name, groupDescription, id, new AsyncCallback<Boolean>() {
+			
+			@Override
+			public void onSuccess(Boolean result) {
+				if(result){
+					showMessage("Group edited sucessfully. ",
+							HTMLControl.HTML_GROUP_MANAGEMENT_NAME,
+							"View group list. ", HTMLControl.BLUE_MESSAGE,
+							true);
+				}
+				else{
+					showMessage("Server error! ",
+							HTMLControl.HTML_GROUP_MANAGEMENT_NAME,
+							"Goto Group Management. ", HTMLControl.RED_MESSAGE,
+							true);
+					
+				}
+				
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				showMessage("Server error! ",
+						HTMLControl.HTML_GROUP_MANAGEMENT_NAME,
+						"Goto Group Management. ", HTMLControl.RED_MESSAGE,
+						true);
+				
+			}
+		});
 		
 	}
 }

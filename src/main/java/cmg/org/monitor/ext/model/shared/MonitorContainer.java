@@ -2,12 +2,15 @@ package cmg.org.monitor.ext.model.shared;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import cmg.org.monitor.entity.shared.ChangeLogMonitor;
 import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.MemoryMonitor;
 import cmg.org.monitor.entity.shared.NotifyMonitor;
+import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.entity.shared.SystemUser;
 
 public class MonitorContainer implements Serializable {
 
@@ -35,6 +38,25 @@ public class MonitorContainer implements Serializable {
 	private NotifyMonitor notify;
 	
 	private ChangeLogMonitor changelog;
+	
+	private List<SystemGroup> listSystemGroup;
+	private List<SystemUser> listSystemUsers;
+
+	public List<SystemGroup> getListSystemGroup() {
+		return listSystemGroup;
+	}
+
+	public void setListSystemGroup(List<SystemGroup> listSystemGroup) {
+		this.listSystemGroup = listSystemGroup;
+	}
+
+	public List<SystemUser> getListSystemUsers() {
+		return listSystemUsers;
+	}
+
+	public void setListSystemUsers(List<SystemUser> listSystemUsers) {
+		this.listSystemUsers = listSystemUsers;
+	}
 
 	public GroupMonitor[] getGroups() {
 		return groups;
