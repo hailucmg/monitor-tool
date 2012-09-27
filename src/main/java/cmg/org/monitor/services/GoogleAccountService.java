@@ -39,7 +39,6 @@ import com.google.gdata.data.appsforyourdomain.provisioning.UserEntry;
 import com.google.gdata.data.appsforyourdomain.provisioning.UserFeed;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
-import com.google.gson.Gson;
 import com.ibm.icu.text.SimpleDateFormat;
 
 /**
@@ -150,6 +149,7 @@ public class GoogleAccountService {
 		bufferLog.append(input);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void sync() {
 		int problem = 0;
 		long start = System.currentTimeMillis();
@@ -253,9 +253,9 @@ public class GoogleAccountService {
 					createdCount = 0, createdFail = 0,
 					removedCount = 0, removedFail = 0,
 					conflictCount = 0, conflictFail = 0;
-			List<SystemUser> removedList = new ArrayList<SystemUser>();
-			List<SystemUser> createdList = new ArrayList<SystemUser>();
-			List<SystemUser> updatedList = new ArrayList<SystemUser>();
+			List<SystemUser> removedList = new ArrayList<SystemUser>(),
+					createdList = new ArrayList<SystemUser>(),
+					updatedList = new ArrayList<SystemUser>();
 			if (activeUsers == null || activeUsers.isEmpty()) {
 				createdList.addAll(users);
 			} else {			
@@ -354,8 +354,8 @@ public class GoogleAccountService {
 					}
 				}
 			}	
-			log("Updated user count: "+updatedCount+" ("+updatedFail+" failed)");
 			log("Created user count: "+createdCount+" ("+createdFail+" failed)");
+			log("Updated user count: "+updatedCount+" ("+updatedFail+" failed)");
 			log("Removed user count: "+removedCount+" ("+removedFail+" failed)");
 			log("Username conflicts count: "+conflictCount+" ("+conflictFail+" new)");
 
@@ -363,7 +363,7 @@ public class GoogleAccountService {
 		long end = System.currentTimeMillis();
 		long total = end - start;
 		log("User synchronization completed with " + problem
-				+ " problems. Time executed: " + total + " ms");
+				+ " problem"+(problem > 1 ? "s" : "")+". Time executed: " + total + " ms");
 	}
 
 	public String getLog() {
@@ -378,7 +378,6 @@ public class GoogleAccountService {
 					"https://www.google.com/a/feeds/c-mg.vn/user/2.0/");
 			System.out.println("Getting user entries...\n");
 			List<UserEntry> entries = new ArrayList<UserEntry>();
-			Gson gson = new Gson();
 			while (metafeedUrl != null) {
 				// Fetch page
 				System.out.println("Fetching page...\n");
