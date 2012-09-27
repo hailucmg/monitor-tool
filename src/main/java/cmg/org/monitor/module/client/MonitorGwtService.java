@@ -59,6 +59,8 @@ public interface MonitorGwtService extends RemoteService {
 	String getLink();
 	
 	SystemGroup getGroupById(String id);
+	
 	boolean addnewGroup(String name, String description);
+	
 	SystemGroup[] getAllGroup();
 }
