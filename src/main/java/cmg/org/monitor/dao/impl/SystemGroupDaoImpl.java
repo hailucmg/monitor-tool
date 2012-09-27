@@ -1,15 +1,21 @@
 package cmg.org.monitor.dao.impl;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 
 import cmg.org.monitor.dao.SystemGroupDAO;
 import cmg.org.monitor.entity.shared.SystemGroup;
-import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.services.PMF;
 
+/** 
+	* DOCME
+	* 
+	* @Creator Hai Lu
+	* @author $Author$
+	* @version $Revision$
+	* @Last changed: $LastChangedDate$
+*/
 public class SystemGroupDaoImpl implements SystemGroupDAO{
 	private static final Logger logger = Logger.getLogger(SystemGroupDaoImpl.class
 			.getCanonicalName());
