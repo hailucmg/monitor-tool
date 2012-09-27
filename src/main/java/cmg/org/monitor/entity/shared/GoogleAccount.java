@@ -46,6 +46,13 @@ public class GoogleAccount implements IsSerializable {
 	private
 	Date lastSync;
 
+	public void swap(GoogleAccount in) {
+		this.domain = in.domain;
+		this.username = in.username;
+		this.password = in.password;
+		this.token = in.token;
+		this.lastSync = in.lastSync;
+	}
 	/** 
 	 * @return the id 
 	 */
