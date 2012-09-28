@@ -190,7 +190,7 @@ public class AddNewGroup extends AncestorEntryPoint {
 			panelValidateGroupName.setVisible(false);
 			panelValidateGroupDescription.setVisible(false);
 			panelAdding.setVisible(true);
-			sendData(name, groupdes);
+			sendData(txtGroupName.getText(), txtGroupDescription.getText());
 		}
 		
 	}

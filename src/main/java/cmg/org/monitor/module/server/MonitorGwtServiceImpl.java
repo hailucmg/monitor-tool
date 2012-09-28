@@ -425,7 +425,6 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		List<SystemGroup> listGroup = new ArrayList<SystemGroup>();
 		if(sysGroup!=null){
 			for(SystemGroup ss : sysGroup){
-				System.out.println(ss.getName());
 				listGroup.add(ss);
 			}
 		}

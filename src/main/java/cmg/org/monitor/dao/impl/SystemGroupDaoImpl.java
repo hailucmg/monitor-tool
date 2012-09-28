@@ -125,10 +125,12 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 		try {
 			List<SystemGroup> temp = (List<SystemGroup>) query.execute();
 			if (!temp.isEmpty()) {
+				
 				groups = new SystemGroup[temp.size()];
 				temp.toArray(groups);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.log(
 					Level.SEVERE,
 					" ERROR when getAllGroup. Message: "
