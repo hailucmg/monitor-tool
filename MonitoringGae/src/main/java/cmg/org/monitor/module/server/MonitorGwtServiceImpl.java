@@ -12,7 +12,9 @@ import cmg.org.monitor.dao.FileSystemDAO;
 import cmg.org.monitor.dao.JvmDAO;
 import cmg.org.monitor.dao.MemoryDAO;
 import cmg.org.monitor.dao.ServiceDAO;
+import cmg.org.monitor.dao.SystemAccountDAO;
 import cmg.org.monitor.dao.SystemDAO;
+import cmg.org.monitor.dao.SystemGroupDAO;
 import cmg.org.monitor.dao.UtilityDAO;
 import cmg.org.monitor.dao.impl.AlertDaoImpl;
 import cmg.org.monitor.dao.impl.CpuDaoImpl;
@@ -20,7 +22,9 @@ import cmg.org.monitor.dao.impl.FileSystemDaoImpl;
 import cmg.org.monitor.dao.impl.JvmDaoImpl;
 import cmg.org.monitor.dao.impl.MemoryDaoImpl;
 import cmg.org.monitor.dao.impl.ServiceDaoImpl;
+import cmg.org.monitor.dao.impl.SystemAccountDaoImpl;
 import cmg.org.monitor.dao.impl.SystemDaoImpl;
+import cmg.org.monitor.dao.impl.SystemGroupDaoImpl;
 import cmg.org.monitor.dao.impl.UtilityDaoImpl;
 import cmg.org.monitor.entity.shared.AlertStoreMonitor;
 import cmg.org.monitor.entity.shared.ChangeLogMonitor;
@@ -380,75 +384,71 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public SystemGroup getGroupById(String id) {
-		if(id.equalsIgnoreCase("test")){
-			SystemGroup  group1 = new SystemGroup();
-			group1.setDescription("test");
-			group1.setName("test");
-			group1.setId("test");
-			return group1;
+		SystemGroupDAO sysGroupDao= new SystemGroupDaoImpl();
+		try {
+			SystemGroup ss = sysGroupDao.getByID(id);
+			return ss;
+		} catch (Exception e) {
+			return null;
 		}
-		return null;
 	}
 
 	@Override
 	public boolean addnewGroup(String name, String description) {
-		return true;
+		SystemGroupDAO sysGroupDao= new SystemGroupDaoImpl();
+		SystemGroup ss = new SystemGroup();
+		ss.setName(name);
+		ss.setDescription(description);
+		try {
+			boolean b = sysGroupDao.addNewGroup(ss);
+			System.out.println("add done " + b);
+			return b;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
 	}
 
 	@Override
 	public MonitorContainer getAllGroup() {
+		try {
 		MonitorContainer container = new MonitorContainer();
-		SystemGroup group1 = new SystemGroup();
-		group1.setId("group1");
-		group1.setName("group1");
-		SystemGroup group2 = new SystemGroup();
-		group2.setId("group2");
-		group2.setName("group2");
-		SystemGroup group3 = new SystemGroup();
-		group3.setId("group3");
-		group3.setName("group3");
-		SystemGroup group4 = new SystemGroup();
-		group4.setId("group4");
-		group4.setName("group4");
-		SystemGroup group5 = new SystemGroup();
-		group5.setId("group5");
-		group5.setName("group5");
-		
-		
-		List<SystemGroup> listGroupUser = new ArrayList<SystemGroup>();
-		listGroupUser.add(group4);
-		listGroupUser.add(group3);
-		
-		SystemUser user1 = new SystemUser();
-		user1.setUsername("user1");
-		user1.setId("test1");
-		user1.setGroups(listGroupUser);
-		
-		SystemUser user2 = new SystemUser();
-		user2.setUsername("user2");
-		user2.setId("test2");
-		user2.setGroups(listGroupUser);
-		
-		
-		List<SystemGroup> listgroup = new ArrayList<SystemGroup>();
-		listgroup.add(group5);
-		listgroup.add(group4);
-		listgroup.add(group3);
-		listgroup.add(group2);
-		listgroup.add(group1);
-		
-		List<SystemUser> listUser = new ArrayList<SystemUser>();
-		listUser.add(user2);
-		listUser.add(user1);
-		
-		container.setListSystemGroup(listgroup);
-		container.setListSystemUsers(listUser);
+		SystemGroupDAO sysGroupDao= new SystemGroupDaoImpl();
+		SystemGroup[] sysGroup = null;
+		try {
+			sysGroup = sysGroupDao.getAllGroup();
+		} catch (Exception e) {
+			e.printStackTrace();
+			sysGroup = null;
+		}
+		List<SystemGroup> listGroup = new ArrayList<SystemGroup>();
+		if(sysGroup!=null){
+			for(SystemGroup ss : sysGroup){
+				System.out.println(ss.getName());
+				listGroup.add(ss);
+			}
+		}
+		container.setListSystemGroup(listGroup);
+		SystemAccountDAO sysAccountDAO = new SystemAccountDaoImpl();
+		List<SystemUser> sysUSers = sysAccountDAO.listAllSystemUser();
+		container.setListSystemUsers(sysUSers);
 		return container;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		
 	}
 
 	@Override
 	public boolean deleteGroup(String name, String id) {
-		return true;
+		SystemGroupDAO sysGroupDao= new SystemGroupDaoImpl();
+		try {
+			return sysGroupDao.deleteGroup(id);
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	@Override
@@ -459,6 +459,11 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public boolean updateGroup(String groupName, String groupDescription,
 			String id) {
-		return true;
+		SystemGroupDAO sysGroupDao = new SystemGroupDaoImpl();
+		try {
+			return sysGroupDao.updateGroup(id, groupName, groupDescription);
+		} catch (Exception e) {
+			return false;
+		}
 	}
 }
