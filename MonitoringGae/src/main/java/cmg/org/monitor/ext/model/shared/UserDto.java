@@ -2,6 +2,14 @@ package cmg.org.monitor.ext.model.shared;
 
 import java.io.Serializable;
 
+/** 
+	* DOCME
+	* 
+	* @Creator Hai Lu
+	* @author $Author$
+	* @version $Revision$
+	* @Last changed: $LastChangedDate$
+*/
 public class UserDto implements Serializable {
 	/**
 	 * 

@@ -1,17 +1,23 @@
 package cmg.org.monitor.ext.model.shared;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import cmg.org.monitor.entity.shared.ChangeLogMonitor;
-import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.MemoryMonitor;
 import cmg.org.monitor.entity.shared.NotifyMonitor;
 import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.entity.shared.SystemUser;
 
+/** 
+	* DOCME
+	* 
+	* @Creator Hai Lu
+	* @author $Author$
+	* @version $Revision$
+	* @Last changed: $LastChangedDate$
+*/
 public class MonitorContainer implements Serializable {
 
 	/**
