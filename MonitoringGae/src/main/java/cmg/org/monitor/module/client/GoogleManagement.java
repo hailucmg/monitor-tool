@@ -1,13 +1,14 @@
 package cmg.org.monitor.module.client;
 
+import cmg.org.monitor.entity.shared.GoogleAccount;
 import cmg.org.monitor.ext.model.shared.UserMonitor;
 import cmg.org.monitor.util.shared.HTMLControl;
+import cmg.org.monitor.util.shared.MonitorConstant;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
@@ -32,10 +33,11 @@ public class GoogleManagement extends AncestorEntryPoint {
     Button btnAddAccount;
     Button btnSaveAccount;
     Button btnClearAccount;
-    TextArea txtLog;
+    static TextArea txtLog;
 
     DisclosurePanel advancedDisclosure;
-
+    static GoogleAccount adminAcc;
+    
     protected void init() {
 	if (currentPage == HTMLControl.PAGE_GOOGLE_MANAGEMENT) {
 	    GoogleManagement.exportStaticMethod();
@@ -53,21 +55,46 @@ public class GoogleManagement extends AncestorEntryPoint {
 	    myTable.setWidth("1185px");
 	    initInterface();
 	    totalTable.setWidget(0, 0, flexTable);
-	    totalTable.setWidget(1, 0, myTable);
-	    totalTable.setWidget(2, 0, advancedDisclosure);
+	    totalTable.setWidget(2, 0, myTable);
+	    totalTable.setWidget(3, 0, advancedDisclosure);
 	    addWidget(HTMLControl.ID_BODY_CONTENT, totalTable);
 	    initContent();
 	}
     }
 
     public static native void exportStaticMethod() /*-{
-	$wnd.updateUserRole =
+	$wnd.syncAccount =
 	$entry(@cmg.org.monitor.module.client.GoogleManagement::syncAccount(Ljava/lang/String;Ljava/lang/String;))
 	}-*/;
 
-    static void syncAccount(String domain, String username) {
-	System.out.println(domain);
-	System.out.println(username);
+    static void syncAccount(String domain, String username){
+	System.out.println(domain + "|" +username);
+	adminAcc = new GoogleAccount();
+	adminAcc.setDomain(MonitorConstant.DOMAIN);
+	adminAcc.setUsername(MonitorConstant.ADMIN_EMAIL_ID);
+	adminAcc.setPassword("ABC");
+	try {
+	    	monitorGwtSv.syncAccount(adminAcc, new AsyncCallback<String>() {
+
+		    @Override
+		    public void onFailure(Throwable caught) {
+			// TODO Auto-generated method stub 
+			System.out.println("bull shit man");
+		    }
+
+		    @Override
+		    public void onSuccess(String result) {
+			// TODO Auto-generated method stub 
+			System.out.println("yow man");
+			txtLog.setText(result);
+		    }
+	    	    
+		});
+	} catch (Exception e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	}
+
     }
 
     void initInterface() {
@@ -116,13 +143,14 @@ public class GoogleManagement extends AncestorEntryPoint {
 		showMessage("Oops! Error.", HTMLControl.HTML_DASHBOARD_NAME, "Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
 	    }
 	});
+	
     }
 
     private AbstractDataTable createData(UserMonitor[] listUser) {
 	DataTable data = DataTable.create();
 	data.addColumn(ColumnType.STRING, "Domain name");
 	data.addColumn(ColumnType.STRING, "Username");
-	data.addColumn(ColumnType.STRING, "Password");
+	data.addColumn(ColumnType.STRING, "");
 	data.addRows(listUser.length);
 
 	UserMonitor[] sortUser = sortByname(listUser);
@@ -132,7 +160,7 @@ public class GoogleManagement extends AncestorEntryPoint {
 	    data.setValue(j, 1, sortUser[j].getId());
 	    data.setValue(j, 2, "<input type='button' class='SyncAcc' id='btnSync' value='Sync account' domain_name='c-mg.com.vn' user_name='"
 		    + sortUser[j].getId()
-		    + "'>    <input type='button' class='ClearAcc' id='btnClear' value='Clear account' domain_name='c-mg.com.vn' user_name='"
+		    + "' onClick=\"javascript:syncAccount('abc','abc');\">    <input type='button' class='ClearAcc' id='btnClear' value='Clear account' domain_name='c-mg.com.vn' user_name='"
 		    + sortUser[j].getId() + "'>");
 	}
 	return data;

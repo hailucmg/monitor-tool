@@ -3,6 +3,7 @@ package cmg.org.monitor.module.client;
 import cmg.org.monitor.entity.shared.AlertStoreMonitor;
 import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
+import cmg.org.monitor.entity.shared.GoogleAccount;
 import cmg.org.monitor.entity.shared.JvmMonitor;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemGroup;
@@ -78,6 +79,6 @@ public interface MonitorGwtServiceAsync {
 	void updateGroup(String groupName, String groupDescription, String id,
 			AsyncCallback<Boolean> callback);
 
-	
+	void syncAccount(GoogleAccount googleacc, AsyncCallback<String> callback);
 	
 }

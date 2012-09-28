@@ -3,6 +3,7 @@ package cmg.org.monitor.module.client;
 import cmg.org.monitor.entity.shared.AlertStoreMonitor;
 import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
+import cmg.org.monitor.entity.shared.GoogleAccount;
 import cmg.org.monitor.entity.shared.JvmMonitor;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemGroup;
@@ -67,5 +68,8 @@ public interface MonitorGwtService extends RemoteService {
 	boolean deleteGroup(String name, String id);
 	
 	boolean updateGroup(String groupName, String groupDescription, String id);
+	
 	boolean updateUserMapping(String email, String idGroup, boolean mapp);
+	
+	String syncAccount(GoogleAccount googleacc);
 }
