@@ -9,6 +9,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import cmg.org.monitor.ext.model.shared.UserMonitor;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /** 
@@ -141,5 +143,9 @@ public class GoogleAccount implements IsSerializable {
 	
 	public void setLastSync(Date lastSync) {
 		this.lastSync = lastSync;
+	}
+	
+	public int compareByName(GoogleAccount c) {
+		return username.trim().compareTo(c.getUsername().trim());
 	}
 }

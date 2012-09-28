@@ -22,6 +22,7 @@ import cmg.org.monitor.dao.SystemAccountDAO;
 import cmg.org.monitor.dao.impl.SystemAccountDaoImpl;
 import cmg.org.monitor.entity.shared.GoogleAccount;
 import cmg.org.monitor.entity.shared.SystemUser;
+import cmg.org.monitor.module.server.MonitorGwtServiceImpl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 import cmg.org.monitor.util.shared.SecurityUtil;
 
@@ -63,7 +64,7 @@ public class GoogleAccountServiceTest {
 	 * Test method for
 	 * {@link cmg.org.monitor.services.GoogleAccountService#sync()}.
 	 */
-	@Test
+	//@Test
 	public void testSync() {
 		gson = new Gson();
 		accountDao = new SystemAccountDaoImpl();
@@ -122,5 +123,27 @@ public class GoogleAccountServiceTest {
 		}
 		System.out.println("List USer size:" + listOld.size());
 		
+	}
+	
+	/**
+	 * Test method for
+	 * {@link cmg.org.monitor.services.GoogleAccountService#sync()}.
+	 * @throws Exception 
+	 */
+	@Test
+	public void testListGoogleAcc() throws Exception {
+	    MonitorGwtServiceImpl asd = new MonitorGwtServiceImpl();
+	    SystemAccountDAO dao = new SystemAccountDaoImpl();
+	    GoogleAccount gg = new GoogleAccount();
+	    gg.setDomain("c-mg.com.vn");
+	    gg.setUsername("long.nguyen");
+	    gg.setPassword("abcdef");
+	    dao.createGoogleAccount(gg);
+	    GoogleAccount[] list = asd.listAllGoogleAcc();
+	    if(list != null){
+		System.out.println("yow man");
+	    }else{
+		System.out.println("bullshit man");
+	    }
 	}
 }

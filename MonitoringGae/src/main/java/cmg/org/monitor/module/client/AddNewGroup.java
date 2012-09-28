@@ -61,7 +61,7 @@ public class AddNewGroup extends AncestorEntryPoint {
 	}
 
 	protected void init() {
-		if (currentPage == HTMLControl.PAGE_ADD_GROUP) {
+		if (currentPage == HTMLControl.PAGE_ADD_GROUP) { 
 			monitorGwtSv.getAllGroup(new AsyncCallback<MonitorContainer>(){
 				@Override
 				public void onFailure(Throwable caught) {
@@ -129,7 +129,36 @@ public class AddNewGroup extends AncestorEntryPoint {
 		bttBack.addStyleName("form-button");
 		
 		CreateHandler createHandler =  new CreateHandler();
-		bttCreate.addClickHandler(createHandler);
+		bttCreate.addClickHandler(new ClickHandler() {
+		    
+		    @Override
+		    public void onClick(ClickEvent event) {
+			String name = validateGroupName(txtGroupName.getText());
+			String groupdes = validateGroupDescription(txtGroupDescription.getText());
+			panelValidateGroupName.setVisible(false);
+			panelValidateGroupDescription.setVisible(false);
+			if(name != ""){
+				panelValidateGroupName.clear();
+				panelValidateGroupName.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">"
+									+ name + "</div>"));
+				panelValidateGroupDescription.setVisible(false);
+				panelValidateGroupName.setVisible(true);
+				return;
+			}else if(groupdes !=""){
+				panelValidateGroupDescription.clear();
+				panelValidateGroupDescription.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">"
+									+ groupdes + "</div>"));
+				panelValidateGroupName.setVisible(false);
+				panelValidateGroupDescription.setVisible(true);
+				return;
+			}
+			
+			panelValidateGroupName.setVisible(false);
+			panelValidateGroupDescription.setVisible(false);
+			panelAdding.setVisible(true);
+			sendData(txtGroupName.getText(), txtGroupDescription.getText());			
+		    }
+		});
 		
 		myReset resetHandler = new myReset();
 		bttReset.addClickHandler(resetHandler);
@@ -220,7 +249,10 @@ public class AddNewGroup extends AncestorEntryPoint {
 	
 	private void sendData(String name, String groupDescription){
 		panelAdding.setVisible(false);
-		monitorGwtSv.addnewGroup(name, groupDescription, new AsyncCallback<Boolean>() {
+		SystemGroup g = new SystemGroup();
+		g.setDescription(groupDescription);
+		g.setName(name);
+		monitorGwtSv.addGroupByObj(g, new AsyncCallback<Boolean>() {
 			@Override
 			public void onSuccess(Boolean result) {
 				if(result){

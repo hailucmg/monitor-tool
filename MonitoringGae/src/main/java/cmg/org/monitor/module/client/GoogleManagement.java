@@ -1,21 +1,23 @@
 package cmg.org.monitor.module.client;
 
 import cmg.org.monitor.entity.shared.GoogleAccount;
-import cmg.org.monitor.ext.model.shared.UserMonitor;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.visualization.client.AbstractDataTable;
-import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
+import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.visualizations.Table;
 import com.google.gwt.visualization.client.visualizations.Table.Options;
 
@@ -29,7 +31,7 @@ public class GoogleManagement extends AncestorEntryPoint {
     Label lbPassword;
     TextBox txtDomain;
     TextBox txtUsername;
-    TextBox txtPassword;
+    PasswordTextBox txtPassword;
     Button btnAddAccount;
     Button btnSaveAccount;
     Button btnClearAccount;
@@ -108,7 +110,7 @@ public class GoogleManagement extends AncestorEntryPoint {
 
 	txtDomain = new TextBox();
 	txtUsername = new TextBox();
-	txtPassword = new TextBox();
+	txtPassword = new PasswordTextBox();
 
 	flexTable.setWidget(0, 0, lbDomain);
 	flexTable.setWidget(0, 1, txtDomain);
@@ -122,13 +124,49 @@ public class GoogleManagement extends AncestorEntryPoint {
 	flexTable.getCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_MIDDLE);
 	flexTable.getCellFormatter().setVerticalAlignment(1, 0, HasVerticalAlignment.ALIGN_MIDDLE);
 	flexTable.getCellFormatter().setVerticalAlignment(2, 0, HasVerticalAlignment.ALIGN_MIDDLE);
+	
+	btnAddAccount.addClickHandler(new ClickHandler() {
+	    @Override
+	    public void onClick(ClickEvent event) {
+		GoogleAccount acc = new GoogleAccount();
+		acc.setDomain(txtDomain.getText());
+		acc.setUsername(txtUsername.getText());
+		acc.setPassword(txtPassword.getText());
+		monitorGwtSv.addGoogleAccount(acc, new AsyncCallback<Boolean>() {
+
+		    @Override
+		    public void onFailure(Throwable caught) {
+			
+			// TODO Auto-generated method stub 
+			showMessage("Added Failed.", "", "", HTMLControl.RED_MESSAGE, true);
+		    }
+
+		    @Override
+		    public void onSuccess(Boolean result) {
+			
+			// TODO Auto-generated method stub 
+			showMessage("Added Successfully", "", "", HTMLControl.BLUE_MESSAGE, true);
+			initContent();
+		    }
+		});
+	    }
+	    
+	    
+	});
     }
 
-    private void initContent() {
-	monitorGwtSv.listAllUsers(new AsyncCallback<UserMonitor[]>() {
+    private void initContent(){
+	monitorGwtSv.listAllGoogleAcc(new AsyncCallback<GoogleAccount[]>() {
 
 	    @Override
-	    public void onSuccess(UserMonitor[] result) {
+	    public void onFailure(Throwable caught) {
+		caught.printStackTrace();
+		showMessage("Oops! Error.", HTMLControl.HTML_DASHBOARD_NAME, "Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
+	    }
+
+	    @Override
+	    public void onSuccess(GoogleAccount[] result) {
+		// TODO Auto-generated method stub 
 		if (result != null) {
 		    setVisibleLoadingImage(false);
 		    setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
@@ -137,40 +175,36 @@ public class GoogleManagement extends AncestorEntryPoint {
 		    showMessage("Oops! Error.", HTMLControl.HTML_DASHBOARD_NAME, "Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
 		}
 	    }
-
-	    @Override
-	    public void onFailure(Throwable caught) {
-		showMessage("Oops! Error.", HTMLControl.HTML_DASHBOARD_NAME, "Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
-	    }
+	    
 	});
 	
     }
 
-    private AbstractDataTable createData(UserMonitor[] listUser) {
+    private AbstractDataTable createData(GoogleAccount[] listUser) {
 	DataTable data = DataTable.create();
 	data.addColumn(ColumnType.STRING, "Domain name");
 	data.addColumn(ColumnType.STRING, "Username");
 	data.addColumn(ColumnType.STRING, "");
 	data.addRows(listUser.length);
 
-	UserMonitor[] sortUser = sortByname(listUser);
+	GoogleAccount[] sortUser = sortByname(listUser);
 	for (int j = 0; j < sortUser.length; j++) {
 
-	    data.setValue(j, 0, "c-mg.com.vn");
-	    data.setValue(j, 1, sortUser[j].getId());
+	    data.setValue(j, 0, sortUser[j].getDomain());
+	    data.setValue(j, 1, sortUser[j].getUsername());
 	    data.setValue(j, 2, "<input type='button' class='SyncAcc' id='btnSync' value='Sync account' domain_name='c-mg.com.vn' user_name='"
-		    + sortUser[j].getId()
-		    + "' onClick=\"javascript:syncAccount('abc','abc');\">    <input type='button' class='ClearAcc' id='btnClear' value='Clear account' domain_name='c-mg.com.vn' user_name='"
+		    + sortUser[j].getId()+ "' pwd='"+sortUser[j].getPassword()+"' onClick=\"javascript:syncAccount('abc','abc');\">"  
+		    + "<input type='button' class='ClearAcc' id='btnClear' value='Clear account' domain_name='c-mg.com.vn' user_name='"
 		    + sortUser[j].getId() + "'>");
 	}
 	return data;
     }
 
-    public UserMonitor[] sortByname(UserMonitor[] users) {
-	UserMonitor temp = null;
+    public GoogleAccount[] sortByname(GoogleAccount[] users) {
+	GoogleAccount temp = null;
 	for (int i = 1; i < users.length; i++) {
 	    int j;
-	    UserMonitor val = users[i];
+	    GoogleAccount val = users[i];
 	    for (j = i - 1; j > -1; j--) {
 		temp = users[j];
 		if (temp.compareByName(val) <= 0) {
@@ -191,7 +225,7 @@ public class GoogleManagement extends AncestorEntryPoint {
 
     }
 
-    private void drawTable(UserMonitor[] listUser) {
+    private void drawTable(GoogleAccount[] listUser) {
 	myTable.draw(createData(listUser), option());
     }
 }
