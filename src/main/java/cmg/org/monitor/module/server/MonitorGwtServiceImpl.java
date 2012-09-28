@@ -1,6 +1,8 @@
 package cmg.org.monitor.module.server;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -50,443 +52,500 @@ import cmg.org.monitor.util.shared.MonitorConstant;
 import cmg.org.monitor.util.shared.SecurityUtil;
 
 import com.google.gdata.util.AuthenticationException;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
-		MonitorGwtService {
+public class MonitorGwtServiceImpl extends RemoteServiceServlet implements MonitorGwtService {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private static final Logger logger = Logger
-			.getLogger(MonitorGwtServiceImpl.class.getCanonicalName());
+    private static final Logger logger = Logger.getLogger(MonitorGwtServiceImpl.class.getCanonicalName());
 
-	@Override
-	public boolean addSystem(SystemMonitor system) {
-		boolean check = false;
-		SystemDAO sysDAO = new SystemDaoImpl();
-		try {
-			check = sysDAO.addSystem(system, sysDAO.createSID());
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, " ERROR when add new system. Message: "
-					+ e.getCause().getMessage());
-		}
-		return check;
+    @Override
+    public boolean addSystem(SystemMonitor system) {
+	boolean check = false;
+	SystemDAO sysDAO = new SystemDaoImpl();
+	try {
+	    check = sysDAO.addSystem(system, sysDAO.createSID());
+	} catch (Exception e) {
+	    logger.log(Level.SEVERE, " ERROR when add new system. Message: " + e.getCause().getMessage());
 	}
+	return check;
+    }
 
-	@Override
-	public SystemMonitor[] listSystems() {
-		SystemDAO sysDAO = new SystemDaoImpl();
-		ArrayList<SystemMonitor> list = null;
-		SystemMonitor[] systems = null;
-		try {
-			list = sysDAO.listSystemsFromMemcache(false);
-			if (list != null && list.size() > 0) {
-				systems = new SystemMonitor[list.size()];
-				list.toArray(systems);
-			}
-		} catch (Exception ex) {
-			logger.log(Level.SEVERE,
-					" ERROR when load all systems from memcache. Message: "
-							+ ex.getCause().getMessage());
-		}
-		if (systems == null) {
-			return systems;
-		} else {
-			return sortByname(systems);
-		}
-
-	}
-
-	/**
-	 * @param sys
-	 * @return
-	 */
-	public SystemMonitor[] sortByname(SystemMonitor[] sys) {
-		SystemMonitor temp = null;
-		for (int i = 1; i < sys.length; i++) {
-			int j;
-			SystemMonitor val = sys[i];
-			for (j = i - 1; j > -1; j--) {
-				temp = sys[j];
-				if (temp.compareByCode(val) <= 0) {
-					break;
-				}
-				sys[j + 1] = temp;
-			}
-			sys[j + 1] = val;
-		}
-		return sys;
-	}
-
-	@Override
-	public UserLoginDto getUserLogin() {
-		return MonitorLoginService.getUserLogin();
-	}
-
-	@Override
-	public SystemMonitor validSystemId(String sysID) {
-		SystemDAO sysDAO = new SystemDaoImpl();
-		SystemMonitor sys = null;
-		try {
-			sys = sysDAO.getSystemById(sysID);
-		} catch (Exception ex) {
-			logger.log(Level.SEVERE, "ERROR when valid system ID. Message: "
-					+ ex.getCause().getMessage());
-		}
-		return sys;
-	}
-
-	@Override
-	public boolean deleteSystem(String id) {
-		SystemDAO sysDAO = new SystemDaoImpl();
-		boolean checkdelete = false;
-		try {
-			checkdelete = sysDAO.deleteSystem(id);
-		} catch (Exception ex) {
-			logger.log(Level.SEVERE, "ERROR when delete system. Message: " + ex.getMessage());
-		}
-		return checkdelete;
-	}
-
-	@Override
-	public String getAboutContent() {
-		UtilityDAO utilDAO = new UtilityDaoImpl();
-		return utilDAO.getAboutContent();
-	}
-
-	@Override
-	public String getHelpContent() {
-		UtilityDAO utilDAO = new UtilityDaoImpl();
-		return utilDAO.getHelpContent();
-	}
-
-	@Override
-	public MonitorContainer getSystemMonitorContainer() {
-		MonitorContainer container = null;
-		SystemDAO sysDAO = new SystemDaoImpl();
-		UtilityDAO utilDAO = new UtilityDaoImpl();
-		try {
-			container = new MonitorContainer();
-			container.setRemoteUrls(sysDAO.listRemoteURLs());
-			ArrayList<GroupMonitor> groups = utilDAO.listGroups();
-			if (groups != null && groups.size() > 0) {
-				GroupMonitor[] listGroups = new GroupMonitor[groups.size()];
-				groups.toArray(listGroups);
-				container.setGroups(listGroups);
-			}
-			container.setEmails(sysDAO.listEmails());
-
-		} catch (Exception ex) {
-			logger.log(Level.SEVERE,
-					"ERROR when load system container information. Message: "
-							+ ex.getMessage());
-		}
-		return container;
-	}
-
-	@Override
-	public MonitorContainer getSystemMonitorContainer(String sysId) {
-		MonitorContainer container = getSystemMonitorContainer();
-		SystemDAO sysDAO = new SystemDaoImpl();
-		try {
-			if (container != null) {
-				SystemMonitor sys = sysDAO.getSystemById(sysId);
-				container.setSys(sys);
-				NotifyMonitor nm = sysDAO.getNotifyOption(sys.getCode());
-				if (nm == null) {
-					nm = new NotifyMonitor();
-				}
-				container.setNotify(nm);
-			}
-
-		} catch (Exception ex) {
-			logger.log(Level.SEVERE,
-					"ERROR when load system container information. Message: "
-							+ ex.getMessage());
-		}
-		return container;
-	}
-
-	@Override
-	public UserMonitor[] listAllUsers() {
-		UtilityDAO utilDAO = new UtilityDaoImpl();
-		ArrayList<UserMonitor> list = utilDAO.listAllUsers();
-		UserMonitor[] users = null;
-		if (list != null && list.size() > 0) {
-			users = new UserMonitor[list.size()];
-			list.toArray(users);
-		}
-		return users;
-	}
-
-	@Override
-	public boolean editSystem(SystemMonitor sys) {
-		SystemDAO sysDAO = new SystemDaoImpl();
-		boolean check = false;
-		try {
-			check = sysDAO.editSystem(sys);
-		} catch (Exception ex) {
-			logger.log(Level.SEVERE,
-					"ERROR when edit system. Message: " + ex.getMessage());
-		}
-		return check;
-	}
-
-	@Override
-	public JvmMonitor[] listJvms(SystemMonitor sys) {
-		JvmDAO jvmDAO = new JvmDaoImpl();
-		ArrayList<JvmMonitor> list = jvmDAO.listJvm(sys);
-		JvmMonitor[] jvms = null;
-		if (list != null && list.size() > 0) {
-			jvms = new JvmMonitor[list.size()];
-			list.toArray(jvms);
-		}
-		return jvms;
-	}
-
-	@Override
-	public ServiceMonitor[] listServices(SystemMonitor sys) {
-		ServiceDAO serviceDAO = new ServiceDaoImpl();
-		ServiceMonitor[] services = null;
-		ArrayList<ServiceMonitor> list = serviceDAO.listService(sys);
-		if (list != null && list.size() > 0) {
-			services = new ServiceMonitor[list.size()];
-			list.toArray(services);
-		}
-		return services;
-	}
-
-	@Override
-	public FileSystemMonitor[] listFileSystems(SystemMonitor sys) {
-		FileSystemDAO fileSystemDAO = new FileSystemDaoImpl();
-		ArrayList<FileSystemMonitor> list = fileSystemDAO.listFileSystems(sys);
-		FileSystemMonitor[] fileSystems = null;
-		if (list != null && list.size() > 0) {
-			fileSystems = new FileSystemMonitor[list.size()];
-			list.toArray(fileSystems);
-		}
-		return fileSystems;
-	}
-
-	@Override
-	public CpuMonitor[] listCpus(SystemMonitor sys) {
-		CpuDAO cpuDAO = new CpuDaoImpl();
-		ArrayList<CpuMonitor> list = cpuDAO.listCpu(sys);
-		CpuMonitor[] cpus = null;
-		if (list != null && list.size() > 0) {
-			cpus = new CpuMonitor[list.size()];
-			list.toArray(cpus);
-		}
-		return cpus;
-	}
-
-	@Override
-	public MonitorContainer listMems(SystemMonitor sys) {
-		MonitorContainer container = new MonitorContainer();
-		MemoryDAO memDAO = new MemoryDaoImpl();
-		MemoryMonitor[] memories = null;
-		ArrayList<MemoryMonitor> list = memDAO.listMemory(sys,
-				MemoryMonitor.MEM);
-		if (list != null && list.size() > 0) {
-			memories = new MemoryMonitor[list.size()];
-			list.toArray(memories);
-			container.setRams(memories);
-		}
-
-		list = memDAO.listMemory(sys, MemoryMonitor.SWAP);
-		if (list != null && list.size() > 0) {
-			memories = new MemoryMonitor[list.size()];
-			list.toArray(memories);
-			container.setSwaps(memories);
-		}
-		return container;
-	}
-
-	@Override
-	public AlertStoreMonitor[] listAlertStore(SystemMonitor sys) {
-		try {
-			AlertDao alertDao = new AlertDaoImpl();
-			SystemDAO sysDAO = new SystemDaoImpl();
-			AlertStoreMonitor[] stores = null;
-			ArrayList<AlertStoreMonitor> list = alertDao.listAlertStore(sys
-					.getId());
-			AlertStoreMonitor store = alertDao.getLastestAlertStore(sys);
-
-			SystemMonitor system = sysDAO.getSystemById(sys.getId());
-			if (store == null) {
-				store = new AlertStoreMonitor();
-				store.setSysId(system.getId());
-				store.setCpuUsage(system.getLastestCpuUsage());
-				store.setMemUsage(system.getLastestMemoryUsage());
-				store.setTimeStamp(new Date(System.currentTimeMillis()));
-			}
-
-			if (list != null && list.size() > 0) {
-				stores = new AlertStoreMonitor[list.size() + 1];
-				for (int i = 0; i < list.size(); i++) {
-					stores[i] = list.get(i);
-				}
-				stores[list.size()] = store;
-			} else {
-				stores = new AlertStoreMonitor[1];
-				stores[0] = store;
-			}
-			return stores;
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Error when list alert store");
-		}
-		return null;
-	}
-
-	@Override
-	public MonitorContainer listChangeLog(SystemMonitor sys, int start, int end) {
-		MonitorContainer container = new MonitorContainer();
-		SystemDAO sysDAO = new SystemDaoImpl();
-
-		ArrayList<ChangeLogMonitor> changelogs = null;
-		int count = -1;
-		try {
-			changelogs = sysDAO.listChangeLog(sys == null ? null : sys.getCode(),
-					start, end);
-			count = sysDAO
-					.getCounterChangeLog(sys == null ? null : sys.getCode());
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.log(Level.SEVERE,
-					"ERROR when list changelog. Message: " + e.getMessage());
-		}
-		ChangeLogMonitor[] list = null;
-		if (changelogs != null && changelogs.size() > 0) {
-			list = new ChangeLogMonitor[changelogs.size()];
-			changelogs.toArray(list);
-		}
-		container.setChangelogCount(count);
-		container.setChangelogs(list);
-		return container;
-	}
-
-	public String getDefaultContent() {
-		return HTMLControl.getDefaultContent();
-	}
-	
-	/* (non-Javadoc) * @see cmg.org.monitor.module.client.MonitorGwtService#editLink(java.lang.String) */
-	@Override
-	public void editLink(String link) {
-	    UtilityDAO dao = new UtilityDaoImpl();
-	    dao.putLinkDefault(link);
-	}
-
-	/* (non-Javadoc) * @see cmg.org.monitor.module.client.MonitorGwtService#getLink() */
-	@Override
-	public String getLink() {
-	    UtilityDAO dao = new UtilityDaoImpl();
-	    String str = dao.getLinkDefault();
-	    return str;
-	}
-
-	@Override
-	public SystemGroup getGroupById(String id) {
-		SystemGroupDAO sysGroupDao= new SystemGroupDaoImpl();
-		try {
-			SystemGroup ss = sysGroupDao.getByID(id);
-			return ss;
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
-	@Override
-	public boolean addnewGroup(String name, String description) {
-		SystemGroupDAO sysGroupDao= new SystemGroupDaoImpl();
-		SystemGroup ss = new SystemGroup();
-		ss.setName(name);
-		ss.setDescription(description);
-		try {
-			boolean b = sysGroupDao.addNewGroup(ss);
-			System.out.println("add done " + b);
-			return b;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-		
-	}
-
-	@Override
-	public MonitorContainer getAllGroup() {
-		try {
-		MonitorContainer container = new MonitorContainer();
-		SystemGroupDAO sysGroupDao= new SystemGroupDaoImpl();
-		SystemGroup[] sysGroup = null;
-		try {
-			sysGroup = sysGroupDao.getAllGroup();
-		} catch (Exception e) {
-			e.printStackTrace();
-			sysGroup = null;
-		}
-		List<SystemGroup> listGroup = new ArrayList<SystemGroup>();
-		if(sysGroup!=null){
-			for(SystemGroup ss : sysGroup){
-				listGroup.add(ss);
-			}
-		}
-		container.setListSystemGroup(listGroup);
-		SystemAccountDAO sysAccountDAO = new SystemAccountDaoImpl();
-		List<SystemUser> sysUSers = sysAccountDAO.listAllSystemUser();
-		container.setListSystemUsers(sysUSers);
-		return container;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-		
-	}
-
-	@Override
-	public boolean deleteGroup(String name, String id) {
-		SystemGroupDAO sysGroupDao= new SystemGroupDaoImpl();
-		try {
-			return sysGroupDao.deleteGroup(id);
-		} catch (Exception e) {
-			return false;
-		}
-	}
-
-	@Override
-	public boolean updateUserMapping(String email, String idGroup, boolean mapp) {
-		return true;
-	}
-
-	@Override
-	public boolean updateGroup(String groupName, String groupDescription,
-			String id) {
-		SystemGroupDAO sysGroupDao = new SystemGroupDaoImpl();
-		try {
-			return sysGroupDao.updateGroup(id, groupName, groupDescription);
-		} catch (Exception e) {
-			return false;
-		}
-	}
-
-	/* (non-Javadoc) * @see cmg.org.monitor.module.client.MonitorGwtService#syncAccount(cmg.org.monitor.entity.shared.GoogleAccount) */
-	@Override
-	public String syncAccount(GoogleAccount googleacc) {
-	    // TODO Auto-generated method stub return null;
-	    GoogleAccountService service;
-	    try {
-		GoogleAccount ac = new GoogleAccount();
-		ac.setDomain("c-mg.vn");
-		ac.setUsername("monitor");
-		googleacc.setPassword(SecurityUtil.encrypt(MonitorConstant.ADMIN_PASSWORD));
-		service = new GoogleAccountService(googleacc);
-		service.sync();
-		return service.getLog();
-	    } catch (AuthenticationException e) {
-		// TODO Auto-generated catch block e.printStackTrace();
-		return "Something wrong with server - Can not sync google account.";
+    @Override
+    public SystemMonitor[] listSystems() {
+	SystemDAO sysDAO = new SystemDaoImpl();
+	ArrayList<SystemMonitor> list = null;
+	SystemMonitor[] systems = null;
+	try {
+	    list = sysDAO.listSystemsFromMemcache(false);
+	    if (list != null && list.size() > 0) {
+		systems = new SystemMonitor[list.size()];
+		list.toArray(systems);
 	    }
+	} catch (Exception ex) {
+	    logger.log(Level.SEVERE, " ERROR when load all systems from memcache. Message: " + ex.getCause().getMessage());
 	}
+	if (systems == null) {
+	    return systems;
+	} else {
+	    return sortByname(systems);
+	}
+
+    }
+
+    /**
+     * @param sys
+     * @return
+     */
+    public SystemMonitor[] sortByname(SystemMonitor[] sys) {
+	SystemMonitor temp = null;
+	for (int i = 1; i < sys.length; i++) {
+	    int j;
+	    SystemMonitor val = sys[i];
+	    for (j = i - 1; j > -1; j--) {
+		temp = sys[j];
+		if (temp.compareByCode(val) <= 0) {
+		    break;
+		}
+		sys[j + 1] = temp;
+	    }
+	    sys[j + 1] = val;
+	}
+	return sys;
+    }
+
+    @Override
+    public UserLoginDto getUserLogin() {
+	return MonitorLoginService.getUserLogin();
+    }
+
+    @Override
+    public SystemMonitor validSystemId(String sysID) {
+	SystemDAO sysDAO = new SystemDaoImpl();
+	SystemMonitor sys = null;
+	try {
+	    sys = sysDAO.getSystemById(sysID);
+	} catch (Exception ex) {
+	    logger.log(Level.SEVERE, "ERROR when valid system ID. Message: " + ex.getCause().getMessage());
+	}
+	return sys;
+    }
+
+    @Override
+    public boolean deleteSystem(String id) {
+	SystemDAO sysDAO = new SystemDaoImpl();
+	boolean checkdelete = false;
+	try {
+	    checkdelete = sysDAO.deleteSystem(id);
+	} catch (Exception ex) {
+	    logger.log(Level.SEVERE, "ERROR when delete system. Message: " + ex.getMessage());
+	}
+	return checkdelete;
+    }
+
+    @Override
+    public String getAboutContent() {
+	UtilityDAO utilDAO = new UtilityDaoImpl();
+	return utilDAO.getAboutContent();
+    }
+
+    @Override
+    public String getHelpContent() {
+	UtilityDAO utilDAO = new UtilityDaoImpl();
+	return utilDAO.getHelpContent();
+    }
+
+    @Override
+    public MonitorContainer getSystemMonitorContainer() {
+	MonitorContainer container = null;
+	SystemDAO sysDAO = new SystemDaoImpl();
+	UtilityDAO utilDAO = new UtilityDaoImpl();
+	try {
+	    container = new MonitorContainer();
+	    container.setRemoteUrls(sysDAO.listRemoteURLs());
+	    ArrayList<GroupMonitor> groups = utilDAO.listGroups();
+	    if (groups != null && groups.size() > 0) {
+		GroupMonitor[] listGroups = new GroupMonitor[groups.size()];
+		groups.toArray(listGroups);
+		container.setGroups(listGroups);
+	    }
+	    container.setEmails(sysDAO.listEmails());
+
+	} catch (Exception ex) {
+	    logger.log(Level.SEVERE, "ERROR when load system container information. Message: " + ex.getMessage());
+	}
+	return container;
+    }
+
+    @Override
+    public MonitorContainer getSystemMonitorContainer(String sysId) {
+	MonitorContainer container = getSystemMonitorContainer();
+	SystemDAO sysDAO = new SystemDaoImpl();
+	try {
+	    if (container != null) {
+		SystemMonitor sys = sysDAO.getSystemById(sysId);
+		container.setSys(sys);
+		NotifyMonitor nm = sysDAO.getNotifyOption(sys.getCode());
+		if (nm == null) {
+		    nm = new NotifyMonitor();
+		}
+		container.setNotify(nm);
+	    }
+
+	} catch (Exception ex) {
+	    logger.log(Level.SEVERE, "ERROR when load system container information. Message: " + ex.getMessage());
+	}
+	return container;
+    }
+
+    @Override
+    public UserMonitor[] listAllUsers() {
+	UtilityDAO utilDAO = new UtilityDaoImpl();
+	ArrayList<UserMonitor> list = utilDAO.listAllUsers();
+	UserMonitor[] users = null;
+	if (list != null && list.size() > 0) {
+	    users = new UserMonitor[list.size()];
+	    list.toArray(users);
+	}
+	return users;
+    }
+
+    @Override
+    public boolean editSystem(SystemMonitor sys) {
+	SystemDAO sysDAO = new SystemDaoImpl();
+	boolean check = false;
+	try {
+	    check = sysDAO.editSystem(sys);
+	} catch (Exception ex) {
+	    logger.log(Level.SEVERE, "ERROR when edit system. Message: " + ex.getMessage());
+	}
+	return check;
+    }
+
+    @Override
+    public JvmMonitor[] listJvms(SystemMonitor sys) {
+	JvmDAO jvmDAO = new JvmDaoImpl();
+	ArrayList<JvmMonitor> list = jvmDAO.listJvm(sys);
+	JvmMonitor[] jvms = null;
+	if (list != null && list.size() > 0) {
+	    jvms = new JvmMonitor[list.size()];
+	    list.toArray(jvms);
+	}
+	return jvms;
+    }
+
+    @Override
+    public ServiceMonitor[] listServices(SystemMonitor sys) {
+	ServiceDAO serviceDAO = new ServiceDaoImpl();
+	ServiceMonitor[] services = null;
+	ArrayList<ServiceMonitor> list = serviceDAO.listService(sys);
+	if (list != null && list.size() > 0) {
+	    services = new ServiceMonitor[list.size()];
+	    list.toArray(services);
+	}
+	return services;
+    }
+
+    @Override
+    public FileSystemMonitor[] listFileSystems(SystemMonitor sys) {
+	FileSystemDAO fileSystemDAO = new FileSystemDaoImpl();
+	ArrayList<FileSystemMonitor> list = fileSystemDAO.listFileSystems(sys);
+	FileSystemMonitor[] fileSystems = null;
+	if (list != null && list.size() > 0) {
+	    fileSystems = new FileSystemMonitor[list.size()];
+	    list.toArray(fileSystems);
+	}
+	return fileSystems;
+    }
+
+    @Override
+    public CpuMonitor[] listCpus(SystemMonitor sys) {
+	CpuDAO cpuDAO = new CpuDaoImpl();
+	ArrayList<CpuMonitor> list = cpuDAO.listCpu(sys);
+	CpuMonitor[] cpus = null;
+	if (list != null && list.size() > 0) {
+	    cpus = new CpuMonitor[list.size()];
+	    list.toArray(cpus);
+	}
+	return cpus;
+    }
+
+    @Override
+    public MonitorContainer listMems(SystemMonitor sys) {
+	MonitorContainer container = new MonitorContainer();
+	MemoryDAO memDAO = new MemoryDaoImpl();
+	MemoryMonitor[] memories = null;
+	ArrayList<MemoryMonitor> list = memDAO.listMemory(sys, MemoryMonitor.MEM);
+	if (list != null && list.size() > 0) {
+	    memories = new MemoryMonitor[list.size()];
+	    list.toArray(memories);
+	    container.setRams(memories);
+	}
+
+	list = memDAO.listMemory(sys, MemoryMonitor.SWAP);
+	if (list != null && list.size() > 0) {
+	    memories = new MemoryMonitor[list.size()];
+	    list.toArray(memories);
+	    container.setSwaps(memories);
+	}
+	return container;
+    }
+
+    @Override
+    public AlertStoreMonitor[] listAlertStore(SystemMonitor sys) {
+	try {
+	    AlertDao alertDao = new AlertDaoImpl();
+	    SystemDAO sysDAO = new SystemDaoImpl();
+	    AlertStoreMonitor[] stores = null;
+	    ArrayList<AlertStoreMonitor> list = alertDao.listAlertStore(sys.getId());
+	    AlertStoreMonitor store = alertDao.getLastestAlertStore(sys);
+
+	    SystemMonitor system = sysDAO.getSystemById(sys.getId());
+	    if (store == null) {
+		store = new AlertStoreMonitor();
+		store.setSysId(system.getId());
+		store.setCpuUsage(system.getLastestCpuUsage());
+		store.setMemUsage(system.getLastestMemoryUsage());
+		store.setTimeStamp(new Date(System.currentTimeMillis()));
+	    }
+
+	    if (list != null && list.size() > 0) {
+		stores = new AlertStoreMonitor[list.size() + 1];
+		for (int i = 0; i < list.size(); i++) {
+		    stores[i] = list.get(i);
+		}
+		stores[list.size()] = store;
+	    } else {
+		stores = new AlertStoreMonitor[1];
+		stores[0] = store;
+	    }
+	    return stores;
+	} catch (Exception e) {
+	    logger.log(Level.SEVERE, "Error when list alert store");
+	}
+	return null;
+    }
+
+    @Override
+    public MonitorContainer listChangeLog(SystemMonitor sys, int start, int end) {
+	MonitorContainer container = new MonitorContainer();
+	SystemDAO sysDAO = new SystemDaoImpl();
+
+	ArrayList<ChangeLogMonitor> changelogs = null;
+	int count = -1;
+	try {
+	    changelogs = sysDAO.listChangeLog(sys == null ? null : sys.getCode(), start, end);
+	    count = sysDAO.getCounterChangeLog(sys == null ? null : sys.getCode());
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.log(Level.SEVERE, "ERROR when list changelog. Message: " + e.getMessage());
+	}
+	ChangeLogMonitor[] list = null;
+	if (changelogs != null && changelogs.size() > 0) {
+	    list = new ChangeLogMonitor[changelogs.size()];
+	    changelogs.toArray(list);
+	}
+	container.setChangelogCount(count);
+	container.setChangelogs(list);
+	return container;
+    }
+
+    public String getDefaultContent() {
+	return HTMLControl.getDefaultContent();
+    }
+
+    /*
+     * (non-Javadoc) * @see
+     * cmg.org.monitor.module.client.MonitorGwtService#editLink
+     * (java.lang.String)
+     */
+    @Override
+    public void editLink(String link) {
+	UtilityDAO dao = new UtilityDaoImpl();
+	dao.putLinkDefault(link);
+    }
+
+    /*
+     * (non-Javadoc) * @see
+     * cmg.org.monitor.module.client.MonitorGwtService#getLink()
+     */
+    @Override
+    public String getLink() {
+	UtilityDAO dao = new UtilityDaoImpl();
+	String str = dao.getLinkDefault();
+	return str;
+    }
+
+    @Override
+    public SystemGroup getGroupById(String id) {
+	SystemGroupDAO sysGroupDao = new SystemGroupDaoImpl();
+	try {
+	    SystemGroup ss = sysGroupDao.getByID(id);
+	    return ss;
+	} catch (Exception e) {
+	    return null;
+	}
+    }
+
+    @Override
+    public boolean addnewGroup(String name, String description) {
+	SystemGroupDAO sysGroupDao = new SystemGroupDaoImpl();
+	SystemGroup ss = new SystemGroup();
+	ss.setName(name);
+	ss.setDescription(description);
+	try {
+	    boolean b = sysGroupDao.addNewGroup(ss);
+	    System.out.println("add done " + b);
+	    return b;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return false;
+    }
+
+    @Override
+    public MonitorContainer getAllGroup() {
+	SystemGroupDAO sysGroupDao = new SystemGroupDaoImpl();
+	//SystemAccountDAO sysAccountDAO = new SystemAccountDaoImpl();
+	try {
+	    MonitorContainer container = new MonitorContainer();
+
+	    SystemGroup[] sysGroup = sysGroupDao.getAllGroup();
+
+	    List<SystemGroup> listGroup = new ArrayList<SystemGroup>();
+	    if (sysGroup != null && sysGroup.length > 0) {
+		for (SystemGroup ss : sysGroup) {
+		    listGroup.add(ss);
+		}
+	    }
+	    container.setListSystemGroup(listGroup);	
+	    /*
+	    List<SystemUser> sysUSers = sysAccountDAO.listAllSystemUser();
+	    container.setListSystemUsers(sysUSers);
+	    */
+	    return container;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return null;
+
+    }
+
+    @Override
+    public boolean deleteGroup(String name, String id) {
+	SystemGroupDAO sysGroupDao = new SystemGroupDaoImpl();
+	try {
+	    return sysGroupDao.deleteGroup(id);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return false;
+    }
+
+    @Override
+    public boolean updateUserMapping(String email, String idGroup, boolean mapp) {
+	return true;
+    }
+
+    @Override
+    public boolean updateGroup(String groupName, String groupDescription, String id) {
+	SystemGroupDAO sysGroupDao = new SystemGroupDaoImpl();
+	try {
+	    System.out.println("groupName:" +groupName + ".groupDescription:" + groupDescription + ".id:" + id);
+	    
+	    return sysGroupDao.updateGroup(id, groupName, groupDescription);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return false;
+    }
+
+    /*
+     * (non-Javadoc) * @see
+     * cmg.org.monitor.module.client.MonitorGwtService#syncAccount
+     * (cmg.org.monitor.entity.shared.GoogleAccount)
+     */
+    @Override
+    public String syncAccount(GoogleAccount googleacc) {
+	// TODO Auto-generated method stub return null;
+	GoogleAccountService service;
+	try {
+	    GoogleAccount ac = new GoogleAccount();
+	    ac.setDomain("c-mg.vn");
+	    ac.setUsername("monitor");
+	    googleacc.setPassword(SecurityUtil.encrypt(MonitorConstant.ADMIN_PASSWORD));
+	    service = new GoogleAccountService(googleacc);
+	    service.sync();
+	    return service.getLog();
+	} catch (AuthenticationException e) {
+	    // TODO Auto-generated catch block e.printStackTrace();
+	    return "Something wrong with server - Can not sync google account.";
+	}
+    }
+
+    /*
+     * (non-Javadoc) * @see
+     * cmg.org.monitor.module.client.MonitorGwtService#listAllGoogleAcc()
+     */
+    @Override
+    public GoogleAccount[] listAllGoogleAcc() throws Exception {
+	// TODO Auto-generated method stub return null;
+	SystemAccountDAO dao = new SystemAccountDaoImpl();
+	List<GoogleAccount> list = new ArrayList<GoogleAccount>();
+	try {
+	    list = dao.listAllGoogleAccount();
+	    if (list != null && !list.isEmpty()) {
+		GoogleAccount[] tempList = new GoogleAccount[list.size()];
+		list.toArray(tempList);
+		return tempList;
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return null;
+    }
+
+    /*
+     * (non-Javadoc) * @see
+     * cmg.org.monitor.module.client.MonitorGwtService#addGoogleAccount
+     * (cmg.org.monitor.entity.shared.GoogleAccount)
+     */
+    @Override
+    public boolean addGoogleAccount(GoogleAccount acc) {
+
+	// TODO Auto-generated method stub return false;
+	SystemAccountDAO dao = new SystemAccountDaoImpl();
+	acc.setPassword(SecurityUtil.encrypt(acc.getPassword()));
+	try {
+	    return dao.createGoogleAccount(acc);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return false;
+
+    }
+
+    /*
+     * (non-Javadoc) * @see
+     * cmg.org.monitor.module.client.MonitorGwtService#addGroupByObj
+     * (cmg.org.monitor.entity.shared.SystemGroup)
+     */
+    @Override
+    public boolean addGroupByObj(SystemGroup s) {
+	SystemGroupDAO sysGroupDao = new SystemGroupDaoImpl();
+	try {
+	    boolean b = sysGroupDao.addNewGroup(s);
+	    System.out.println("add done " + b);
+	    return b;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return false;
+    }
 }

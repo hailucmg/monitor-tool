@@ -72,4 +72,10 @@ public interface MonitorGwtService extends RemoteService {
 	boolean updateUserMapping(String email, String idGroup, boolean mapp);
 	
 	String syncAccount(GoogleAccount googleacc);
+	
+	GoogleAccount[] listAllGoogleAcc() throws Exception;
+	
+	public boolean addGoogleAccount(GoogleAccount acc);
+	
+	boolean addGroupByObj(SystemGroup s);
 }

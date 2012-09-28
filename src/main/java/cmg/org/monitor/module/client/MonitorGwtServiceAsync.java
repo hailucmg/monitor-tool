@@ -80,5 +80,11 @@ public interface MonitorGwtServiceAsync {
 			AsyncCallback<Boolean> callback);
 
 	void syncAccount(GoogleAccount googleacc, AsyncCallback<String> callback);
+
+	void listAllGoogleAcc(AsyncCallback<GoogleAccount[]> callback);
+
+	void addGoogleAccount(GoogleAccount acc, AsyncCallback<Boolean> callback);
+
+	void addGroupByObj(SystemGroup s, AsyncCallback<Boolean> callback);
 	
 }
