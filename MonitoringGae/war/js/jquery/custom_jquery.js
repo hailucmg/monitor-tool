@@ -72,6 +72,8 @@ $(document).bind("click", function (e) {
     if (e.target.id != $(".action-slider").attr("class")) $("#actions-box-slider").slideUp();
 });
 
+
+// EVENT CLICK ON CHECKBOX OF USER ROLE PAGE
 $(".ckUserRole").live('click',function(){
 	username = $(this).attr('username');
 	role = $(this).attr('role');
