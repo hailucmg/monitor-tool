@@ -222,7 +222,9 @@ public class EditGroup extends AncestorEntryPoint {
 			panelValidateGroupName.setVisible(false);
 			panelValidateGroupDescription.setVisible(false);
 			panelAdding.setVisible(true);
-			sendData(name, groupdes, id);
+			String nameEdit = txtGroupName.getText();
+			String groupEdit = txtGroupDescription.getText();
+			sendData(nameEdit, groupEdit, id);
 		}
 		
 	}
