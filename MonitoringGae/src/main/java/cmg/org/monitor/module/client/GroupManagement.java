@@ -30,7 +30,7 @@ import com.google.gwt.visualization.client.visualizations.Table.Options;
 
 public class GroupManagement extends AncestorEntryPoint{
 	static List<SystemGroup> listGroup;
-	static private Table tableListSystem;
+	static private Table tableListGroup;
     static private FlexTable rootLinkDefault;
     static private FlexTable tableLinkDefault;
     static DialogBox dialogBox;
@@ -60,17 +60,18 @@ public class GroupManagement extends AncestorEntryPoint{
 
 			@Override
 			public void onSuccess(MonitorContainer result) {
-				if (result != null) {
+				if (result.getListSystemGroup() != null) {
+					System.out.println(result.getListSystemGroup().size());
 					listGroup = result.getListSystemGroup();
-					tableListSystem = new Table();
-					addWidget(HTMLControl.ID_BODY_CONTENT,tableListSystem);
+					tableListGroup = new Table();
+					addWidget(HTMLControl.ID_BODY_CONTENT,tableListGroup);
 					setVisibleLoadingImage(false);
 					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
 					drawTable(listGroup);
 				} else {
-					showMessage("Oops! Error.", HTMLControl.HTML_DASHBOARD_NAME,
-							"Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
-					setVisibleLoadingImage(false);
+					  showMessage("No group found. ", HTMLControl.HTML_ADD_NEW_GROUP_NAME, "Add new group.", HTMLControl.BLUE_MESSAGE, true);
+					    setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+					    setVisibleLoadingImage(false);
 				}
 				setOnload(false);
 				
@@ -137,7 +138,7 @@ public class GroupManagement extends AncestorEntryPoint{
 	
 	   static void drawTable(List<SystemGroup> result) {
 			if (result != null && result.size() > 0) {
-			    tableListSystem.draw(createDataListSystem(result), createOptionsTableListSystem());
+				tableListGroup.draw(createDataListSystem(result), createOptionsTableListSystem());
 			} else {
 			    showMessage("No Group found. ", HTMLControl.HTML_ADD_NEW_GROUP_NAME, "Add new group.", HTMLControl.RED_MESSAGE, true);
 			    showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);

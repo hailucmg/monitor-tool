@@ -226,7 +226,7 @@ public class AddNewGroup extends AncestorEntryPoint {
 				if(result){
 					showMessage("Group added sucessfully. ",
 							HTMLControl.HTML_GROUP_MANAGEMENT_NAME,
-							"View Group list. ", HTMLControl.RED_MESSAGE,
+							"View Group list. ", HTMLControl.BLUE_MESSAGE,
 							true);
 				}else{
 					showMessage("Server error! ",

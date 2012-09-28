@@ -36,7 +36,6 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 		initPersistence();
 		try {
 			pm.currentTransaction().begin();
-
 			SystemGroup temp = new SystemGroup();
 			temp.setName(sg.getName());
 			temp.setDescription(sg.getDescription());
