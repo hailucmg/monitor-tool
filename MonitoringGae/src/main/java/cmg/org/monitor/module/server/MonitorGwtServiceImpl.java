@@ -30,6 +30,7 @@ import cmg.org.monitor.entity.shared.AlertStoreMonitor;
 import cmg.org.monitor.entity.shared.ChangeLogMonitor;
 import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
+import cmg.org.monitor.entity.shared.GoogleAccount;
 import cmg.org.monitor.entity.shared.JvmMonitor;
 import cmg.org.monitor.entity.shared.MemoryMonitor;
 import cmg.org.monitor.entity.shared.NotifyMonitor;
@@ -42,9 +43,13 @@ import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.ext.model.shared.UserMonitor;
 import cmg.org.monitor.module.client.MonitorGwtService;
+import cmg.org.monitor.services.GoogleAccountService;
 import cmg.org.monitor.services.MonitorLoginService;
 import cmg.org.monitor.util.shared.HTMLControl;
+import cmg.org.monitor.util.shared.MonitorConstant;
+import cmg.org.monitor.util.shared.SecurityUtil;
 
+import com.google.gdata.util.AuthenticationException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
@@ -464,5 +469,24 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		} catch (Exception e) {
 			return false;
 		}
+	}
+
+	/* (non-Javadoc) * @see cmg.org.monitor.module.client.MonitorGwtService#syncAccount(cmg.org.monitor.entity.shared.GoogleAccount) */
+	@Override
+	public String syncAccount(GoogleAccount googleacc) {
+	    // TODO Auto-generated method stub return null;
+	    GoogleAccountService service;
+	    try {
+		GoogleAccount ac = new GoogleAccount();
+		ac.setDomain("c-mg.vn");
+		ac.setUsername("monitor");
+		googleacc.setPassword(SecurityUtil.encrypt(MonitorConstant.ADMIN_PASSWORD));
+		service = new GoogleAccountService(googleacc);
+		service.sync();
+		return service.getLog();
+	    } catch (AuthenticationException e) {
+		// TODO Auto-generated catch block e.printStackTrace();
+		return "Something wrong with server - Can not sync google account.";
+	    }
 	}
 }
