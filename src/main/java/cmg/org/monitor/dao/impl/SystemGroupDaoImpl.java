@@ -58,22 +58,25 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 
 	@Override
 	public SystemGroup getByID(String id) throws Exception {
+		initPersistence();
 		try {
 			return pm.getObjectById(SystemGroup.class, id);
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE,
 					" ERROR when getByID. Message: " + ex.getMessage());
 			throw ex;
+		} finally {
+			pm.close();
 		}
 	}
 
 	@Override
 	public boolean updateGroup(String id, String groupName,
 			String groupDescription) throws Exception {
+		initPersistence();
 		SystemGroup temp = pm.getObjectById(SystemGroup.class, id);
 		boolean check = false;
-		if (temp != null) {
-			initPersistence();
+		if (temp != null) {			
 			try {
 				pm.currentTransaction().begin();
 				temp.setName(groupName);
