@@ -35,15 +35,19 @@ public class UserManagement extends AncestorEntryPoint {
 
 	private void initUI(){
 		UserManagement.exportStaticMethod();
-		monitorGwtSv.getAllGroup(new AsyncCallback<MonitorContainer>() {
+		monitorGwtSv.getAllUserAndGroup(new AsyncCallback<MonitorContainer>() {
 			@Override
 			public void onSuccess(MonitorContainer result) {
-				if(result!=null){
+				if(result!=null && result.getListSystemGroup()!=null && result.getListSystemUsers()!=null){
 					listGroup = result.getListSystemGroup();
 					listUser = result.getListSystemUsers();
 					setVisibleLoadingImage(false);
 					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
 					drawTable(listUser, listGroup);
+				}else{
+					showMessage("Oops! Error.",
+							HTMLControl.HTML_DASHBOARD_NAME,
+							"Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
 				}
 				
 			}
@@ -138,7 +142,12 @@ public class UserManagement extends AncestorEntryPoint {
 	}
 	
 	private void drawTable(List<SystemUser> listUser , List<SystemGroup> listGroup ) {
-		myTable.draw(createData(listUser,listGroup), option());
+		if(listUser.size() > 0 && listGroup.size() > 0){
+			myTable.draw(createData(listUser,listGroup), option());
+		}else{
+			  showMessage("No Group or user found. ", HTMLControl.HTML_ADD_NEW_GROUP_NAME, "Add new group.", HTMLControl.RED_MESSAGE, true);
+		}
+		
 	}
 	public static void updateUserMapping(String email, String idGroup, boolean mapping){
 		monitorGwtSv.updateUserMapping(email, idGroup, mapping, new AsyncCallback<Boolean>() {
