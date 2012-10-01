@@ -95,10 +95,10 @@ public class UserManagement extends AncestorEntryPoint {
 		for(int j = 0 ; j < listUser.size() ; j++){
 			data.setValue(j, 0,  listUser.get(j).getUsername());
 			for(int k = 0; k < indexGroup ; k++){
-				List<SystemGroup> listGroupUSer = listUser.get(j).getGroups();
+				List<String> listGroupUSer = listUser.get(j).getGroupIDs();
 				boolean checkInGroup = false;
-				for(SystemGroup g : listGroupUSer){
-					if(g.getName().equalsIgnoreCase(listGroup.get(k).getName())){
+				for(String g : listGroupUSer){
+					if(g.equalsIgnoreCase(listGroup.get(k).getId())){
 						checkInGroup = true;
 					}
 				}
@@ -145,7 +145,7 @@ public class UserManagement extends AncestorEntryPoint {
 		if(listUser.size() > 0 && listGroup.size() > 0){
 			myTable.draw(createData(listUser,listGroup), option());
 		}else{
-			  showMessage("No Group or user found. ", HTMLControl.HTML_ADD_NEW_GROUP_NAME, "Add new group.", HTMLControl.RED_MESSAGE, true);
+			  showMessage("No user found. ","","", HTMLControl.RED_MESSAGE, true);
 		}
 		
 	}

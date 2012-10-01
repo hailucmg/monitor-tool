@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.validation.GroupDefinitionException;
+
 import cmg.org.monitor.dao.AlertDao;
 import cmg.org.monitor.dao.CpuDAO;
 import cmg.org.monitor.dao.FileSystemDAO;
@@ -450,7 +452,20 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements Monit
 
     @Override
     public boolean updateUserMapping(String email, String idGroup, boolean mapp) {
-	return true;
+    	try {
+    		SystemAccountDAO sysAccDao = new SystemAccountDaoImpl();
+        	SystemGroupDAO groupDao = new SystemGroupDaoImpl();
+        	if (mapp){
+        		groupDao.addUserToGroup(sysAccDao.getSystemUserByEmail(email), groupDao.getByID(idGroup));
+        	} else {
+        		groupDao.removeUserFromGroup(sysAccDao.getSystemUserByEmail(email), groupDao.getByID(idGroup));
+        	}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+    	
+    	return true;
     }
 
     @Override
@@ -567,6 +582,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements Monit
 		    container.setListSystemGroup(listGroup);	
 		   
 		    List<SystemUser> sysUSers = sysAccountDAO.listAllSystemUser();
+		  
 		    container.setListSystemUsers(sysUSers);
 		    
 		    return container;
