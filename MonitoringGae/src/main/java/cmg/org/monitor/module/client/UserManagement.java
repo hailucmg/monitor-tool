@@ -79,12 +79,12 @@ public class UserManagement extends AncestorEntryPoint {
 		boolean sendServer;
 		if(check.equalsIgnoreCase("true")){
 			sendServer = false;
-			updateUserMapping(username, groupID, sendServer);
-			cb.setAttribute("ischeck", "false");
+			updateUserMapping(idCheckbox,username, groupID, sendServer);
+			/*cb.setAttribute("ischeck", "false");*/
 		}else if(check.equalsIgnoreCase("false")){
 			sendServer = true;
-			updateUserMapping(username, groupID, sendServer);
-			cb.setAttribute("ischeck", "true");
+			updateUserMapping(idCheckbox,username, groupID, sendServer);
+			/*cb.setAttribute("ischeck", "true");*/
 		}
 	}
 	
@@ -110,7 +110,7 @@ public class UserManagement extends AncestorEntryPoint {
 				
 				if(checkInGroup){
 					String id =listUser.get(j).getId()+ "-" + listGroup.get(k).getId();	
-					data.setValue(j, k+1, "<input type=\"checkbox\"  onClick=\"javascript:RecipeData('"+listUser.get(j).getEmail() +"','" + listGroup.get(k).getId() + "','" + id +"');\"      id=\""+id+"\"  style='display:block;margin-left:auto;margin-right:auto;border-color:green;' ischeck=\"true\"  checked> ");
+					data.setValue(j, k+1, "<input type=\"checkbox\"  onClick=\"javascript:RecipeData('"+listUser.get(j).getEmail() +"','" + listGroup.get(k).getId() + "','" + id +"');\"      id=\""+id+"\"  style='display:block;margin-left:auto;margin-right:auto;border-color:green;' ischeck=\"true\"  checked=\"checked\"> ");
 					
 				}else{
 					String id =listUser.get(j).getId()+"-"+listGroup.get(k).getId();	
@@ -154,17 +154,45 @@ public class UserManagement extends AncestorEntryPoint {
 		}
 		
 	}
-	public static void updateUserMapping(String email, String idGroup, boolean mapping){
+	public static void updateUserMapping(String idCheckBox,String email, String idGroup, boolean mapping){
+		 final String idCb = idCheckBox;
+		 final boolean map = mapping;
 		monitorGwtSv.updateUserMapping(email, idGroup, mapping, new AsyncCallback<Boolean>() {
 			
 			@Override
 			public void onSuccess(Boolean result) {
-				System.out.println("hey yow");
+				Element cb = Document.get().getElementById(idCb);
+				if(result){
+					if(map){
+						cb.setAttribute("checked", "checked");
+						cb.setAttribute("ischeck", "true");
+					}else{
+						cb.removeAttribute("checked");
+						cb.setAttribute("ischeck", "false");
+					}
+				}else{
+					 if(map){
+						 cb.removeAttribute("checked");
+						 cb.setAttribute("ischeck", "false");
+					 }else{
+						 cb.setAttribute("checked", "checked");
+						 cb.setAttribute("ischeck", "true");
+					 }
+					 showMessage("Server error. ","","", HTMLControl.RED_MESSAGE, true);
+				}
 			}
 			
 			@Override
 			public void onFailure(Throwable caught) {
-				System.out.println("hey fail");
+				Element cb = Document.get().getElementById(idCb);
+				 if(map){
+					 cb.removeAttribute("checked");
+					 cb.setAttribute("ischeck", "false");
+				 }else{
+					 cb.setAttribute("checked", "checked");
+					 cb.setAttribute("ischeck", "true");
+				 }
+				 showMessage("Server error. ","","", HTMLControl.RED_MESSAGE, true);
 			}
 		});
 	}
