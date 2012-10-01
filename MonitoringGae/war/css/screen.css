@@ -1713,5 +1713,20 @@ a:hover.back-login	{
 	z-index: 1000;
 }
 	
+a.btnSync	{
+	background: url(../images/table/reload_all_tabs.png) no-repeat;
+	height: 24px;
+	width: 24px;
+	display:block;
+	}
+	
+a.btnCancel	{
+	background: url(../images/table/button_cancel.png) no-repeat;
+	height: 24px;
+	width: 24px;
+	display:block;
+	margin-top: -27px;
+	margin-left: 30px;
+	}
 	
 
