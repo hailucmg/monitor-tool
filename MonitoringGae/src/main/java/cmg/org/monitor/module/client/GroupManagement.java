@@ -29,7 +29,7 @@ import com.google.gwt.visualization.client.visualizations.Table;
 import com.google.gwt.visualization.client.visualizations.Table.Options;
 
 public class GroupManagement extends AncestorEntryPoint{
-	static List<SystemGroup> listGroup;
+	public static List<SystemGroup> listGroup;
 	static private Table tableListGroup;
     static private FlexTable rootLinkDefault;
     static private FlexTable tableLinkDefault;
@@ -43,6 +43,8 @@ public class GroupManagement extends AncestorEntryPoint{
 	protected void init() {
 		if (currentPage == HTMLControl.PAGE_GROUP_MANAGEMENT) {
 			GroupManagement.exportStaticMethod();
+			tableListGroup = new Table();
+			addWidget(HTMLControl.ID_BODY_CONTENT,tableListGroup);
 			initUI();	
 		}
 	}
@@ -55,26 +57,21 @@ public class GroupManagement extends AncestorEntryPoint{
 				showMessage("Oops! Error.", HTMLControl.HTML_DASHBOARD_NAME,
 						"Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
 				setVisibleLoadingImage(false);
-				setOnload(false);
 			}
 
 			@Override
 			public void onSuccess(MonitorContainer result) {
-				if (result.getListSystemGroup() != null) {
-					System.out.println(result.getListSystemGroup().size());
+				System.out.println(result.getListSystemGroup().size());
+				if (result.getListSystemGroup().size() > 0) {
 					listGroup = result.getListSystemGroup();
-					tableListGroup = new Table();
-					addWidget(HTMLControl.ID_BODY_CONTENT,tableListGroup);
 					setVisibleLoadingImage(false);
 					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
 					drawTable(listGroup);
 				} else {
 					  showMessage("No group found. ", HTMLControl.HTML_ADD_NEW_GROUP_NAME, "Add new group.", HTMLControl.BLUE_MESSAGE, true);
-					    setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
-					    setVisibleLoadingImage(false);
+					  setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
+					  setVisibleLoadingImage(false);
 				}
-				setOnload(false);
-				
 			}
 		});
 	}
@@ -137,12 +134,9 @@ public class GroupManagement extends AncestorEntryPoint{
 	    }
 	
 	   static void drawTable(List<SystemGroup> result) {
-			if (result != null && result.size() > 0) {
-				tableListGroup.draw(createDataListSystem(result), createOptionsTableListSystem());
-			} else {
-			    showMessage("No Group found. ", HTMLControl.HTML_ADD_NEW_GROUP_NAME, "Add new group.", HTMLControl.RED_MESSAGE, true);
-			    showReloadCountMessage(HTMLControl.YELLOW_MESSAGE);
-			}
+		tableListGroup.draw(createDataListSystem(result), createOptionsTableListSystem());
+				
+			
 	   }
 	
 	/*
@@ -192,13 +186,33 @@ public class GroupManagement extends AncestorEntryPoint{
 	
 	
 	public static void deleteGroup(String groupname, String id){
+		setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
+		final String tempName = groupname;
 		monitorGwtSv.deleteGroup(groupname, id, new AsyncCallback<Boolean>() {
 			
 			@Override
 			public void onSuccess(Boolean result) {
 				showMessage("Group deleted sucessfully.", "", "", HTMLControl.BLUE_MESSAGE, true);
 				dialogBox.hide();
-				initUI();
+				if(listGroup.size() > 1 ){
+					for(int i = 0 ; i < listGroup.size();i++){
+						if(listGroup.get(i).getName().equalsIgnoreCase(tempName)){
+							listGroup.remove(i);
+							break;
+						}	
+					}
+					setVisibleLoadingImage(false);
+					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+					drawTable(listGroup);
+				}else{
+					if(listGroup.size() == 1){
+						  listGroup.remove(0);	
+						  showMessage("No group found. ", HTMLControl.HTML_ADD_NEW_GROUP_NAME, "Add new group.", HTMLControl.BLUE_MESSAGE, true);
+						  setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
+						  setVisibleLoadingImage(false);
+					}	
+				}
+				
 			}
 			
 			@Override
