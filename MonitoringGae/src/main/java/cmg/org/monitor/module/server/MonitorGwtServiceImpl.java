@@ -414,26 +414,19 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements Monit
     @Override
     public MonitorContainer getAllGroup() {
 	SystemGroupDAO sysGroupDao = new SystemGroupDaoImpl();
-	//SystemAccountDAO sysAccountDAO = new SystemAccountDaoImpl();
 	try {
 	    MonitorContainer container = new MonitorContainer();
 
 	    SystemGroup[] sysGroup = sysGroupDao.getAllGroup();
-
-	    List<SystemGroup> listGroup = new ArrayList<SystemGroup>();
-	    if (sysGroup != null && sysGroup.length > 0) {
-		for (SystemGroup ss : sysGroup) {
-		    listGroup.add(ss);
-		}
+	    if(sysGroup!= null){
+	    	container.setListSystemGroup(sysGroup);
+	    }else{
+	    	container.setListSystemGroup(null);
 	    }
-	    container.setListSystemGroup(listGroup);	
-	    /*
-	    List<SystemUser> sysUSers = sysAccountDAO.listAllSystemUser();
-	    container.setListSystemUsers(sysUSers);
-	    */
 	    return container;
 	} catch (Exception e) {
 	    e.printStackTrace();
+	    
 	}
 	return null;
 
@@ -573,18 +566,13 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements Monit
 
 		    SystemGroup[] sysGroup = sysGroupDao.getAllGroup();
 
-		    List<SystemGroup> listGroup = new ArrayList<SystemGroup>();
-		    if (sysGroup != null && sysGroup.length > 0) {
-			for (SystemGroup ss : sysGroup) {
-			    listGroup.add(ss);
-			}
-		    }
-		    container.setListSystemGroup(listGroup);	
+		    
+		    container.setListSystemGroup(sysGroup);	
 		   
 		    List<SystemUser> sysUSers = sysAccountDAO.listAllSystemUser();
-		  
-		    container.setListSystemUsers(sysUSers);
-		    
+		    SystemUser[] listUser = new SystemUser[sysUSers.size()];
+		    sysUSers.toArray(listUser);
+		    container.setListSystemUsers(listUser);
 		    return container;
 		} catch (Exception e) {
 		    e.printStackTrace();

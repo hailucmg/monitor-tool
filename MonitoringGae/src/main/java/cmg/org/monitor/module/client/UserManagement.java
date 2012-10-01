@@ -39,15 +39,20 @@ public class UserManagement extends AncestorEntryPoint {
 			@Override
 			public void onSuccess(MonitorContainer result) {
 				if(result!=null && result.getListSystemGroup()!=null && result.getListSystemUsers()!=null){
-					listGroup = result.getListSystemGroup();
-					listUser = result.getListSystemUsers();
+					SystemGroup[] listTempGroup = result.getListSystemGroup();
+					SystemUser[] listTempUsers =result.getListSystemUsers();
+					for(SystemGroup s : listTempGroup){
+						listGroup.add(s);
+					}
+					for(SystemUser se : listTempUsers){
+						listUser.add(se);
+					}
 					setVisibleLoadingImage(false);
 					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
 					drawTable(listUser, listGroup);
 				}else{
-					showMessage("Oops! Error.",
-							HTMLControl.HTML_DASHBOARD_NAME,
-							"Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
+					setVisibleLoadingImage(false);
+					showMessage("No user found. ","","", HTMLControl.RED_MESSAGE, true);
 				}
 				
 			}
