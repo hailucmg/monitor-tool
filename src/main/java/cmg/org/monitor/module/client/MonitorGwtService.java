@@ -80,4 +80,6 @@ public interface MonitorGwtService extends RemoteService {
 	public boolean addGoogleAccount(GoogleAccount acc);
 	
 	boolean addGroupByObj(SystemGroup s);
+	
+	boolean deleteGoogleAccount(String id);
 }
