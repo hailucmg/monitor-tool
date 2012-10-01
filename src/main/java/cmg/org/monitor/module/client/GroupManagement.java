@@ -61,9 +61,11 @@ public class GroupManagement extends AncestorEntryPoint{
 
 			@Override
 			public void onSuccess(MonitorContainer result) {
-				System.out.println(result.getListSystemGroup().size());
-				if (result.getListSystemGroup().size() > 0) {
-					listGroup = result.getListSystemGroup();
+				if (result.getListSystemGroup()!=null && result!= null) {
+					SystemGroup[] listTempGroup = result.getListSystemGroup();
+					for(SystemGroup s : listTempGroup){
+						listGroup.add(s);
+					}
 					setVisibleLoadingImage(false);
 					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
 					drawTable(listGroup);
