@@ -86,5 +86,7 @@ public interface MonitorGwtServiceAsync {
 	void addGoogleAccount(GoogleAccount acc, AsyncCallback<Boolean> callback);
 
 	void addGroupByObj(SystemGroup s, AsyncCallback<Boolean> callback);
+
+	void getAllUserAndGroup(AsyncCallback<MonitorContainer> callback);
 	
 }
