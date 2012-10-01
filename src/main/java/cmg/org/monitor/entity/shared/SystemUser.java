@@ -41,12 +41,12 @@ public class SystemUser implements IsSerializable {
 
 	@Persistent
 	private String lastName;
-	
+
 	@Persistent
-	private List<String> roleIDs = new ArrayList<String>();
-	
+	private String[] roleIDs;
+
 	@Persistent
-	private List<String> groupIDs = new ArrayList<String>();
+	private String[] groupIDs;
 
 	private List<SystemRole> roles;
 
@@ -67,16 +67,17 @@ public class SystemUser implements IsSerializable {
 		this.isSuspended = in.isSuspended;
 		this.isDomainAdmin = in.isDomainAdmin;
 	}
-	
+
 	public void clear() {
 		roles = new ArrayList<SystemRole>();
 		groups = new ArrayList<SystemGroup>();
 	}
-	
+
 	public void addToGroup(SystemGroup group) {
 		boolean check = false;
-		if (!groupIDs.isEmpty()) {
-			for (String groupId: groupIDs) {
+		List<String> groups = getGroupIDs();
+		if (groups != null && groups.size() > 0) {
+			for (String groupId : groups) {
 				if (groupId.equalsIgnoreCase(group.getId())) {
 					check = true;
 					break;
@@ -84,39 +85,43 @@ public class SystemUser implements IsSerializable {
 			}
 		}
 		if (!check) {
-			groupIDs.add(group.getId());
+			groups.add(group.getId());
 		}
+		setGroupIDs(groups);
 		check = false;
-		if (!group.getUserIDs().isEmpty()) {
-			for (Object userId: group.getUserIDs()) {
-				if (((String)userId).equalsIgnoreCase(getId())) {
+		List<String> users = group.getUserIDs();
+		if (users != null && users.size() > 0) {
+			for (Object userId : users) {
+				if (((String) userId).equalsIgnoreCase(getId())) {
 					check = true;
 					break;
 				}
 			}
 		}
 		if (!check) {
-			group.getUserIDs().add(getId());
+			users.add(getId());
 		}
+		group.setUserIDs(users);
 	}
-	
+
 	public void removeFromGroup(SystemGroup group) {
 		int index = -1;
-		if (!groupIDs.isEmpty()) {
-			for (int i = 0; i < groupIDs.size(); i++) {
-				if (groupIDs.get(i).equalsIgnoreCase(group.getId())) {
+		if (!getGroupIDs().isEmpty()) {
+			for (int i = 0; i < getGroupIDs().size(); i++) {
+				if (getGroupIDs().get(i).equalsIgnoreCase(group.getId())) {
 					index = i;
 					break;
 				}
 			}
 		}
 		if (index != -1) {
-			groupIDs.remove(index);
+			getGroupIDs().remove(index);
 		}
 		index = -1;
 		if (!group.getUserIDs().isEmpty()) {
 			for (int i = 0; i < group.getUserIDs().size(); i++) {
-				if (((String)group.getUserIDs().get(i)).equalsIgnoreCase(getId())) {
+				if (((String) group.getUserIDs().get(i))
+						.equalsIgnoreCase(getId())) {
 					index = i;
 					break;
 				}
@@ -126,11 +131,11 @@ public class SystemUser implements IsSerializable {
 			group.getUserIDs().remove(index);
 		}
 	}
-	
+
 	public void addRole(SystemRole role) {
 		boolean check = false;
-		if (!roleIDs.isEmpty()) {
-			for (String roleId: roleIDs) {
+		if (!getRoleIDs().isEmpty()) {
+			for (String roleId : roleIDs) {
 				if (roleId.equalsIgnoreCase(role.getId())) {
 					check = true;
 					break;
@@ -138,12 +143,12 @@ public class SystemUser implements IsSerializable {
 			}
 		}
 		if (!check) {
-			roleIDs.add(role.getId());
+			getRoleIDs().add(role.getId());
 		}
 		check = false;
 		if (!role.getUserIDs().isEmpty()) {
-			for (Object userId: role.getUserIDs()) {
-				if (((String)userId).equalsIgnoreCase(getId())) {
+			for (Object userId : role.getUserIDs()) {
+				if (((String) userId).equalsIgnoreCase(getId())) {
 					check = true;
 					break;
 				}
@@ -153,24 +158,25 @@ public class SystemUser implements IsSerializable {
 			role.getUserIDs().add(getId());
 		}
 	}
-	
+
 	public void removeRole(SystemRole role) {
 		int index = -1;
-		if (!roleIDs.isEmpty()) {
-			for (int i = 0; i < roleIDs.size(); i++) {
-				if (roleIDs.get(i).equalsIgnoreCase(role.getId())) {
+		if (!getRoleIDs().isEmpty()) {
+			for (int i = 0; i < getRoleIDs().size(); i++) {
+				if (getRoleIDs().get(i).equalsIgnoreCase(role.getId())) {
 					index = i;
 					break;
 				}
 			}
 		}
 		if (index != -1) {
-			roleIDs.remove(index);
+			getRoleIDs().remove(index);
 		}
 		index = -1;
 		if (!role.getUserIDs().isEmpty()) {
 			for (int i = 0; i < role.getUserIDs().size(); i++) {
-				if (((String)role.getUserIDs().get(i)).equalsIgnoreCase(getId())) {
+				if (((String) role.getUserIDs().get(i))
+						.equalsIgnoreCase(getId())) {
 					index = i;
 					break;
 				}
@@ -180,7 +186,7 @@ public class SystemUser implements IsSerializable {
 			role.getUserIDs().remove(index);
 		}
 	}
-	
+
 	public String getId() {
 		return id;
 	}
@@ -188,7 +194,7 @@ public class SystemUser implements IsSerializable {
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
 	public String getFullName() {
 		if (firstName == null || lastName == null) {
 			return "";
@@ -308,63 +314,89 @@ public class SystemUser implements IsSerializable {
 		this.isDomainAdmin = isDomainAdmin;
 	}
 
-	/** 
-	 * @return the firstName 
+	/**
+	 * @return the firstName
 	 */
 	public String getFirstName() {
 		return firstName;
 	}
 
-	/** 
-	 * @param firstName the firstName to set 
+	/**
+	 * @param firstName
+	 *            the firstName to set
 	 */
-	
+
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
 
-	/** 
-	 * @return the lastName 
+	/**
+	 * @return the lastName
 	 */
 	public String getLastName() {
 		return lastName;
 	}
 
-	/** 
-	 * @param lastName the lastName to set 
+	/**
+	 * @param lastName
+	 *            the lastName to set
 	 */
-	
+
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
 
-	/** 
-	 * @return the roleIDs 
+	/**
+	 * @return the roleIDs
 	 */
 	public List<String> getRoleIDs() {
-		return roleIDs;
+		if (roleIDs == null) {
+			return null;
+		} else {
+			List<String> list = new ArrayList<String>();
+			for (int i = 0; i < roleIDs.length; i++) {
+				list.add(roleIDs[i]);
+			}
+			return list;
+		}
 	}
 
-	/** 
-	 * @param roleIDs the roleIDs to set 
+	/**
+	 * @param roleIDs
+	 *            the roleIDs to set
 	 */
-	
-	public void setRoleIDs(List<String> roleIDs) {
-		this.roleIDs = roleIDs;
+
+	public void setRoleIDs(List<String> listRoleIDs) {
+		if (listRoleIDs != null && listRoleIDs.size() > 0) {
+			roleIDs = new String[listRoleIDs.size()];
+			listRoleIDs.toArray(roleIDs);
+		}
 	}
 
-	/** 
-	 * @return the groupIDs 
+	/**
+	 * @return the groupIDs
 	 */
 	public List<String> getGroupIDs() {
-		return groupIDs;
+		if (groupIDs == null) {
+			return null;
+		} else {
+			List<String> list = new ArrayList<String>();
+			for (int i = 0; i < groupIDs.length; i++) {
+				list.add(groupIDs[i]);
+			}
+			return list;
+		}
 	}
 
-	/** 
-	 * @param groupIDs the groupIDs to set 
+	/**
+	 * @param groupIDs
+	 *            the groupIDs to set
 	 */
-	
-	public void setGroupIDs(List<String> groupIDs) {
-		this.groupIDs = groupIDs;
+
+	public void setGroupIDs(List<String> listGroupIDs) {
+		if (listGroupIDs != null && listGroupIDs.size() > 0) {
+			groupIDs = new String[listGroupIDs.size()];
+			listGroupIDs.toArray(groupIDs);
+		}
 	}
 }
