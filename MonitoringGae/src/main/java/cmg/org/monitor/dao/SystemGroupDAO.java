@@ -1,6 +1,7 @@
 package cmg.org.monitor.dao;
 
 import cmg.org.monitor.entity.shared.SystemGroup;
+import cmg.org.monitor.entity.shared.SystemUser;
 
 /** 
 	* DOCME
@@ -18,4 +19,7 @@ public interface SystemGroupDAO {
 	public boolean deleteGroup(String id) throws Exception;
 	public SystemGroup[] getAllGroup() throws Exception;
 	
+	public boolean addUserToGroup(SystemUser user, SystemGroup group) throws Exception;
+	
+	public boolean removeUserFromGroup(SystemUser user, SystemGroup group) throws Exception;	
 }

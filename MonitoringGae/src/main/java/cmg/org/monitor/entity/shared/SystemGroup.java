@@ -1,5 +1,8 @@
 package cmg.org.monitor.entity.shared;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -29,6 +32,9 @@ public class SystemGroup implements IsSerializable  {
 	
 	@Persistent
 	private String description;
+	
+	@Persistent
+	private List<String> userIDs = new ArrayList<String>();
 	
 	public String getDescription() {
 		return description;
@@ -66,5 +72,20 @@ public class SystemGroup implements IsSerializable  {
 	
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	/** 
+	 * @return the userIDs 
+	 */
+	public List<String> getUserIDs() {
+		return userIDs;
+	}
+
+	/** 
+	 * @param userIDs the userIDs to set 
+	 */
+	
+	public void setUserIDs(List<String> userIDs) {
+		this.userIDs = userIDs;
 	}
 }

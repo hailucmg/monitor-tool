@@ -14,11 +14,13 @@ import static org.junit.Assert.*;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import cmg.org.monitor.dao.SystemAccountDAO;
 import cmg.org.monitor.dao.SystemGroupDAO;
 import cmg.org.monitor.entity.shared.LinkDefaultMonitor;
 import cmg.org.monitor.entity.shared.SystemGroup;
@@ -64,12 +66,12 @@ public class SystemGroupDaoImplTest {
 					groupDao.addNewGroup(temp);
 				}
 			}
-			
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		idtest = "agR0ZXN0chELEgtTeXN0ZW1Hcm91cBgBDA";
-		
+
 	}
 
 	@After
@@ -92,7 +94,7 @@ public class SystemGroupDaoImplTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	/**
@@ -106,8 +108,9 @@ public class SystemGroupDaoImplTest {
 		try {
 			group = groupDao.getByID(idtest);
 			group.setName("Funny");
-			groupDao.updateGroup(group.getId(), group.getName(), group.getDescription());
-			group= null;
+			groupDao.updateGroup(group.getId(), group.getName(),
+					group.getDescription());
+			group = null;
 			group = groupDao.getByID(idtest);
 			assertEquals("Funny", group.getName());
 		} catch (Exception e) {
@@ -124,22 +127,22 @@ public class SystemGroupDaoImplTest {
 	@Test
 	public void testDeleteGroup() {
 		boolean b = false;
-		SystemGroup group =  null;
+		SystemGroup group = null;
 		try {
-			b = groupDao.deleteGroup(idtest);	
+			b = groupDao.deleteGroup(idtest);
 			try {
-			group = groupDao.getByID(idtest);
+				group = groupDao.getByID(idtest);
 			} catch (Exception ex) {
 				//
 			}
-			
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		assertEquals(true, b);
 		assertNull(group);
-	
+
 	}
 
 	/**
@@ -155,6 +158,68 @@ public class SystemGroupDaoImplTest {
 			System.out.println(gson.toJson(list));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testAddGroupUser() {
+		try {
+			SystemAccountDAO accountDao = new SystemAccountDaoImpl();
+			SystemGroup[] list = groupDao.getAllGroup();
+			SystemGroup group = list[0];
+			System.out.println(group.getName());
+			SystemUser user = new SystemUser();
+			user.setDomain("c-mg.vn");
+			user.setUsername("monitor");
+			user.setFirstName("Hai");
+			user.setEmail("monitor@c-mg.vn");
+
+			accountDao.createSystemUser(user);
+
+			user = new SystemUser();
+			user.setDomain("c-mg.com");
+			user.setUsername("hailu");
+			user.setFirstName("Hai");
+			user.setEmail("hailu@c-mg.com");
+			accountDao.createSystemUser(user);
+			
+			user = accountDao.getSystemUserByEmail("monitor@c-mg.vn");
+			assertEquals("monitor@c-mg.vn", user.getEmail());
+			groupDao.addUserToGroup(user, list[0]);
+			groupDao.addUserToGroup(user, list[1]);
+			groupDao.addUserToGroup(user, list[3]);
+			groupDao.addUserToGroup(accountDao.getSystemUserByEmail("hailu@c-mg.com"), list[3]);
+			user = accountDao.getSystemUserByEmail("monitor@c-mg.vn");
+			List<String> groups = user.getGroupIDs();
+			assertEquals(3, groups.size());
+			if (!groups.isEmpty()) {
+				for (String gp : groups) {
+					System.out.println("#ID: " + gp);
+					SystemGroup groupTemp = groupDao.getByID(gp);
+					System.out.println("-> Name:" + groupTemp.getName());
+					System.out
+							.println("#UID: " + groupTemp.getUserIDs().get(0));
+					assertEquals(user.getId(), groupTemp.getUserIDs().get(0));
+				}
+			}
+			SystemGroup groupTemp = groupDao.getByID(list[3].getId());
+			List<String> users = groupTemp.getUserIDs();
+			assertEquals(2, users.size());
+			for (String ur: users) {
+				System.out.println(accountDao.getSystemUserById(ur).getEmail());
+			}
+			
+			groupDao.removeUserFromGroup(user, list[3]);
+			
+			
+			groupTemp = groupDao.getByID(list[3].getId());
+			users = groupTemp.getUserIDs();
+			assertEquals(1, users.size());
+			for (String ur: users) {
+				System.out.println(accountDao.getSystemUserById(ur).getEmail());
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

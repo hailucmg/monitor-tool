@@ -56,6 +56,8 @@ public interface SystemAccountDAO {
 	 */
 	public boolean createSystemUsers(List<SystemUser> users) throws Exception;
 	
+	public SystemUser getSystemUserById(String id) throws Exception;
+	
 	public SystemUser getSystemUserByEmail(String email) throws Exception;
 	/**
 	 * 
