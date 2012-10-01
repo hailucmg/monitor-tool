@@ -1,5 +1,8 @@
 package cmg.org.monitor.entity.shared;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -19,6 +22,11 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 */
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
 public class SystemRole implements IsSerializable  {
+	public static final String ROLE_ADMINISTRATOR = "administrator";
+	
+	public static final String ROLE_USER = "user";
+	
+	
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	@Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
@@ -26,6 +34,10 @@ public class SystemRole implements IsSerializable  {
 	
 	@Persistent
 	private String name;
+	
+	@Persistent
+	private
+	List<String> userIDs = new ArrayList<String>();
 
 	/** 
 	 * @return the name 
@@ -55,5 +67,20 @@ public class SystemRole implements IsSerializable  {
 	
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	/** 
+	 * @return the userIDs 
+	 */
+	public List<String> getUserIDs() {
+		return userIDs;
+	}
+
+	/** 
+	 * @param userIDs the userIDs to set 
+	 */
+	
+	public void setUserIDs(List<String> userIDs) {
+		this.userIDs = userIDs;
 	}
 }
