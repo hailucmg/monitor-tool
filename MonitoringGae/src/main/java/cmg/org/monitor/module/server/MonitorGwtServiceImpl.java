@@ -591,4 +591,18 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements Monit
 		}
 		return null;
 	}
+	
+	 /* (non-Javadoc) * @see cmg.org.monitor.module.client.MonitorGwtService#deleteGoogleAccount(java.lang.String) */
+	    @Override
+	    public boolean deleteGoogleAccount(String id) {
+		SystemAccountDAO accDao = new SystemAccountDaoImpl();
+		try {
+		    if(accDao.deleteGoogleAccount(id)){
+		        return true;
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+		return false;
+	    }
 }
