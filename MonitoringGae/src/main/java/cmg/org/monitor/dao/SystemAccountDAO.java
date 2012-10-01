@@ -107,4 +107,8 @@ public interface SystemAccountDAO {
 	 * @throws Exception
 	 */
 	public List<SystemUser> listAllSystemUserByDomain(String domain) throws Exception;
+	
+	public void initRole(SystemUser user) throws Exception;
+	
+	public void initGroup(SystemUser user) throws Exception;
 }

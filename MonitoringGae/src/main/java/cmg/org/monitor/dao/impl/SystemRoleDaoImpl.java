@@ -9,6 +9,7 @@
 
 package cmg.org.monitor.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -127,7 +128,11 @@ public class SystemRoleDaoImpl implements SystemRoleDAO {
 	public SystemRole getById(String id) throws Exception {
 		initPersistence();
 		try {
-			return pm.getObjectById(SystemRole.class, id);
+			SystemRole role = new SystemRole();
+			SystemRole tmp = pm.getObjectById(SystemRole.class, id);
+			role.setId(tmp.getId());
+			role.setName(tmp.getName());
+			return role;
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE,
 					" ERROR when getByID. Message: " + ex.getMessage());
@@ -149,6 +154,7 @@ public class SystemRoleDaoImpl implements SystemRoleDAO {
 		try {
 			List<SystemRole> temp = (List<SystemRole>) query.execute();
 			if (!temp.isEmpty()) {
+				roles = new ArrayList<SystemRole>();
 				roles.addAll(temp);
 			}
 		} catch (Exception e) {
@@ -163,12 +169,30 @@ public class SystemRoleDaoImpl implements SystemRoleDAO {
 		return roles;
 	}
 
+	@Override
+	public void init() {
+		try {
+			SystemRole role = getByName(SystemRole.ROLE_ADMINISTRATOR);
+			if (role == null) {
+				role = new SystemRole();
+				role.setName(SystemRole.ROLE_ADMINISTRATOR);
+				createRole(role);
+			}
+			role = getByName(SystemRole.ROLE_USER);
+			if (role == null) {
+				role = new SystemRole();
+				role.setName(SystemRole.ROLE_USER);
+				createRole(role);
+			}
+		} catch (Exception e) {		
+		}
+	}
 	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see cmg.org.monitor.dao.SystemRoleDAO#getByName(java.lang.String)
 	 */
-	public SystemRole getByName(String name) throws Exception {		
+	public SystemRole getByName(String name) throws Exception {
 		initPersistence();
 		Query query = pm.newQuery(SystemRole.class);
 		query.setFilter("name == namePara");
@@ -176,7 +200,10 @@ public class SystemRoleDaoImpl implements SystemRoleDAO {
 		try {
 			List<SystemRole> temp = (List<SystemRole>) query.execute(name);
 			if (!temp.isEmpty()) {
-				return temp.get(0);
+				SystemRole role = new SystemRole();
+				role.setId(temp.get(0).getId());
+				role.setName(temp.get(0).getName());
+				return role;
 			}
 		} catch (Exception e) {
 			logger.log(
@@ -194,14 +221,19 @@ public class SystemRoleDaoImpl implements SystemRoleDAO {
 	 * (non-Javadoc)
 	 * @see cmg.org.monitor.dao.SystemRoleDAO#addRole(cmg.org.monitor.entity.shared.SystemUser, cmg.org.monitor.entity.shared.SystemRole) 
 	 */
-	public boolean addRole(SystemUser user, SystemRole role) throws Exception {
-		// TODO Auto-generated method stub
+	public boolean addRole(SystemUser user, String roleName) throws Exception {
+		SystemRole role = getByName(roleName);
+		if (role == null) {
+			role = new SystemRole();
+			role.setName(roleName);
+			createRole(role);
+		}
 		initPersistence();
 		user = pm.getObjectById(SystemUser.class, user.getId());
-		role = pm.getObjectById(SystemRole.class, role.getId());
 		boolean b= false;
 		try {			
-			user.addRole(role);			
+			user.addRole(role);		
+			user.clear();
 			pm.makePersistent(role);
 			pm.makePersistent(user);
 			b = true;
@@ -221,14 +253,15 @@ public class SystemRoleDaoImpl implements SystemRoleDAO {
 	 * (non-Javadoc)
 	 * @see cmg.org.monitor.dao.SystemRoleDAO#removeRole(cmg.org.monitor.entity.shared.SystemUser, cmg.org.monitor.entity.shared.SystemRole) 
 	 */
-	public boolean removeRole(SystemUser user, SystemRole role)
+	public boolean removeRole(SystemUser user, String roleName)
 			throws Exception {
+		SystemRole role = getByName(roleName);	
 		initPersistence();
 		user = pm.getObjectById(SystemUser.class, user.getId());
-		role = pm.getObjectById(SystemRole.class, role.getId());
 		boolean b= false;
 		try {			
 			user.removeRole(role);			
+			user.clear();
 			pm.makePersistent(role);
 			pm.makePersistent(user);
 			b = true;

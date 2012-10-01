@@ -22,4 +22,6 @@ public interface SystemGroupDAO {
 	public boolean addUserToGroup(SystemUser user, SystemGroup group) throws Exception;
 	
 	public boolean removeUserFromGroup(SystemUser user, SystemGroup group) throws Exception;	
+	
+
 }

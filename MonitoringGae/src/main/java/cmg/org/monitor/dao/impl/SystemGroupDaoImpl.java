@@ -152,6 +152,7 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 		boolean b = false;
 		try {
 			user.addToGroup(group);
+			user.clear();
 			pm.makePersistent(group);
 			pm.makePersistent(user);
 			b = true;
@@ -177,6 +178,7 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 		boolean b = false;
 		try {
 			user.removeFromGroup(group);
+			user.clear();
 			pm.makePersistent(group);
 			pm.makePersistent(user);
 			b = true;
