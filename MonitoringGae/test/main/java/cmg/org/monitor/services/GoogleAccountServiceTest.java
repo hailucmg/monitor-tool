@@ -9,6 +9,8 @@
 
 package cmg.org.monitor.services;
 
+import static org.junit.Assert.*;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,8 +21,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import cmg.org.monitor.dao.SystemAccountDAO;
+import cmg.org.monitor.dao.SystemRoleDAO;
 import cmg.org.monitor.dao.impl.SystemAccountDaoImpl;
+import cmg.org.monitor.dao.impl.SystemRoleDaoImpl;
 import cmg.org.monitor.entity.shared.GoogleAccount;
+import cmg.org.monitor.entity.shared.SystemRole;
 import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.module.server.MonitorGwtServiceImpl;
 import cmg.org.monitor.util.shared.MonitorConstant;
@@ -31,6 +36,7 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sun.accessibility.internal.resources.accessibility_zh_CN;
 
 /**
  * DOCME
@@ -64,7 +70,7 @@ public class GoogleAccountServiceTest {
 	 * Test method for
 	 * {@link cmg.org.monitor.services.GoogleAccountService#sync()}.
 	 */
-	//@Test
+	@Test
 	public void testSync() {
 		gson = new Gson();
 		accountDao = new SystemAccountDaoImpl();
@@ -79,7 +85,7 @@ public class GoogleAccountServiceTest {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
+/*
 		String jsonInit = "[{\"id\":\"agR0ZXN0chALEgpTeXN0ZW1Vc2VyGAIM\",\"username\":\"hai.testuser2\",\"email\":\"hai.testuser2@c-mg.vn\",\"domain\":\"c-mg.vn\",\"firstName\":\"Hai Test\",\"lastName\":\"User 2\",\"isSuspended\":false,\"isDomainAdmin\":false},{\"id\":\"agR0ZXN0chALEgpTeXN0ZW1Vc2VyGAMM\",\"username\":\"hai.testuser3\",\"email\":\"hai.testuser3@c-mg.vn\",\"domain\":\"c-mg.vn\",\"firstName\":\"Hai Test\",\"lastName\":\"User3\",\"isSuspended\":false,\"isDomainAdmin\":false},{\"id\":\"agR0ZXN0chALEgpTeXN0ZW1Vc2VyGAQM\",\"username\":\"hai.testuser\",\"email\":\"hai.testuser@c-mg.vn\",\"domain\":\"c-mg.vn\",\"firstName\":\"Hai Test\",\"lastName\":\"User\",\"isSuspended\":false,\"isDomainAdmin\":false},{\"id\":\"agR0ZXN0chALEgpTeXN0ZW1Vc2VyGAUM\",\"username\":\"cmgvietnam\",\"email\":\"cmgvietnam@c-mg.vn\",\"domain\":\"c-mg.vn\",\"firstName\":\"cmg\",\"lastName\":\"vietnam\",\"isSuspended\":false,\"isDomainAdmin\":false},{\"id\":\"agR0ZXN0chALEgpTeXN0ZW1Vc2VyGAYM\",\"username\":\"dao.nguyen\",\"email\":\"dao.nguyen@c-mg.vn\",\"domain\":\"c-mg.vn\",\"firstName\":\"Dao\",\"lastName\":\"Nguyen\",\"isSuspended\":false,\"isDomainAdmin\":false},{\"id\":\"agR0ZXN0chALEgpTeXN0ZW1Vc2VyGAcM\",\"username\":\"dcarlyle\",\"email\":\"dcarlyle@c-mg.vn\",\"domain\":\"c-mg.vn\",\"firstName\":\"Dominic\",\"lastName\":\"Carlyle\",\"isSuspended\":false,\"isDomainAdmin\":true},{\"id\":\"agR0ZXN0chALEgpTeXN0ZW1Vc2VyGAgM\",\"username\":\"Elaine.Dimon\",\"email\":\"Elaine.Dimon@c-mg.vn\",\"domain\":\"c-mg.vn\",\"firstName\":\"Elanine\",\"lastName\":\"Dimon\",\"isSuspended\":false,\"isDomainAdmin\":false},{\"id\":\"agR0ZXN0chALEgpTeXN0ZW1Vc2VyGAkM\",\"username\":\"glo.noreply\",\"email\":\"glo.noreply@c-mg.vn\",\"domain\":\"c-mg.vn\",\"firstName\":\"glo\",\"lastName\":\"test\",\"isSuspended\":false,\"isDomainAdmin\":false},{\"id\":\"agR0ZXN0chALEgpTeXN0ZW1Vc2VyGAoM\",\"username\":\"hai.lu\",\"email\":\"hai.lu@c-mg.vn\",\"domain\":\"c-mg.vn\",\"firstName\":\"Hai\",\"lastName\":\"Lu\",\"isSuspended\":false,\"isDomainAdmin\":false},{\"id\":\"agR0ZXN0chALEgpTeXN0ZW1Vc2VyGAsM\",\"username\":\"hieu.tran\",\"email\":\"hieu.tran@c-mg.vn\",\"domain\":\"c-mg.vn\",\"firstName\":\"Mr\",\"lastName\":\"Hieu\",\"isSuspended\":true,\"isDomainAdmin\":false},{\"id\":\"agR0ZXN0chALEgpTeXN0ZW1Vc2VyGAwM\",\"username\":\"hudsoncmg\",\"email\":\"hudsoncmg@c-mg.vn\",\"domain\":\"c-mg.vn\",\"firstName\":\"hudson\",\"lastName\":\"admin 2\",\"isSuspended\":false,\"isDomainAdmin\":false},{\"id\":\"agR0ZXN0chALEgpTeXN0ZW1Vc2VyGA0M\",\"username\":\"huong.vu\",\"email\":\"huong.vu@c-mg.vn\",\"domain\":\"c-mg.vn\",\"firstName\":\"Huong\",\"lastName\":\"Vu\",\"isSuspended\":false,\"isDomainAdmin\":false},{\"id\":\"agR0ZXN0chALEgpTeXN0ZW1Vc2VyGA4M\",\"username\":\"lam.phan\",\"email\":\"lam.phan@c-mg.vn\",\"domain\":\"c-mg.vn\",\"firstName\":\"Lam\",\"lastName\":\"Phan\",\"isSuspended\":true,\"isDomainAdmin\":false},{\"id\":\"agR0ZXN0chALEgpTeXN0ZW1Vc2VyGA8M\",\"username\":\"lan.ta\",\"email\":\"lan.ta@c-mg.vn\",\"domain\":\"c-mg.vn\",\"firstName\":\"Lan\",\"lastName\":\"Ta\",\"isSuspended\":false,\"isDomainAdmin\":false},{\"id\":\"agR0ZXN0chALEgpTeXN0ZW1Vc2VyGBAM\",\"username\":\"monitor\",\"email\":\"monitor@c-mg.vn\",\"domain\":\"c-mg.vn\",\"firstName\":\"monitor\",\"lastName\":\"admin\",\"isSuspended\":false,\"isDomainAdmin\":true},{\"id\":\"agR0ZXN0chALEgpTeXN0ZW1Vc2VyGBEM\",\"username\":\"ort.noreply\",\"email\":\"ort.noreply@c-mg.vn\",\"domain\":\"c-mg.vn\",\"firstName\":\"ort\",\"lastName\":\"schedule\",\"isSuspended\":false,\"isDomainAdmin\":false},{\"id\":\"agR0ZXN0chALEgpTeXN0ZW1Vc2VyGBIM\",\"username\":\"tuannguyen\",\"email\":\"tuannguyen@c-mg.vn\",\"domain\":\"c-mg.vn\",\"firstName\":\"Tuan\",\"lastName\":\"Nguyen\",\"isSuspended\":false,\"isDomainAdmin\":true}]";
 		Type type = new TypeToken<Collection<SystemUser>>() {
 		}.getType();
@@ -105,6 +111,10 @@ public class GoogleAccountServiceTest {
 				System.out.println("#### -> " + gson.toJson(user));
 			}
 		}
+		*/
+		SystemRoleDAO roleDao = new SystemRoleDaoImpl();
+		roleDao.init();
+		List<SystemUser> listOld = new ArrayList<SystemUser>();
 		try {
 			service.sync();
 			System.out.println(service.getLog());
@@ -121,6 +131,27 @@ public class GoogleAccountServiceTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		try {
+			List<SystemRole> roless = roleDao.listAll();
+			for (SystemRole role : roless) {
+				System.out.println(role.getName() + " #id: " + role.getId() + " userId size:" + role.getUserIDs().size());
+			}
+			assertNotNull(roless);
+			assertEquals(2, roless.size());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		try {
+			accountDao.initRole(listOld.get(0));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		List<SystemRole> roles = listOld.get(0).getRoles();
+		assertEquals(1, roles.size());
+		assertEquals(SystemRole.ROLE_USER, roles.get(0).getName());
+		
 		System.out.println("List USer size:" + listOld.size());
 		
 	}
@@ -140,10 +171,6 @@ public class GoogleAccountServiceTest {
 	    gg.setPassword("abcdef");
 	    dao.createGoogleAccount(gg);
 	    GoogleAccount[] list = asd.listAllGoogleAcc();
-	    if(list != null){
-		System.out.println("yow man");
-	    }else{
-		System.out.println("bullshit man");
-	    }
+	    assertNotNull(list);	    
 	}
 }
