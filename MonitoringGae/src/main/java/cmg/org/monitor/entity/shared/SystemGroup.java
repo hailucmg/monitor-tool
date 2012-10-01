@@ -34,7 +34,7 @@ public class SystemGroup implements IsSerializable  {
 	private String description;
 	
 	@Persistent
-	private List<String> userIDs = new ArrayList<String>();
+	private String[] userIDs;
 	
 	public String getDescription() {
 		return description;
@@ -78,14 +78,25 @@ public class SystemGroup implements IsSerializable  {
 	 * @return the userIDs 
 	 */
 	public List<String> getUserIDs() {
-		return userIDs;
+		if (userIDs == null) {
+			return null;
+		} else {
+			List<String> list = new ArrayList<String>();
+			for (int i = 0; i < userIDs.length; i++) {
+				list.add(userIDs[i]);
+			}
+			return list;
+		}		
 	}
 
 	/** 
 	 * @param userIDs the userIDs to set 
 	 */
 	
-	public void setUserIDs(List<String> userIDs) {
-		this.userIDs = userIDs;
+	public void setUserIDs(List<String> listUserIDs) {
+		if (listUserIDs != null && listUserIDs.size() > 0) {
+			userIDs = new String[listUserIDs.size()];
+			listUserIDs.toArray(userIDs);
+		}
 	}
 }
