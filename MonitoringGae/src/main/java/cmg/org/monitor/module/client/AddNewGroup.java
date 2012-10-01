@@ -73,7 +73,10 @@ public class AddNewGroup extends AncestorEntryPoint {
 				}
 				@Override
 				public void onSuccess(MonitorContainer result) {
-						groupNames = result.getListSystemGroup();
+						SystemGroup[] listTempGroup = result.getListSystemGroup();
+						for(SystemGroup s : listTempGroup){
+							groupNames.add(s);
+						}
 						initUI();
 						addWidget(HTMLControl.ID_BODY_CONTENT, tableForm);
 						setVisibleLoadingImage(false);

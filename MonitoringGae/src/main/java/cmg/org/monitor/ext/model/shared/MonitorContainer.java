@@ -45,22 +45,24 @@ public class MonitorContainer implements Serializable {
 	
 	private ChangeLogMonitor changelog;
 	
-	private List<SystemGroup> listSystemGroup;
-	private List<SystemUser> listSystemUsers;
+	private SystemGroup[] listSystemGroup;
+	private SystemUser[] listSystemUsers;
 
-	public List<SystemGroup> getListSystemGroup() {
+	
+
+	public SystemGroup[] getListSystemGroup() {
 		return listSystemGroup;
 	}
 
-	public void setListSystemGroup(List<SystemGroup> listSystemGroup) {
+	public void setListSystemGroup(SystemGroup[] listSystemGroup) {
 		this.listSystemGroup = listSystemGroup;
 	}
 
-	public List<SystemUser> getListSystemUsers() {
+	public SystemUser[] getListSystemUsers() {
 		return listSystemUsers;
 	}
 
-	public void setListSystemUsers(List<SystemUser> listSystemUsers) {
+	public void setListSystemUsers(SystemUser[] listSystemUsers) {
 		this.listSystemUsers = listSystemUsers;
 	}
 

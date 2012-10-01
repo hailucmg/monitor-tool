@@ -81,7 +81,10 @@ public class EditGroup extends AncestorEntryPoint {
 		monitorGwtSv.getAllGroup(new AsyncCallback<MonitorContainer>() {
 			@Override
 			public void onSuccess(MonitorContainer result) {
-				groupNames = result.getListSystemGroup();
+				SystemGroup[] listTempGroup = result.getListSystemGroup();
+				for(SystemGroup s : listTempGroup){
+					groupNames.add(s);
+				}
 			}
 			@Override
 			public void onFailure(Throwable caught) {
