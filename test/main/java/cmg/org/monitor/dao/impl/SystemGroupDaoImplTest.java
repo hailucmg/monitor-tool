@@ -9,12 +9,13 @@
 
 package cmg.org.monitor.dao.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -22,10 +23,8 @@ import org.junit.Test;
 
 import cmg.org.monitor.dao.SystemAccountDAO;
 import cmg.org.monitor.dao.SystemGroupDAO;
-import cmg.org.monitor.entity.shared.LinkDefaultMonitor;
 import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemUser;
-import cmg.org.monitor.services.LinkService;
 
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
