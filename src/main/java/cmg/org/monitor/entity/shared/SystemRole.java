@@ -39,6 +39,7 @@ public class SystemRole implements IsSerializable  {
 	private
 	List<String> userIDs = new ArrayList<String>();
 
+	
 	/** 
 	 * @return the name 
 	 */

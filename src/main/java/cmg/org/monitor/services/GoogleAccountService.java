@@ -21,8 +21,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import cmg.org.monitor.dao.SystemAccountDAO;
+import cmg.org.monitor.dao.SystemRoleDAO;
 import cmg.org.monitor.dao.impl.SystemAccountDaoImpl;
+import cmg.org.monitor.dao.impl.SystemRoleDaoImpl;
 import cmg.org.monitor.entity.shared.GoogleAccount;
+import cmg.org.monitor.entity.shared.SystemRole;
 import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.util.shared.MonitorConstant;
 import cmg.org.monitor.util.shared.SecurityUtil;
@@ -151,6 +154,8 @@ public class GoogleAccountService {
 
 	@SuppressWarnings("unchecked")
 	public void sync() {
+		SystemRoleDAO roleDao = new SystemRoleDaoImpl();
+		roleDao.init();
 		int problem = 0;
 		long start = System.currentTimeMillis();
 		log("User synchronization process started...");
@@ -290,13 +295,18 @@ public class GoogleAccountService {
 			}
 			// Start create new user
 			if (!createdList.isEmpty()) {
+				SystemUser userTemp = null;
 				for (SystemUser sysUser : createdList) {
 					createdCount++;
-					try {
+					try {						
 						boolean b = accountDao.createSystemUser(sysUser);
 						log("Creating user: " + sysUser.getUsername() + " ("
 								+ sysUser.getFullName() + ")"
-								+ (b ? " ... DONE" : " ... FAIL"));						
+								+ (b ? " ... DONE" : " ... FAIL"));		
+						userTemp = accountDao.getSystemUserByEmail(sysUser.getEmail());
+						if (userTemp != null) {
+							roleDao.addRole(userTemp, SystemRole.ROLE_USER);
+						}
 						if (!b) {
 							createdFail++;
 						}
@@ -414,7 +424,6 @@ public class GoogleAccountService {
 
 	@Deprecated
 	protected List<String> listGroups() throws Exception {
-
 		List<String> list = null;
 		try {
 			GenericFeed groupFeed = groupService.retrieveAllGroups();

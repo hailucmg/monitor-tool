@@ -68,6 +68,11 @@ public class SystemUser implements IsSerializable {
 		this.isDomainAdmin = in.isDomainAdmin;
 	}
 	
+	public void clear() {
+		roles = new ArrayList<SystemRole>();
+		groups = new ArrayList<SystemGroup>();
+	}
+	
 	public void addToGroup(SystemGroup group) {
 		boolean check = false;
 		if (!groupIDs.isEmpty()) {
@@ -125,8 +130,8 @@ public class SystemUser implements IsSerializable {
 	public void addRole(SystemRole role) {
 		boolean check = false;
 		if (!roleIDs.isEmpty()) {
-			for (String groupId: roleIDs) {
-				if (groupId.equalsIgnoreCase(role.getId())) {
+			for (String roleId: roleIDs) {
+				if (roleId.equalsIgnoreCase(role.getId())) {
 					check = true;
 					break;
 				}

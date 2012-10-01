@@ -36,7 +36,9 @@ public interface SystemRoleDAO {
 	
 	public SystemRole getByName(String name) throws Exception;
 	
-	public boolean addRole(SystemUser user, SystemRole role) throws Exception;
+	public boolean addRole(SystemUser user, String roleName) throws Exception;
 	
-	public boolean removeRole(SystemUser user, SystemRole role) throws Exception;
+	public boolean removeRole(SystemUser user, String roleName) throws Exception;
+	
+	public void init();
 }

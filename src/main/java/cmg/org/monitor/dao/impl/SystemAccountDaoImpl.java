@@ -18,7 +18,11 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import cmg.org.monitor.dao.SystemAccountDAO;
+import cmg.org.monitor.dao.SystemGroupDAO;
+import cmg.org.monitor.dao.SystemRoleDAO;
 import cmg.org.monitor.entity.shared.GoogleAccount;
+import cmg.org.monitor.entity.shared.SystemGroup;
+import cmg.org.monitor.entity.shared.SystemRole;
 import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.services.PMF;
 
@@ -35,7 +39,14 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	private static final Logger logger = Logger
 			.getLogger(SystemAccountDaoImpl.class.getCanonicalName());
 	PersistenceManager pm;
+	
+	private List<SystemRole> tempRoles;
+	private SystemRole tempRole;
+	private List<SystemGroup> tempGroups;
+	private SystemGroup tempGroup;
 
+	SystemRoleDAO roleDao = new SystemRoleDaoImpl();
+	SystemGroupDAO groupDao = new SystemGroupDaoImpl();
 	void initPersistence() {
 		if (pm == null || pm.isClosed()) {
 			pm = PMF.get().getPersistenceManager();
@@ -54,6 +65,7 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		try {
 			pm.currentTransaction().begin();
 			temp.swap(user);
+			user.clear();
 			pm.makePersistent(temp);
 			pm.currentTransaction().commit();
 			check = true;
@@ -86,6 +98,7 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 					if (user instanceof SystemUser) {
 						temp = new SystemUser();
 						temp.swap((SystemUser) user);
+						temp.clear();
 						pm.currentTransaction().begin();
 						pm.makePersistent(temp);
 						pm.currentTransaction().commit();
@@ -281,7 +294,8 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		try {
 			temp = (List<SystemUser>) query.execute(domain);
 			if (!temp.isEmpty()) {
-				for (SystemUser user : temp) {
+				for (SystemUser user : temp) {					
+				
 					tempOut.add(user);
 				}
 			}
@@ -395,6 +409,7 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 			temp.swap(user);
 			try {
 				pm.currentTransaction().begin();
+				temp.clear();
 				pm.makePersistent(temp);
 				pm.currentTransaction().commit();
 				check = true;
@@ -428,7 +443,9 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		try {
 			temp = (List<SystemUser>) query.execute(email);
 			if (!temp.isEmpty()) {
-				return temp.get(0);
+				SystemUser user = temp.get(0);
+				
+				return user;
 			}
 		} catch (Exception e) {
 			logger.log(
@@ -450,7 +467,8 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	public SystemUser getSystemUserById(String id) throws Exception {
 		initPersistence();
 		try {
-			return pm.getObjectById(SystemUser.class, id);
+			SystemUser user = pm.getObjectById(SystemUser.class, id);			
+			return user;
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, " ERROR when getSystemUserById. Message: "
 					+ e.getMessage());
@@ -458,5 +476,34 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		} finally {
 			pm.close();
 		}
+	}
+	
+	
+
+	@Override
+	public void initRole(SystemUser user) throws Exception {
+		if (user.getRoleIDs().size() > 0) {
+			tempRoles = new ArrayList<SystemRole>();
+			for (Object roleId : user.getRoleIDs()) {			
+				tempRole = roleDao.getById(roleId.toString());
+				tempRoles.add(tempRole);
+			}
+			user.setRoles(tempRoles);
+		}		
+	}
+
+	/**
+	 * (non-Javadoc)
+	 * @see cmg.org.monitor.dao.SystemAccountDAO#initGroup(java.lang.System) 
+	 */
+	public void initGroup(SystemUser user) throws Exception {
+		if (user.getGroupIDs().size() > 0) {
+			tempGroups = new ArrayList<SystemGroup>();
+			for (Object groupId : user.getGroupIDs()) {			
+				tempGroup = groupDao.getByID(groupId.toString());
+				tempGroups.add(tempGroup);
+			}
+			user.setGroups(tempGroups);
+		}		
 	}
 }
