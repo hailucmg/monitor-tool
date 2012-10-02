@@ -97,4 +97,6 @@ public interface MonitorGwtServiceAsync {
 	void updateGoogleAccount(GoogleAccount acc, AsyncCallback<Boolean> callback);
 
 	void listAllSystemUsers(AsyncCallback<List<SystemUser>> callback);
+
+	void updateUserRole(String email, String role, boolean b, AsyncCallback<Boolean> callback);
 }

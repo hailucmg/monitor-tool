@@ -96,6 +96,8 @@ public class SystemGroup implements IsSerializable  {
 		if (listUserIDs != null && listUserIDs.size() > 0) {
 			userIDs = new String[listUserIDs.size()];
 			listUserIDs.toArray(userIDs);
+		} else {
+		    userIDs = null;
 		}
 	}
 	public String getDescription() {

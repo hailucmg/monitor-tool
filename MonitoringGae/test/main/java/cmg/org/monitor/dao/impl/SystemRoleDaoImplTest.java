@@ -48,12 +48,7 @@ public class SystemRoleDaoImplTest {
 		roleDao = new SystemRoleDaoImpl();
 		accountDao = new SystemAccountDaoImpl();
 		gson = new Gson();		
-		SystemRole role = new SystemRole();
-		role.setName(SystemRole.ROLE_ADMINISTRATOR);
-		roleDao.createRole(role);
-		role = new SystemRole();
-		role.setName(SystemRole.ROLE_USER);
-		roleDao.createRole(role);
+		
 		
 		SystemUser user = new SystemUser();
 		user.setDomain("c-mg.vn");
@@ -126,8 +121,24 @@ public class SystemRoleDaoImplTest {
 		for (SystemRole role: listRoles) {
 			System.out.println(role.getName());
 		}
-		assertEquals(2, listRoles.size());		
+		assertEquals(2, listRoles.size());
 		
+		
+		try {
+			adminUser = accountDao.getSystemUserByEmail("hailu@c-mg.com");
+			adminUser.removeUserRole(SystemRole.ROLE_USER);
+			adminUser.removeUserRole(SystemRole.ROLE_ADMINISTRATOR);
+			
+			accountDao.updateSystemUser(adminUser);
+			adminUser = accountDao.getSystemUserByEmail("hailu@c-mg.com");
+		} catch (Exception e) {			
+			e.printStackTrace();
+		}
+		listRoles = adminUser.getRoles();
+		for (SystemRole role: listRoles) {
+			System.out.println(role.getName());
+		}
+		assertEquals(0, listRoles.size());
 	}
 
 }

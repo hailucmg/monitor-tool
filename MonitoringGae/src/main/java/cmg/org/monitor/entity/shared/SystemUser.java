@@ -453,6 +453,8 @@ public class SystemUser implements IsSerializable {
 		if (listRoleIDs != null && listRoleIDs.size() > 0) {
 			roleIDs = new String[listRoleIDs.size()];
 			listRoleIDs.toArray(roleIDs);
+		} else {
+		    roleIDs = null;
 		}
 	}
 
@@ -480,10 +482,24 @@ public class SystemUser implements IsSerializable {
 		if (listGroupIDs != null && listGroupIDs.size() > 0) {
 			groupIDs = new String[listGroupIDs.size()];
 			listGroupIDs.toArray(groupIDs);
+		} else {
+		    groupIDs = null;
 		}
 	}
 	
 	public int compareByName(SystemUser s) {
 		return username.trim().compareTo(s.getUsername().trim());
+	}
+	
+	public boolean checkRole(String roleId) {
+	    List<String> roles = getRoleIDs();
+	    if (roles != null && roles.size() > 0) {
+		for (String role : roles) {
+		    if (role.equalsIgnoreCase(roleId)) {
+			return true;
+		    }
+		}
+	    } 
+	    return false;
 	}
 }

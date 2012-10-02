@@ -112,4 +112,6 @@ public interface SystemAccountDAO {
 	public void initRole(SystemUser user) throws Exception;
 	
 	public void initGroup(SystemUser user) throws Exception;
+	
+	public boolean updateRole(String email, String role, boolean b) throws Exception;
 }
