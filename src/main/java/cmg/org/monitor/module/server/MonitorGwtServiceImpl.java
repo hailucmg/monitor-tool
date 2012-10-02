@@ -565,7 +565,6 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		SystemGroupDAO sysGroupDao = new SystemGroupDaoImpl();
 		try {
 			boolean b = sysGroupDao.addNewGroup(s);
-			System.out.println("add done " + b);
 			return b;
 		} catch (Exception e) {
 			e.printStackTrace();
