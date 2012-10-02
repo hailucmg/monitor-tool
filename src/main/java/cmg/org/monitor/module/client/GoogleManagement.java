@@ -44,9 +44,11 @@ public class GoogleManagement extends AncestorEntryPoint {
     Label lbDomain;
     Label lbUsername;
     Label lbPassword;
+    Label lbConfirmPwd;
     TextBox txtDomain;
     TextBox txtUsername;
     PasswordTextBox txtPassword;
+    PasswordTextBox txtConfirmPwd;
     Button btnAddAccount;
     Button btnSaveAccount;
     Button btnClearAccount;
@@ -59,6 +61,7 @@ public class GoogleManagement extends AncestorEntryPoint {
     AbsolutePanel panelValidateDomain;
     AbsolutePanel panelValidateUsername;
     AbsolutePanel panelValidatePassword;
+    AbsolutePanel panelValidateConfirmPassword;
 
     protected void init() {
 	if (currentPage == HTMLControl.PAGE_GOOGLE_MANAGEMENT) {
@@ -173,13 +176,13 @@ public class GoogleManagement extends AncestorEntryPoint {
 	    msg = "This field is required ";
 	}
 
-	if (listGoogleAcc != null && listGoogleAcc.length > 0) {
-	    for (int i = 0; i < listGoogleAcc.length; i++) {
-		if (listGoogleAcc[i].getUsername().equalsIgnoreCase(username) && listGoogleAcc[i].getDomain().equalsIgnoreCase(domain)) {
-		    msg = "User existed on this domain";
-		}
-	    }
-	}
+	//if (listGoogleAcc != null && listGoogleAcc.length > 0) {
+	   // for (int i = 0; i < listGoogleAcc.length; i++) {
+		//if (listGoogleAcc[i].getUsername().equalsIgnoreCase(username) && listGoogleAcc[i].getDomain().equalsIgnoreCase(domain)) {
+		//    msg = "User existed on this domain";
+		//}
+	    //}
+	//}
 	return msg;
     }
 
@@ -190,11 +193,24 @@ public class GoogleManagement extends AncestorEntryPoint {
 	}
 	return msg;
     }
+    
+    private String checkConfirmPwd(String str, String pass){
+	String msg = "";
+	if (str == null || str.trim().length() == 0) {
+	    msg = "This field is required ";
+	}
+	
+	if (!str.equals(pass)){
+	    msg = "Confirm password is not the same with password";
+	}
+	return msg;
+    }
 
     void initInterface() {
 	lbDomain = new Label("Domain name:");
 	lbUsername = new Label("User name:");
 	lbPassword = new Label("Password:");
+	lbConfirmPwd = new Label("Confirm Password:");
 
 	btnAddAccount = new Button("Add/Edit account");
 	// btnSaveAccount = new Button("Update account");
@@ -203,8 +219,11 @@ public class GoogleManagement extends AncestorEntryPoint {
 	txtDomain = new TextBox();
 	txtUsername = new TextBox();
 	txtPassword = new PasswordTextBox();
+	txtConfirmPwd = new PasswordTextBox();
 	txtPassword.getElement().setAttribute("style", "margin-left:2px;");
 	txtPassword.setWidth("159px");
+	txtConfirmPwd.getElement().setAttribute("style", "margin-left:2px;");
+	txtConfirmPwd.setWidth("159px");
 
 	panelValidateDomain = new AbsolutePanel();
 	panelValidateDomain.setVisible(false);
@@ -222,7 +241,10 @@ public class GoogleManagement extends AncestorEntryPoint {
 	flexTable.setWidget(2, 0, lbPassword);
 	flexTable.setWidget(2, 1, txtPassword);
 	flexTable.setWidget(2, 2, panelValidatePassword);
-	flexTable.setWidget(3, 0, btnAddAccount);
+	flexTable.setWidget(3, 0, lbConfirmPwd);
+	flexTable.setWidget(3, 1, txtConfirmPwd);
+	flexTable.setWidget(3, 2, panelValidateConfirmPassword);
+	flexTable.setWidget(4, 0, btnAddAccount);
 	// flexTable.setWidget(3, 1, btnSaveAccount);
 	// flexTable.setWidget(3, 2, btnClearAccount);
 	flexTable.getCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_MIDDLE);
@@ -258,6 +280,14 @@ public class GoogleManagement extends AncestorEntryPoint {
 		    panelValidateUsername.setVisible(false);
 		    panelValidateDomain.setVisible(false);
 		    panelValidatePassword.setVisible(true);
+		    return;
+		} else if (checkConfirmPwd(txtConfirmPwd.getText(), txtPassword.getText()) != ""){
+		    panelValidateConfirmPassword.clear();
+		    panelValidateConfirmPassword.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">"
+			    + checkConfirmPwd(txtConfirmPwd.getText(), txtPassword.getText()) + "</div>"));
+		    panelValidateConfirmPassword.setVisible(false);
+		    panelValidateConfirmPassword.setVisible(false);
+		    panelValidateConfirmPassword.setVisible(true);
 		    return;
 		}
 
@@ -312,7 +342,7 @@ public class GoogleManagement extends AncestorEntryPoint {
 	DataTable data = DataTable.create();
 	data.addColumn(ColumnType.STRING, "Domain name");
 	data.addColumn(ColumnType.STRING, "Username");
-	data.addColumn(ColumnType.DATETIME, "Last Syncronized");
+	data.addColumn(ColumnType.DATETIME, "Last Synchronized");
 	data.addColumn(ColumnType.STRING, "");
 	if (listUser != null) {
 	    data.addRows(listUser.length);
@@ -323,7 +353,7 @@ public class GoogleManagement extends AncestorEntryPoint {
 		    data.setValue(j, 0, sortUser[j].getDomain());
 		    data.setValue(j, 1, sortUser[j].getUsername());
 		    data.setValue(j, 2, sortUser[j].getLastSync());
-		    data.setValue(j,3,"<a class='btnSync' title='Syncronize' id='btnSync' domain_name='c-mg.com.vn' user_name='"
+		    data.setValue(j,3,"<a class='btnSync' title='Synchronized' id='btnSync' domain_name='c-mg.com.vn' user_name='"
 				    + sortUser[j].getId()+ "' pwd='"+ sortUser[j].getPassword() + "' onClick=\"javascript:syncAccount('abc','abc');\">"
 				    + "<a id='btnClear' domain_name='c-mg.com.vn' user_name='"
 				    + sortUser[j].getId() + "' onClick=\"javascript:showConfirmDialog('" + sortUser[j].getUsername() + "@"
