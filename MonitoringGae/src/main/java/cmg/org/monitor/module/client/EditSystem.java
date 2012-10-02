@@ -120,172 +120,10 @@ public class EditSystem extends AncestorEntryPoint {
 					@Override
 					public void onSuccess(MonitorContainer result) {
 						if (result != null) {
+							
 							system = result.getSys();
 							notify = result.getNotify();
 							container = result;
-							tableNotify = new Grid(5, 2);
-							tableNotify.setCellSpacing(3);
-							cbNotifyCpu = new CheckBox();
-							cbNotifyCpu.setValue(notify.isNotifyCpu());
-							cbNotifyCpu.setStyleName("");
-							cbNotifyCpu.setStyleName("checkbox-size");
-							
-							cbNotifyMemory = new CheckBox();
-							cbNotifyMemory.setValue(notify.isNotifyMemory());
-							cbNotifyMemory.setStyleName("");
-							cbNotifyMemory.setStyleName("checkbox-size");
-							
-							cbNotifyServices = new CheckBox();
-							cbNotifyServices.setValue(notify.isNotifyServices());
-							cbNotifyServices.setStyleName("");
-							cbNotifyServices.setStyleName("checkbox-size");
-							
-							cbNotifyJVM = new CheckBox();
-							cbNotifyJVM.setValue(notify.isJVM());
-							cbNotifyJVM.setStyleName("");
-							cbNotifyJVM.setStyleName("checkbox-size");
-							
-							cbNotifyServicesConnection = new CheckBox();
-							cbNotifyServicesConnection.setValue(notify
-									.isNotifyServicesConnection());
-							cbNotifyServicesConnection.setStyleName("");
-							cbNotifyServicesConnection.setStyleName("checkbox-size");
-							
-							lblNotifyJVM = new Label(MonitorConstant.Notify_JVM);
-							lblNotifyCpu = new Label(MonitorConstant.Notify_Cpu);
-							lblNotifyMemory = new Label(
-									MonitorConstant.Notify_Memory);
-							lblNotifyServices = new Label(
-									MonitorConstant.Notify_Service);
-							lblNotifyServicesConnection = new Label(
-									MonitorConstant.Notify_ServiceConnection);
-							tableNotify.setWidget(0, 0, lblNotifyCpu);
-							tableNotify.setWidget(0, 1, cbNotifyCpu);
-							tableNotify.setWidget(1, 0, lblNotifyMemory);
-							tableNotify.setWidget(1, 1, cbNotifyMemory);
-							tableNotify.setWidget(2, 0, lblNotifyServices);
-							tableNotify.setWidget(2, 1, cbNotifyServices);
-							tableNotify.setWidget(3, 0,
-									lblNotifyServicesConnection);
-							tableNotify.setWidget(3, 1,
-									cbNotifyServicesConnection);
-							tableNotify.setWidget(4, 0, lblNotifyJVM);
-							tableNotify.setWidget(4, 1, cbNotifyJVM);
-							advancedDisclosure = new DisclosurePanel(
-									HTMLControl.NOTIFY_OPTION);
-							advancedDisclosure.setAnimationEnabled(true);
-							advancedDisclosure.setContent(tableNotify);
-							advancedDisclosure.setOpen(true);
-
-							labelEmail = new Label();
-							labelEmail.setText("Email");
-							txtEmail = new TextBox();
-							txtEmail.setWidth("196px");
-							txtEmail.setHeight("30px");
-							tableForm.setCellPadding(3);
-							tableForm.setCellSpacing(3);
-							tableForm.getFlexCellFormatter().setWidth(0, 0,
-									"100px");
-							tableForm.getFlexCellFormatter().setWidth(1, 0,
-									"100px");
-							tableForm.getFlexCellFormatter().setWidth(2, 0,
-									"100px");
-							tableForm.getFlexCellFormatter().setWidth(3, 0,
-									"100px");
-							tableForm.getFlexCellFormatter().setWidth(4, 0,
-									"100px");
-							tableForm.getFlexCellFormatter().setWidth(5, 0,
-									"100px");
-							tableForm.getFlexCellFormatter().setWidth(6, 0,
-									"100px");
-							tableForm.getFlexCellFormatter().setWidth(7, 0,
-									"100px");
-							tableForm.getFlexCellFormatter().setWidth(8, 0,
-									"298px");
-							tableForm.getFlexCellFormatter().setWidth(9, 0,
-									"100px");
-							tableForm.getFlexCellFormatter().setWidth(10, 0,
-									"100px");
-							tableForm.getFlexCellFormatter().setWidth(11, 0,
-									"100px");
-
-							labelName = new Label();
-							labelName.setText("Name");
-
-							labelurl = new Label();
-							labelurl.setText("URL");
-
-							labelip = new Label();
-							labelip.setText("IP");
-
-							labelremoteurl = new Label();
-							labelremoteurl.setText("Remote-URL");
-
-							labelactive = new Label();
-							labelactive.setText("Active");
-
-							labelprotocol = new Label();
-							labelprotocol.setText("Protocol");
-
-							labelmailgroup = new Label();
-							labelmailgroup.setText("Notification mail group");
-
-							txtName = new TextBox();
-							txtName.setWidth("196px");
-							txtName.setHeight("30px");
-							txtName.setText(system.getName());
-
-							txtURL = new TextBox();
-							txtURL.setWidth("196px");
-							txtURL.setHeight("30px");
-							txtURL.setText(system.getUrl());
-
-							txtIP = new TextBox();
-							txtIP.setWidth("196px");
-							txtIP.setHeight("30px");
-							txtIP.setText(system.getIp());
-
-							txtRemote = new TextBox();
-							txtRemote.setWidth("196px");
-							txtRemote.setHeight("30px");
-							txtRemote.setText(system.getRemoteUrl());
-
-							txtEmail.setText(system.getEmailRevice());
-
-							panelLabelEmail = new AbsolutePanel();
-							panelLabelEmail.add(labelEmail);
-							panelLabelEmail.setVisible(false);
-
-							paneltxtEmail = new AbsolutePanel();
-							paneltxtEmail.add(txtEmail);
-
-							listActive = new ListBox();
-							listActive.setWidth("198px");
-							listActive.setHeight("28px");
-							listActive.addItem("Yes");
-							listActive.addItem("No");
-							if (system.isActive()) {
-								listActive.setSelectedIndex(0);
-							} else {
-								listActive.setSelectedIndex(1);
-							}
-
-							listProtocol = new ListBox();
-							listProtocol.setWidth("198px");
-							listProtocol.setHeight("28px");
-							listProtocol.addItem(MonitorConstant.HTTP_PROTOCOL);
-							listProtocol.addItem(MonitorConstant.SMTP_PROTOCOL);
-							if (system.getProtocol().equals("HTTP(s)")) {
-								listProtocol.setSelectedIndex(0);
-								paneltxtEmail.setVisible(false);
-								panelLabelEmail.setVisible(false);
-								txtRemote.setEnabled(true);
-							} else {
-								listProtocol.setSelectedIndex(1);
-								paneltxtEmail.setVisible(true);
-								panelLabelEmail.setVisible(true);
-								txtRemote.setEnabled(false);
-							}
 							listGroup = new ListBox();
 							listGroup.setWidth("198px");
 							listGroup.setHeight("28px");
@@ -300,78 +138,250 @@ public class EditSystem extends AncestorEntryPoint {
 									}
 								}
 								listGroup.setSelectedIndex(index);
+								tableNotify = new Grid(5, 2);
+								tableNotify.setCellSpacing(3);
+								cbNotifyCpu = new CheckBox();
+								cbNotifyCpu.setValue(notify.isNotifyCpu());
+								cbNotifyCpu.setStyleName("");
+								cbNotifyCpu.setStyleName("checkbox-size");
+								
+								cbNotifyMemory = new CheckBox();
+								cbNotifyMemory.setValue(notify.isNotifyMemory());
+								cbNotifyMemory.setStyleName("");
+								cbNotifyMemory.setStyleName("checkbox-size");
+								
+								cbNotifyServices = new CheckBox();
+								cbNotifyServices.setValue(notify.isNotifyServices());
+								cbNotifyServices.setStyleName("");
+								cbNotifyServices.setStyleName("checkbox-size");
+								
+								cbNotifyJVM = new CheckBox();
+								cbNotifyJVM.setValue(notify.isJVM());
+								cbNotifyJVM.setStyleName("");
+								cbNotifyJVM.setStyleName("checkbox-size");
+								
+								cbNotifyServicesConnection = new CheckBox();
+								cbNotifyServicesConnection.setValue(notify
+										.isNotifyServicesConnection());
+								cbNotifyServicesConnection.setStyleName("");
+								cbNotifyServicesConnection.setStyleName("checkbox-size");
+								
+								lblNotifyJVM = new Label(MonitorConstant.Notify_JVM);
+								lblNotifyCpu = new Label(MonitorConstant.Notify_Cpu);
+								lblNotifyMemory = new Label(
+										MonitorConstant.Notify_Memory);
+								lblNotifyServices = new Label(
+										MonitorConstant.Notify_Service);
+								lblNotifyServicesConnection = new Label(
+										MonitorConstant.Notify_ServiceConnection);
+								tableNotify.setWidget(0, 0, lblNotifyCpu);
+								tableNotify.setWidget(0, 1, cbNotifyCpu);
+								tableNotify.setWidget(1, 0, lblNotifyMemory);
+								tableNotify.setWidget(1, 1, cbNotifyMemory);
+								tableNotify.setWidget(2, 0, lblNotifyServices);
+								tableNotify.setWidget(2, 1, cbNotifyServices);
+								tableNotify.setWidget(3, 0,
+										lblNotifyServicesConnection);
+								tableNotify.setWidget(3, 1,
+										cbNotifyServicesConnection);
+								tableNotify.setWidget(4, 0, lblNotifyJVM);
+								tableNotify.setWidget(4, 1, cbNotifyJVM);
+								advancedDisclosure = new DisclosurePanel(
+										HTMLControl.NOTIFY_OPTION);
+								advancedDisclosure.setAnimationEnabled(true);
+								advancedDisclosure.setContent(tableNotify);
+								advancedDisclosure.setOpen(true);
+
+								labelEmail = new Label();
+								labelEmail.setText("Email");
+								txtEmail = new TextBox();
+								txtEmail.setWidth("196px");
+								txtEmail.setHeight("30px");
+								tableForm.setCellPadding(3);
+								tableForm.setCellSpacing(3);
+								tableForm.getFlexCellFormatter().setWidth(0, 0,
+										"100px");
+								tableForm.getFlexCellFormatter().setWidth(1, 0,
+										"100px");
+								tableForm.getFlexCellFormatter().setWidth(2, 0,
+										"100px");
+								tableForm.getFlexCellFormatter().setWidth(3, 0,
+										"100px");
+								tableForm.getFlexCellFormatter().setWidth(4, 0,
+										"100px");
+								tableForm.getFlexCellFormatter().setWidth(5, 0,
+										"100px");
+								tableForm.getFlexCellFormatter().setWidth(6, 0,
+										"100px");
+								tableForm.getFlexCellFormatter().setWidth(7, 0,
+										"100px");
+								tableForm.getFlexCellFormatter().setWidth(8, 0,
+										"298px");
+								tableForm.getFlexCellFormatter().setWidth(9, 0,
+										"100px");
+								tableForm.getFlexCellFormatter().setWidth(10, 0,
+										"100px");
+								tableForm.getFlexCellFormatter().setWidth(11, 0,
+										"100px");
+
+								labelName = new Label();
+								labelName.setText("Name");
+
+								labelurl = new Label();
+								labelurl.setText("URL");
+
+								labelip = new Label();
+								labelip.setText("IP");
+
+								labelremoteurl = new Label();
+								labelremoteurl.setText("Remote-URL");
+
+								labelactive = new Label();
+								labelactive.setText("Active");
+
+								labelprotocol = new Label();
+								labelprotocol.setText("Protocol");
+
+								labelmailgroup = new Label();
+								labelmailgroup.setText("Notification mail group");
+
+								txtName = new TextBox();
+								txtName.setWidth("196px");
+								txtName.setHeight("30px");
+								txtName.setText(system.getName());
+
+								txtURL = new TextBox();
+								txtURL.setWidth("196px");
+								txtURL.setHeight("30px");
+								txtURL.setText(system.getUrl());
+
+								txtIP = new TextBox();
+								txtIP.setWidth("196px");
+								txtIP.setHeight("30px");
+								txtIP.setText(system.getIp());
+
+								txtRemote = new TextBox();
+								txtRemote.setWidth("196px");
+								txtRemote.setHeight("30px");
+								txtRemote.setText(system.getRemoteUrl());
+
+								txtEmail.setText(system.getEmailRevice());
+
+								panelLabelEmail = new AbsolutePanel();
+								panelLabelEmail.add(labelEmail);
+								panelLabelEmail.setVisible(false);
+
+								paneltxtEmail = new AbsolutePanel();
+								paneltxtEmail.add(txtEmail);
+
+								listActive = new ListBox();
+								listActive.setWidth("198px");
+								listActive.setHeight("28px");
+								listActive.addItem("Yes");
+								listActive.addItem("No");
+								if (system.isActive()) {
+									listActive.setSelectedIndex(0);
+								} else {
+									listActive.setSelectedIndex(1);
+								}
+
+								listProtocol = new ListBox();
+								listProtocol.setWidth("198px");
+								listProtocol.setHeight("28px");
+								listProtocol.addItem(MonitorConstant.HTTP_PROTOCOL);
+								listProtocol.addItem(MonitorConstant.SMTP_PROTOCOL);
+								if (system.getProtocol().equals("HTTP(s)")) {
+									listProtocol.setSelectedIndex(0);
+									paneltxtEmail.setVisible(false);
+									panelLabelEmail.setVisible(false);
+									txtRemote.setEnabled(true);
+								} else {
+									listProtocol.setSelectedIndex(1);
+									paneltxtEmail.setVisible(true);
+									panelLabelEmail.setVisible(true);
+									txtRemote.setEnabled(false);
+								}
+								
+
+								btnEdit = new Button();
+								btnEdit.setText("Update");
+								btnEdit.setStyleName("margin:6px;");
+								btnEdit.addStyleName("form-button");
+
+								bttReset = new Button();
+								bttReset.setText("Reset");
+								bttReset.setStyleName("margin:6px;");
+								bttReset.addStyleName("form-button");
+
+								bttBack = new Button();
+								bttBack.setText("Back");
+								bttBack.setStyleName("margin:6px;");
+								bttBack.addStyleName("form-button");
+
+								panelButton = new AbsolutePanel();
+								panelButton.add(btnEdit);
+								panelButton.add(bttReset);
+								panelButton.add(bttBack);
+
+								panelAdding = new AbsolutePanel();
+								panelAdding
+										.add(new HTML(
+												"<div id=\"img-adding\"><img src=\"images/icon/loading11.gif\"/></div>"));
+								panelAdding.setVisible(false);
+
+								panelValidateName = new AbsolutePanel();
+
+								panelValidateEmail = new AbsolutePanel();
+
+								panelValidateIP = new AbsolutePanel();
+
+								panelValidateURL = new AbsolutePanel();
+
+								panelValidateRemoteURL = new AbsolutePanel();
+
+								tableForm.setWidget(0, 0, labelName);
+								tableForm.setWidget(0, 1, txtName);
+								tableForm.setWidget(0, 2, panelValidateName);
+								tableForm.setWidget(1, 0, labelurl);
+								tableForm.setWidget(1, 1, txtURL);
+								tableForm.setWidget(1, 2, panelValidateURL);
+								tableForm.setWidget(2, 0, labelip);
+								tableForm.setWidget(2, 1, txtIP);
+								tableForm.setWidget(2, 2, panelValidateIP);
+								tableForm.setWidget(3, 0, labelactive);
+								tableForm.setWidget(3, 1, listActive);
+								tableForm.setWidget(4, 0, labelprotocol);
+								tableForm.setWidget(4, 1, listProtocol);
+								tableForm.setWidget(5, 0, panelLabelEmail);
+								tableForm.setWidget(5, 1, paneltxtEmail);
+								tableForm.setWidget(5, 2, panelValidateEmail);
+								tableForm.setWidget(6, 0, labelmailgroup);
+								tableForm.setWidget(6, 1, listGroup);
+								tableForm.setWidget(7, 0, labelremoteurl);
+								tableForm.setWidget(7, 1, txtRemote);
+								tableForm.setWidget(7, 2, panelValidateRemoteURL);
+								tableForm.getFlexCellFormatter()
+										.setColSpan(8, 0, 2);
+								tableForm.setWidget(8, 0, advancedDisclosure);
+								tableForm.getFlexCellFormatter()
+										.setColSpan(9, 0, 2);
+								tableForm.setWidget(9, 0, panelAdding);
+								tableForm.getFlexCellFormatter().setColSpan(10, 0,
+										3);
+								tableForm.setWidget(10, 0, panelButton);
+								initHandler();
+								setVisibleLoadingImage(false);
+								setOnload(false);
+								setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+							}else{
+								setVisibleLoadingImage(false);
+								setOnload(false);
+								showMessage("No Group Found.",
+										HTMLControl.HTML_GROUP_MANAGEMENT_NAME,
+										"Goto Group Management. ",
+										HTMLControl.RED_MESSAGE, true);
 							}
-
-							btnEdit = new Button();
-							btnEdit.setText("Update");
-							btnEdit.setStyleName("margin:6px;");
-							btnEdit.addStyleName("form-button");
-
-							bttReset = new Button();
-							bttReset.setText("Reset");
-							bttReset.setStyleName("margin:6px;");
-							bttReset.addStyleName("form-button");
-
-							bttBack = new Button();
-							bttBack.setText("Back");
-							bttBack.setStyleName("margin:6px;");
-							bttBack.addStyleName("form-button");
-
-							panelButton = new AbsolutePanel();
-							panelButton.add(btnEdit);
-							panelButton.add(bttReset);
-							panelButton.add(bttBack);
-
-							panelAdding = new AbsolutePanel();
-							panelAdding
-									.add(new HTML(
-											"<div id=\"img-adding\"><img src=\"images/icon/loading11.gif\"/></div>"));
-							panelAdding.setVisible(false);
-
-							panelValidateName = new AbsolutePanel();
-
-							panelValidateEmail = new AbsolutePanel();
-
-							panelValidateIP = new AbsolutePanel();
-
-							panelValidateURL = new AbsolutePanel();
-
-							panelValidateRemoteURL = new AbsolutePanel();
-
-							tableForm.setWidget(0, 0, labelName);
-							tableForm.setWidget(0, 1, txtName);
-							tableForm.setWidget(0, 2, panelValidateName);
-							tableForm.setWidget(1, 0, labelurl);
-							tableForm.setWidget(1, 1, txtURL);
-							tableForm.setWidget(1, 2, panelValidateURL);
-							tableForm.setWidget(2, 0, labelip);
-							tableForm.setWidget(2, 1, txtIP);
-							tableForm.setWidget(2, 2, panelValidateIP);
-							tableForm.setWidget(3, 0, labelactive);
-							tableForm.setWidget(3, 1, listActive);
-							tableForm.setWidget(4, 0, labelprotocol);
-							tableForm.setWidget(4, 1, listProtocol);
-							tableForm.setWidget(5, 0, panelLabelEmail);
-							tableForm.setWidget(5, 1, paneltxtEmail);
-							tableForm.setWidget(5, 2, panelValidateEmail);
-							tableForm.setWidget(6, 0, labelmailgroup);
-							tableForm.setWidget(6, 1, listGroup);
-							tableForm.setWidget(7, 0, labelremoteurl);
-							tableForm.setWidget(7, 1, txtRemote);
-							tableForm.setWidget(7, 2, panelValidateRemoteURL);
-							tableForm.getFlexCellFormatter()
-									.setColSpan(8, 0, 2);
-							tableForm.setWidget(8, 0, advancedDisclosure);
-							tableForm.getFlexCellFormatter()
-									.setColSpan(9, 0, 2);
-							tableForm.setWidget(9, 0, panelAdding);
-							tableForm.getFlexCellFormatter().setColSpan(10, 0,
-									3);
-							tableForm.setWidget(10, 0, panelButton);
-							initHandler();
-							setVisibleLoadingImage(false);
-							setOnload(false);
-							setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+							
 
 						}
 					}

@@ -61,13 +61,13 @@ public class UserManagement extends AncestorEntryPoint {
 					
 					if(!checkGroup && !checkUser){
 						setVisibleLoadingImage(false);
-						showMessage("No user found. ","Goto Google Management",HTMLControl.HTML_GOOGLE_MANAGEMENT_NAME, HTMLControl.RED_MESSAGE, true);
+						showMessage("No user found. ",HTMLControl.HTML_GOOGLE_MANAGEMENT_NAME,"Goto Google Management", HTMLControl.RED_MESSAGE, true);
 					}else if(!checkGroup && checkUser){
 						setVisibleLoadingImage(false);
-						showMessage("No group found. ","Goto Group Management",HTMLControl.HTML_GROUP_MANAGEMENT_NAME, HTMLControl.RED_MESSAGE, true);
+						showMessage("No group found. ",HTMLControl.HTML_GROUP_MANAGEMENT_NAME,"Goto Group Management",HTMLControl.RED_MESSAGE, true);
 					}else if(!checkUser && checkGroup){
 						setVisibleLoadingImage(false);
-						showMessage("No user found. ","Goto Google Management",HTMLControl.HTML_GOOGLE_MANAGEMENT_NAME, HTMLControl.RED_MESSAGE, true);
+						showMessage("No user found. ",HTMLControl.HTML_GOOGLE_MANAGEMENT_NAME,"Goto Google Management", HTMLControl.RED_MESSAGE, true);
 					}else if(checkGroup && checkUser){
 						setVisibleLoadingImage(false);
 						setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
@@ -75,7 +75,7 @@ public class UserManagement extends AncestorEntryPoint {
 					}
 				}else{
 					setVisibleLoadingImage(false);
-					showMessage("No user found. ","Goto Google Management",HTMLControl.HTML_GOOGLE_MANAGEMENT_NAME, HTMLControl.RED_MESSAGE, true);
+					showMessage("No user found.",HTMLControl.HTML_GOOGLE_MANAGEMENT_NAME, "Goto Google Management",HTMLControl.RED_MESSAGE, true);
 				}
 				
 			}
@@ -173,7 +173,7 @@ public class UserManagement extends AncestorEntryPoint {
 		if(listUser.size() > 0 && listGroup.size() > 0){
 			myTable.draw(createData(listUser,listGroup), option());
 		}else{
-			  showMessage("No user found. ","","", HTMLControl.RED_MESSAGE, true);
+			showMessage("No user found.",HTMLControl.HTML_GOOGLE_MANAGEMENT_NAME, "Goto Google Management",HTMLControl.RED_MESSAGE, true);
 		}
 		
 	}

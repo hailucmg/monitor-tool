@@ -434,6 +434,8 @@ public class AddnewSystem extends AncestorEntryPoint {
 							setOnload(false);
 							setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
 						}else{
+							setVisibleLoadingImage(false);
+							setOnload(false);
 							showMessage("No Group Found.",
 									HTMLControl.HTML_GROUP_MANAGEMENT_NAME,
 									"Goto Group Management. ",
