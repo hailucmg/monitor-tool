@@ -123,6 +123,7 @@ public class SystemRole implements IsSerializable  {
 	/** 
 	 * @return the id 
 	 */
+	@Deprecated
 	public String getId() {
 		return id;
 	}
