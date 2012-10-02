@@ -79,6 +79,7 @@ public class SystemRoleDaoImplTest {
 	
 	@Test
 	public void test() {
+		/*
 		List<SystemRole> roles = null;
 		try {
 			roles = roleDao.listAll();
@@ -101,15 +102,18 @@ public class SystemRoleDaoImplTest {
 		assertNotNull(userRole);
 		System.out.println(adminRole.getId());
 		System.out.println(userRole.getId());
+		*/
 		SystemUser adminUser = null;
 		try {
 			adminUser = accountDao.getSystemUserByEmail("hailu@c-mg.com");
-			roleDao.addRole(adminUser.getEmail(), SystemRole.ROLE_ADMINISTRATOR);
-			roleDao.addRole(adminUser.getEmail(), SystemRole.ROLE_USER);
+			adminUser.addUserRole(SystemRole.ROLE_ADMINISTRATOR);
+			adminUser.addUserRole(SystemRole.ROLE_USER);
+			accountDao.updateSystemUser(adminUser);
 			adminUser = accountDao.getSystemUserByEmail("hailu@c-mg.com");
 		} catch (Exception e) {			
 			e.printStackTrace();
 		}
+		/*
 		List<String> roleUsers = adminUser.getRoleIDs();
 		try {
 			accountDao.initRole(adminUser);
@@ -117,11 +121,12 @@ public class SystemRoleDaoImplTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
 		List<SystemRole> listRoles = adminUser.getRoles();
 		for (SystemRole role: listRoles) {
-			System.out.println(role.getId() + " | " + role.getName() + " | " + roleUsers.get(0));
+			System.out.println(role.getName());
 		}
-		assertEquals(2, roleUsers.size());		
+		assertEquals(2, listRoles.size());		
 		
 	}
 
