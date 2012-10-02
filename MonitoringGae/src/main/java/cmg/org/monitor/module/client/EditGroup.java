@@ -79,14 +79,12 @@ public class EditGroup extends AncestorEntryPoint {
 	
 	
 	private void initSystemGroups(){
-		monitorGwtSv.getAllGroup(new AsyncCallback<MonitorContainer>() {
+		monitorGwtSv.getAllGroup(new AsyncCallback<SystemGroup[]>() {
 			@Override
-			public void onSuccess(MonitorContainer result) {
-				if(result.getListSystemGroup()!=null){
-					SystemGroup[] listTempGroup = result.getListSystemGroup();
-					if(groupNames == null){
-						groupNames = new ArrayList<SystemGroup>();
-					}
+			public void onSuccess(SystemGroup[]  result) {
+				if(result!=null){
+					SystemGroup[] listTempGroup = result;
+					groupNames = new ArrayList<SystemGroup>();
 					for(SystemGroup s : listTempGroup){
 						groupNames.add(s);
 					}
@@ -268,6 +266,7 @@ public class EditGroup extends AncestorEntryPoint {
 			@Override
 			public void onSuccess(Boolean result) {
 				if(result){
+					initSystemGroups();
 					showMessage("Group edited sucessfully. ",
 							HTMLControl.HTML_GROUP_MANAGEMENT_NAME,
 							"View group list. ", HTMLControl.BLUE_MESSAGE,

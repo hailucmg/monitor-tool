@@ -66,7 +66,7 @@ public interface MonitorGwtService extends RemoteService {
 	
 	boolean addnewGroup(String name, String description);
 	
-	MonitorContainer getAllGroup();
+	SystemGroup[] getAllGroup();
 	
 	MonitorContainer getAllUserAndGroup();
 	

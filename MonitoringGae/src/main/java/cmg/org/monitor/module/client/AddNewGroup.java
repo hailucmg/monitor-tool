@@ -34,7 +34,6 @@ public class AddNewGroup extends AncestorEntryPoint {
 	Button bttBack;
 	Button bttReset;
 	boolean addSuccess = false;
-	static List<SystemGroup> temp;
 	
 	private String validateGroupName(String name){
 		String msg = "";
@@ -53,23 +52,6 @@ public class AddNewGroup extends AncestorEntryPoint {
 				}
 			}
 			
-			/*if(temp.size() > 0){
-				System.out.println(temp.size() + " " + addSuccess);
-				if(addSuccess == false){
-					temp.remove(temp.size()-1);
-				}
-				
-				if(temp.size() > 0){
-					for(SystemGroup g : temp){
-						if(name.equalsIgnoreCase(g.getName())){
-							temp.remove(temp.size()-1);
-							msg = "This name is existed	";
-							addSuccess = false;
-						}
-					}
-				}
-				
-			}*/
 		}
 		return msg;
 	}
@@ -94,7 +76,7 @@ public class AddNewGroup extends AncestorEntryPoint {
 	}
 	
 	void initGroups(){
-		monitorGwtSv.getAllGroup(new AsyncCallback<MonitorContainer>(){
+		monitorGwtSv.getAllGroup(new AsyncCallback<SystemGroup[]>(){
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
@@ -104,9 +86,9 @@ public class AddNewGroup extends AncestorEntryPoint {
 						HTMLControl.RED_MESSAGE, true);
 			}
 			@Override
-			public void onSuccess(MonitorContainer result) {
-					if(result.getListSystemGroup()!=null){
-						SystemGroup[] listTempGroup = result.getListSystemGroup();
+			public void onSuccess(SystemGroup[] result) {
+					if(result!=null){
+						SystemGroup[] listTempGroup = result;
 						groupNames = new ArrayList<SystemGroup>();
 						for(SystemGroup s : listTempGroup){
 							groupNames.add(s);
@@ -161,10 +143,6 @@ public class AddNewGroup extends AncestorEntryPoint {
 		    
 		    @Override
 		    public void onClick(ClickEvent event) {
-		   /* SystemGroup  g = new SystemGroup();
-			g.setDescription(txtGroupDescription.getText());
-			g.setName(txtGroupName.getText());
-			temp.add(g);*/
 			String name = validateGroupName(txtGroupName.getText());
 			String groupdes = validateGroupDescription(txtGroupDescription.getText());
 			panelValidateGroupName.setVisible(false);
@@ -248,8 +226,6 @@ public class AddNewGroup extends AncestorEntryPoint {
 		SystemGroup  g = new SystemGroup();
 		g.setDescription(groupDescription);
 		g.setName(name);
-	/*	temp.add(g);*/
-		
 		monitorGwtSv.addGroupByObj(g, new AsyncCallback<Boolean>() {
 			@Override
 			public void onSuccess(Boolean result) {
