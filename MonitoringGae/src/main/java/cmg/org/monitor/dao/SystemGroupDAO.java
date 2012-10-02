@@ -26,4 +26,6 @@ public interface SystemGroupDAO {
 	public boolean removeUserFromGroup(String userEmail, String groupId) throws Exception;
 	
 	public List<SystemUser> listAllUserOfGroup(String groupName) throws Exception;
+	
+	public SystemGroup getByName(String name) throws Exception;
 }

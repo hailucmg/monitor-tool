@@ -130,7 +130,8 @@ public class SystemDaoImpl implements SystemDAO {
 		}
 		if (description != null && description.trim().length() > 0) {
 			ChangeLogMonitor clm = new ChangeLogMonitor();
-			UserLoginDto user = MonitorLoginService.getUserLogin();
+			MonitorLoginService service = new MonitorLoginService();
+			UserLoginDto user = service.getUserLogin();
 			clm.setUsername(user.getEmail());
 			clm.setDescription(description);
 			clm.setSystemName(sys.toString());
@@ -184,7 +185,8 @@ public class SystemDaoImpl implements SystemDAO {
 			listSystems(false);
 		}
 		ChangeLogMonitor clm = new ChangeLogMonitor();
-		UserLoginDto user = MonitorLoginService.getUserLogin();
+		MonitorLoginService service = new MonitorLoginService();
+		UserLoginDto user = service.getUserLogin();
 		clm.setUsername(user.getEmail());
 		clm.setSid(code);
 		clm.setSystemName(code + " - " + system.getName());

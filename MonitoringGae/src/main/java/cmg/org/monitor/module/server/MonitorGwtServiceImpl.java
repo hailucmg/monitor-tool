@@ -38,7 +38,6 @@ import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.entity.shared.SystemUser;
-import cmg.org.monitor.ext.model.shared.GroupMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.ext.model.shared.UserMonitor;
@@ -81,11 +80,29 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		SystemDAO sysDAO = new SystemDaoImpl();
 		ArrayList<SystemMonitor> list = null;
 		SystemMonitor[] systems = null;
+		SystemGroupDAO groupDao = new SystemGroupDaoImpl();
+		MonitorLoginService loginSer = new MonitorLoginService();
+		UserLoginDto user = loginSer.getUserLogin();
 		try {
-			list = sysDAO.listSystemsFromMemcache(false);
+			list = sysDAO.listSystemsFromMemcache(false);			
 			if (list != null && list.size() > 0) {
-				systems = new SystemMonitor[list.size()];
-				list.toArray(systems);
+				ArrayList<SystemMonitor> tempList = new ArrayList<SystemMonitor>();
+				for (SystemMonitor sys : list) {
+					boolean check = false;
+					SystemGroup gr = groupDao.getByName(sys.getGroupEmail());
+					if (user.getRole() == MonitorConstant.ROLE_ADMIN) {
+						check = true;
+					} else if (user.checkGroup(gr == null ? "" : gr.getId())) {
+						check = true;
+					}
+					if (check) {
+						tempList.add(sys);
+					}
+				}
+				if (tempList.size() > 0) {
+					systems = new SystemMonitor[tempList.size()];
+					tempList.toArray(systems);
+				}
 			}
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE,
@@ -93,7 +110,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 							+ ex.getCause().getMessage());
 		}
 		if (systems == null) {
-			return systems;
+			return null;
 		} else {
 			return sortByname(systems);
 		}
@@ -123,7 +140,8 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public UserLoginDto getUserLogin() {
-		return MonitorLoginService.getUserLogin();
+		MonitorLoginService service = new MonitorLoginService();
+		return service.getUserLogin();
 	}
 
 	@Override

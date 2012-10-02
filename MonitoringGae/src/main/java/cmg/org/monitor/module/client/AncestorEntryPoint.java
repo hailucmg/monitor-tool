@@ -1,7 +1,5 @@
 package cmg.org.monitor.module.client;
 
-import org.cyberneko.html.HTMLComponent;
-
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
@@ -33,7 +31,7 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 
 	protected static Timer timerMess;
 	protected static Timer timerReload;
-	
+
 	protected static Timer timerJvm = null;
 	protected static Timer timerCpu = null;
 	protected static Timer timerMem = null;
@@ -55,9 +53,9 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 	protected boolean isOnload = true;
 
 	static boolean isReadyDelete = true;
-	
+
 	protected static DialogBox dialogBox;
-	
+
 	private static DialogBox dialogFix;
 
 	@Override
@@ -130,9 +128,9 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 	protected void visibleMessage() {
 
 	}
-	
+
 	protected static void setOnload(boolean b) {
-		if (b) {			
+		if (b) {
 			dialogFix.center();
 		} else {
 			dialogFix.hide();
@@ -205,10 +203,10 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 				doLogin();
 			}
 
-		} /*else {
-			Window.Location.replace(currentUrl
-					+ HTMLControl.HTML_DASHBOARD_NAME);
-		}*/
+		} /*
+		 * else { Window.Location.replace(currentUrl +
+		 * HTMLControl.HTML_DASHBOARD_NAME); }
+		 */
 	}
 
 	protected void doLogin() {
@@ -229,13 +227,24 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 								.getLogoutHTML(result.getLogoutUrl(),
 										result.getEmail()));
 						if (result.getRole() == MonitorConstant.ROLE_GUEST) {
-							showMessage(
-									"Hello "
-											+ result.getNickName()
-											+ ". You might not have permission to use Health Monitoring System. ",
-									result.getLogoutUrl(),
-									"Login with another account.",
-									HTMLControl.YELLOW_MESSAGE, true);
+							if (currentPage == HTMLControl.PAGE_ABOUT
+									|| currentPage == HTMLControl.PAGE_HELP) {
+								setVisibleMessage(false, HTMLControl.YELLOW_MESSAGE);
+								setVisibleMessage(false, HTMLControl.RED_MESSAGE);
+								role = result.getRole();
+								changeMenu(currentPage, role);
+								init();
+							} else {
+								setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
+								setVisibleLoadingImage(false);
+								showMessage(
+										"Hello "
+												+ result.getNickName()
+												+ ". You might not have permission to use Health Monitoring System. ",
+										result.getLogoutUrl(),
+										"Login with another account.",
+										HTMLControl.YELLOW_MESSAGE, true);
+							}
 						} else {
 							showMessage(
 									"Welcome to Health Monitoring System. If have any question ",
@@ -249,6 +258,7 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 					} else {
 						addWidget(HTMLControl.ID_LOGIN_FORM,
 								HTMLControl.getLoginHTML(result.getLoginUrl()));
+						setVisibleLoadingImage(false);
 						showMessage(
 								"Must login to use Health Monitoring System. ",
 								result.getLoginUrl(), "Login. ",
@@ -289,8 +299,6 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 		setVisibleMessage(true, typeMessage);
 		timerMess.scheduleRepeating(1000);
 	}
-	
-	
 
 	protected static void showReloadCountMessage(final int typeMessage) {
 		count = MonitorConstant.REFRESH_RATE / 1000;
@@ -301,13 +309,17 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 		showMessage(
 				"Latest status of systems. Update in "
 						+ HTMLControl.getStringTime(count),
-				"#dashboard/reload", "<input type=\"button\"  class=\"form-reload\">", typeMessage, true);
+				"#dashboard/reload",
+				"<input type=\"button\"  class=\"form-reload\">", typeMessage,
+				true);
 		timerMess = new Timer() {
 			@Override
 			public void run() {
 				showMessage("Latest status of systems. Update in "
 						+ HTMLControl.getStringTime(--count),
-						"#dashboard/reload", "<input type=\"button\"  class=\"form-reload\">", typeMessage, false);
+						"#dashboard/reload",
+						"<input type=\"button\"  class=\"form-reload\">",
+						typeMessage, false);
 				if (count <= 0) {
 					this.cancel();
 				}
