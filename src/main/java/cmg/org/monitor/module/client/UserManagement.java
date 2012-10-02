@@ -95,7 +95,7 @@ public class UserManagement extends AncestorEntryPoint {
 	private AbstractDataTable createData(List<SystemUser> listUser ,List<SystemGroup> listGroup) {
 		DataTable data = DataTable.create();
 		int indexGroup = listGroup.size();
-		data.addColumn(ColumnType.STRING, "");
+		data.addColumn(ColumnType.STRING, "username\\group");
 		for(int i = 0; i < listGroup.size();i++){
 			data.addColumn(ColumnType.STRING, listGroup.get(i).getName());
 		}
