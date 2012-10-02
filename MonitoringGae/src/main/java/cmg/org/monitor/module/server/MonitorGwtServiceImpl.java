@@ -627,4 +627,18 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		}
 		return false;
 	    }
+
+	    /* (non-Javadoc) * @see cmg.org.monitor.module.client.MonitorGwtService#listAllSystemUsers() */
+	    @Override
+	    public List<SystemUser> listAllSystemUsers() {
+		// TODO Auto-generated method stub return null;
+		SystemAccountDAO accDao = new SystemAccountDaoImpl();
+		try {
+		    List<SystemUser> list = accDao.listAllSystemUser();
+		    return list;
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+		return null;
+	    }
 }
