@@ -1,6 +1,7 @@
 package cmg.org.monitor.module.client;
 
 import cmg.org.monitor.entity.shared.NotifyMonitor;
+import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.GroupMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorContainer;
@@ -288,9 +289,8 @@ public class EditSystem extends AncestorEntryPoint {
 							listGroup = new ListBox();
 							listGroup.setWidth("198px");
 							listGroup.setHeight("28px");
-							GroupMonitor[] groups = container.getGroups();
+							SystemGroup[] groups = container.getListSystemGroup();
 							if (groups != null && groups.length > 0) {
-
 								for (int i = 0; i < groups.length; i++) {
 									listGroup.addItem(groups[i].getName());
 									if (system.getGroupEmail()

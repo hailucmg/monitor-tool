@@ -25,7 +25,7 @@ public class AddNewGroup extends AncestorEntryPoint {
     Label lblGroupDescription;
     AbsolutePanel panelValidateGroupName;
     AbsolutePanel panelValidateGroupDescription;
-    List<SystemGroup> groupNames = new ArrayList<SystemGroup>();
+    List<SystemGroup> groupNames;
     AbsolutePanel panelButton;
     AbsolutePanel panelAdding;
     Button bttCreate;
@@ -34,38 +34,38 @@ public class AddNewGroup extends AncestorEntryPoint {
     boolean addSuccess = false;
 
     private String validateGroupName(String name) {
-	String msg = "";
-	if (name == null || name.trim().length() == 0) {
-	    msg = "This field is required ";
-	} else if (name.contains("$") || name.contains("%") || name.contains("*")) {
-	    msg = "Name is not validate";
-	} else {
-	    if (groupNames != null) {
-		for (SystemGroup gName : groupNames) {
-		    if (name.equalsIgnoreCase(gName.getName())) {
-			msg = "This name is existed	";
-			return msg;
+		String msg = "";
+		if (name == null || name.trim().length() == 0) {
+		    msg = "This field is required ";
+		} else if (name.contains("$") || name.contains("%") || name.contains("*")) {
+		    msg = "Name is not validate";
+		} else {
+		    if (groupNames != null) {
+			for (SystemGroup gName : groupNames) {
+			    if (name.equalsIgnoreCase(gName.getName())) {
+				msg = "This name is existed	";
+				return msg;
+			    }
+			}
 		    }
-		}
-	    }
 
-	}
-	return msg;
+		}
+		return msg;
     }
 
     private String validateGroupDescription(String description) {
-	String msg = "";
-	if (description == null || description.trim().length() == 0) {
-	    msg = "This field is required ";
+		String msg = "";
+		if (description == null || description.trim().length() == 0) {
+		    msg = "This field is required ";
+		}
+		return msg;
 	}
-	return msg;
-    }
-
-    protected void init() {
-	if (currentPage == HTMLControl.PAGE_ADD_GROUP) {
-	    initGroups();
-	}
-    }
+	
+	    protected void init() {
+			if (currentPage == HTMLControl.PAGE_ADD_GROUP) {
+			    initGroups();
+			}
+	    }
 
     void initGroups() {
 	monitorGwtSv.getAllGroup(new AsyncCallback<SystemGroup[]>() {
@@ -79,14 +79,14 @@ public class AddNewGroup extends AncestorEntryPoint {
 
 	    @Override
 	    public void onSuccess(SystemGroup[] result) {
-		if (result != null && result.length > 0) {
-		    SystemGroup[] listTempGroup = result;
-		    groupNames = new ArrayList<SystemGroup>();
-		    for (SystemGroup s : listTempGroup) {
-			groupNames.add(s);
-		    }
-		}
-		initUI();
+			if (result != null && result.length > 0) {
+			    SystemGroup[] listTempGroup = result;
+			    groupNames = new ArrayList<SystemGroup>();
+			    for (SystemGroup s : listTempGroup) {
+			    	groupNames.add(s);
+			    }
+			}
+			initUI();
 	    }
 
 	});
@@ -215,29 +215,29 @@ public class AddNewGroup extends AncestorEntryPoint {
     }
 
     private void sendData(String name, String groupDescription) {
-	panelAdding.setVisible(false);
-	final SystemGroup g = new SystemGroup();
-	g.setDescription(groupDescription);
-	g.setName(name);
-	monitorGwtSv.addGroupByObj(g, new AsyncCallback<Boolean>() {
-	    @Override
-	    public void onSuccess(Boolean result) {
-		if (result) {
-		    showMessage("Group added sucessfully. ", HTMLControl.HTML_GROUP_MANAGEMENT_NAME, "View Group list. ", HTMLControl.BLUE_MESSAGE,
-			    true);
-		    groupNames.add(g);
-		} else {
-		    showMessage("Server error! ", HTMLControl.HTML_GROUP_MANAGEMENT_NAME, "Go to Group Management. ", HTMLControl.RED_MESSAGE, true);
-		}
-
-	    }
-
-	    @Override
-	    public void onFailure(Throwable caught) {
-		caught.printStackTrace();
-		showMessage("Server error! ", HTMLControl.HTML_GROUP_MANAGEMENT_NAME, "Go to Group Management. ", HTMLControl.RED_MESSAGE, true);
-
-	    }
+		panelAdding.setVisible(false);
+		SystemGroup g = new SystemGroup();
+		g.setDescription(groupDescription);
+		g.setName(name);
+		monitorGwtSv.addGroupByObj(g, new AsyncCallback<Boolean>() {
+		    @Override
+		    public void onSuccess(Boolean result) {
+			if (result) {
+			    showMessage("Group added sucessfully. ", HTMLControl.HTML_GROUP_MANAGEMENT_NAME, "View Group list. ", HTMLControl.BLUE_MESSAGE,
+				    true);
+			    	initGroups();
+			} else {
+			    showMessage("Server error! ", HTMLControl.HTML_GROUP_MANAGEMENT_NAME, "Go to Group Management. ", HTMLControl.RED_MESSAGE, true);
+			}
+	
+		    }
+	
+		    @Override
+		    public void onFailure(Throwable caught) {
+			caught.printStackTrace();
+			showMessage("Server error! ", HTMLControl.HTML_GROUP_MANAGEMENT_NAME, "Go to Group Management. ", HTMLControl.RED_MESSAGE, true);
+	
+		    }
 	});
 
     }

@@ -1,6 +1,7 @@
 package cmg.org.monitor.module.client;
 
 import cmg.org.monitor.entity.shared.NotifyMonitor;
+import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.model.shared.GroupMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorContainer;
@@ -422,17 +423,23 @@ public class AddnewSystem extends AncestorEntryPoint {
 					@Override
 					public void onSuccess(MonitorContainer result) {
 						container = result;
-						GroupMonitor[] groups = container.getGroups();
+						SystemGroup[] groups = container.getListSystemGroup();
 						if (groups != null) {
-							for (GroupMonitor g : groups) {
+							for (SystemGroup g : groups) {
 								listGroup.addItem(g.getName());
 							}
 							listGroup.setSelectedIndex(0);
+							addWidget(HTMLControl.ID_BODY_CONTENT, tableForm);
+							setVisibleLoadingImage(false);
+							setOnload(false);
+							setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+						}else{
+							showMessage("No Group Found.",
+									HTMLControl.HTML_GROUP_MANAGEMENT_NAME,
+									"Goto Group Management. ",
+									HTMLControl.RED_MESSAGE, true);
 						}
-						addWidget(HTMLControl.ID_BODY_CONTENT, tableForm);
-						setVisibleLoadingImage(false);
-						setOnload(false);
-						setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+						
 
 					}
 
