@@ -80,7 +80,7 @@ public class UserRole extends AncestorEntryPoint {
 
 	private AbstractDataTable createData(List<SystemUser> result) {
 		DataTable data = DataTable.create();
-		data.addColumn(ColumnType.STRING, "Username");
+		data.addColumn(ColumnType.STRING, "");
 		data.addColumn(ColumnType.STRING, "Administrator");
 		data.addColumn(ColumnType.STRING, "User");
 		data.addRows(result.size());
@@ -88,7 +88,7 @@ public class UserRole extends AncestorEntryPoint {
 		List<SystemUser> sortUser = sortByname(result);
 		for (int j = 0; j < sortUser.size(); j++) {
 
-			data.setValue(j, 0, sortUser.get(j).getUsername());
+			data.setValue(j, 0, sortUser.get(j).getEmail() + " (" + sortUser.get(j).getFullName() + ")");
 			if(sortUser.get(j).checkRole(SystemRole.ROLE_ADMINISTRATOR)){
 			    data.setValue(j, 1, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_ADMINISTRATOR+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;' checked='checked'>");
 			}else{

@@ -40,7 +40,7 @@ public interface SystemAccountDAO {
 	
 	public boolean deleteSystemUser(SystemUser user) throws Exception;
 	
-	public boolean updateSystemUser(SystemUser user) throws Exception;
+	public boolean updateSystemUser(SystemUser user, boolean b) throws Exception;
 	/**
 	 * 
 	 * @param user

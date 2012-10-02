@@ -241,7 +241,7 @@ public class SystemRoleDaoImpl implements SystemRoleDAO {
 			SystemUser user = accountDao.getSystemUserByEmail(userEmail);
 			String userId = user.getId();
 			user.addUserRole(roleId);
-			accountDao.updateSystemUser(user);		
+			accountDao.updateSystemUser(user, true);		
 			
 			role.addUser(userId);			
 			updateRole(role);
@@ -275,7 +275,7 @@ public class SystemRoleDaoImpl implements SystemRoleDAO {
 			SystemUser user = accountDao.getSystemUserByEmail(userEmail);
 			String userId = user.getId();
 			user.removeUserRole(roleId);
-			accountDao.updateSystemUser(user);		
+			accountDao.updateSystemUser(user, true);		
 			
 			role.removeUser(userId);			
 			updateRole(role);
