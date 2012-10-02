@@ -90,4 +90,6 @@ public interface MonitorGwtServiceAsync {
 	void getAllUserAndGroup(AsyncCallback<MonitorContainer> callback);
 	
 	void deleteGoogleAccount(String id, AsyncCallback<Boolean> callback);
+
+	void updateGoogleAccount(GoogleAccount acc, AsyncCallback<Boolean> callback);
 }

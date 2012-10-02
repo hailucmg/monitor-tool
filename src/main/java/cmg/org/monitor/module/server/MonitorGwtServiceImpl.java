@@ -612,4 +612,19 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		}
 		return false;
 	}
+	    
+	    /* (non-Javadoc) * @see cmg.org.monitor.module.client.MonitorGwtService#updateGoogleAccount(cmg.org.monitor.entity.shared.GoogleAccount) */
+	    @Override
+	    public boolean updateGoogleAccount(GoogleAccount acc) {
+		// TODO Auto-generated method stub return false;
+		SystemAccountDAO accDao = new SystemAccountDaoImpl();
+		try {
+		    if(accDao.updateGoogleAccount(acc)){
+		        return true;
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+		return false;
+	    }
 }
