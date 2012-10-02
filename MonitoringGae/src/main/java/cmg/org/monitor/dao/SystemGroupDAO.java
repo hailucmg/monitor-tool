@@ -1,5 +1,7 @@
 package cmg.org.monitor.dao;
 
+import java.util.List;
+
 import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemUser;
 
@@ -22,4 +24,6 @@ public interface SystemGroupDAO {
 	public boolean addUserToGroup(String userEmail, String groupId) throws Exception;
 	
 	public boolean removeUserFromGroup(String userEmail, String groupId) throws Exception;
+	
+	public List<SystemUser> listAllUserOfGroup(String groupName) throws Exception;
 }
