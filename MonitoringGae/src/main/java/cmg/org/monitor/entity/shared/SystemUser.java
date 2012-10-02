@@ -10,6 +10,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import cmg.org.monitor.ext.model.shared.UserMonitor;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -398,5 +400,9 @@ public class SystemUser implements IsSerializable {
 			groupIDs = new String[listGroupIDs.size()];
 			listGroupIDs.toArray(groupIDs);
 		}
+	}
+	
+	public int compareByName(SystemUser s) {
+		return username.trim().compareTo(s.getUsername().trim());
 	}
 }
