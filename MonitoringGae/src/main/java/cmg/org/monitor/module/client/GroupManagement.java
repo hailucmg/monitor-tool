@@ -4,26 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cmg.org.monitor.entity.shared.SystemGroup;
-import cmg.org.monitor.ext.model.shared.MonitorContainer;
-
 import cmg.org.monitor.util.shared.HTMLControl;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
-
-
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
-
 import com.google.gwt.user.client.ui.HTML;
-
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.visualization.client.AbstractDataTable;
-import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
+import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.formatters.BarFormat;
 import com.google.gwt.visualization.client.formatters.BarFormat.Color;
 import com.google.gwt.visualization.client.visualizations.Table;
