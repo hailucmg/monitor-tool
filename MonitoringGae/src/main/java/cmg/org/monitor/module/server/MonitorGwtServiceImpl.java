@@ -536,8 +536,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements Monit
     public boolean addGroupByObj(SystemGroup s) {
 	SystemGroupDAO sysGroupDao = new SystemGroupDaoImpl();
 	try {
-	    boolean b = sysGroupDao.addNewGroup(s);
-	    return b;
+	    return sysGroupDao.addNewGroup(s);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
