@@ -30,7 +30,7 @@ import com.google.gwt.visualization.client.visualizations.Table;
 import com.google.gwt.visualization.client.visualizations.Table.Options;
 
 public class GroupManagement extends AncestorEntryPoint{
-	public static List<SystemGroup> listGroup = new ArrayList<SystemGroup>();
+	public static List<SystemGroup> listGroup;
 	static private Table tableListGroup;
     static private FlexTable rootLinkDefault;
     static private FlexTable tableLinkDefault;
@@ -64,8 +64,11 @@ public class GroupManagement extends AncestorEntryPoint{
 			public void onSuccess(MonitorContainer result) {
 				if (result.getListSystemGroup()!=null && result!= null) {
 					SystemGroup[] listTempGroup = result.getListSystemGroup();
-					for(SystemGroup s : listTempGroup){
-						listGroup.add(s);
+					if(listTempGroup!=null){
+						listGroup = new ArrayList<SystemGroup>();
+						for(SystemGroup s : listTempGroup){
+							listGroup.add(s);
+						}
 					}
 					setVisibleLoadingImage(false);
 					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);

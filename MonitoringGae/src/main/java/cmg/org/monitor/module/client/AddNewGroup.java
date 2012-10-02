@@ -27,7 +27,7 @@ public class AddNewGroup extends AncestorEntryPoint {
 	Label lblGroupDescription;
 	AbsolutePanel panelValidateGroupName;
 	AbsolutePanel panelValidateGroupDescription;
-	List<SystemGroup> groupNames;
+	List<SystemGroup> groupNames = new ArrayList<SystemGroup>();
 	AbsolutePanel panelButton;
 	AbsolutePanel panelAdding;
 	Button bttCreate;
@@ -76,9 +76,7 @@ public class AddNewGroup extends AncestorEntryPoint {
 				public void onSuccess(MonitorContainer result) {
 						if(result.getListSystemGroup()!=null){
 							SystemGroup[] listTempGroup = result.getListSystemGroup();
-							if (groupNames == null) {
-								groupNames = new ArrayList<SystemGroup>();
-							}
+							groupNames = new ArrayList<SystemGroup>();
 							for(SystemGroup s : listTempGroup){
 								groupNames.add(s);
 							}
@@ -204,7 +202,6 @@ public class AddNewGroup extends AncestorEntryPoint {
 
 		@Override
 		public void onClick(ClickEvent event) {
-			// TODO Auto-generated method stub
 			String name = validateGroupName(txtGroupName.getText());
 			String groupdes = validateGroupDescription(txtGroupDescription.getText());
 			panelValidateGroupName.setVisible(false);
@@ -258,9 +255,10 @@ public class AddNewGroup extends AncestorEntryPoint {
 	
 	private void sendData(String name, String groupDescription){
 		panelAdding.setVisible(false);
-		SystemGroup g = new SystemGroup();
+		SystemGroup  g = new SystemGroup();
 		g.setDescription(groupDescription);
 		g.setName(name);
+	
 		monitorGwtSv.addGroupByObj(g, new AsyncCallback<Boolean>() {
 			@Override
 			public void onSuccess(Boolean result) {
@@ -269,6 +267,7 @@ public class AddNewGroup extends AncestorEntryPoint {
 							HTMLControl.HTML_GROUP_MANAGEMENT_NAME,
 							"View Group list. ", HTMLControl.BLUE_MESSAGE,
 							true);
+					init();
 				}else{
 					showMessage("Server error! ",
 							HTMLControl.HTML_GROUP_MANAGEMENT_NAME,

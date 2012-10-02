@@ -646,7 +646,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 					if (result) {
 						showMessage("System added sucessfully. ",
 								HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
-								"View system list. ", HTMLControl.RED_MESSAGE,
+								"View system list. ", HTMLControl.BLUE_MESSAGE,
 								true);
 					} else {
 						showMessage("Server error! ",
