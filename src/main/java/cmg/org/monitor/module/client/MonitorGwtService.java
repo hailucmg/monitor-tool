@@ -1,5 +1,7 @@
 package cmg.org.monitor.module.client;
 
+import java.util.List;
+
 import cmg.org.monitor.entity.shared.AlertStoreMonitor;
 import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
@@ -8,6 +10,7 @@ import cmg.org.monitor.entity.shared.JvmMonitor;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.ext.model.shared.UserMonitor;
@@ -84,4 +87,6 @@ public interface MonitorGwtService extends RemoteService {
 	boolean deleteGoogleAccount(String id);
 	
 	boolean updateGoogleAccount(GoogleAccount acc);
+	
+	List<SystemUser> listAllSystemUsers();
 }
