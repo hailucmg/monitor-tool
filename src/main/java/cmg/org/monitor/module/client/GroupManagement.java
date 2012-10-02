@@ -37,7 +37,8 @@ public class GroupManagement extends AncestorEntryPoint{
     static DialogBox dialogBox;
     private static HTML popupContent;
     private static FlexTable flexHTML;
-    
+    static String tempName ;
+	static String idTemp ;
     
     
     
@@ -87,7 +88,9 @@ public class GroupManagement extends AncestorEntryPoint{
 		$entry(@cmg.org.monitor.module.client.GroupManagement::showConfirmDialogBox(Ljava/lang/String;Ljava/lang/String;))
 		}-*/;
 
-	    static void showConfirmDialogBox(final String name, final String id) {
+	    static void showConfirmDialogBox(String name, String id) {
+	    tempName = name;
+	    idTemp = id;
 		dialogBox = new DialogBox();
 		dialogBox.setAnimationEnabled(true);
 		final Button closeButton = new Button("Cancel");
@@ -126,7 +129,7 @@ public class GroupManagement extends AncestorEntryPoint{
 		    public void onClick(ClickEvent event) {
 		    	setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
 				setVisibleLoadingImage(true);
-				deleteGroup(name, id);
+				deleteGroup(tempName, idTemp);
 		    }
 		});
 		closeButton.addClickHandler(new ClickHandler() {
@@ -193,16 +196,14 @@ public class GroupManagement extends AncestorEntryPoint{
 	
 	public static void deleteGroup(String groupname, String id){
 		setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
-		final String tempName = groupname;
 		monitorGwtSv.deleteGroup(groupname, id, new AsyncCallback<Boolean>() {
-			
 			@Override
 			public void onSuccess(Boolean result) {
 				showMessage("Group deleted sucessfully.", "", "", HTMLControl.BLUE_MESSAGE, true);
 				dialogBox.hide();
 				if(listGroup.size() > 1 ){
 					for(int i = 0 ; i < listGroup.size();i++){
-						if(listGroup.get(i).getName().equalsIgnoreCase(tempName)){
+						if(listGroup.get(i).getId().equalsIgnoreCase(idTemp)){
 							listGroup.remove(i);
 							break;
 						}	
