@@ -158,7 +158,7 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 			SystemUser user = accountDao.getSystemUserByEmail(userEmail);
 			String userId = user.getId();
 			user.addGroup(groupId);
-			accountDao.updateSystemUser(user);
+			accountDao.updateSystemUser(user, true);
 			initPersistence();		
 			SystemGroup group = pm.getObjectById(SystemGroup.class, groupId);
 			group.addUser(userId);
@@ -186,7 +186,7 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 			SystemUser user = accountDao.getSystemUserByEmail(userEmail);
 			String userId = user.getId();
 			user.removeGroup(groupId);
-			accountDao.updateSystemUser(user);
+			accountDao.updateSystemUser(user, true);
 			initPersistence();		
 			SystemGroup group = pm.getObjectById(SystemGroup.class, groupId);
 			group.removeUser(userId);

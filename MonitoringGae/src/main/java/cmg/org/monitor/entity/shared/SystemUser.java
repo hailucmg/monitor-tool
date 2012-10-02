@@ -66,9 +66,6 @@ public class SystemUser implements IsSerializable {
 		this.lastName = in.lastName;
 		this.isSuspended = in.isSuspended;
 		this.isDomainAdmin = in.isDomainAdmin;
-		this.roleIDs = in.roleIDs;
-		this.groupIDs = in.groupIDs;
-		this.groups = in.groups;
 	}
 
 	public void clear() {

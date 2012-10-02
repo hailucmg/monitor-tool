@@ -103,7 +103,7 @@ public class SystemRoleDaoImplTest {
 			adminUser = accountDao.getSystemUserByEmail("hailu@c-mg.com");
 			adminUser.addUserRole(SystemRole.ROLE_ADMINISTRATOR);
 			adminUser.addUserRole(SystemRole.ROLE_USER);
-			accountDao.updateSystemUser(adminUser);
+			accountDao.updateSystemUser(adminUser, true);
 			adminUser = accountDao.getSystemUserByEmail("hailu@c-mg.com");
 		} catch (Exception e) {			
 			e.printStackTrace();
@@ -129,7 +129,7 @@ public class SystemRoleDaoImplTest {
 			adminUser.removeUserRole(SystemRole.ROLE_USER);
 			adminUser.removeUserRole(SystemRole.ROLE_ADMINISTRATOR);
 			
-			accountDao.updateSystemUser(adminUser);
+			accountDao.updateSystemUser(adminUser, true);
 			adminUser = accountDao.getSystemUserByEmail("hailu@c-mg.com");
 		} catch (Exception e) {			
 			e.printStackTrace();

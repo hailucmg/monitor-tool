@@ -330,12 +330,17 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
      * 
      * @see cmg.org.monitor.dao.SystemAccountDAO#updateSystemUser(cmg.org.monitor.entity.shared.SystemUser)
      */
-    public boolean updateSystemUser(SystemUser user) throws Exception {
+    public boolean updateSystemUser(SystemUser user, boolean b) throws Exception {
 	SystemUser temp = getSystemUserByEmail(user.getEmail());
 	boolean check = false;
 	if (temp != null) {
 	    initPersistence();
-	    temp.swap(user);
+	   
+		temp.swap(user);
+	    if (b) {
+		temp.setGroupIDs(user.getGroupIDs());
+		temp.setRoleIDs(user.getRoleIDs());
+	    }
 	    try {
 		pm.currentTransaction().begin();
 		temp.clear();

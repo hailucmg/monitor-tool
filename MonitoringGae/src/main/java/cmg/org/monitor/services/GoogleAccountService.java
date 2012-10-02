@@ -322,7 +322,7 @@ public class GoogleAccountService {
 				for (SystemUser sysUser : updatedList) {
 					updatedCount++;
 					try {
-						boolean b = accountDao.updateSystemUser(sysUser);
+						boolean b = accountDao.updateSystemUser(sysUser, false);
 						log("Updating user: " + sysUser.getUsername() + " ("
 								+ sysUser.getFullName() + ")"
 								+ (b ? " ... DONE" : " ... FAIL"));						
