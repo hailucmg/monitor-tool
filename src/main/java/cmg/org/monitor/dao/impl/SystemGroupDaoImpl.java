@@ -220,7 +220,7 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 	public List listAllUserOfGroup(String groupName) throws Exception {
 		initPersistence();
 		Query query = pm.newQuery(SystemGroup.class);
-		query.setFilter("name = paraName");
+		query.setFilter("name == paraName");
 		query.declareParameters("String paraName");
 		SystemGroup group = null;
 		try {
@@ -247,6 +247,30 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 				return users;
 			}
 		}
+		return null;
+	}
+
+	/**
+	 * (non-Javadoc)
+	 * @see cmg.org.monitor.dao.SystemGroupDAO#getByName(java.lang.String) 
+	 */
+	public SystemGroup getByName(String name) throws Exception {
+		initPersistence();
+		Query query = pm.newQuery(SystemGroup.class);
+		query.setFilter("name == paraName");
+		query.declareParameters("String paraName");
+		try {
+			List<SystemGroup> temp = (List<SystemGroup>) query.execute(name);			
+			if (!temp.isEmpty()) {
+				return temp.get(0);
+			}
+		} catch (Exception e) {
+			logger.log(Level.SEVERE,
+					" ERROR when getByName. Message: " + e.getMessage());
+			throw e;
+		} finally {
+			pm.close();
+		}		
 		return null;
 	}
 
