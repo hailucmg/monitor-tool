@@ -295,22 +295,22 @@ public class GoogleAccountService {
 			}
 			// Start create new user
 			if (!createdList.isEmpty()) {
-				SystemUser userTemp = null;
 				for (SystemUser sysUser : createdList) {
 					createdCount++;
 					try {						
-						boolean b = accountDao.createSystemUser(sysUser);
-						log("Creating user: " + sysUser.getUsername() + " ("
-								+ sysUser.getFullName() + ")"
-								+ (b ? " ... DONE" : " ... FAIL"));		
-						userTemp = accountDao.getSystemUserByEmail(sysUser.getEmail());
-						if (userTemp != null) {
-							roleDao.addRole(userTemp, SystemRole.ROLE_USER);
+						boolean b = accountDao.createSystemUser(sysUser);						
+						
+						if (b) {
+							b = roleDao.addRole(sysUser.getEmail(), SystemRole.ROLE_USER);						
 						}
 						if (!b) {
 							createdFail++;
 						}
+						log("Creating user: " + sysUser.getUsername() + " ("
+								+ sysUser.getFullName() + ")"
+								+ (b ? " ... DONE" : " ... FAIL"));		
 					} catch (Exception e) {
+						e.printStackTrace();
 						problem++;
 						createdFail++;
 						log("Creating user '" + sysUser.getUsername() + " ("

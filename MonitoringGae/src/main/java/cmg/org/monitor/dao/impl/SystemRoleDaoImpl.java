@@ -17,7 +17,9 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import cmg.org.monitor.dao.SystemAccountDAO;
 import cmg.org.monitor.dao.SystemRoleDAO;
+import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemRole;
 import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.services.PMF;
@@ -79,6 +81,7 @@ public class SystemRoleDaoImpl implements SystemRoleDAO {
 			try {
 				pm.currentTransaction().begin();
 				temp.setName(role.getName());
+				temp.setUserIDs(role.getUserIDs());
 				pm.makePersistent(temp);
 				pm.currentTransaction().commit();
 				check = true;
@@ -132,6 +135,7 @@ public class SystemRoleDaoImpl implements SystemRoleDAO {
 			SystemRole tmp = pm.getObjectById(SystemRole.class, id);
 			role.setId(tmp.getId());
 			role.setName(tmp.getName());
+			role.setUserIDs(tmp.getUserIDs());
 			return role;
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE,
@@ -221,31 +225,32 @@ public class SystemRoleDaoImpl implements SystemRoleDAO {
 	 * (non-Javadoc)
 	 * @see cmg.org.monitor.dao.SystemRoleDAO#addRole(cmg.org.monitor.entity.shared.SystemUser, cmg.org.monitor.entity.shared.SystemRole) 
 	 */
-	public boolean addRole(SystemUser user, String roleName) throws Exception {
-		SystemRole role = getByName(roleName);
-		if (role == null) {
-			role = new SystemRole();
-			role.setName(roleName);
-			createRole(role);
-		}
-		initPersistence();
-		user = pm.getObjectById(SystemUser.class, user.getId());
+	public boolean addRole(String userEmail, String roleName) throws Exception {
+		SystemAccountDAO accountDao = new SystemAccountDaoImpl();
 		boolean b= false;
-		try {			
-			user.addRole(role);		
-			user.clear();
-			pm.makePersistent(role);
-			pm.makePersistent(user);
+		try {
+			SystemRole role = getByName(roleName);
+			if (role == null) {
+				role = new SystemRole();
+				role.setName(roleName);
+				createRole(role);
+				role = getByName(roleName);
+			}
+			String roleId = role.getId();
+			
+			SystemUser user = accountDao.getSystemUserByEmail(userEmail);
+			String userId = user.getId();
+			user.addUserRole(roleId);
+			accountDao.updateSystemUser(user);		
+			
+			role.addUser(userId);			
+			updateRole(role);
 			b = true;
 		} catch (Exception ex) {
-			logger.log(
-					Level.SEVERE,
-					" ERROR when addRole. Message: "
-							+ ex.getMessage());
 			throw ex;
 		} finally {
-			pm.close();
-		}		
+			
+		}
 		return b;
 	}
 
@@ -253,27 +258,33 @@ public class SystemRoleDaoImpl implements SystemRoleDAO {
 	 * (non-Javadoc)
 	 * @see cmg.org.monitor.dao.SystemRoleDAO#removeRole(cmg.org.monitor.entity.shared.SystemUser, cmg.org.monitor.entity.shared.SystemRole) 
 	 */
-	public boolean removeRole(SystemUser user, String roleName)
+	public boolean removeRole(String userEmail, String roleName)
 			throws Exception {
-		SystemRole role = getByName(roleName);	
-		initPersistence();
-		user = pm.getObjectById(SystemUser.class, user.getId());
+		SystemAccountDAO accountDao = new SystemAccountDaoImpl();
 		boolean b= false;
-		try {			
-			user.removeRole(role);			
-			user.clear();
-			pm.makePersistent(role);
-			pm.makePersistent(user);
+		try {
+			SystemRole role = getByName(roleName);
+			if (role == null) {
+				role = new SystemRole();
+				role.setName(roleName);
+				createRole(role);
+				role = getByName(roleName);
+			}
+			
+			String roleId = role.getId();			
+			SystemUser user = accountDao.getSystemUserByEmail(userEmail);
+			String userId = user.getId();
+			user.removeUserRole(roleId);
+			accountDao.updateSystemUser(user);		
+			
+			role.removeUser(userId);			
+			updateRole(role);
 			b = true;
-		} catch (Exception ex) {		
-			logger.log(
-					Level.SEVERE,
-					" ERROR when removeRole. Message: "
-							+ ex.getMessage());
+		} catch (Exception ex) {
 			throw ex;
 		} finally {
-			pm.close();
-		}		
+			
+		}
 		return b;
 	}
 

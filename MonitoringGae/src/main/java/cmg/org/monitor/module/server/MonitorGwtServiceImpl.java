@@ -460,12 +460,9 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			SystemAccountDAO sysAccDao = new SystemAccountDaoImpl();
 			SystemGroupDAO groupDao = new SystemGroupDaoImpl();
 			if (mapp) {
-				groupDao.addUserToGroup(sysAccDao.getSystemUserByEmail(email),
-						groupDao.getByID(idGroup));
+				groupDao.addUserToGroup(email,idGroup);
 			} else {
-				groupDao.removeUserFromGroup(
-						sysAccDao.getSystemUserByEmail(email),
-						groupDao.getByID(idGroup));
+				groupDao.removeUserFromGroup(email,idGroup);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

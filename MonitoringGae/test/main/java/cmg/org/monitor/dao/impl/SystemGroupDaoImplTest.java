@@ -185,10 +185,10 @@ public class SystemGroupDaoImplTest {
 			
 			user = accountDao.getSystemUserByEmail("monitor@c-mg.vn");
 			assertEquals("monitor@c-mg.vn", user.getEmail());
-			groupDao.addUserToGroup(user, list[0]);
-			groupDao.addUserToGroup(user, list[1]);
-			groupDao.addUserToGroup(user, list[3]);
-			groupDao.addUserToGroup(accountDao.getSystemUserByEmail("hailu@c-mg.com"), list[3]);
+			groupDao.addUserToGroup(user.getEmail(), list[0].getId());
+			groupDao.addUserToGroup(user.getEmail(), list[1].getId());
+			groupDao.addUserToGroup(user.getEmail(), list[3].getId());
+			groupDao.addUserToGroup("hailu@c-mg.com", list[3].getId());
 			user = accountDao.getSystemUserByEmail("monitor@c-mg.vn");
 			List<String> groups = user.getGroupIDs();
 			assertEquals(3, groups.size());
@@ -209,12 +209,12 @@ public class SystemGroupDaoImplTest {
 				System.out.println(accountDao.getSystemUserById(ur).getEmail());
 			}
 			
-			groupDao.removeUserFromGroup(user, list[3]);
+			groupDao.removeUserFromGroup(user.getEmail(), list[3].getId());
 			
 			
 			groupTemp = groupDao.getByID(list[3].getId());
 			users = groupTemp.getUserIDs();
-			assertEquals(2, users.size());
+			assertEquals(1, users.size());
 			for (String ur: users) {
 				System.out.println(accountDao.getSystemUserById(ur).getEmail());
 			}

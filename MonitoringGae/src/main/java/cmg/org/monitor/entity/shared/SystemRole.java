@@ -22,9 +22,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 */
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
 public class SystemRole implements IsSerializable  {
-	public static final String ROLE_ADMINISTRATOR = "administrator";
+	public static final String ROLE_ADMINISTRATOR = "Administrator";
 	
-	public static final String ROLE_USER = "user";
+	public static final String ROLE_USER = "User";
 	
 	
 	@PrimaryKey
@@ -37,8 +37,71 @@ public class SystemRole implements IsSerializable  {
 	
 	@Persistent
 	private
-	List<String> userIDs = new ArrayList<String>();
+	String[] userIDs;
 
+	
+	public void addUser(String userId) {
+		boolean check = false;
+		List<String> users =getUserIDs();
+		if (users != null && users.size() > 0) {
+			for (Object uId : users) {
+				if (((String) uId).equalsIgnoreCase(userId)) {
+					check = true;
+					break;
+				}
+			}
+		}
+		if (!check) {
+			if (users == null) {
+				users = new ArrayList<String>();
+			}
+			users.add(userId);
+		}
+		setUserIDs(users);
+	}
+	
+	public void removeUser(String userId) {
+		int index = -1;
+		List<String> users = getUserIDs();
+		if (users != null && !users.isEmpty()) {
+			for (int i = 0; i < users.size(); i++) {
+				if (((String) users.get(i))
+						.equalsIgnoreCase(userId)) {
+					index = i;
+					break;
+				}
+			}
+		}
+		if (index != -1) {
+			users.remove(index);
+		}
+		setUserIDs(users);
+	}
+	/** 
+	 * @return the userIDs 
+	 */
+	public List<String> getUserIDs() {
+		if (userIDs == null) {
+			return null;
+		} else {
+			List<String> list = new ArrayList<String>();
+			for (int i = 0; i < userIDs.length; i++) {
+				list.add(userIDs[i]);
+			}
+			return list;
+		}		
+	}
+
+	/** 
+	 * @param userIDs the userIDs to set 
+	 */
+	
+	public void setUserIDs(List<String> listUserIDs) {
+		if (listUserIDs != null && listUserIDs.size() > 0) {
+			userIDs = new String[listUserIDs.size()];
+			listUserIDs.toArray(userIDs);
+		}
+	}
 	
 	/** 
 	 * @return the name 
@@ -70,18 +133,4 @@ public class SystemRole implements IsSerializable  {
 		this.id = id;
 	}
 
-	/** 
-	 * @return the userIDs 
-	 */
-	public List<String> getUserIDs() {
-		return userIDs;
-	}
-
-	/** 
-	 * @param userIDs the userIDs to set 
-	 */
-	
-	public void setUserIDs(List<String> userIDs) {
-		this.userIDs = userIDs;
-	}
 }
