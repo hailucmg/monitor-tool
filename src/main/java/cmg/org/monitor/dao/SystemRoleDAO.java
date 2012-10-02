@@ -24,21 +24,22 @@ import cmg.org.monitor.entity.shared.SystemUser;
  */
 
 public interface SystemRoleDAO {
+	@Deprecated
 	public boolean createRole(SystemRole role) throws Exception;
-	
+	@Deprecated
 	public boolean updateRole(SystemRole role) throws Exception;
-	
+	@Deprecated
 	public boolean deleteRole(SystemRole role) throws Exception;
-	
+	@Deprecated
 	public SystemRole getById(String id) throws Exception;
-	
+	@Deprecated
 	public List<SystemRole> listAll() throws Exception;
-	
+	@Deprecated
 	public SystemRole getByName(String name) throws Exception;
-	
+	@Deprecated
 	public boolean addRole(String userEmail, String roleName) throws Exception;
-	
+	@Deprecated
 	public boolean removeRole(String userEmail, String roleName) throws Exception;
-	
+	@Deprecated
 	public void init();
 }

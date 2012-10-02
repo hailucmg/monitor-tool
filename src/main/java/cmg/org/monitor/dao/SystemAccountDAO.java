@@ -108,6 +108,7 @@ public interface SystemAccountDAO {
 	 */
 	public List<SystemUser> listAllSystemUserByDomain(String domain) throws Exception;
 	
+	@Deprecated
 	public void initRole(SystemUser user) throws Exception;
 	
 	public void initGroup(SystemUser user) throws Exception;
