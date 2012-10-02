@@ -174,14 +174,14 @@ public class SystemGroupDaoImplTest {
 			user.setFirstName("Hai");
 			user.setEmail("monitor@c-mg.vn");
 
-			accountDao.createSystemUser(user);
+			accountDao.createSystemUser(user, false);
 
 			user = new SystemUser();
 			user.setDomain("c-mg.com");
 			user.setUsername("hailu");
 			user.setFirstName("Hai");
 			user.setEmail("hailu@c-mg.com");
-			accountDao.createSystemUser(user);
+			accountDao.createSystemUser(user, false);
 			
 			user = accountDao.getSystemUserByEmail("monitor@c-mg.vn");
 			assertEquals("monitor@c-mg.vn", user.getEmail());
