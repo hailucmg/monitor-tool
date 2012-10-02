@@ -33,6 +33,8 @@ public class AddNewGroup extends AncestorEntryPoint {
 	Button bttCreate;
 	Button bttBack;
 	Button bttReset;
+	boolean addSuccess = false;
+	List<SystemGroup> temp;
 	
 	private String validateGroupName(String name){
 		String msg = "";
@@ -48,6 +50,22 @@ public class AddNewGroup extends AncestorEntryPoint {
 						msg = "This name is existed	";
 					}
 				}
+			}
+			
+			if(temp.size() > 0){
+				
+				if(addSuccess == false){
+					temp.remove(temp.size());
+				}
+				
+				if(temp.size() > 0){
+					for(SystemGroup g : temp){
+						if(name.equalsIgnoreCase(g.getName())){
+							msg = "This name is existed	";
+						}
+					}
+				}
+				
 			}
 		}
 		return msg;
@@ -81,6 +99,7 @@ public class AddNewGroup extends AncestorEntryPoint {
 								groupNames.add(s);
 							}
 						}
+						temp = new ArrayList<SystemGroup>();
 						initUI();
 						addWidget(HTMLControl.ID_BODY_CONTENT, tableForm);
 						setVisibleLoadingImage(false);
@@ -225,6 +244,10 @@ public class AddNewGroup extends AncestorEntryPoint {
 			panelValidateGroupName.setVisible(false);
 			panelValidateGroupDescription.setVisible(false);
 			panelAdding.setVisible(true);
+			SystemGroup  g = new SystemGroup();
+			g.setDescription(txtGroupDescription.getText());
+			g.setName(txtGroupName.getText());
+			temp.add(g);
 			sendData(txtGroupName.getText(), txtGroupDescription.getText());
 		}
 		
@@ -258,7 +281,8 @@ public class AddNewGroup extends AncestorEntryPoint {
 		SystemGroup  g = new SystemGroup();
 		g.setDescription(groupDescription);
 		g.setName(name);
-	
+		temp.add(g);
+		
 		monitorGwtSv.addGroupByObj(g, new AsyncCallback<Boolean>() {
 			@Override
 			public void onSuccess(Boolean result) {
@@ -267,8 +291,10 @@ public class AddNewGroup extends AncestorEntryPoint {
 							HTMLControl.HTML_GROUP_MANAGEMENT_NAME,
 							"View Group list. ", HTMLControl.BLUE_MESSAGE,
 							true);
-					init();
+					/*init();*/
+					addSuccess = true;
 				}else{
+					addSuccess = false;
 					showMessage("Server error! ",
 							HTMLControl.HTML_GROUP_MANAGEMENT_NAME,
 							"Go to Group Management. ",
@@ -279,6 +305,7 @@ public class AddNewGroup extends AncestorEntryPoint {
 			
 			@Override
 			public void onFailure(Throwable caught) {
+				addSuccess = false;
 				caught.printStackTrace();
 				showMessage("Server error! ",
 						HTMLControl.HTML_GROUP_MANAGEMENT_NAME,
