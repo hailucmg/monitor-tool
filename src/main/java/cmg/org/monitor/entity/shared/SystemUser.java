@@ -469,6 +469,10 @@ public class SystemUser implements IsSerializable {
 		return username.trim().compareTo(s.getUsername().trim());
 	}
 	
+	public int compareByDomain(SystemUser s) {
+		return domain.trim().compareTo(s.getDomain().trim());
+	}
+	
 	public boolean checkRole(String roleId) {
 	    List<String> roles = getRoleIDs();
 	    if (roles != null && roles.size() > 0) {
