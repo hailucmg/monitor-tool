@@ -124,9 +124,13 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 		Query query = pm.newQuery(SystemGroup.class);
 		try {
 			List<SystemGroup> temp = (List<SystemGroup>) query.execute();
+			List<SystemGroup> listTemp = new ArrayList<SystemGroup>();
 			if (!temp.isEmpty()) {
-				groups = new SystemGroup[temp.size()];
-				temp.toArray(groups);
+				for (SystemGroup g : temp) {
+					listTemp.add(g);
+				}
+				groups = new SystemGroup[listTemp.size()];
+				listTemp.toArray(groups);
 			}
 		} catch (Exception e) {
 			logger.log(Level.SEVERE,

@@ -1,5 +1,6 @@
 package cmg.org.monitor.module.client;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cmg.org.monitor.entity.shared.SystemGroup;
@@ -29,7 +30,7 @@ import com.google.gwt.visualization.client.visualizations.Table;
 import com.google.gwt.visualization.client.visualizations.Table.Options;
 
 public class GroupManagement extends AncestorEntryPoint{
-	public static List<SystemGroup> listGroup;
+	public static List<SystemGroup> listGroup = new ArrayList<SystemGroup>();
 	static private Table tableListGroup;
     static private FlexTable rootLinkDefault;
     static private FlexTable tableLinkDefault;
