@@ -169,14 +169,13 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		MonitorContainer container = null;
 		SystemDAO sysDAO = new SystemDaoImpl();
 		UtilityDAO utilDAO = new UtilityDaoImpl();
+		SystemGroupDaoImpl groupDAO = new SystemGroupDaoImpl();
 		try {
 			container = new MonitorContainer();
 			container.setRemoteUrls(sysDAO.listRemoteURLs());
-			ArrayList<GroupMonitor> groups = utilDAO.listGroups();
-			if (groups != null && groups.size() > 0) {
-				GroupMonitor[] listGroups = new GroupMonitor[groups.size()];
-				groups.toArray(listGroups);
-				container.setGroups(listGroups);
+			SystemGroup[] groups = groupDAO.getAllGroup();
+			if (groups != null && groups.length > 0) {
+				container.setListSystemGroup(groups);
 			}
 			container.setEmails(sysDAO.listEmails());
 

@@ -39,23 +39,43 @@ public class UserManagement extends AncestorEntryPoint {
 		monitorGwtSv.getAllUserAndGroup(new AsyncCallback<MonitorContainer>() {
 			@Override
 			public void onSuccess(MonitorContainer result) {
-				if(result!=null && result.getListSystemGroup()!=null && result.getListSystemUsers()!=null){
+				if(result!=null){
+					boolean checkUser = false;
+					boolean checkGroup = false;
 					SystemGroup[] listTempGroup = result.getListSystemGroup();
-					SystemUser[] listTempUsers =result.getListSystemUsers();
+					if(listTempGroup !=null){
 						listGroup = new ArrayList<SystemGroup>();
+						for(SystemGroup s : listTempGroup){
+							listGroup.add(s);
+						}
+						checkGroup = true;
+					}
+					SystemUser[] listTempUsers =result.getListSystemUsers();
+					if(listTempUsers != null){
 						listUser = new ArrayList<SystemUser>();
-					for(SystemGroup s : listTempGroup){
-						listGroup.add(s);
+						for(SystemUser se : listTempUsers){
+							listUser.add(se);
+						}
+						checkUser = true;
 					}
-					for(SystemUser se : listTempUsers){
-						listUser.add(se);
+					
+					if(!checkGroup && !checkUser){
+						setVisibleLoadingImage(false);
+						showMessage("No user found. ","Goto Google Management",HTMLControl.HTML_GOOGLE_MANAGEMENT_NAME, HTMLControl.RED_MESSAGE, true);
+					}else if(!checkGroup && checkUser){
+						setVisibleLoadingImage(false);
+						showMessage("No group found. ","Goto Group Management",HTMLControl.HTML_GROUP_MANAGEMENT_NAME, HTMLControl.RED_MESSAGE, true);
+					}else if(!checkUser && checkGroup){
+						setVisibleLoadingImage(false);
+						showMessage("No user found. ","Goto Google Management",HTMLControl.HTML_GOOGLE_MANAGEMENT_NAME, HTMLControl.RED_MESSAGE, true);
+					}else if(checkGroup && checkUser){
+						setVisibleLoadingImage(false);
+						setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+						drawTable(listUser, listGroup);
 					}
-					setVisibleLoadingImage(false);
-					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
-					drawTable(listUser, listGroup);
 				}else{
 					setVisibleLoadingImage(false);
-					showMessage("No user found. ","","", HTMLControl.RED_MESSAGE, true);
+					showMessage("No user found. ","Goto Google Management",HTMLControl.HTML_GOOGLE_MANAGEMENT_NAME, HTMLControl.RED_MESSAGE, true);
 				}
 				
 			}
