@@ -26,6 +26,8 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 	private static final Logger logger = Logger
 			.getLogger(SystemGroupDaoImpl.class.getCanonicalName());
 	PersistenceManager pm;
+	
+
 
 	void initPersistence() {
 		if (pm == null || pm.isClosed()) {
@@ -148,17 +150,19 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 	 * @see cmg.org.monitor.dao.SystemGroupDAO#addUserToGroup(cmg.org.monitor.entity.shared.SystemUser,
 	 *      cmg.org.monitor.entity.shared.SystemGroup)
 	 */
-	public boolean addUserToGroup(SystemUser user, SystemGroup group)
+	public boolean addUserToGroup(String userEmail, String groupId)
 			throws Exception {
-		initPersistence();
-		user = pm.getObjectById(SystemUser.class, user.getId());
-		group = pm.getObjectById(SystemGroup.class, group.getId());
-		boolean b = false;
+		SystemAccountDAO accountDao = new SystemAccountDaoImpl();
+		boolean b= false;
 		try {
-			user.addToGroup(group);
-			user.clear();
-			pm.makePersistent(group);
-			pm.makePersistent(user);
+			SystemUser user = accountDao.getSystemUserByEmail(userEmail);
+			String userId = user.getId();
+			user.addGroup(groupId);
+			accountDao.updateSystemUser(user);
+			initPersistence();		
+			SystemGroup group = pm.getObjectById(SystemGroup.class, groupId);
+			group.addUser(userId);
+			pm.makePersistent(group);		
 			b = true;
 		} catch (Exception ex) {
 			throw ex;
@@ -174,17 +178,19 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 	 * @see cmg.org.monitor.dao.SystemGroupDAO#removeUserFromGroup(cmg.org.monitor.entity.shared.SystemUser,
 	 *      cmg.org.monitor.entity.shared.SystemGroup)
 	 */
-	public boolean removeUserFromGroup(SystemUser user, SystemGroup group)
+	public boolean removeUserFromGroup(String userEmail, String groupId)
 			throws Exception {
-		initPersistence();
-		user = pm.getObjectById(SystemUser.class, user.getId());
-		group = pm.getObjectById(SystemGroup.class, group.getId());
-		boolean b = false;
+		SystemAccountDAO accountDao = new SystemAccountDaoImpl();
+		boolean b= false;
 		try {
-			user.removeFromGroup(group);
-			user.clear();
-			pm.makePersistent(group);
-			pm.makePersistent(user);
+			SystemUser user = accountDao.getSystemUserByEmail(userEmail);
+			String userId = user.getId();
+			user.removeGroup(groupId);
+			accountDao.updateSystemUser(user);
+			initPersistence();		
+			SystemGroup group = pm.getObjectById(SystemGroup.class, groupId);
+			group.removeUser(userId);
+			pm.makePersistent(group);		
 			b = true;
 		} catch (Exception ex) {
 			throw ex;

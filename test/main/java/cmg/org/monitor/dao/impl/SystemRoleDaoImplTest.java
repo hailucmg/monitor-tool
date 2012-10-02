@@ -104,8 +104,8 @@ public class SystemRoleDaoImplTest {
 		SystemUser adminUser = null;
 		try {
 			adminUser = accountDao.getSystemUserByEmail("hailu@c-mg.com");
-			roleDao.addRole(adminUser, SystemRole.ROLE_ADMINISTRATOR);
-			roleDao.addRole(adminUser, SystemRole.ROLE_USER);
+			roleDao.addRole(adminUser.getEmail(), SystemRole.ROLE_ADMINISTRATOR);
+			roleDao.addRole(adminUser.getEmail(), SystemRole.ROLE_USER);
 			adminUser = accountDao.getSystemUserByEmail("hailu@c-mg.com");
 		} catch (Exception e) {			
 			e.printStackTrace();

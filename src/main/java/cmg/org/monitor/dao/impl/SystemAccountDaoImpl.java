@@ -45,8 +45,8 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	private List<SystemGroup> tempGroups;
 	private SystemGroup tempGroup;
 
-	SystemRoleDAO roleDao = new SystemRoleDaoImpl();
-	SystemGroupDAO groupDao = new SystemGroupDaoImpl();
+	
+	
 	void initPersistence() {
 		if (pm == null || pm.isClosed()) {
 			pm = PMF.get().getPersistenceManager();
@@ -482,6 +482,7 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 
 	@Override
 	public void initRole(SystemUser user) throws Exception {
+		SystemRoleDAO roleDao = new SystemRoleDaoImpl();
 		if (user.getRoleIDs().size() > 0) {
 			tempRoles = new ArrayList<SystemRole>();
 			for (Object roleId : user.getRoleIDs()) {			
@@ -497,6 +498,7 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 * @see cmg.org.monitor.dao.SystemAccountDAO#initGroup(java.lang.System) 
 	 */
 	public void initGroup(SystemUser user) throws Exception {
+		SystemGroupDAO groupDao = new SystemGroupDaoImpl();
 		if (user.getGroupIDs().size() > 0) {
 			tempGroups = new ArrayList<SystemGroup>();
 			for (Object groupId : user.getGroupIDs()) {			

@@ -19,7 +19,7 @@ public interface SystemGroupDAO {
 	public boolean deleteGroup(String id) throws Exception;
 	public SystemGroup[] getAllGroup() throws Exception;
 	
-	public boolean addUserToGroup(SystemUser user, SystemGroup group) throws Exception;
+	public boolean addUserToGroup(String userEmail, String groupId) throws Exception;
 	
-	public boolean removeUserFromGroup(SystemUser user, SystemGroup group) throws Exception;
+	public boolean removeUserFromGroup(String userEmail, String groupId) throws Exception;
 }
