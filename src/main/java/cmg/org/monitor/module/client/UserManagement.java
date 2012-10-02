@@ -42,12 +42,8 @@ public class UserManagement extends AncestorEntryPoint {
 				if(result!=null && result.getListSystemGroup()!=null && result.getListSystemUsers()!=null){
 					SystemGroup[] listTempGroup = result.getListSystemGroup();
 					SystemUser[] listTempUsers =result.getListSystemUsers();
-					if (listGroup == null) {
 						listGroup = new ArrayList<SystemGroup>();
-					}
-					if (listUser == null) {
 						listUser = new ArrayList<SystemUser>();
-					}
 					for(SystemGroup s : listTempGroup){
 						listGroup.add(s);
 					}

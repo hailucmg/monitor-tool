@@ -1,6 +1,7 @@
 package cmg.org.monitor.module.client;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cmg.org.monitor.entity.shared.SystemGroup;
@@ -81,9 +82,14 @@ public class EditGroup extends AncestorEntryPoint {
 		monitorGwtSv.getAllGroup(new AsyncCallback<MonitorContainer>() {
 			@Override
 			public void onSuccess(MonitorContainer result) {
-				SystemGroup[] listTempGroup = result.getListSystemGroup();
-				for(SystemGroup s : listTempGroup){
-					groupNames.add(s);
+				if(result.getListSystemGroup()!=null){
+					SystemGroup[] listTempGroup = result.getListSystemGroup();
+					if(groupNames == null){
+						groupNames = new ArrayList<SystemGroup>();
+					}
+					for(SystemGroup s : listTempGroup){
+						groupNames.add(s);
+					}
 				}
 			}
 			@Override
