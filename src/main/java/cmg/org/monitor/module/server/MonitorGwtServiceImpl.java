@@ -410,24 +410,15 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements Monit
     }
 
     @Override
-    public MonitorContainer getAllGroup() {
+    public SystemGroup[] getAllGroup() {
 	SystemGroupDAO sysGroupDao = new SystemGroupDaoImpl();
 	try {
-	    MonitorContainer container = new MonitorContainer();
-
 	    SystemGroup[] sysGroup = sysGroupDao.getAllGroup();
-	    if (sysGroup != null) {
-		container.setListSystemGroup(sysGroup);
-	    } else {
-		container.setListSystemGroup(null);
-	    }
-	    return container;
+	    return sysGroup;
 	} catch (Exception e) {
 	    e.printStackTrace();
-
 	}
 	return null;
-
     }
 
     @Override

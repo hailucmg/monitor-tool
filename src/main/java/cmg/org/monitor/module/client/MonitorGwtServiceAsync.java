@@ -72,7 +72,7 @@ public interface MonitorGwtServiceAsync {
 	void addnewGroup(String name, String description,
 			AsyncCallback<Boolean> callback);
 
-	void getAllGroup(AsyncCallback<MonitorContainer> callback);
+	void getAllGroup(AsyncCallback<SystemGroup[]> callback);
 
 	void deleteGroup(String name, String id, AsyncCallback<Boolean> callback);
 

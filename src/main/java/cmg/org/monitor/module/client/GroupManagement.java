@@ -52,7 +52,7 @@ public class GroupManagement extends AncestorEntryPoint{
 	}
 
 	public static void initUI(){
-		monitorGwtSv.getAllGroup(new AsyncCallback<MonitorContainer>() {
+		monitorGwtSv.getAllGroup(new AsyncCallback<SystemGroup[]>() {
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();
@@ -62,9 +62,9 @@ public class GroupManagement extends AncestorEntryPoint{
 			}
 
 			@Override
-			public void onSuccess(MonitorContainer result) {
-				if (result.getListSystemGroup()!=null && result!= null) {
-					SystemGroup[] listTempGroup = result.getListSystemGroup();
+			public void onSuccess(SystemGroup[]  result) {
+				if (result!= null) {
+					SystemGroup[] listTempGroup = result;
 					if(listTempGroup!=null){
 						listGroup = new ArrayList<SystemGroup>();
 						for(SystemGroup s : listTempGroup){
