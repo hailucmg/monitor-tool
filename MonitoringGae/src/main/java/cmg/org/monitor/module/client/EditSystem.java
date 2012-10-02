@@ -3,7 +3,6 @@ package cmg.org.monitor.module.client;
 import cmg.org.monitor.entity.shared.NotifyMonitor;
 import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemMonitor;
-import cmg.org.monitor.ext.model.shared.GroupMonitor;
 import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
@@ -716,13 +715,10 @@ public class EditSystem extends AncestorEntryPoint {
 	// validate URL
 	private String validateURL(String url) {
 		String msg = "";
-		boolean check = true;
 		if (url == null || url.trim().length() == 0) {
 			msg = "This field is required ";
-			check = false;
 		} else if (url.length() < 3) {
 			msg = "URL is not validate";
-			check = false;
 		}
 		
 		return msg;
@@ -730,17 +726,14 @@ public class EditSystem extends AncestorEntryPoint {
 
 	private String validateIP(String ip) {
 		String msg = "";
-		boolean check = true;
 		if (ip == "" || ip == null) {
 			msg = "This field is required";
-			check = false;
 		}
 		String patternStr = "^([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}$";
 		RegExp regExp = RegExp.compile(patternStr);
 		boolean matchFound = regExp.test(ip);
 		if (matchFound == false) {
 			msg = "ip is not validate";
-			check = false;
 		}
 		
 		return msg;

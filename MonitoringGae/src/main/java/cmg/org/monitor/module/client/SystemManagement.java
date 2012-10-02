@@ -139,7 +139,7 @@ public class SystemManagement extends AncestorEntryPoint {
 					showMessage("No system found. ",
 							HTMLControl.HTML_ADD_NEW_SYSTEM_NAME,
 							"Add new system.", HTMLControl.RED_MESSAGE, true);
-					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
 					setVisibleLoadingImage(false);
 				}
 				setOnload(false);
