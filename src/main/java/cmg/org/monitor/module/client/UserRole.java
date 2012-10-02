@@ -82,7 +82,7 @@ public class UserRole extends AncestorEntryPoint {
 		DataTable data = DataTable.create();
 		data.addColumn(ColumnType.STRING, "Domain");
 		data.addColumn(ColumnType.STRING, "Username");
-		data.addColumn(ColumnType.STRING, "Email");
+		data.addColumn(ColumnType.STRING, "Fullname");
 		data.addColumn(ColumnType.STRING, "Administrator");
 		data.addColumn(ColumnType.STRING, "User");
 		data.addRows(result.size());
@@ -92,7 +92,7 @@ public class UserRole extends AncestorEntryPoint {
 
 			data.setValue(j, 0, sortUser.get(j).getDomain());
 			data.setValue(j, 1, sortUser.get(j).getUsername());
-			data.setValue(j, 2, sortUser.get(j).getEmail());
+			data.setValue(j, 2, sortUser.get(j).getFullName());
 			if(sortUser.get(j).checkRole(SystemRole.ROLE_ADMINISTRATOR)){
 			    data.setValue(j, 3, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_ADMINISTRATOR+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;' checked='checked'>");
 			}else{

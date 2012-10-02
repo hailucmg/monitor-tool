@@ -92,7 +92,7 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 * @see cmg.org.monitor.dao.SystemAccountDAO#deleteAllDomainUser(java.lang.String)
 	 */
 	public boolean deleteAllDomainUser(String domain) throws Exception {
-		List<SystemUser> listUser = listAllSystemUserByDomain(domain);
+		List<SystemUser> listUser = listAllSystemUserByDomain(domain, false);
 		boolean check = false;
 		if (!listUser.isEmpty()) {
 			initPersistence();
@@ -128,7 +128,7 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		boolean check = false;
 		initPersistence();
 		try {
-			pm.currentTransaction().begin();			
+			pm.currentTransaction().begin();
 			pm.makePersistent(account);
 			pm.currentTransaction().commit();
 			check = true;
@@ -216,13 +216,21 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 * @see cmg.org.monitor.dao.SystemAccountDAO#listAllSystemUser()
 	 */
 	@SuppressWarnings("unchecked")
-	public List<SystemUser> listAllSystemUser() throws Exception {
+	public List<SystemUser> listAllSystemUser(boolean b) throws Exception {
 		initPersistence();
 		Query query = pm.newQuery(SystemUser.class);
+		if (b) {
+			query.setFilter("isSuspended == value");
+			query.declareParameters("boolean domainPara");
+		}
 		List<SystemUser> temp = null;
 		List<SystemUser> tempOut = new ArrayList<SystemUser>();
 		try {
-			temp = (List<SystemUser>) query.execute();
+			if (b) {
+				temp = (List<SystemUser>) query.execute(true);
+			} else {
+				temp = (List<SystemUser>) query.execute();
+			}
 			if (!temp.isEmpty()) {
 				for (SystemUser user : temp) {
 					tempOut.add(user);
@@ -247,16 +255,25 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 * @see cmg.org.monitor.dao.SystemAccountDAO#listAllSystemUserByDomain(java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<SystemUser> listAllSystemUserByDomain(String domain)
+	public List<SystemUser> listAllSystemUserByDomain(String domain, boolean b)
 			throws Exception {
 		initPersistence();
 		Query query = pm.newQuery(SystemUser.class);
-		query.setFilter("domain == domainPara");
-		query.declareParameters("String domainPara");
+		if (b) {
+			query.setFilter("domain == domainPara && isSuspended == value");
+			query.declareParameters("String domainPara, boolean domainPara");
+		} else {
+			query.setFilter("domain == domainPara");
+			query.declareParameters("String domainPara");
+		}
 		List<SystemUser> temp = null;
 		List<SystemUser> tempOut = new ArrayList<SystemUser>();
 		try {
-			temp = (List<SystemUser>) query.execute(domain);
+			if (b) {
+				temp = (List<SystemUser>) query.execute(domain, b);
+			} else {
+				temp = (List<SystemUser>) query.execute(domain);
+			}
 			if (!temp.isEmpty()) {
 				for (SystemUser user : temp) {
 

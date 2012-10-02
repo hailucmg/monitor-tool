@@ -102,14 +102,14 @@ public interface SystemAccountDAO {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<SystemUser> listAllSystemUser() throws Exception;
+	public List<SystemUser> listAllSystemUser(boolean b) throws Exception;
 	/**
 	 * 
 	 * @param domain
 	 * @return
 	 * @throws Exception
 	 */
-	public List<SystemUser> listAllSystemUserByDomain(String domain) throws Exception;
+	public List<SystemUser> listAllSystemUserByDomain(String domain, boolean b) throws Exception;
 	
 	@Deprecated
 	public void initRole(SystemUser user) throws Exception;

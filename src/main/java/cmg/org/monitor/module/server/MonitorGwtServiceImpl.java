@@ -577,7 +577,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			SystemGroup[] sysGroup = sysGroupDao.getAllGroup();
 
 			container.setListSystemGroup(sysGroup);
-			List<SystemUser> sysUSers = sysAccountDAO.listAllSystemUser();
+			List<SystemUser> sysUSers = sysAccountDAO.listAllSystemUser(true);
 			SystemUser[] listUser = new SystemUser[sysUSers.size()];
 			sysUSers.toArray(listUser);
 			container.setListSystemUsers(listUser);
@@ -633,7 +633,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		// TODO Auto-generated method stub return null;
 		SystemAccountDAO accDao = new SystemAccountDaoImpl();
 		try {
-			List<SystemUser> list = accDao.listAllSystemUser();
+			List<SystemUser> list = accDao.listAllSystemUser(true);
 			return list;
 		} catch (Exception e) {
 			e.printStackTrace();
