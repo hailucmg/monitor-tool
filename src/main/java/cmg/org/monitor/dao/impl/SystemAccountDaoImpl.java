@@ -181,10 +181,12 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	public boolean deleteGoogleAccount(String googleAccId) throws Exception {
 		boolean check = false;
 		initPersistence();
+		String domain = "";
 		try {
 			pm.currentTransaction().begin();
 			GoogleAccount temp = pm.getObjectById(GoogleAccount.class,
 					googleAccId);
+			domain = temp.getDomain();
 			pm.deletePersistent(temp);
 			pm.currentTransaction().commit();
 			check = true;
@@ -197,6 +199,14 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 			throw ex;
 		} finally {
 			pm.close();
+		}
+		if (domain != null && domain.length() > 0) {
+			List<SystemUser> users = listAllSystemUserByDomain(domain, false);
+			if (users != null && users.size() > 0) {
+				for (SystemUser user : users) {
+					deleteSystemUser(user);
+				}
+			}
 		}
 		return check;
 	}
@@ -227,13 +237,19 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		List<SystemUser> tempOut = new ArrayList<SystemUser>();
 		try {
 			if (b) {
-				temp = (List<SystemUser>) query.execute(true);
+				temp = (List<SystemUser>) query.execute(false);
 			} else {
 				temp = (List<SystemUser>) query.execute();
 			}
 			if (!temp.isEmpty()) {
 				for (SystemUser user : temp) {
-					tempOut.add(user);
+					if (b) {
+						if (!user.isSuspended()) {
+							tempOut.add(user);
+						}
+					} else {
+						tempOut.add(user);
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -270,14 +286,19 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		List<SystemUser> tempOut = new ArrayList<SystemUser>();
 		try {
 			if (b) {
-				temp = (List<SystemUser>) query.execute(domain, b);
+				temp = (List<SystemUser>) query.execute(domain, false);
 			} else {
 				temp = (List<SystemUser>) query.execute(domain);
 			}
 			if (!temp.isEmpty()) {
 				for (SystemUser user : temp) {
-
-					tempOut.add(user);
+					if (b) {
+						if (!user.isSuspended()) {
+							tempOut.add(user);
+						}
+					} else {
+						tempOut.add(user);
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -353,11 +374,15 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	public boolean deleteSystemUser(SystemUser user) throws Exception {
 		SystemUser temp = getSystemUserByEmail(user.getEmail());
 		boolean check = false;
+		List<String> groupIds = null;
+		String userId = "";
 		if (temp != null) {
 			initPersistence();
 			try {
 				pm.currentTransaction().begin();
 				temp = pm.getObjectById(SystemUser.class, temp.getId());
+				groupIds = temp.getGroupIDs();
+				userId = temp.getId();
 				pm.deletePersistent(temp);
 				pm.currentTransaction().commit();
 				check = true;
@@ -373,6 +398,16 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 				pm.close();
 			}
 
+		}
+		if (groupIds != null && groupIds.size() > 0 && userId != null && userId.length() > 0) {
+			initPersistence();
+			for (String groupId: groupIds) {				
+				SystemGroup group = pm.getObjectById(SystemGroup.class, groupId);
+				group.removeUser(userId);
+				pm.makePersistent(group);
+				
+			}
+			pm.close();
 		}
 		return check;
 	}
@@ -396,7 +431,6 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 			}
 			try {
 				pm.currentTransaction().begin();
-				temp.clear();
 				pm.makePersistent(temp);
 				pm.currentTransaction().commit();
 				check = true;
