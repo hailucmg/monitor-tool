@@ -294,7 +294,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 		labelEmail.setText("Email");
 
 		labelmailgroup = new Label();
-		labelmailgroup.setText("Notification mail group");
+		labelmailgroup.setText("Group");
 
 		txtName = new TextBox();
 		txtName.setWidth("196px");
