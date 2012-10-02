@@ -123,7 +123,7 @@ public class GoogleAccountServiceTest {
 		}
 		
 		try {
-			listOld = accountDao.listAllSystemUser();
+			listOld = accountDao.listAllSystemUser(true);
 			if (!listOld.isEmpty()) {
 				System.out.println(gson.toJson(listOld));
 			}

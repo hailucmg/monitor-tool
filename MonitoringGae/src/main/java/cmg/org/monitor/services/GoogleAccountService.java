@@ -248,7 +248,7 @@ public class GoogleAccountService {
 			try {
 				log("Retrieving active user list from "
 						+ MonitorConstant.PROJECT_NAME);
-				activeUsers = accountDao.listAllSystemUserByDomain(adminAcc.getDomain());
+				activeUsers = accountDao.listAllSystemUserByDomain(adminAcc.getDomain(), false);
 			} catch (Exception e) {
 				problem++;
 				log("List all user by domain Exception. Message:"
