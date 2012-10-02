@@ -39,6 +39,8 @@ public interface SystemAccountDAO {
 	 */
 	public GoogleAccount getGoogleAccountById(String id) throws Exception;
 	
+	public GoogleAccount getGoogleAccountByDomain(String domain) throws Exception;
+	
 	public boolean deleteSystemUser(SystemUser user) throws Exception;
 	
 	public boolean updateSystemUser(SystemUser user, boolean b) throws Exception;

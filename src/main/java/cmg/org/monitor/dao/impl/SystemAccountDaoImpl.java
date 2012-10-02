@@ -58,13 +58,14 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 * 
 	 * @see cmg.org.monitor.dao.SystemAccountDAO#createSystemUser(cmg.org.monitor.entity.shared.SystemUser)
 	 */
-	public boolean createSystemUser(SystemUser user, boolean isAddRole) throws Exception {
+	public boolean createSystemUser(SystemUser user, boolean isAddRole)
+			throws Exception {
 		initPersistence();
 		SystemUser temp = new SystemUser();
 		boolean check = false;
 		try {
 			pm.currentTransaction().begin();
-			
+
 			temp.swap(user);
 			if (isAddRole) {
 				temp.setRoleIDs(user.getRoleIDs());
@@ -127,11 +128,8 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		boolean check = false;
 		initPersistence();
 		try {
-			pm.currentTransaction().begin();
-			GoogleAccount temp = pm.getObjectById(GoogleAccount.class,
-					account.getId());
-			temp.swap(account);
-			pm.makePersistent(temp);
+			pm.currentTransaction().begin();			
+			pm.makePersistent(account);
 			pm.currentTransaction().commit();
 			check = true;
 		} catch (Exception ex) {
@@ -485,7 +483,8 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 * cmg.org.monitor.dao.SystemAccountDAO#createSystemUsers(java.util.List)
 	 */
 	@Override
-	public boolean createSystemUsers(List users, boolean isAddRole) throws Exception {
+	public boolean createSystemUsers(List users, boolean isAddRole)
+			throws Exception {
 		initPersistence();
 		boolean check = false;
 		if (!users.isEmpty()) {
@@ -549,5 +548,35 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		} finally {
 			pm.close();
 		}
+	}
+
+	/**
+	 * (non-Javadoc)
+	 * 
+	 * @see cmg.org.monitor.dao.SystemAccountDAO#getGoogleAccountByDomain(java.lang.String)
+	 */
+	public GoogleAccount getGoogleAccountByDomain(String domain)
+			throws Exception {
+		initPersistence();
+		Query query = pm.newQuery(GoogleAccount.class);
+		query.setFilter("domain == domainPara");
+		query.declareParameters("String domainPara");
+		List<GoogleAccount> temp = null;
+		try {
+			temp = (List<GoogleAccount>) query.execute(domain);
+			if (!temp.isEmpty()) {
+				GoogleAccount user = temp.get(0);
+				return user;
+			}
+		} catch (Exception e) {
+			logger.log(
+					Level.SEVERE,
+					" ERROR when getGoogleAccountByDomain. Message: "
+							+ e.getMessage());
+			throw e;
+		} finally {
+			pm.close();
+		}
+		return null;
 	}
 }

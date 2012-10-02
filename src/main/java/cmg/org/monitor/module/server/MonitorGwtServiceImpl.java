@@ -485,17 +485,21 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public String syncAccount(GoogleAccount googleacc) {
 		GoogleAccountService service;
+		SystemAccountDAO accountDao = new SystemAccountDaoImpl();
 		try {
-			GoogleAccount ac = new GoogleAccount();
-			ac.setDomain("c-mg.vn");
-			ac.setUsername("monitor");
-			googleacc.setPassword(SecurityUtil
-					.encrypt(MonitorConstant.ADMIN_PASSWORD));
-			service = new GoogleAccountService(googleacc);
-			service.sync();
-			return service.getLog();
-		} catch (AuthenticationException e) {			
-			return "Something wrong with server - Can not sync google account.";
+			GoogleAccount ac = accountDao.getGoogleAccountByDomain(googleacc.getDomain());
+			if (ac.getUsername().equalsIgnoreCase(googleacc.getUsername())) {
+				service = new GoogleAccountService(ac);
+				service.sync();
+				return service.getLog();
+			} else {
+				return "FAIL: Can not sync google account. Wrong username!";
+			}
+			
+		} catch (AuthenticationException ae) {
+			return "FAIL: Authenticantion fail. Exception: " + ae.getMessage();
+		}  catch (Exception e) {	
+			return "FAIL: Can not sync google account. Exception: " + e.getMessage();
 		}
 	}
 
@@ -504,8 +508,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	 * cmg.org.monitor.module.client.MonitorGwtService#listAllGoogleAcc()
 	 */
 	@Override
-	public GoogleAccount[] listAllGoogleAcc() throws Exception {
-		// TODO Auto-generated method stub return null;
+	public GoogleAccount[] listAllGoogleAcc() throws Exception {		
 		SystemAccountDAO dao = new SystemAccountDaoImpl();
 		List<GoogleAccount> list = new ArrayList<GoogleAccount>();
 		try {
@@ -528,17 +531,24 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	 */
 	@Override
 	public boolean addGoogleAccount(GoogleAccount acc) {
-
-		// TODO Auto-generated method stub return false;
 		SystemAccountDAO dao = new SystemAccountDaoImpl();
-		acc.setPassword(SecurityUtil.encrypt(acc.getPassword()));
 		try {
-			return dao.createGoogleAccount(acc);
+			GoogleAccount temp = dao.getGoogleAccountByDomain(acc.getDomain());
+			if (temp != null) {
+				if (!temp.getPassword().equalsIgnoreCase(acc.getPassword())) {
+					temp.setPassword(SecurityUtil.encrypt(acc.getPassword()));
+				}
+				temp.setDomain(acc.getDomain());
+				temp.setUsername(acc.getUsername());
+				dao.updateGoogleAccount(temp);
+			} else {
+				acc.setPassword(SecurityUtil.encrypt(acc.getPassword()));
+				return dao.createGoogleAccount(acc);
+			}			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return false;
-
 	}
 
 	/*
@@ -567,7 +577,6 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			SystemGroup[] sysGroup = sysGroupDao.getAllGroup();
 
 			container.setListSystemGroup(sysGroup);
-
 			List<SystemUser> sysUSers = sysAccountDAO.listAllSystemUser();
 			SystemUser[] listUser = new SystemUser[sysUSers.size()];
 			sysUSers.toArray(listUser);
@@ -604,7 +613,6 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	 */
 	@Override
 	public boolean updateGoogleAccount(GoogleAccount acc) {
-		// TODO Auto-generated method stub return false;
 		SystemAccountDAO accDao = new SystemAccountDaoImpl();
 		try {
 			if (accDao.updateGoogleAccount(acc)) {
