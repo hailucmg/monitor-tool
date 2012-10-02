@@ -50,8 +50,6 @@ public class SystemUser implements IsSerializable {
 	@Persistent
 	private String[] groupIDs;
 
-	private List<SystemRole> roles;
-
 	private List<SystemGroup> groups;
 
 	@Persistent
@@ -71,11 +69,10 @@ public class SystemUser implements IsSerializable {
 		this.roleIDs = in.roleIDs;
 		this.groupIDs = in.groupIDs;
 		this.groups = in.groups;
-		this.roles = in.roles;
 	}
 
 	public void clear() {
-		roles = new ArrayList<SystemRole>();
+		
 		groups = new ArrayList<SystemGroup>();
 	}
 
@@ -322,16 +319,18 @@ public class SystemUser implements IsSerializable {
 	 * @return the roles
 	 */
 	public List<SystemRole> getRoles() {
-		return roles;
-	}
-
-	/**
-	 * @param roles
-	 *            the roles to set
-	 */
-
-	public void setRoles(List<SystemRole> roles) {
-		this.roles = roles;
+		if (roleIDs != null && roleIDs.length > 0) {
+			List<SystemRole> list = new ArrayList<SystemRole>();
+			for (String rid : roleIDs) {
+				SystemRole role = new SystemRole();
+				role.setName(rid);
+				list.add(role);
+			}
+			return list;
+		} else {
+			return null;
+		}
+		
 	}
 
 	/**

@@ -482,6 +482,7 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 
 	@Override
 	public void initRole(SystemUser user) throws Exception {
+		/*
 		SystemRoleDAO roleDao = new SystemRoleDaoImpl();
 		if (user.getRoleIDs().size() > 0) {
 			tempRoles = new ArrayList<SystemRole>();
@@ -490,7 +491,8 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 				tempRoles.add(tempRole);
 			}
 			user.setRoles(tempRoles);
-		}		
+		}
+		*/		
 	}
 
 	/**

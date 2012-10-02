@@ -15,6 +15,7 @@ import cmg.org.monitor.dao.ServiceDAO;
 import cmg.org.monitor.dao.SystemAccountDAO;
 import cmg.org.monitor.dao.SystemDAO;
 import cmg.org.monitor.dao.SystemGroupDAO;
+import cmg.org.monitor.dao.SystemRoleDAO;
 import cmg.org.monitor.dao.UtilityDAO;
 import cmg.org.monitor.dao.impl.AlertDaoImpl;
 import cmg.org.monitor.dao.impl.CpuDaoImpl;
@@ -25,6 +26,7 @@ import cmg.org.monitor.dao.impl.ServiceDaoImpl;
 import cmg.org.monitor.dao.impl.SystemAccountDaoImpl;
 import cmg.org.monitor.dao.impl.SystemDaoImpl;
 import cmg.org.monitor.dao.impl.SystemGroupDaoImpl;
+import cmg.org.monitor.dao.impl.SystemRoleDaoImpl;
 import cmg.org.monitor.dao.impl.UtilityDaoImpl;
 import cmg.org.monitor.entity.shared.AlertStoreMonitor;
 import cmg.org.monitor.entity.shared.ChangeLogMonitor;
@@ -123,6 +125,8 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public UserLoginDto getUserLogin() {
+		SystemRoleDAO roleDao = new SystemRoleDaoImpl();
+		roleDao.init();
 		return MonitorLoginService.getUserLogin();
 	}
 

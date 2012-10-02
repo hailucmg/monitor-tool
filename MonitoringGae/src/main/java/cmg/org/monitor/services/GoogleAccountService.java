@@ -298,11 +298,8 @@ public class GoogleAccountService {
 				for (SystemUser sysUser : createdList) {
 					createdCount++;
 					try {						
-						boolean b = accountDao.createSystemUser(sysUser);						
-						
-						if (b) {
-							b = roleDao.addRole(sysUser.getEmail(), SystemRole.ROLE_USER);						
-						}
+						sysUser.addUserRole(SystemRole.ROLE_USER);
+						boolean b = accountDao.createSystemUser(sysUser);
 						if (!b) {
 							createdFail++;
 						}

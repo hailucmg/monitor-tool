@@ -39,7 +39,7 @@ public class SystemRole implements IsSerializable  {
 	private
 	String[] userIDs;
 
-	
+	@Deprecated
 	public void addUser(String userId) {
 		boolean check = false;
 		List<String> users =getUserIDs();
@@ -60,6 +60,7 @@ public class SystemRole implements IsSerializable  {
 		setUserIDs(users);
 	}
 	
+	@Deprecated
 	public void removeUser(String userId) {
 		int index = -1;
 		List<String> users = getUserIDs();
@@ -80,6 +81,7 @@ public class SystemRole implements IsSerializable  {
 	/** 
 	 * @return the userIDs 
 	 */
+	@Deprecated
 	public List<String> getUserIDs() {
 		if (userIDs == null) {
 			return null;
@@ -95,7 +97,7 @@ public class SystemRole implements IsSerializable  {
 	/** 
 	 * @param userIDs the userIDs to set 
 	 */
-	
+	@Deprecated
 	public void setUserIDs(List<String> listUserIDs) {
 		if (listUserIDs != null && listUserIDs.size() > 0) {
 			userIDs = new String[listUserIDs.size()];
