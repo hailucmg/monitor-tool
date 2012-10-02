@@ -68,6 +68,10 @@ public class SystemUser implements IsSerializable {
 		this.lastName = in.lastName;
 		this.isSuspended = in.isSuspended;
 		this.isDomainAdmin = in.isDomainAdmin;
+		this.roleIDs = in.roleIDs;
+		this.groupIDs = in.groupIDs;
+		this.groups = in.groups;
+		this.roles = in.roles;
 	}
 
 	public void clear() {
@@ -75,6 +79,44 @@ public class SystemUser implements IsSerializable {
 		groups = new ArrayList<SystemGroup>();
 	}
 
+	public void addGroup(String groupId) {
+		boolean check = false;
+		List<String> groups = getGroupIDs();
+		if (groups != null && groups.size() > 0) {
+			for (String gId : groups) {
+				if (gId.equalsIgnoreCase(groupId)) {
+					check = true;
+					break;
+				}
+			}
+		}
+		if (!check) {
+			if (groups == null) {
+				groups = new ArrayList<String>();
+			}
+			groups.add(groupId);
+		}
+		setGroupIDs(groups);
+	}
+	
+	public void removeGroup(String groupId) {
+		int index = -1;
+		List<String> groups = getGroupIDs();
+		if (groups != null && !groups.isEmpty()) {
+			for (int i = 0; i < groups.size(); i++) {
+				if (groups.get(i).equalsIgnoreCase(groupId)) {
+					index = i;
+					break;
+				}
+			}
+		}
+		if (index != -1) {
+			groups.remove(index);
+		}
+		setGroupIDs(groups);		
+	}
+	
+	@Deprecated
 	public void addToGroup(SystemGroup group) {
 		boolean check = false;
 		List<String> groups = getGroupIDs();
@@ -106,6 +148,7 @@ public class SystemUser implements IsSerializable {
 		group.setUserIDs(users);
 	}
 
+	@Deprecated
 	public void removeFromGroup(SystemGroup group) {
 		int index = -1;
 		if (!getGroupIDs().isEmpty()) {
@@ -134,6 +177,27 @@ public class SystemUser implements IsSerializable {
 		}
 	}
 
+	public void addUserRole(String roleId) {
+		boolean check = false;
+		List<String> roles = getRoleIDs();
+		if (roles != null && !roles.isEmpty()) {
+			for (String rId : roles) {
+				if (rId.equalsIgnoreCase(roleId)) {
+					check = true;
+					break;
+				}
+			}
+		}
+		if (!check) {
+			if (roles == null) {
+				roles = new ArrayList<String>();
+			}
+			roles.add(roleId);
+		}
+		setRoleIDs(roles);
+	}
+	
+	@Deprecated
 	public void addRole(SystemRole role) {
 		boolean check = false;
 		if (!getRoleIDs().isEmpty()) {
@@ -160,7 +224,25 @@ public class SystemUser implements IsSerializable {
 			role.getUserIDs().add(getId());
 		}
 	}
+	
+	public void removeUserRole(String roleId) {
+		int index = -1;
+		List<String> roles = getRoleIDs();
+		if (roles != null && !roles.isEmpty()) {
+			for (int i = 0; i < roles.size(); i++) {
+				if (roles.get(i).equalsIgnoreCase(roleId)) {
+					index = i;
+					break;
+				}
+			}
+		}
+		if (index != -1) {
+			roles.remove(index);
+		}
+		setRoleIDs(roles);
+	}
 
+	@Deprecated
 	public void removeRole(SystemRole role) {
 		int index = -1;
 		if (!getRoleIDs().isEmpty()) {
