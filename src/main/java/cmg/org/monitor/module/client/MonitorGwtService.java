@@ -89,4 +89,6 @@ public interface MonitorGwtService extends RemoteService {
 	boolean updateGoogleAccount(GoogleAccount acc);
 	
 	List<SystemUser> listAllSystemUsers();
+	
+	boolean updateUserRole(String email, String role, boolean b);
 }

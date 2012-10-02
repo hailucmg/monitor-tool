@@ -1,5 +1,9 @@
 package cmg.org.monitor.module.client;
 
+import java.util.List;
+
+import cmg.org.monitor.entity.shared.SystemRole;
+import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.ext.model.shared.UserMonitor;
 import cmg.org.monitor.util.shared.HTMLControl;
 
@@ -29,18 +33,32 @@ public class UserRole extends AncestorEntryPoint {
 	$entry(@cmg.org.monitor.module.client.UserRole::updateUserRole(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;))
 	}-*/;
 	
-	static void updateUserRole(String username, String role, String b){
-	    System.out.println(username);
+	static void updateUserRole(String email, String role, String b){
+	    System.out.println(b);
+	    System.out.println(email);
 	    System.out.println(role);
-	    boolean isChecked = Boolean.parseBoolean(b);
-	    System.out.println(isChecked);
+	    monitorGwtSv.updateUserRole(email, role, b.equalsIgnoreCase("true"), new AsyncCallback<Boolean>() {
+
+		@Override
+		public void onFailure(Throwable caught) {
+		    showMessage("Error.", "", "", HTMLControl.RED_MESSAGE, true);
+		}
+
+		@Override
+		public void onSuccess(Boolean result) {
+		    if(!result){
+			showMessage("Error.", "", "", HTMLControl.RED_MESSAGE, true);
+		    }
+		}
+		
+	    });
 	}
 	
 	private void initContent() {
-		monitorGwtSv.listAllUsers(new AsyncCallback<UserMonitor[]>() {
+		monitorGwtSv.listAllSystemUsers(new AsyncCallback<List<SystemUser>>() {
 
 			@Override
-			public void onSuccess(UserMonitor[] result) {
+			public void onSuccess(List<SystemUser> result) {
 				if (result != null) {
 					setVisibleLoadingImage(false);
 					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
@@ -60,36 +78,45 @@ public class UserRole extends AncestorEntryPoint {
 		});
 	}
 
-	private AbstractDataTable createData(UserMonitor[] listUser) {
+	private AbstractDataTable createData(List<SystemUser> result) {
 		DataTable data = DataTable.create();
 		data.addColumn(ColumnType.STRING, "Username");
 		data.addColumn(ColumnType.STRING, "Administrator");
 		data.addColumn(ColumnType.STRING, "User");
-		data.addRows(listUser.length);
+		data.addRows(result.size());
 
-		UserMonitor[] sortUser = sortByname(listUser);
-		for (int j = 0; j < sortUser.length; j++) {
+		List<SystemUser> sortUser = sortByname(result);
+		for (int j = 0; j < sortUser.size(); j++) {
 
-			data.setValue(j, 0, sortUser[j].getId());
-			data.setValue(j, 1, "<input class='ckUserRole' type='checkbox' name='user_role' role='Admin' username='"+sortUser[j].getId()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;'>");
-			data.setValue(j, 2, "<input class='ckUserRole' type='checkbox' name='user_role' role='User' username='"+sortUser[j].getId()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;'>");
+			data.setValue(j, 0, sortUser.get(j).getUsername());
+			if(sortUser.get(j).checkRole(SystemRole.ROLE_ADMINISTRATOR)){
+			    data.setValue(j, 1, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_ADMINISTRATOR+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;' checked='checked'>");
+			}else{
+			    data.setValue(j, 1, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_ADMINISTRATOR+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;'>");
+			}
+			
+			if(sortUser.get(j).checkRole(SystemRole.ROLE_USER)){
+			    data.setValue(j, 2, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_USER+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;' checked='checked'>");
+			}else{
+			    data.setValue(j, 2, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_USER+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;'>");
+			}
 		}
 		return data;
 	}
 
-	public UserMonitor[] sortByname(UserMonitor[] users) {
-		UserMonitor temp = null;
-		for (int i = 1; i < users.length; i++) {
+	public List<SystemUser> sortByname(List<SystemUser> users) {
+		SystemUser temp = null;
+		for (int i = 1; i < users.size(); i++) {
 			int j;
-			UserMonitor val = users[i];
+			SystemUser val = users.get(i);
 			for (j = i - 1; j > -1; j--) {
-				temp = users[j];
+				temp = users.get(j);
 				if (temp.compareByName(val) <= 0) {
 					break;
 				}
-				users[j + 1] = temp;
+				users.set(j+1, temp);
 			}
-			users[j + 1] = val;
+			users.set(j+1, val);
 		}
 		return users;
 	}
@@ -102,8 +129,8 @@ public class UserRole extends AncestorEntryPoint {
 
 	}
 
-	private void drawTable(UserMonitor[] listUser) {
-		myTable.draw(createData(listUser), option());
+	private void drawTable(List<SystemUser> result) {
+		myTable.draw(createData(result), option());
 	}
 
 }
