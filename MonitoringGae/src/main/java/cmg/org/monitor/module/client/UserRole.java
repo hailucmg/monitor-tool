@@ -80,7 +80,9 @@ public class UserRole extends AncestorEntryPoint {
 
 	private AbstractDataTable createData(List<SystemUser> result) {
 		DataTable data = DataTable.create();
-		data.addColumn(ColumnType.STRING, "");
+		data.addColumn(ColumnType.STRING, "Domain");
+		data.addColumn(ColumnType.STRING, "Username");
+		data.addColumn(ColumnType.STRING, "Email");
 		data.addColumn(ColumnType.STRING, "Administrator");
 		data.addColumn(ColumnType.STRING, "User");
 		data.addRows(result.size());
@@ -88,17 +90,19 @@ public class UserRole extends AncestorEntryPoint {
 		List<SystemUser> sortUser = sortByname(result);
 		for (int j = 0; j < sortUser.size(); j++) {
 
-			data.setValue(j, 0, sortUser.get(j).getEmail() + " (" + sortUser.get(j).getFullName() + ")");
+			data.setValue(j, 0, sortUser.get(j).getDomain());
+			data.setValue(j, 1, sortUser.get(j).getUsername());
+			data.setValue(j, 2, sortUser.get(j).getEmail());
 			if(sortUser.get(j).checkRole(SystemRole.ROLE_ADMINISTRATOR)){
-			    data.setValue(j, 1, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_ADMINISTRATOR+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;' checked='checked'>");
+			    data.setValue(j, 3, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_ADMINISTRATOR+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;' checked='checked'>");
 			}else{
-			    data.setValue(j, 1, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_ADMINISTRATOR+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;'>");
+			    data.setValue(j, 3, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_ADMINISTRATOR+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;'>");
 			}
 			
 			if(sortUser.get(j).checkRole(SystemRole.ROLE_USER)){
-			    data.setValue(j, 2, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_USER+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;' checked='checked'>");
+			    data.setValue(j, 4, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_USER+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;' checked='checked'>");
 			}else{
-			    data.setValue(j, 2, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_USER+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;'>");
+			    data.setValue(j, 4, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_USER+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;'>");
 			}
 		}
 		return data;
@@ -111,7 +115,7 @@ public class UserRole extends AncestorEntryPoint {
 			SystemUser val = users.get(i);
 			for (j = i - 1; j > -1; j--) {
 				temp = users.get(j);
-				if (temp.compareByName(val) <= 0) {
+				if (temp.compareByDomain(val) <= 0) {
 					break;
 				}
 				users.set(j+1, temp);
