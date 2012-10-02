@@ -21,9 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import cmg.org.monitor.dao.SystemAccountDAO;
-import cmg.org.monitor.dao.SystemRoleDAO;
 import cmg.org.monitor.dao.impl.SystemAccountDaoImpl;
-import cmg.org.monitor.dao.impl.SystemRoleDaoImpl;
 import cmg.org.monitor.entity.shared.GoogleAccount;
 import cmg.org.monitor.entity.shared.SystemRole;
 import cmg.org.monitor.entity.shared.SystemUser;
@@ -75,6 +73,8 @@ public class GoogleAccountService {
 	private static final int LOG_INFO_LEVEL = 0x001;
 	private static final int LOG_WARNING_LEVEL = 0x002;
 	private static final int LOG_ERROR_LEVEL = 0x003;
+	
+	SystemAccountDAO accountDao = new SystemAccountDaoImpl();
 
 	StringBuffer bufferLog;
 	GoogleAccount adminAcc;
@@ -83,13 +83,13 @@ public class GoogleAccountService {
 		//
 	}
 
-	public GoogleAccountService(GoogleAccount adminAcc)
+	public GoogleAccountService(GoogleAccount admin)
 			throws AuthenticationException {
 		try {
-			if (adminAcc == null) {
+			if (admin == null) {
 				throw new AuthenticationException("Null account object");
 			}
-			this.adminAcc = adminAcc;
+			this.adminAcc = admin;
 			if (adminAcc.getToken() != null && adminAcc.getToken().length() > 0) {
 				groupService = new AppsGroupsService(adminAcc.getDomain(),
 						APPLICATION_NAME);
@@ -104,16 +104,10 @@ public class GoogleAccountService {
 				UserToken us = (UserToken) groupService.getAuthTokenFactory()
 						.getAuthToken();
 				adminAcc.setToken(us.getValue());
-
-				SystemAccountDAO accountDao = new SystemAccountDaoImpl();
+				
 				userService = new UserService(APPLICATION_NAME);
 				userService.setUserToken(adminAcc.getToken());
-				try {
-					// restore the token
-					accountDao.updateGoogleAccount(adminAcc);
-				} catch (Exception e) {
-					logger.log(Level.SEVERE, e.getMessage());
-				}
+				
 			}
 
 		} catch (AuthenticationException e) {
@@ -153,9 +147,7 @@ public class GoogleAccountService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void sync() {
-		SystemRoleDAO roleDao = new SystemRoleDaoImpl();
-		roleDao.init();
+	public void sync() {		
 		int problem = 0;
 		long start = System.currentTimeMillis();
 		log("User synchronization process started...");
@@ -242,8 +234,7 @@ public class GoogleAccountService {
 			}
 		}
 		if (!users.isEmpty()) {
-			log("Initiating synchronization to " + MonitorConstant.PROJECT_NAME);
-			SystemAccountDAO accountDao = new SystemAccountDaoImpl();
+			log("Initiating synchronization to " + MonitorConstant.PROJECT_NAME);			
 			List<SystemUser> activeUsers = null;
 			try {
 				log("Retrieving active user list from "
@@ -369,6 +360,12 @@ public class GoogleAccountService {
 		}
 		long end = System.currentTimeMillis();
 		long total = end - start;
+		try {
+			adminAcc.setLastSync(new Date(System.currentTimeMillis()));
+			accountDao.updateGoogleAccount(adminAcc);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, e.getMessage());
+		}
 		log("User synchronization completed with " + problem
 				+ " problem"+(problem > 1 ? "s" : "")+". Time executed: " + total + " ms");
 	}

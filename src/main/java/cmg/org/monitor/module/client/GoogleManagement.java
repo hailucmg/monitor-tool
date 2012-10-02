@@ -163,6 +163,18 @@ public class GoogleManagement extends AncestorEntryPoint {
 								HTMLControl.BLUE_MESSAGE, true);
 						txtLog.setText(result);
 						advancedDisclosure.setOpen(true);
+						monitorGwtSv.listAllGoogleAcc(new AsyncCallback<GoogleAccount[]>() {
+							@Override
+							public void onFailure(Throwable caught) {								
+							}
+
+							@Override
+							public void onSuccess(GoogleAccount[] result) {										
+								listGoogleAcc = result;
+								drawTable(result);
+							}
+
+						});
 					}
 				}
 
@@ -350,9 +362,22 @@ public class GoogleManagement extends AncestorEntryPoint {
 							@Override
 							public void onSuccess(Boolean result) {
 
-								showMessage("Added Successfully", "", "",
+								showMessage("Successfully", "", "",
 										HTMLControl.BLUE_MESSAGE, true);
-								initContent();
+								monitorGwtSv.listAllGoogleAcc(new AsyncCallback<GoogleAccount[]>() {
+
+									@Override
+									public void onFailure(Throwable caught) {
+										
+									}
+
+									@Override
+									public void onSuccess(GoogleAccount[] result) {										
+										listGoogleAcc = result;
+										drawTable(result);
+									}
+
+								});
 							}
 						});
 			}

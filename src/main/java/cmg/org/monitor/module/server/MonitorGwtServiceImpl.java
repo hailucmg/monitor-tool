@@ -498,7 +498,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			
 		} catch (AuthenticationException ae) {
 			return "FAIL: Authenticantion fail. Exception: " + ae.getMessage();
-		}  catch (Exception e) {	
+		}  catch (Exception e) {
 			return "FAIL: Can not sync google account. Exception: " + e.getMessage();
 		}
 	}
