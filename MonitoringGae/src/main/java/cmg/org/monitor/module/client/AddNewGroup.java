@@ -1,6 +1,7 @@
 package cmg.org.monitor.module.client;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cmg.org.monitor.entity.shared.SystemGroup;
@@ -75,6 +76,9 @@ public class AddNewGroup extends AncestorEntryPoint {
 				public void onSuccess(MonitorContainer result) {
 						if(result.getListSystemGroup()!=null){
 							SystemGroup[] listTempGroup = result.getListSystemGroup();
+							if (groupNames == null) {
+								groupNames = new ArrayList<SystemGroup>();
+							}
 							for(SystemGroup s : listTempGroup){
 								groupNames.add(s);
 							}

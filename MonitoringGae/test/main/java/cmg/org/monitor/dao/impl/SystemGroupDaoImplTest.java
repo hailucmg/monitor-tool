@@ -214,7 +214,7 @@ public class SystemGroupDaoImplTest {
 			
 			groupTemp = groupDao.getByID(list[3].getId());
 			users = groupTemp.getUserIDs();
-			assertEquals(1, users.size());
+			assertEquals(2, users.size());
 			for (String ur: users) {
 				System.out.println(accountDao.getSystemUserById(ur).getEmail());
 			}
