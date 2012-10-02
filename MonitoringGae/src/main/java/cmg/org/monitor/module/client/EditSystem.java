@@ -120,7 +120,6 @@ public class EditSystem extends AncestorEntryPoint {
 					@Override
 					public void onSuccess(MonitorContainer result) {
 						if (result != null) {
-							
 							system = result.getSys();
 							notify = result.getNotify();
 							container = result;
@@ -131,13 +130,11 @@ public class EditSystem extends AncestorEntryPoint {
 							if (groups != null && groups.length > 0) {
 								for (int i = 0; i < groups.length; i++) {
 									listGroup.addItem(groups[i].getName());
-									if (system.getGroupEmail()
-											.equalsIgnoreCase(
-													groups[i].getName())) {
+									if (system.getGroupEmail().equalsIgnoreCase(groups[i].getName())) {
 										index = i;
 									}
+									listGroup.setSelectedIndex(index);
 								}
-								listGroup.setSelectedIndex(index);
 								tableNotify = new Grid(5, 2);
 								tableNotify.setCellSpacing(3);
 								cbNotifyCpu = new CheckBox();
@@ -243,7 +240,7 @@ public class EditSystem extends AncestorEntryPoint {
 								labelprotocol.setText("Protocol");
 
 								labelmailgroup = new Label();
-								labelmailgroup.setText("Notification mail group");
+								labelmailgroup.setText("Group ");
 
 								txtName = new TextBox();
 								txtName.setWidth("196px");
@@ -661,6 +658,7 @@ public class EditSystem extends AncestorEntryPoint {
 
 	private void editSystem(SystemMonitor sys) {
 		panelAdding.setVisible(false);
+		final String sid = sys.getId();
 		monitorGwtSv.editSystem(sys, new AsyncCallback<Boolean>() {
 			@Override
 			public void onSuccess(Boolean result) {
@@ -669,6 +667,7 @@ public class EditSystem extends AncestorEntryPoint {
 							HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
 							"View system list. ", HTMLControl.BLUE_MESSAGE,
 							true);
+					initFlexTable(sid);
 				} else {
 					showMessage("Server error! ",
 							HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
