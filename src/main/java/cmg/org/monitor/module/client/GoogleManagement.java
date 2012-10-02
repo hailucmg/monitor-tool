@@ -143,13 +143,13 @@ public class GoogleManagement extends AncestorEntryPoint {
 		@Override
 		public void onFailure(Throwable caught) {
 		    // TODO Auto-generated method stub
-		    showMessage("Syncronized Failed.", "", "", HTMLControl.RED_MESSAGE, true);
+		    showMessage("Synchronized Failed.", "", "", HTMLControl.RED_MESSAGE, true);
 		}
 
 		@Override
 		public void onSuccess(String result) {
 		    // TODO Auto-generated method stub
-		    showMessage("Syncronized Successfully", "", "", HTMLControl.BLUE_MESSAGE, true);
+		    showMessage("Synchronized Successfully", "", "", HTMLControl.BLUE_MESSAGE, true);
 		    txtLog.setText(result);
 		    advancedDisclosure.setOpen(true);
 		}
@@ -305,14 +305,14 @@ public class GoogleManagement extends AncestorEntryPoint {
 		    public void onFailure(Throwable caught) {
 
 			// TODO Auto-generated method stub
-			showMessage("Added Failed.", "", "", HTMLControl.RED_MESSAGE, true);
+			showMessage("Failed.", "", "", HTMLControl.RED_MESSAGE, true);
 		    }
 
 		    @Override
 		    public void onSuccess(Boolean result) {
 
 			// TODO Auto-generated method stub
-			showMessage("Added Successfully", "", "", HTMLControl.BLUE_MESSAGE, true);
+			showMessage("Succeed", "", "", HTMLControl.BLUE_MESSAGE, true);
 			initContent();
 		    }
 		});
