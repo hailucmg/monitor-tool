@@ -231,6 +231,8 @@ public class GoogleManagement extends AncestorEntryPoint {
 	panelValidateUsername.setVisible(false);
 	panelValidatePassword = new AbsolutePanel();
 	panelValidatePassword.setVisible(false);
+	panelValidateConfirmPassword = new AbsolutePanel();
+	panelValidateConfirmPassword.setVisible(false);
 
 	flexTable.setWidget(0, 0, lbDomain);
 	flexTable.setWidget(0, 1, txtDomain);
