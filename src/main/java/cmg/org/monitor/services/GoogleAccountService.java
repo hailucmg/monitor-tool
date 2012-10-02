@@ -299,7 +299,7 @@ public class GoogleAccountService {
 					createdCount++;
 					try {						
 						sysUser.addUserRole(SystemRole.ROLE_USER);
-						boolean b = accountDao.createSystemUser(sysUser);
+						boolean b = accountDao.createSystemUser(sysUser, true);
 						if (!b) {
 							createdFail++;
 						}

@@ -10,8 +10,6 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import cmg.org.monitor.ext.model.shared.UserMonitor;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -50,8 +48,6 @@ public class SystemUser implements IsSerializable {
 	@Persistent
 	private String[] groupIDs;
 
-	private List<SystemGroup> groups;
-
 	@Persistent
 	private boolean isSuspended;
 
@@ -68,9 +64,9 @@ public class SystemUser implements IsSerializable {
 		this.isDomainAdmin = in.isDomainAdmin;
 	}
 
+	@Deprecated
 	public void clear() {
-		
-		groups = new ArrayList<SystemGroup>();
+		//
 	}
 
 	public void addGroup(String groupId) {
@@ -330,21 +326,6 @@ public class SystemUser implements IsSerializable {
 		
 	}
 
-	/**
-	 * @return the groups
-	 */
-	public List<SystemGroup> getGroups() {
-		return groups;
-	}
-
-	/**
-	 * @param groups
-	 *            the groups to set
-	 */
-
-	public void setGroups(List<SystemGroup> groups) {
-		this.groups = groups;
-	}
 
 	/**
 	 * @return the domain

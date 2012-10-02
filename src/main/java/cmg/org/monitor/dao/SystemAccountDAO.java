@@ -12,6 +12,7 @@ package cmg.org.monitor.dao;
 import java.util.List;
 
 import cmg.org.monitor.entity.shared.GoogleAccount;
+import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemUser;
 
 /** 
@@ -47,14 +48,14 @@ public interface SystemAccountDAO {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean createSystemUser(SystemUser user) throws Exception;
+	public boolean createSystemUser(SystemUser user, boolean isAddRole) throws Exception;
 	/**
 	 * 
 	 * @param users
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean createSystemUsers(List<SystemUser> users) throws Exception;
+	public boolean createSystemUsers(List<SystemUser> users, boolean isAddRole) throws Exception;
 	
 	public SystemUser getSystemUserById(String id) throws Exception;
 	
@@ -111,7 +112,7 @@ public interface SystemAccountDAO {
 	@Deprecated
 	public void initRole(SystemUser user) throws Exception;
 	
-	public void initGroup(SystemUser user) throws Exception;
+	public List<SystemGroup> initGroup(SystemUser user) throws Exception;
 	
 	public boolean updateRole(String email, String role, boolean b) throws Exception;
 }
