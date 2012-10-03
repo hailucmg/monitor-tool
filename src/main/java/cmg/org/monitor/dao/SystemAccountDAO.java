@@ -117,4 +117,7 @@ public interface SystemAccountDAO {
 	public List<SystemGroup> initGroup(SystemUser user) throws Exception;
 	
 	public boolean updateRole(String email, String role, boolean b) throws Exception;
+	
+	public void initSystemUserMemcache();
+	public void initGoogleAccountMemcache();
 }

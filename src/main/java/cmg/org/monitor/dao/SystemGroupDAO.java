@@ -28,4 +28,6 @@ public interface SystemGroupDAO {
 	public List<SystemUser> listAllUserOfGroup(String groupName) throws Exception;
 	
 	public SystemGroup getByName(String name) throws Exception;
+	
+	public void initSystemGroupMemcache();
 }

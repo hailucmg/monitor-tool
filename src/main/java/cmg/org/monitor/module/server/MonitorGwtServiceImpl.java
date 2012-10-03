@@ -431,7 +431,9 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		ss.setDescription(description);
 		try {
 			boolean b = sysGroupDao.addNewGroup(ss);
-			System.out.println("add done " + b);
+			if (b) {
+				sysGroupDao.initSystemGroupMemcache();
+			}
 			return b;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -454,8 +456,14 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public boolean deleteGroup(String name, String id) {
 		SystemGroupDAO sysGroupDao = new SystemGroupDaoImpl();
+		SystemAccountDAO accountDao = new SystemAccountDaoImpl();
 		try {
-			return sysGroupDao.deleteGroup(id);
+			boolean check =sysGroupDao.deleteGroup(id);
+			if (check) {
+				accountDao.initSystemUserMemcache();
+				sysGroupDao.initSystemGroupMemcache();
+			}
+			return check;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -467,11 +475,16 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		try {
 			SystemAccountDAO sysAccDao = new SystemAccountDaoImpl();
 			SystemGroupDAO groupDao = new SystemGroupDaoImpl();
+			boolean b = false;
 			if (mapp) {
-				groupDao.addUserToGroup(email, idGroup);
+				b = groupDao.addUserToGroup(email, idGroup);
 			} else {
-				groupDao.removeUserFromGroup(email, idGroup);
+				b = groupDao.removeUserFromGroup(email, idGroup);
 			}
+			if (b) {
+				sysAccDao.initSystemUserMemcache();
+				groupDao.initSystemGroupMemcache();
+			}			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -485,10 +498,11 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			String id) {
 		SystemGroupDAO sysGroupDao = new SystemGroupDaoImpl();
 		try {
-			System.out.println("groupName:" + groupName + ".groupDescription:"
-					+ groupDescription + ".id:" + id);
-
-			return sysGroupDao.updateGroup(id, groupName, groupDescription);
+			boolean check = sysGroupDao.updateGroup(id, groupName, groupDescription);
+			if (check) {
+				sysGroupDao.initSystemGroupMemcache();
+			}
+			return check;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -552,17 +566,22 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		SystemAccountDAO dao = new SystemAccountDaoImpl();
 		try {
 			GoogleAccount temp = dao.getGoogleAccountByDomain(acc.getDomain());
+			boolean b = false;
 			if (temp != null) {
 				if (!temp.getPassword().equalsIgnoreCase(acc.getPassword())) {
 					temp.setPassword(SecurityUtil.encrypt(acc.getPassword()));
 				}
 				temp.setDomain(acc.getDomain());
 				temp.setUsername(acc.getUsername());
-				dao.updateGoogleAccount(temp);
+				b = dao.updateGoogleAccount(temp);
 			} else {
 				acc.setPassword(SecurityUtil.encrypt(acc.getPassword()));
-				return dao.createGoogleAccount(acc);
-			}			
+				b = dao.createGoogleAccount(acc);
+			}		
+			if (b) {
+				dao.initGoogleAccountMemcache();
+			}
+			return b;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -578,7 +597,11 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	public boolean addGroupByObj(SystemGroup s) {
 		SystemGroupDAO sysGroupDao = new SystemGroupDaoImpl();
 		try {
-			return sysGroupDao.addNewGroup(s);
+			boolean check = sysGroupDao.addNewGroup(s);
+			if (check) {
+				sysGroupDao.initSystemGroupMemcache();
+			}
+			return check;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -615,9 +638,11 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	public boolean deleteGoogleAccount(String id) {
 		SystemAccountDAO accDao = new SystemAccountDaoImpl();
 		try {
-			if (accDao.deleteGoogleAccount(id)) {
-				return true;
+			boolean check = accDao.deleteGoogleAccount(id);
+			if (check) {
+				accDao.initGoogleAccountMemcache();
 			}
+			return check;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -633,9 +658,11 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	public boolean updateGoogleAccount(GoogleAccount acc) {
 		SystemAccountDAO accDao = new SystemAccountDaoImpl();
 		try {
-			if (accDao.updateGoogleAccount(acc)) {
-				return true;
+			boolean check = accDao.updateGoogleAccount(acc);
+			if (check) {
+				accDao.initGoogleAccountMemcache();
 			}
+			return check;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -668,8 +695,11 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	public boolean updateUserRole(String email, String role, boolean b) {
 		SystemAccountDAO systemDao = new SystemAccountDaoImpl();
 		try {
-
-			return systemDao.updateRole(email, role, b);
+			boolean done = systemDao.updateRole(email, role, b);
+			if (done) {
+				systemDao.initSystemUserMemcache();
+			}
+			return done;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

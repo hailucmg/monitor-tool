@@ -9,7 +9,9 @@
 
 package cmg.org.monitor.dao.impl;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,16 +19,17 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import sun.security.action.GetBooleanAction;
-
 import cmg.org.monitor.dao.SystemAccountDAO;
 import cmg.org.monitor.dao.SystemGroupDAO;
-import cmg.org.monitor.dao.SystemRoleDAO;
 import cmg.org.monitor.entity.shared.GoogleAccount;
 import cmg.org.monitor.entity.shared.SystemGroup;
-import cmg.org.monitor.entity.shared.SystemRole;
 import cmg.org.monitor.entity.shared.SystemUser;
+import cmg.org.monitor.memcache.Key;
+import cmg.org.monitor.memcache.MonitorMemcache;
 import cmg.org.monitor.services.PMF;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * DOCME
@@ -41,11 +44,6 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	private static final Logger logger = Logger
 			.getLogger(SystemAccountDaoImpl.class.getCanonicalName());
 	PersistenceManager pm;
-
-	private List<SystemRole> tempRoles;
-	private SystemRole tempRole;
-	private List<SystemGroup> tempGroups;
-	private SystemGroup tempGroup;
 
 	void initPersistence() {
 		if (pm == null || pm.isClosed()) {
@@ -227,42 +225,44 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<SystemUser> listAllSystemUser(boolean b) throws Exception {
-		initPersistence();
-		Query query = pm.newQuery(SystemUser.class);
-		if (b) {
-			query.setFilter("isSuspended == value");
-			query.declareParameters("boolean domainPara");
-		}
-		List<SystemUser> temp = null;
-		List<SystemUser> tempOut = new ArrayList<SystemUser>();
-		try {
-			if (b) {
-				temp = (List<SystemUser>) query.execute(false);
-			} else {
+		List<SystemUser> tempOut = listSystemUserFromMemcache();
+		if (tempOut == null || tempOut.size() == 0) {
+			initPersistence();
+			Query query = pm.newQuery(SystemUser.class);
+			List<SystemUser> temp = null;
+			try {
 				temp = (List<SystemUser>) query.execute();
-			}
-			if (!temp.isEmpty()) {
-				for (SystemUser user : temp) {
-					if (b) {
-						if (!user.isSuspended()) {
-							tempOut.add(user);
-						}
-					} else {
+				if (!temp.isEmpty()) {
+					for (SystemUser user : temp) {
 						tempOut.add(user);
 					}
 				}
+				storeListSystemUserToMemcache(tempOut);
+			} catch (Exception e) {
+				logger.log(
+						Level.SEVERE,
+						" ERROR when getSystemUserByEmail. Message: "
+								+ e.getMessage());
+				throw e;
+			} finally {
+				pm.close();
 			}
-		} catch (Exception e) {
-			logger.log(
-					Level.SEVERE,
-					" ERROR when getSystemUserByEmail. Message: "
-							+ e.getMessage());
-			throw e;
-		} finally {
-			pm.close();
-		}
 
-		return tempOut;
+		}
+		if (tempOut != null && tempOut.size() > 0) {
+			List<SystemUser> temp = new ArrayList<SystemUser>();
+			for (SystemUser user : tempOut) {
+				if (b) {
+					if (!user.isSuspended()) {
+						temp.add(user);
+					}
+				} else {
+					temp.add(user);
+				}
+			}
+			return temp;
+		}
+		return null;
 	}
 
 	/**
@@ -273,45 +273,64 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	@SuppressWarnings("unchecked")
 	public List<SystemUser> listAllSystemUserByDomain(String domain, boolean b)
 			throws Exception {
-		initPersistence();
-		Query query = pm.newQuery(SystemUser.class);
-		if (b) {
-			query.setFilter("domain == domainPara && isSuspended == value");
-			query.declareParameters("String domainPara, boolean domainPara");
-		} else {
-			query.setFilter("domain == domainPara");
-			query.declareParameters("String domainPara");
-		}
-		List<SystemUser> temp = null;
-		List<SystemUser> tempOut = new ArrayList<SystemUser>();
-		try {
-			if (b) {
-				temp = (List<SystemUser>) query.execute(domain, false);
-			} else {
-				temp = (List<SystemUser>) query.execute(domain);
-			}
-			if (!temp.isEmpty()) {
-				for (SystemUser user : temp) {
-					if (b) {
-						if (!user.isSuspended()) {
-							tempOut.add(user);
-						}
-					} else {
-						tempOut.add(user);
+		List<SystemUser> store = listSystemUserFromMemcache();
+		if (store != null && store.size() > 0) {
+			List<SystemUser> temp = new ArrayList<SystemUser>();
+			for (SystemUser user : store) {
+				if (b) {
+					if (user.getDomain().equalsIgnoreCase(domain)
+							&& !user.isSuspended()) {
+						temp.add(user);
+					}
+				} else {
+					if (user.getDomain().equalsIgnoreCase(domain)) {
+						temp.add(user);
 					}
 				}
 			}
-		} catch (Exception e) {
-			logger.log(
-					Level.SEVERE,
-					" ERROR when getSystemUserByEmail. Message: "
-							+ e.getMessage());
-			throw e;
-		} finally {
-			pm.close();
-		}
+			return temp;
+		} else {
+			initSystemUserMemcache();
+			initPersistence();
+			Query query = pm.newQuery(SystemUser.class);
+			if (b) {
+				query.setFilter("domain == domainPara && isSuspended == value");
+				query.declareParameters("String domainPara, boolean domainPara");
+			} else {
+				query.setFilter("domain == domainPara");
+				query.declareParameters("String domainPara");
+			}
+			List<SystemUser> temp = null;
+			List<SystemUser> tempOut = new ArrayList<SystemUser>();
+			try {
+				if (b) {
+					temp = (List<SystemUser>) query.execute(domain, false);
+				} else {
+					temp = (List<SystemUser>) query.execute(domain);
+				}
+				if (!temp.isEmpty()) {
+					for (SystemUser user : temp) {
+						if (b) {
+							if (!user.isSuspended()) {
+								tempOut.add(user);
+							}
+						} else {
+							tempOut.add(user);
+						}
+					}
+				}
+			} catch (Exception e) {
+				logger.log(
+						Level.SEVERE,
+						" ERROR when getSystemUserByEmail. Message: "
+								+ e.getMessage());
+				throw e;
+			} finally {
+				pm.close();
+			}
 
-		return tempOut;
+			return tempOut;
+		}
 	}
 
 	/**
@@ -320,18 +339,28 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 * @see cmg.org.monitor.dao.SystemAccountDAO#getGoogleAccountById(java.lang.String)
 	 */
 	public GoogleAccount getGoogleAccountById(String id) throws Exception {
-		initPersistence();
-		try {
-			return pm.getObjectById(GoogleAccount.class, id);
-		} catch (Exception ex) {
-			logger.log(
-					Level.SEVERE,
-					" ERROR when getGoogleAccountById. Message: "
-							+ ex.getMessage());
-			pm.currentTransaction().rollback();
-			throw ex;
-		} finally {
-			pm.close();
+		List<GoogleAccount> store = listGoogleAccountFromMemcache();
+		if (store != null && store.size() > 0) {
+			for (GoogleAccount acc : store) {
+				if (acc.getId().equals(id)) {
+					return acc;
+				}
+			}
+			return null;
+		} else {
+			initPersistence();
+			try {
+				return pm.getObjectById(GoogleAccount.class, id);
+			} catch (Exception ex) {
+				logger.log(
+						Level.SEVERE,
+						" ERROR when getGoogleAccountById. Message: "
+								+ ex.getMessage());
+				pm.currentTransaction().rollback();
+				throw ex;
+			} finally {
+				pm.close();
+			}
 		}
 	}
 
@@ -342,28 +371,34 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<GoogleAccount> listAllGoogleAccount() throws Exception {
-		initPersistence();
-		Query query = pm.newQuery(GoogleAccount.class);
-		List<GoogleAccount> temp = null;
-		List<GoogleAccount> tempOut = new ArrayList<GoogleAccount>();
-		try {
-			temp = (List<GoogleAccount>) query.execute();
-			if (!temp.isEmpty()) {
-				for (GoogleAccount user : temp) {
-					tempOut.add(user);
+		List<GoogleAccount> store = listGoogleAccountFromMemcache();
+		if (store != null && store.size() > 0) {
+			return store;
+		} else {
+			initGoogleAccountMemcache();
+			initPersistence();
+			Query query = pm.newQuery(GoogleAccount.class);
+			List<GoogleAccount> temp = null;
+			List<GoogleAccount> tempOut = new ArrayList<GoogleAccount>();
+			try {
+				temp = (List<GoogleAccount>) query.execute();
+				if (!temp.isEmpty()) {
+					for (GoogleAccount user : temp) {
+						tempOut.add(user);
+					}
 				}
+			} catch (Exception e) {
+				logger.log(
+						Level.SEVERE,
+						" ERROR when listAllGoogleAccount. Message: "
+								+ e.getMessage());
+				throw e;
+			} finally {
+				pm.close();
 			}
-		} catch (Exception e) {
-			logger.log(
-					Level.SEVERE,
-					" ERROR when listAllGoogleAccount. Message: "
-							+ e.getMessage());
-			throw e;
-		} finally {
-			pm.close();
-		}
 
-		return tempOut;
+			return tempOut;
+		}
 	}
 
 	/**
@@ -399,13 +434,15 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 			}
 
 		}
-		if (groupIds != null && groupIds.size() > 0 && userId != null && userId.length() > 0) {
+		if (groupIds != null && groupIds.size() > 0 && userId != null
+				&& userId.length() > 0) {
 			initPersistence();
-			for (String groupId: groupIds) {				
-				SystemGroup group = pm.getObjectById(SystemGroup.class, groupId);
+			for (String groupId : groupIds) {
+				SystemGroup group = pm
+						.getObjectById(SystemGroup.class, groupId);
 				group.removeUser(userId);
 				pm.makePersistent(group);
-				
+
 			}
 			pm.close();
 		}
@@ -423,7 +460,6 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		boolean check = false;
 		if (temp != null) {
 			initPersistence();
-
 			temp.swap(user);
 			if (b) {
 				temp.setGroupIDs(user.getGroupIDs());
@@ -456,28 +492,39 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public SystemUser getSystemUserByEmail(String email) throws Exception {
-		initPersistence();
-		Query query = pm.newQuery(SystemUser.class);
-		query.setFilter("email == emailPara");
-		query.declareParameters("String emailPara");
-		List<SystemUser> temp = null;
-		try {
-			temp = (List<SystemUser>) query.execute(email);
-			if (!temp.isEmpty()) {
-				SystemUser user = temp.get(0);
-
-				return user;
+		List<SystemUser> store = listSystemUserFromMemcache();
+		if (store != null && store.size() > 0) {
+			for (SystemUser user : store) {
+				if (user.getEmail().equals(email)) {
+					return user;
+				}
 			}
-		} catch (Exception e) {
-			logger.log(
-					Level.SEVERE,
-					" ERROR when getSystemUserByEmail. Message: "
-							+ e.getMessage());
-			throw e;
-		} finally {
-			pm.close();
+			return null;
+		} else {
+			initSystemUserMemcache();
+			initPersistence();
+			Query query = pm.newQuery(SystemUser.class);
+			query.setFilter("email == emailPara");
+			query.declareParameters("String emailPara");
+			List<SystemUser> temp = null;
+			try {
+				temp = (List<SystemUser>) query.execute(email);
+				if (!temp.isEmpty()) {
+					SystemUser user = temp.get(0);
+
+					return user;
+				}
+			} catch (Exception e) {
+				logger.log(
+						Level.SEVERE,
+						" ERROR when getSystemUserByEmail. Message: "
+								+ e.getMessage());
+				throw e;
+			} finally {
+				pm.close();
+			}
+			return null;
 		}
-		return null;
 	}
 
 	/**
@@ -486,16 +533,29 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 * @see cmg.org.monitor.dao.SystemAccountDAO#getSystemUserById(java.lang.String)
 	 */
 	public SystemUser getSystemUserById(String id) throws Exception {
-		initPersistence();
-		try {
-			SystemUser user = pm.getObjectById(SystemUser.class, id);
-			return user;
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, " ERROR when getSystemUserById. Message: "
-					+ e.getMessage());
-			throw e;
-		} finally {
-			pm.close();
+		List<SystemUser> store = listSystemUserFromMemcache();
+		if (store != null && store.size() > 0) {
+			for (SystemUser user : store) {
+				if (user.getId().equals(id)) {
+					return user;
+				}
+			}
+			return null;
+		} else {
+			initSystemUserMemcache();
+			initPersistence();
+			try {
+				SystemUser user = pm.getObjectById(SystemUser.class, id);
+				return user;
+			} catch (Exception e) {
+				logger.log(
+						Level.SEVERE,
+						" ERROR when getSystemUserById. Message: "
+								+ e.getMessage());
+				throw e;
+			} finally {
+				pm.close();
+			}
 		}
 	}
 
@@ -577,6 +637,7 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	@Override
 	public boolean updateRole(String email, String role, boolean b)
 			throws Exception {
+		boolean check = false;
 		try {
 			SystemUser user = getSystemUserByEmail(email);
 			if (b) {
@@ -588,7 +649,7 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 			pm.currentTransaction().begin();
 			pm.makePersistent(user);
 			pm.currentTransaction().commit();
-			return true;
+			check = true;
 		} catch (Exception e) {
 			logger.log(
 					Level.SEVERE,
@@ -599,6 +660,7 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		} finally {
 			pm.close();
 		}
+		return check;
 	}
 
 	/**
@@ -608,26 +670,140 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 	 */
 	public GoogleAccount getGoogleAccountByDomain(String domain)
 			throws Exception {
+		List<GoogleAccount> store = listGoogleAccountFromMemcache();
+		if (store != null && store.size() > 0) {
+			for (GoogleAccount acc : store) {
+				if (acc.getDomain().equalsIgnoreCase(domain)) {
+					return acc;
+				}
+			}
+			return null;
+		} else {
+			initGoogleAccountMemcache();
+			initPersistence();
+			Query query = pm.newQuery(GoogleAccount.class);
+			query.setFilter("domain == domainPara");
+			query.declareParameters("String domainPara");
+			List<GoogleAccount> temp = null;
+			try {
+				temp = (List<GoogleAccount>) query.execute(domain);
+				if (!temp.isEmpty()) {
+					GoogleAccount user = temp.get(0);
+					return user;
+				}
+			} catch (Exception e) {
+				logger.log(
+						Level.SEVERE,
+						" ERROR when getGoogleAccountByDomain. Message: "
+								+ e.getMessage());
+				throw e;
+			} finally {
+				pm.close();
+			}
+			return null;
+		}
+	}
+
+	private List<GoogleAccount> listGoogleAccountFromMemcache() {
+		List<GoogleAccount> tempOut = new ArrayList<GoogleAccount>();
+		Gson gson = new Gson();
+		Type type = new TypeToken<Collection<GoogleAccount>>() {
+		}.getType();
+		Object obj = MonitorMemcache.get(Key.create(Key.GOOGLE_ACCOUNT));
+		if (obj != null && obj instanceof String) {
+			try {
+				System.out.println("START listGoogleAccountFromMemcache");
+				tempOut = gson.fromJson(String.valueOf(obj), type);
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error. Message: " + ex.getMessage());
+			}
+		}
+		return tempOut;
+	}
+
+	private void storeListGoogleAccountToMemcache(List<GoogleAccount> list) {
+		Gson gson = new Gson();
+		try {
+			System.out.println("START storeListGoogleAccountToMemcache");
+			MonitorMemcache.put(Key.create(Key.GOOGLE_ACCOUNT),
+					gson.toJson(list));
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, "Error. Message: " + ex.getMessage());
+		}
+	}
+
+	@Override
+	public void initGoogleAccountMemcache() {
+		List<GoogleAccount> tempOut = new ArrayList<GoogleAccount>();
 		initPersistence();
 		Query query = pm.newQuery(GoogleAccount.class);
-		query.setFilter("domain == domainPara");
-		query.declareParameters("String domainPara");
 		List<GoogleAccount> temp = null;
 		try {
-			temp = (List<GoogleAccount>) query.execute(domain);
+			temp = (List<GoogleAccount>) query.execute();
 			if (!temp.isEmpty()) {
-				GoogleAccount user = temp.get(0);
-				return user;
+				for (GoogleAccount user : temp) {
+					tempOut.add(user);
+				}
 			}
+			storeListGoogleAccountToMemcache(tempOut);
 		} catch (Exception e) {
 			logger.log(
 					Level.SEVERE,
-					" ERROR when getGoogleAccountByDomain. Message: "
+					" ERROR when initGoogleAccountMemcache. Message: "
 							+ e.getMessage());
-			throw e;
 		} finally {
 			pm.close();
 		}
-		return null;
+	}
+
+	private List<SystemUser> listSystemUserFromMemcache() {
+		List<SystemUser> tempOut = new ArrayList<SystemUser>();
+		Gson gson = new Gson();
+		Type type = new TypeToken<Collection<SystemUser>>() {
+		}.getType();
+		Object obj = MonitorMemcache.get(Key.create(Key.SYSTEM_USER));
+		if (obj != null && obj instanceof String) {
+			try {
+				System.out.println("START listSystemUserFromMemcache");
+				tempOut = gson.fromJson(String.valueOf(obj), type);
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error. Message: " + ex.getMessage());
+			}
+		}
+		return tempOut;
+	}
+
+	private void storeListSystemUserToMemcache(List<SystemUser> list) {
+		Gson gson = new Gson();
+		try {
+			System.out.println("START storeListSystemUserToMemcache");
+			MonitorMemcache.put(Key.create(Key.SYSTEM_USER), gson.toJson(list));
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, "Error. Message: " + ex.getMessage());
+		}
+	}
+
+	@Override
+	public void initSystemUserMemcache() {
+		List<SystemUser> tempOut = new ArrayList<SystemUser>();
+		initPersistence();
+		Query query = pm.newQuery(SystemUser.class);
+		List<SystemUser> temp = null;
+		try {
+			temp = (List<SystemUser>) query.execute();
+			if (!temp.isEmpty()) {
+				for (SystemUser user : temp) {
+					tempOut.add(user);
+				}
+			}
+			storeListSystemUserToMemcache(tempOut);
+		} catch (Exception e) {
+			logger.log(
+					Level.SEVERE,
+					" ERROR when initSystemUserMemcache. Message: "
+							+ e.getMessage());
+		} finally {
+			pm.close();
+		}
 	}
 }

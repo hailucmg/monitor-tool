@@ -1,6 +1,8 @@
 package cmg.org.monitor.dao.impl;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -8,10 +10,15 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import cmg.org.monitor.dao.SystemAccountDAO;
 import cmg.org.monitor.dao.SystemGroupDAO;
 import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemUser;
+import cmg.org.monitor.memcache.Key;
+import cmg.org.monitor.memcache.MonitorMemcache;
 import cmg.org.monitor.services.PMF;
 
 /**
@@ -59,15 +66,26 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 
 	@Override
 	public SystemGroup getByID(String id) throws Exception {
-		initPersistence();
-		try {
-			return pm.getObjectById(SystemGroup.class, id);
-		} catch (Exception ex) {
-			logger.log(Level.SEVERE,
-					" ERROR when getByID. Message: " + ex.getMessage());
-			throw ex;
-		} finally {
-			pm.close();
+		List<SystemGroup> store = listSystemGroupFromMemcache();
+		if (store != null && store.size() > 0) {
+			for (SystemGroup g : store) {
+				if (g.getId().equals(id)) {
+					return g;
+				}
+			}
+			return null;
+		} else {
+			initSystemGroupMemcache();
+			initPersistence();
+			try {
+				return pm.getObjectById(SystemGroup.class, id);
+			} catch (Exception ex) {
+				logger.log(Level.SEVERE,
+						" ERROR when getByID. Message: " + ex.getMessage());
+				throw ex;
+			} finally {
+				pm.close();
+			}
 		}
 	}
 
@@ -100,11 +118,11 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 	public boolean deleteGroup(String id) throws Exception {
 		boolean check = false;
 		initPersistence();
-		List<String> userIds = null;		
+		List<String> userIds = null;
 		try {
 			pm.currentTransaction().begin();
 			SystemGroup temp = pm.getObjectById(SystemGroup.class, id);
-			if (temp!= null) {				
+			if (temp != null) {
 				userIds = temp.getUserIDs();
 			}
 			pm.deletePersistent(temp);
@@ -118,42 +136,50 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 		} finally {
 			pm.close();
 		}
-		
-		if (userIds != null && userIds.size() > 0) {			
-			for (String userId: userIds) {
+
+		if (userIds != null && userIds.size() > 0) {
+			for (String userId : userIds) {
 				initPersistence();
 				SystemUser user = pm.getObjectById(SystemUser.class, userId);
 				user.removeGroup(id);
 				pm.makePersistent(user);
 				pm.close();
-			}					
+			}
 		}
 		return check;
 	}
 
 	@Override
 	public SystemGroup[] getAllGroup() throws Exception {
-		SystemGroup[] groups = null;
-		initPersistence();
-		Query query = pm.newQuery(SystemGroup.class);
-		try {
-			List<SystemGroup> temp = (List<SystemGroup>) query.execute();
-			List<SystemGroup> listTemp = new ArrayList<SystemGroup>();
-			if (!temp.isEmpty()) {
-				for (SystemGroup g : temp) {
-					listTemp.add(g);
+		List<SystemGroup> store = listSystemGroupFromMemcache();
+		if (store != null && store.size() > 0) {
+			SystemGroup[] groups = new SystemGroup[store.size()];
+			store.toArray(groups);
+			return groups;
+		} else {
+			initSystemGroupMemcache();
+			SystemGroup[] groups = null;
+			initPersistence();
+			Query query = pm.newQuery(SystemGroup.class);
+			try {
+				List<SystemGroup> temp = (List<SystemGroup>) query.execute();
+				List<SystemGroup> listTemp = new ArrayList<SystemGroup>();
+				if (!temp.isEmpty()) {
+					for (SystemGroup g : temp) {
+						listTemp.add(g);
+					}
+					groups = new SystemGroup[listTemp.size()];
+					listTemp.toArray(groups);
 				}
-				groups = new SystemGroup[listTemp.size()];
-				listTemp.toArray(groups);
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, " ERROR when getAllGroup. Message: "
+						+ e.getMessage());
+				throw e;
+			} finally {
+				pm.close();
 			}
-		} catch (Exception e) {
-			logger.log(Level.SEVERE,
-					" ERROR when getAllGroup. Message: " + e.getMessage());
-			throw e;
-		} finally {
-			pm.close();
+			return groups;
 		}
-		return groups;
 	}
 
 	/**
@@ -224,7 +250,8 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 		query.declareParameters("String paraName");
 		SystemGroup group = null;
 		try {
-			List<SystemGroup> temp = (List<SystemGroup>) query.execute(groupName);			
+			List<SystemGroup> temp = (List<SystemGroup>) query
+					.execute(groupName);
 			if (!temp.isEmpty()) {
 				group = temp.get(0);
 			}
@@ -235,13 +262,13 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 		} finally {
 			pm.close();
 		}
-		if (group!= null) {
+		if (group != null) {
 			SystemAccountDAO accountDao = new SystemAccountDaoImpl();
-			List<String> userIds = group.getUserIDs();			
+			List<String> userIds = group.getUserIDs();
 			if (userIds != null && userIds.size() > 0) {
 				List<SystemUser> users = new ArrayList<SystemUser>();
-				for (String userId: userIds) {
-					SystemUser user =  accountDao.getSystemUserById(userId);
+				for (String userId : userIds) {
+					SystemUser user = accountDao.getSystemUserById(userId);
 					users.add(user);
 				}
 				return users;
@@ -252,26 +279,95 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 
 	/**
 	 * (non-Javadoc)
-	 * @see cmg.org.monitor.dao.SystemGroupDAO#getByName(java.lang.String) 
+	 * 
+	 * @see cmg.org.monitor.dao.SystemGroupDAO#getByName(java.lang.String)
 	 */
 	public SystemGroup getByName(String name) throws Exception {
+		List<SystemGroup> store = listSystemGroupFromMemcache();
+		if (store != null && store.size() > 0) {
+			for (SystemGroup g : store) {
+				if (g.getName().equalsIgnoreCase(name)) {
+					return g;
+				}
+			}
+			return null;
+		} else {
+			initSystemGroupMemcache();
+			initPersistence();
+			Query query = pm.newQuery(SystemGroup.class);
+			query.setFilter("name == paraName");
+			query.declareParameters("String paraName");
+			try {
+				List<SystemGroup> temp = (List<SystemGroup>) query
+						.execute(name);
+				if (!temp.isEmpty()) {
+					return temp.get(0);
+				}
+			} catch (Exception e) {
+				logger.log(Level.SEVERE,
+						" ERROR when getByName. Message: " + e.getMessage());
+				throw e;
+			} finally {
+				pm.close();
+			}
+			return null;
+		}
+	}
+
+	private List<SystemGroup> listSystemGroupFromMemcache() {
+		List<SystemGroup> tempOut = new ArrayList<SystemGroup>();
+		Gson gson = new Gson();
+		Type type = new TypeToken<Collection<SystemGroup>>() {
+		}.getType();
+		Object obj = MonitorMemcache.get(Key.create(Key.SYSTEM_GROUP));
+		if (obj != null && obj instanceof String) {
+			try {
+				System.out.println("START listSystemGroupFromMemcache");
+				tempOut = gson.fromJson(String.valueOf(obj), type);
+			} catch (Exception ex) {
+				logger.log(Level.WARNING, "Error. Message: " + ex.getMessage());
+			}
+		}
+		return tempOut;
+	}
+
+	private void storeListSystemGroupToMemcache(List<SystemGroup> list) {
+		Gson gson = new Gson();
+		try {
+			System.out.println("START storeListSystemGroupToMemcache");
+			MonitorMemcache
+					.put(Key.create(Key.SYSTEM_GROUP), gson.toJson(list));
+		} catch (Exception e) {
+			logger.log(Level.WARNING, "Error: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * (non-Javadoc)
+	 * 
+	 * @see cmg.org.monitor.dao.SystemGroupDAO#initSystemGroupMemcache()
+	 */
+	@Override
+	public void initSystemGroupMemcache() {
 		initPersistence();
 		Query query = pm.newQuery(SystemGroup.class);
-		query.setFilter("name == paraName");
-		query.declareParameters("String paraName");
 		try {
-			List<SystemGroup> temp = (List<SystemGroup>) query.execute(name);			
+			List<SystemGroup> temp = (List<SystemGroup>) query.execute();
+			List<SystemGroup> listTemp = new ArrayList<SystemGroup>();
 			if (!temp.isEmpty()) {
-				return temp.get(0);
+				for (SystemGroup g : temp) {
+					listTemp.add(g);
+				}
 			}
+			storeListSystemGroupToMemcache(listTemp);
 		} catch (Exception e) {
-			logger.log(Level.SEVERE,
-					" ERROR when getByName. Message: " + e.getMessage());
-			throw e;
+			logger.log(
+					Level.SEVERE,
+					" ERROR when initSystemGroupMemcache. Message: "
+							+ e.getMessage());
 		} finally {
 			pm.close();
-		}		
-		return null;
+		}
 	}
 
 }

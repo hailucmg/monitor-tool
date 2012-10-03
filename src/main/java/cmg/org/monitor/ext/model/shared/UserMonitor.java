@@ -2,9 +2,11 @@ package cmg.org.monitor.ext.model.shared;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import cmg.org.monitor.entity.shared.AlertStoreMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
 public class UserMonitor implements Serializable {
@@ -14,6 +16,8 @@ public class UserMonitor implements Serializable {
 	 */
 	private static final long serialVersionUID = -517786869646667636L;
 	private String id;
+	private List<String> groupIds;
+	private SystemUser user;
 	private int role;
 	private ArrayList<GroupMonitor> groups;
 	private ArrayList<SystemMonitor> systems;
@@ -154,5 +158,46 @@ public class UserMonitor implements Serializable {
 	
 	public int compareByName(UserMonitor c) {
 		return id.trim().compareTo(c.getId().trim());
+	}
+
+	public boolean checkGroup(String groupId) {
+		if (groupIds != null && groupIds.size() > 0) {
+			for (String gid: groupIds) {
+				if (gid.equalsIgnoreCase(groupId)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/** 
+	 * @return the groupIds 
+	 */
+	public List<String> getGroupIds() {
+		return groupIds;
+	}
+
+	/** 
+	 * @param groupIds the groupIds to set 
+	 */
+	
+	public void setGroupIds(List<String> groupIds) {
+		this.groupIds = groupIds;
+	}
+
+	/** 
+	 * @return the user 
+	 */
+	public SystemUser getUser() {
+		return user;
+	}
+
+	/** 
+	 * @param user the user to set 
+	 */
+	
+	public void setUser(SystemUser user) {
+		this.user = user;
 	}
 }

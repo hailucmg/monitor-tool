@@ -1,12 +1,16 @@
 package cmg.org.monitor.module.server;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cmg.org.monitor.dao.SystemAccountDAO;
+import cmg.org.monitor.dao.impl.SystemAccountDaoImpl;
+import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
@@ -51,9 +55,21 @@ public class LoginServlet extends HttpServlet {
 		try {
 			if (userService.isUserLoggedIn()) {
 				if (userService.isUserAdmin()) {
-					System.out.println("is User Admin login");
+					SystemAccountDAO accDao = new SystemAccountDaoImpl();
+					List<SystemUser> list = null;
+					try {
+						list = accDao.listAllSystemUser(true);
+					} catch (Exception e) {
+						//
+					}
+					if (list != null && list.size() > 0) {
+						resp.sendRedirect(resp.encodeRedirectURL(HTMLControl.HTML_INDEX_NAME));
+					} else {
+						resp.sendRedirect(resp.encodeRedirectURL(HTMLControl.HTML_GOOGLE_MANAGEMENT_NAME));
+					}
+				} else {
+					resp.sendRedirect(resp.encodeRedirectURL(HTMLControl.HTML_INDEX_NAME));
 				}
-				resp.sendRedirect(resp.encodeRedirectURL(HTMLControl.HTML_INDEX_NAME));
 			} else {
 			    resp.sendRedirect(resp.encodeRedirectURL(
 			    		userService.createLoginURL(HTMLControl.HTML_INDEX_NAME, MonitorConstant.DOMAIN)));
