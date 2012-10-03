@@ -223,7 +223,6 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 					|| currentPage == HTMLControl.PAGE_GROUP_MANAGEMENT
 					|| currentPage == HTMLControl.PAGE_USER_MANAGEMENT
 					|| currentPage == HTMLControl.PAGE_USER_ROLE
-					|| currentPage == HTMLControl.PAGE_EDIT_GROUP
 					|| currentPage == HTMLControl.PAGE_ADD_GROUP) {
 
 				addWidget(
