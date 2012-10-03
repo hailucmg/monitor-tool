@@ -21,7 +21,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import cmg.org.monitor.dao.SystemAccountDAO;
+import cmg.org.monitor.dao.SystemGroupDAO;
 import cmg.org.monitor.dao.impl.SystemAccountDaoImpl;
+import cmg.org.monitor.dao.impl.SystemGroupDaoImpl;
 import cmg.org.monitor.entity.shared.GoogleAccount;
 import cmg.org.monitor.entity.shared.SystemRole;
 import cmg.org.monitor.entity.shared.SystemUser;
@@ -56,7 +58,7 @@ public class GoogleAccountService {
 
 	protected static final String SERVICE_VERSION = "2.0";
 
-	private static final String APPLICATION_NAME = "cmg-monitor-tools";
+	public static final String APPLICATION_NAME = "cmg-monitor-tools";
 
 	private static final Logger logger = Logger
 			.getLogger(GoogleAccountService.class.getCanonicalName());
@@ -115,7 +117,7 @@ public class GoogleAccountService {
 			throw e;
 		}
 	}
-
+	
 	private String getTimestampString() {
 		return sdfTimestamp.format(new Date(System.currentTimeMillis()));
 	}
@@ -363,9 +365,14 @@ public class GoogleAccountService {
 		try {
 			adminAcc.setLastSync(new Date(System.currentTimeMillis()));
 			accountDao.updateGoogleAccount(adminAcc);
+			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage());
 		}
+		SystemGroupDAO groupDao = new SystemGroupDaoImpl();
+		groupDao.initSystemGroupMemcache();
+		accountDao.initGoogleAccountMemcache();
+		accountDao.initSystemUserMemcache();
 		log("User synchronization completed with " + problem
 				+ " problem"+(problem > 1 ? "s" : "")+". Time executed: " + total + " ms");
 	}

@@ -3,11 +3,6 @@ package cmg.org.monitor.memcache;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class Key implements IsSerializable {
-	/**
-	 * 
-	 */
-
-	private static final long serialVersionUID = 1L;
 
 	public static final int FILE_SYSTEM_STORE = 0x101;
 	public static final int CPU__STORE = 0x102;
@@ -33,6 +28,10 @@ public class Key implements IsSerializable {
 	public static final int TOKEN_MAIL= 0x019;
 	public static final int TOKEN_GROUP = 0x020;
 	public static final int LINK_DEFAULT = 0x021;
+	
+	public static final int SYSTEM_GROUP = 0x222;
+	public static final int GOOGLE_ACCOUNT = 0x223;
+	public static final int SYSTEM_USER = 0x224;
 	private int type;
 
 	private String sid;

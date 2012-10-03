@@ -27,15 +27,18 @@ import cmg.org.monitor.dao.impl.AlertDaoImpl;
 import cmg.org.monitor.dao.impl.SystemDaoImpl;
 import cmg.org.monitor.entity.shared.AlertMonitor;
 import cmg.org.monitor.entity.shared.AlertStoreMonitor;
+import cmg.org.monitor.entity.shared.GoogleAccount;
 import cmg.org.monitor.entity.shared.MailConfigMonitor;
 import cmg.org.monitor.entity.shared.MailMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.memcache.Key;
 import cmg.org.monitor.memcache.MonitorMemcache;
+import cmg.org.monitor.services.GoogleAccountService;
 import cmg.org.monitor.util.shared.Constant;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
+import cmg.org.monitor.util.shared.SecurityUtil;
 
 import com.google.gdata.client.appsforyourdomain.migration.MailItemService;
 import com.google.gdata.data.appsforyourdomain.migration.Label;
@@ -67,21 +70,19 @@ public class MailService {
 	private static final Logger logger = Logger.getLogger(AlertDaoImpl.class
 			.getName());
 
-	private final MailItemService mailItemService;
+	private MailItemService mailItemService;
+	
+	GoogleAccount adminAcc;
 
-	public MailService() {
-		// Set up the mail item service.
-		mailItemService = new MailItemService(MonitorConstant.SITES_APP_NAME);
-		Object obj = MonitorMemcache.get(Key.create(Key.TOKEN_MAIL));
-		if(obj != null){
-			if(obj instanceof String){
-				logger.log(Level.INFO,"getting token mail : " + obj.toString());
-				mailItemService.setUserToken(obj.toString());
-			}
+	public MailService(GoogleAccount acc) {		
+		adminAcc = acc;
+		mailItemService = new MailItemService(GoogleAccountService.APPLICATION_NAME);
+		if (adminAcc.getToken() != null && adminAcc.getToken().length()> 0){
+			mailItemService.setUserToken(acc.getToken());
 		}else{
 			try {
-				mailItemService.setUserCredentials(MonitorConstant.ADMIN_EMAIL,
-						MonitorConstant.ADMIN_PASSWORD);
+				mailItemService.setUserCredentials(adminAcc.getUsername() + "@" + adminAcc.getDomain(),
+						SecurityUtil.decrypt(adminAcc.getPassword()));
 			} catch (AuthenticationException ae) {
 				logger.log(Level.SEVERE,
 						" -> ERROR: Sending mail ... AuthenticationException: "
@@ -120,7 +121,7 @@ public class MailService {
 				// send mail
 				MailItemFeed feed = new MailItemFeed();
 				feed.getEntries().add(entry);
-				feed = mailItemService.batch(MonitorConstant.DOMAIN,
+				feed = mailItemService.batch(adminAcc.getDomain(),
 						mailConfig.getMailId(false), feed);
 				MailItemEntry returnedEntry = feed.getEntries().get(0);
 

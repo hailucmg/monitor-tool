@@ -1,6 +1,7 @@
 package cmg.org.monitor.app.schedule;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -9,9 +10,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cmg.org.monitor.dao.SystemAccountDAO;
 import cmg.org.monitor.dao.UtilityDAO;
+import cmg.org.monitor.dao.impl.SystemAccountDaoImpl;
 import cmg.org.monitor.dao.impl.UtilityDaoImpl;
+import cmg.org.monitor.entity.shared.GoogleAccount;
 import cmg.org.monitor.ext.util.MonitorUtil;
+import cmg.org.monitor.services.GoogleAccountService;
 
 public class TokenScheduler extends HttpServlet {
 
@@ -39,10 +44,19 @@ public class TokenScheduler extends HttpServlet {
 			logger.log(Level.INFO, MonitorUtil.parseTime(start, true)
 					+ " -> START: Scheduled token begin ...");
 			// BEGIN LOG
+			
 			UtilityDAO uDAO = new UtilityDaoImpl();
-			uDAO.putTokenMail();
 			uDAO.putTokenSite();
-			uDAO.putTokenGroup();
+			
+			SystemAccountDAO accountDao = new SystemAccountDaoImpl(); 
+			List<GoogleAccount> listAcc = accountDao.listAllGoogleAccount();
+			if (listAcc != null && listAcc.size() > 0) {
+				for (GoogleAccount acc : listAcc) {
+					acc.setToken("");
+					GoogleAccountService service = new GoogleAccountService(acc);
+					service.sync();
+				}
+			}
 			// END LOG
 			long end = System.currentTimeMillis();
 			long time = end - start;
@@ -51,6 +65,7 @@ public class TokenScheduler extends HttpServlet {
 					+ " ms");
 			// END LOG
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			logger.log(
 					Level.SEVERE,
 					" ->ERROR: When Scheduled token. Message: "
