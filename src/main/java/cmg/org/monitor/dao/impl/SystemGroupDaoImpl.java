@@ -110,7 +110,18 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 		} finally {
 			pm.close();
 		}
-
+		if (check) {
+			List<SystemGroup> groups = listSystemGroupFromMemcache();
+			if (groups != null && groups.size() > 0) {
+				for (SystemGroup g : groups) {
+					if (g.getId().equals(id)) {
+						g.setName(groupName);
+						g.setDescription(groupDescription);
+					}
+				}
+				storeListSystemGroupToMemcache(groups);
+			}
+		}
 		return check;
 	}
 
@@ -146,6 +157,21 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 				pm.close();
 			}
 		}
+		List<SystemGroup> list = listSystemGroupFromMemcache();
+		if (list != null && list.size() > 0) {
+			int index = -1;
+			for (int i = 0; i < list.size(); i++) {
+				if (list.get(i).getId().equals(id)) {
+					index = i;
+					break;
+				}
+			}
+			if (index != -1) {
+				list.remove(index);
+				storeListSystemGroupToMemcache(list);
+			}
+		}
+
 		return check;
 	}
 
@@ -192,9 +218,10 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 			throws Exception {
 		SystemAccountDAO accountDao = new SystemAccountDaoImpl();
 		boolean b = false;
+		String userId = "";
 		try {
 			SystemUser user = accountDao.getSystemUserByEmail(userEmail);
-			String userId = user.getId();
+			userId = user.getId();
 			user.addGroup(groupId);
 			accountDao.updateSystemUser(user, true);
 			initPersistence();
@@ -207,6 +234,27 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 		} finally {
 			pm.close();
 		}
+		if (b) {
+			List<SystemUser> users = accountDao.listAllSystemUser(false);
+			if (users != null && users.size() > 0) {
+				for (SystemUser u : users) {
+					if (u.getEmail().equalsIgnoreCase(userEmail)) {
+						u.addGroup(groupId);
+					}
+				}
+				accountDao.storeListSystemUserToMemcache(users);
+			}
+			List<SystemGroup> groups = listSystemGroupFromMemcache();
+			if (groups != null && groups.size() > 0) {
+				for (SystemGroup g : groups) {
+					if (g.getId().equals(groupId)) {
+						g.addUser(userId);
+					}
+				}
+			}
+			storeListSystemGroupToMemcache(groups);
+		}
+
 		return b;
 	}
 
@@ -220,9 +268,10 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 			throws Exception {
 		SystemAccountDAO accountDao = new SystemAccountDaoImpl();
 		boolean b = false;
+		String userId = "";
 		try {
 			SystemUser user = accountDao.getSystemUserByEmail(userEmail);
-			String userId = user.getId();
+			userId = user.getId();
 			user.removeGroup(groupId);
 			accountDao.updateSystemUser(user, true);
 			initPersistence();
@@ -235,6 +284,28 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 		} finally {
 			pm.close();
 		}
+
+		if (b) {
+			List<SystemUser> users = accountDao.listAllSystemUser(false);
+			if (users != null && users.size() > 0) {
+				for (SystemUser u : users) {
+					if (u.getEmail().equalsIgnoreCase(userEmail)) {
+						u.removeGroup(groupId);
+					}
+				}
+				accountDao.storeListSystemUserToMemcache(users);
+			}
+			List<SystemGroup> groups = listSystemGroupFromMemcache();
+			if (groups != null && groups.size() > 0) {
+				for (SystemGroup g : groups) {
+					if (g.getId().equals(groupId)) {
+						g.removeUser(userId);
+					}
+				}
+			}
+			storeListSystemGroupToMemcache(groups);
+		}
+
 		return b;
 	}
 
@@ -314,7 +385,8 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 		}
 	}
 
-	private List<SystemGroup> listSystemGroupFromMemcache() {
+	@Override
+	public List<SystemGroup> listSystemGroupFromMemcache() {
 		List<SystemGroup> tempOut = new ArrayList<SystemGroup>();
 		Gson gson = new Gson();
 		Type type = new TypeToken<Collection<SystemGroup>>() {
@@ -331,7 +403,8 @@ public class SystemGroupDaoImpl implements SystemGroupDAO {
 		return tempOut;
 	}
 
-	private void storeListSystemGroupToMemcache(List<SystemGroup> list) {
+	@Override
+	public void storeListSystemGroupToMemcache(List list) {
 		Gson gson = new Gson();
 		try {
 			System.out.println("START storeListSystemGroupToMemcache");

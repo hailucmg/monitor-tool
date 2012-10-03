@@ -63,6 +63,12 @@ public class GoogleManagement extends AncestorEntryPoint {
 
 	protected void init() {
 		if (currentPage == HTMLControl.PAGE_GOOGLE_MANAGEMENT) {
+			if (currentUser.isAdmin() && currentUser.isNeedAddAccount()) {
+				showMessage(
+						"There are no user in system. Please create a google account to sync. ",
+						"", "",
+						HTMLControl.RED_MESSAGE, true);	
+			}
 			GoogleManagement.exportStaticMethod();
 			GoogleManagement.clearGoogleAccount();
 			GoogleManagement.exportConfirmDialog();
@@ -370,7 +376,8 @@ public class GoogleManagement extends AncestorEntryPoint {
 									}
 
 									@Override
-									public void onSuccess(GoogleAccount[] result) {										
+									public void onSuccess(GoogleAccount[] result) {		
+										currentUser.setNeedAddAccount(false);
 										listGoogleAcc = result;
 										drawTable(result);
 									}

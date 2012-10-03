@@ -23,6 +23,8 @@ public class UserLoginDto implements Serializable {
 
 	private boolean isAdmin;
 	private List<String> groupIds;
+	
+	private boolean needAddAccount = false;
 
 	public UserLoginDto() {
 		this.isAdmin = false;
@@ -147,5 +149,20 @@ public class UserLoginDto implements Serializable {
 
 	public void setGroupIds(List<String> groupIds) {
 		this.groupIds = groupIds;
+	}
+
+	/** 
+	 * @return the needAddAccount 
+	 */
+	public boolean isNeedAddAccount() {
+		return needAddAccount;
+	}
+
+	/** 
+	 * @param needAddAccount the needAddAccount to set 
+	 */
+	
+	public void setNeedAddAccount(boolean needAddAccount) {
+		this.needAddAccount = needAddAccount;
 	}
 }

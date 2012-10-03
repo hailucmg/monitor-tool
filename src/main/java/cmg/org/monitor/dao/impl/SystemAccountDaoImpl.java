@@ -114,6 +114,14 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 			}
 
 		}
+		if (check) {
+			List<SystemUser> listAll = listAllSystemUser(false);
+			if (listAll != null && listAll.size() > 0 && listUser != null
+					&& listUser.size() > 0) {
+				listAll.removeAll(listUser);
+				storeListSystemUserToMemcache(listAll);
+			}
+		}
 		return check;
 	}
 
@@ -139,6 +147,18 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 			throw ex;
 		} finally {
 			pm.close();
+		}
+
+		if (check) {
+			List<GoogleAccount> list = listAllGoogleAccount();
+			if (list != null && list.size() > 0) {
+				for (GoogleAccount acc : list) {
+					if (acc.getId().equals(account.getId())) {
+						acc.swap(account);
+					}
+				}
+			}
+			storeListGoogleAccountToMemcache(list);
 		}
 		return check;
 	}
@@ -198,12 +218,48 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		} finally {
 			pm.close();
 		}
-		if (domain != null && domain.length() > 0) {
-			List<SystemUser> users = listAllSystemUserByDomain(domain, false);
-			if (users != null && users.size() > 0) {
-				for (SystemUser user : users) {
-					deleteSystemUser(user);
+		if (check) {
+			if (domain != null && domain.length() > 0) {
+				List<SystemUser> users = listAllSystemUserByDomain(domain,
+						false);
+				List<SystemUser> listAll = listAllSystemUser(false);
+				if (listAll != null && listAll.size() > 0 && users != null
+						&& users.size() > 0) {
+					for (SystemUser u : users) {
+						int index = -1;
+						for (int i = 0; i < listAll.size(); i++) {
+							if (u.getId().equals(listAll.get(i).getId())) {
+								index = i;
+								break;
+							}
+						}
+						listAll.remove(index);
+					}
+					storeListSystemUserToMemcache(listAll);
 				}
+
+				if (users != null && users.size() > 0) {
+					for (SystemUser user : users) {
+						deleteSystemUser(user);
+					}
+				}
+			}
+		}
+
+		if (check) {
+			List<GoogleAccount> list = listAllGoogleAccount();
+			if (list != null && list.size() > 0) {
+				int index = -1;
+				for (int i = 0; i < list.size(); i++) {
+					if (list.get(i).getId().equals(googleAccId)) {
+						index = i;
+						break;
+					}
+				}
+				if (index != -1) {
+					list.remove(index);
+				}
+				storeListGoogleAccountToMemcache(list);
 			}
 		}
 		return check;
@@ -446,6 +502,23 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 			}
 			pm.close();
 		}
+
+		if (check) {
+			List<SystemUser> users = listAllSystemUser(false);
+			if (users != null && users.size() > 0) {
+				int index = -1;
+				for (int i = 0; i < users.size(); i++) {
+					if (users.get(i).getId().equals(user.getId())) {
+						index = i;
+						break;
+					}
+				}
+				if (index != -1) {
+					users.remove(index);
+					storeListSystemUserToMemcache(users);
+				}
+			}
+		}
 		return check;
 	}
 
@@ -481,6 +554,22 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 				pm.close();
 			}
 
+		}
+		
+		if (check) {
+			List<SystemUser> list = listAllSystemUser(false);
+			if (list != null && list.size() > 0) {
+				for (SystemUser u : list) {
+					if (u.getId().equals(user.getId())) {
+						u.swap(user);
+						if (b) {
+							u.setGroupIDs(user.getGroupIDs());
+							u.setRoleIDs(user.getRoleIDs());
+						}
+					}
+				}
+				storeListSystemUserToMemcache(list);
+			}
 		}
 		return check;
 	}
@@ -660,6 +749,22 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		} finally {
 			pm.close();
 		}
+		if (check) {
+			List<SystemUser> list = listAllSystemUser(false);
+			if (list != null && list.size() > 0) {
+				for (SystemUser user : list) {
+					if (user.getEmail().equalsIgnoreCase(email)) {
+						if (b) {
+							user.addUserRole(role);
+						} else {
+							user.removeUserRole(role);
+						}
+						break;
+					}
+				}
+				storeListSystemUserToMemcache(list);
+			}
+		}
 		return check;
 	}
 
@@ -704,7 +809,8 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		}
 	}
 
-	private List<GoogleAccount> listGoogleAccountFromMemcache() {
+	@Override
+	public List<GoogleAccount> listGoogleAccountFromMemcache() {
 		List<GoogleAccount> tempOut = new ArrayList<GoogleAccount>();
 		Gson gson = new Gson();
 		Type type = new TypeToken<Collection<GoogleAccount>>() {
@@ -721,7 +827,8 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		return tempOut;
 	}
 
-	private void storeListGoogleAccountToMemcache(List<GoogleAccount> list) {
+	@Override
+	public void storeListGoogleAccountToMemcache(List list) {
 		Gson gson = new Gson();
 		try {
 			System.out.println("START storeListGoogleAccountToMemcache");
@@ -756,7 +863,8 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		}
 	}
 
-	private List<SystemUser> listSystemUserFromMemcache() {
+	@Override
+	public List<SystemUser> listSystemUserFromMemcache() {
 		List<SystemUser> tempOut = new ArrayList<SystemUser>();
 		Gson gson = new Gson();
 		Type type = new TypeToken<Collection<SystemUser>>() {
@@ -773,7 +881,8 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		return tempOut;
 	}
 
-	private void storeListSystemUserToMemcache(List<SystemUser> list) {
+	@Override
+	public void storeListSystemUserToMemcache(List list) {
 		Gson gson = new Gson();
 		try {
 			System.out.println("START storeListSystemUserToMemcache");

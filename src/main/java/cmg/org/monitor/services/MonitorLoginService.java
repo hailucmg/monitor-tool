@@ -1,6 +1,7 @@
 package cmg.org.monitor.services;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,8 +38,18 @@ public class MonitorLoginService {
 				userLogin.setEmail(user.getEmail());
 				userLogin.setNickName(user.getNickname());
 				userLogin.setUserId(user.getUserId());
-				SystemAccountDAO accountDao = new SystemAccountDaoImpl();
+				SystemAccountDAO accountDao = new SystemAccountDaoImpl();				
+				List<SystemUser> list = null;
+				try {
+					list = accountDao.listAllSystemUser(true);
+				} catch (Exception e) {
+					//
+				}
+				
 				if (userService.isUserAdmin()) {
+					if (list == null || list.size() == 0) {
+						userLogin.setNeedAddAccount(true);
+					}
 					userLogin.setAdmin(true);
 					userLogin.setRole(MonitorConstant.ROLE_ADMIN);
 				} else {

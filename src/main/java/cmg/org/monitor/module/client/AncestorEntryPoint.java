@@ -37,6 +37,8 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 	protected static Timer timerMem = null;
 	protected static Timer timerService = null;
 	protected static Timer timerFilesystem = null;
+	
+	protected static UserLoginDto currentUser = null;
 
 	protected String hash;
 
@@ -85,6 +87,7 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 		} catch (Exception ex) {
 			Window.Location.replace(HTMLControl.trimHashPart(Window.Location
 					.getHref()));
+			return;
 		}
 
 	}
@@ -162,15 +165,51 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 	}
 
 	private void initHash(String hash) {
-		currentUrl = HTMLControl.trimHashPart(Window.Location.getHref());
+		currentUrl = HTMLControl.trimHashPart(Window.Location.getHref());		
 		if (hash == null || hash.equals("") || hash.equals("dashboard/reload")) {
 			Window.Location.replace(currentUrl
 					+ HTMLControl.HTML_DASHBOARD_NAME);
+			setOnload(false);
+			return;
 		} else if (HTMLControl.validIndex(hash)) {
 			setOnload(true);
 			dialogBox.hide();
 			clear();
 			currentPage = HTMLControl.getPageIndex(hash);
+			if (currentUser != null) {
+				if (currentUser.isLogin()) {
+					if (currentUser.getRole() != MonitorConstant.ROLE_ADMIN
+							&& (currentPage == HTMLControl.PAGE_USER_MANAGEMENT
+									|| currentPage == HTMLControl.PAGE_ADD_SYSTEM
+									|| currentPage == HTMLControl.PAGE_SYSTEM_MANAGEMENT
+									|| currentPage == HTMLControl.PAGE_GOOGLE_MANAGEMENT
+									|| currentPage == HTMLControl.PAGE_GROUP_MANAGEMENT
+									|| currentPage == HTMLControl.PAGE_USER_MANAGEMENT
+									|| currentPage == HTMLControl.PAGE_USER_ROLE
+									|| currentPage == HTMLControl.PAGE_EDIT_GROUP
+									|| currentPage == HTMLControl.PAGE_ADD_GROUP)) {
+						Window.Location.replace(currentUrl
+								+ HTMLControl.HTML_DASHBOARD_NAME);
+						setOnload(false);
+						return;
+					}
+					
+					if (currentUser.isAdmin() 
+							&& currentUser.isNeedAddAccount()
+							&& currentPage != HTMLControl.PAGE_GOOGLE_MANAGEMENT
+							&& currentPage != HTMLControl.PAGE_ABOUT
+							&& currentPage != HTMLControl.PAGE_HELP) {
+						Window.Location.replace(currentUrl
+								+ HTMLControl.HTML_GOOGLE_MANAGEMENT_NAME);
+						setOnload(false);
+						showMessage(
+								"There are no user in system. Please create a google account to sync. ",
+								"", "",
+								HTMLControl.RED_MESSAGE, true);						
+						return;
+					}
+				}
+			}
 			if (currentPage != HTMLControl.PAGE_SYSTEM_DETAIL
 					&& currentPage != HTMLControl.PAGE_SYSTEM_STATISTIC) {
 				addWidget(HTMLControl.ID_PAGE_HEADING,
@@ -221,6 +260,7 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 			public void onSuccess(UserLoginDto result) {
 				if (result != null) {
 					if (result.isLogin()) {
+						currentUser = result;
 						addWidget(HTMLControl.ID_MENU, HTMLControl.getMenuHTML(
 								HTMLControl.PAGE_DASHBOARD, result.getRole()));
 						addWidget(HTMLControl.ID_LOGIN_FORM, HTMLControl
@@ -290,8 +330,9 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 						url, titleUrl, typeMessage, false);
 				if (count <= 0) {
 					setVisibleMessage(false, typeMessage);
-					Window.Location.replace(currentUrl + url);
+					Window.Location.replace(currentUrl + url);					
 					this.cancel();
+					return;
 				}
 			}
 		};

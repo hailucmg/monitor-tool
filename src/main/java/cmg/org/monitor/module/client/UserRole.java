@@ -59,19 +59,19 @@ public class UserRole extends AncestorEntryPoint {
 
 			@Override
 			public void onSuccess(List<SystemUser> result) {
-				if (result != null) {
+				if (result != null && result.size() > 0) {
 					setVisibleLoadingImage(false);
 					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
 					drawTable(result);
 				} else {
-					showMessage("Oops! Error.",
-							HTMLControl.HTML_DASHBOARD_NAME,
-							"Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
+					setVisibleLoadingImage(false);
+					showMessage("No user found. ",HTMLControl.HTML_GOOGLE_MANAGEMENT_NAME,"Goto Google Management", HTMLControl.RED_MESSAGE, true);
 				}
 			}
 
 			@Override
 			public void onFailure(Throwable caught) {
+				setVisibleLoadingImage(false);
 				showMessage("Oops! Error.", HTMLControl.HTML_DASHBOARD_NAME,
 						"Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
 			}

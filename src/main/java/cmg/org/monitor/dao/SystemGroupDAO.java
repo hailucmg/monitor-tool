@@ -30,4 +30,6 @@ public interface SystemGroupDAO {
 	public SystemGroup getByName(String name) throws Exception;
 	
 	public void initSystemGroupMemcache();
+	public List<SystemGroup> listSystemGroupFromMemcache();
+	public void storeListSystemGroupToMemcache(List<SystemGroup> list);
 }
