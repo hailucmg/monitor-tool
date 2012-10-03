@@ -38,14 +38,14 @@ public class MonitorLoginService {
 				userLogin.setEmail(user.getEmail());
 				userLogin.setNickName(user.getNickname());
 				userLogin.setUserId(user.getUserId());
-				SystemAccountDAO accountDao = new SystemAccountDaoImpl();				
+				SystemAccountDAO accountDao = new SystemAccountDaoImpl();
 				List<SystemUser> list = null;
 				try {
 					list = accountDao.listAllSystemUser(true);
 				} catch (Exception e) {
 					//
 				}
-				
+
 				if (userService.isUserAdmin()) {
 					if (list == null || list.size() == 0) {
 						userLogin.setNeedAddAccount(true);
@@ -53,8 +53,15 @@ public class MonitorLoginService {
 					userLogin.setAdmin(true);
 					userLogin.setRole(MonitorConstant.ROLE_ADMIN);
 				} else {
-					SystemUser sysUser = accountDao.getSystemUserByEmail(user
-							.getEmail());
+					SystemUser sysUser = null;
+					if (list != null && list.size() > 0) {
+						for (SystemUser u : list) {
+							if (u.getEmail().equalsIgnoreCase(user.getEmail())) {
+								sysUser = u;
+							}
+						}
+					}
+
 					userLogin.setRole(MonitorConstant.ROLE_GUEST);
 					if (sysUser != null) {
 						userLogin.setGroupIds(sysUser.getGroupIDs());
