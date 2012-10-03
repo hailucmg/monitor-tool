@@ -120,4 +120,8 @@ public interface SystemAccountDAO {
 	
 	public void initSystemUserMemcache();
 	public void initGoogleAccountMemcache();
+	public void storeListSystemUserToMemcache(List<SystemUser> list);
+	public List<SystemUser> listSystemUserFromMemcache();
+	public void storeListGoogleAccountToMemcache(List<GoogleAccount> list);
+	public List<GoogleAccount> listGoogleAccountFromMemcache();
 }

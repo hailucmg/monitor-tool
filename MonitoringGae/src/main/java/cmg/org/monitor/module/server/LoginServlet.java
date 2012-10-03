@@ -2,6 +2,7 @@ package cmg.org.monitor.module.server;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServlet;
@@ -31,8 +32,9 @@ public class LoginServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		try {
-			validLogin(req, resp);
+			checkLogin(req, resp);
 		} catch (IOException ex) {
+			logger.log(Level.SEVERE, "Error: " + ex.getMessage());
 			throw ex;
 		}
 	    
@@ -42,14 +44,14 @@ public class LoginServlet extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		try {
-			validLogin(req, resp);
+			checkLogin(req, resp);
 		} catch (IOException ex) {
+			logger.log(Level.SEVERE, "Error: " + ex.getMessage());
 			throw ex;
 		}
 	}
 	
-	private void validLogin(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		
+	private void checkLogin(HttpServletRequest req, HttpServletResponse resp) throws IOException {		
 		UserService userService = UserServiceFactory.getUserService();
 		User user = userService.getCurrentUser();
 		try {
@@ -65,7 +67,7 @@ public class LoginServlet extends HttpServlet {
 					if (list != null && list.size() > 0) {
 						resp.sendRedirect(resp.encodeRedirectURL(HTMLControl.HTML_INDEX_NAME));
 					} else {
-						resp.sendRedirect(resp.encodeRedirectURL(HTMLControl.HTML_GOOGLE_MANAGEMENT_NAME));
+						resp.sendRedirect(resp.encodeRedirectURL(HTMLControl.HTML_INDEX_NAME + HTMLControl.HTML_GOOGLE_MANAGEMENT_NAME));
 					}
 				} else {
 					resp.sendRedirect(resp.encodeRedirectURL(HTMLControl.HTML_INDEX_NAME));
@@ -75,6 +77,7 @@ public class LoginServlet extends HttpServlet {
 			    		userService.createLoginURL(HTMLControl.HTML_INDEX_NAME, MonitorConstant.DOMAIN)));
 			}
 		} catch (IOException ex) {
+			logger.log(Level.SEVERE, "Error: " + ex.getMessage());
 			throw ex;
 		}
 		
