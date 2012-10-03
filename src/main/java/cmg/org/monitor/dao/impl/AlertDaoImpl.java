@@ -98,7 +98,6 @@ public class AlertDaoImpl implements AlertDao {
 			query.setRange(0, MonitorConstant.STATISTIC_HISTORY_LENGTH);
 			List<AlertStoreMonitor> listData = null;
 			try {
-				pm.currentTransaction().begin();
 				listData = (List<AlertStoreMonitor>) query.execute(sysId);
 				if (listData != null && listData.size() > 0) {
 					list = new ArrayList<AlertStoreMonitor>();
@@ -115,13 +114,11 @@ public class AlertDaoImpl implements AlertDao {
 						list.add(alertStore);
 					}// for
 				}// if
-				pm.currentTransaction().commit();
 			
 			} catch (Exception ex) {
 				logger.log(Level.WARNING, " -> ERROR: "
 						+ ex.getMessage());
 			} finally {
-				query.closeAll();
 				pm.close();
 			}
 		}// if
@@ -168,13 +165,8 @@ public class AlertDaoImpl implements AlertDao {
 			store.setAlerts(tempAlerts);
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			try {
-				pm.currentTransaction().begin();
-				pm.makePersistent(store);
-				pm.currentTransaction().commit();
-			
+				pm.makePersistent(store);			
 			} catch (Exception ex) {
-				pm.currentTransaction().rollback();
-
 				logger.log(Level.WARNING, " -> ERROR: "
 						+ ex.fillInStackTrace().toString());
 			} finally {
