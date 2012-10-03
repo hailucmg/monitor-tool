@@ -181,7 +181,6 @@ public class UserManagement extends AncestorEntryPoint {
 		 final String idCb = idCheckBox;
 		 final boolean map = mapping;
 		monitorGwtSv.updateUserMapping(email, idGroup, mapping, new AsyncCallback<Boolean>() {
-			
 			@Override
 			public void onSuccess(Boolean result) {
 				Element cb = Document.get().getElementById(idCb);
@@ -193,6 +192,7 @@ public class UserManagement extends AncestorEntryPoint {
 						cb.removeAttribute("checked");
 						cb.setAttribute("ischeck", "false");
 					}
+					showMessage("","","",HTMLControl.RED_MESSAGE, false);
 				}else{
 					 if(map){
 						 cb.removeAttribute("checked");
