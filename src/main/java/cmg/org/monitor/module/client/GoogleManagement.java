@@ -72,6 +72,7 @@ public class GoogleManagement extends AncestorEntryPoint {
 			GoogleManagement.exportStaticMethod();
 			GoogleManagement.clearGoogleAccount();
 			GoogleManagement.exportConfirmDialog();
+			GoogleManagement.exportViewLastestLog();
 			flexTable = new FlexTable();
 
 			totalTable = new FlexTable();
@@ -94,6 +95,11 @@ public class GoogleManagement extends AncestorEntryPoint {
 		}
 	}
 
+	public static native void exportViewLastestLog() /*-{
+	$wnd.viewLastestLog =
+	$entry(@cmg.org.monitor.module.client.GoogleManagement::viewLastestLog(Ljava/lang/String;Ljava/lang/String;))
+	}-*/;
+	
 	public static native void exportStaticMethod() /*-{
 													$wnd.syncAccount =
 													$entry(@cmg.org.monitor.module.client.GoogleManagement::syncAccount(Ljava/lang/String;Ljava/lang/String;))
@@ -104,6 +110,24 @@ public class GoogleManagement extends AncestorEntryPoint {
 													$entry(@cmg.org.monitor.module.client.GoogleManagement::clearAccount(Ljava/lang/String;))
 													}-*/;
 
+	static void viewLastestLog(String adminAccount, String id) {
+		monitorGwtSv.viewLastestLog(adminAccount, new AsyncCallback<String>() {
+
+			public void onFailure(Throwable caught) {
+				txtLog.setText("Error. Message: " + caught.getMessage());
+				advancedDisclosure.setOpen(true);
+			}
+
+			public void onSuccess(String result) {
+				if (result == null || result.length() == 0) {
+					result = "No log found";
+				}
+				txtLog.setText(result);
+				advancedDisclosure.setOpen(true);
+			}
+		});
+	}
+	
 	static void clearAccount(String id) {
 		final String userid = id;
 		monitorGwtSv.deleteGoogleAccount(id, new AsyncCallback<Boolean>() {
@@ -434,7 +458,7 @@ public class GoogleManagement extends AncestorEntryPoint {
 					data.setValue(
 							j,
 							3,
-							"<a class='btnSync' title='Synchronized' id='btnSync' domain_name='"
+							"<div class='btnSync' title='Synchronized' id='btnSync' domain_name='"
 									+ sortUser[j].getDomain()
 									+ "' user_name='"
 									+ sortUser[j].getId()
@@ -444,8 +468,26 @@ public class GoogleManagement extends AncestorEntryPoint {
 									+ sortUser[j].getDomain()
 									+ "','"
 									+ sortUser[j].getUsername()
-									+ "');\">"
-									+ "<a id='btnClear' domain_name='c-mg.com.vn' user_name='"
+									+ "');\"></div>"
+									+ "<div id='btnViewLog' user_name='"
+									+ sortUser[j].getId()
+									+ "' onClick=\"javascript:viewLastestLog('"
+									+ sortUser[j].getUsername()
+									+ "@"
+									+ sortUser[j].getDomain()
+									+ "','"
+									+ sortUser[j].getId()
+									+ "');\" title=\"View lastest log\" class=\"btnViewlog\"></div>"
+									+ "<div id='btnDownloadLog'  user_name='"
+									+ sortUser[j].getId()
+									+ "' onClick=\"javascript:downloadFullLog('"
+									+ sortUser[j].getUsername()
+									+ "@"
+									+ sortUser[j].getDomain()
+									+ "','"
+									+ sortUser[j].getId()
+									+ "');\" title=\"Download full log\" class=\"btnDownloadLog\"></div>"
+									+ "<div id='btnClear' domain_name='c-mg.com.vn' user_name='"
 									+ sortUser[j].getId()
 									+ "' onClick=\"javascript:showConfirmDialog('"
 									+ sortUser[j].getUsername()
@@ -453,7 +495,7 @@ public class GoogleManagement extends AncestorEntryPoint {
 									+ sortUser[j].getDomain()
 									+ "','"
 									+ sortUser[j].getId()
-									+ "');\" title=\"Delete\" class=\"btnCancel\"></a>");
+									+ "');\" title=\"Delete\"></div>");
 				}
 			}
 		}

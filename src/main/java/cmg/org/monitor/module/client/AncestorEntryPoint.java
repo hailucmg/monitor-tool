@@ -181,6 +181,7 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 					if (currentUser.getRole() != MonitorConstant.ROLE_ADMIN
 							&& (currentPage == HTMLControl.PAGE_USER_MANAGEMENT
 									|| currentPage == HTMLControl.PAGE_ADD_SYSTEM
+									|| currentPage == HTMLControl.PAGE_SYSTEM_CHANGE_LOG
 									|| currentPage == HTMLControl.PAGE_SYSTEM_MANAGEMENT
 									|| currentPage == HTMLControl.PAGE_GOOGLE_MANAGEMENT
 									|| currentPage == HTMLControl.PAGE_GROUP_MANAGEMENT
