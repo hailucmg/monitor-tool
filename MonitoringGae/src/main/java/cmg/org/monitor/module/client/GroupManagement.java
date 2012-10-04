@@ -3,8 +3,12 @@ package cmg.org.monitor.module.client;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 import cmg.org.monitor.entity.shared.SystemGroup;
+import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.util.shared.HTMLControl;
+
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -78,11 +82,16 @@ public class GroupManagement extends AncestorEntryPoint{
 	
 	 public static native void exportStaticMethod() /*-{
 		$wnd.showConfirmDialogBox =
-		$entry(@cmg.org.monitor.module.client.GroupManagement::showConfirmDialogBox(Ljava/lang/String;Ljava/lang/String;))
+		$entry(@cmg.org.monitor.module.client.GroupManagement::showConfirmDialogBox(Ljava/lang/String;))
 		}-*/;
 
-	    static void showConfirmDialogBox(String name, String id) {
-	    tempName = name;
+	    static void showConfirmDialogBox(String id) {
+	    for(SystemGroup s : listGroup){
+	    	if(s.getId().equals(id)){
+	    		tempName = s.getName();
+	    	}
+	    }
+	    System.out.println(tempName);
 	    idTemp = id;
 		dialogBox = new DialogBox();
 		dialogBox.setAnimationEnabled(true);
@@ -103,7 +112,7 @@ public class GroupManagement extends AncestorEntryPoint{
 		});
 		VerticalPanel dialogVPanel = new VerticalPanel();
 		popupContent = new HTML();
-		popupContent.setHTML("<h4>Do you want to delete Group : " + name + "?</h4>");
+		popupContent.setHTML("<h4>Do you want to delete Group : " + tempName + "?</h4>");
 		flexHTML = new FlexTable();
 		flexHTML.setWidget(0, 0, popupContent);
 		flexHTML.setStyleName("table-popup");
@@ -156,6 +165,7 @@ public class GroupManagement extends AncestorEntryPoint{
 	 */
 	static AbstractDataTable createDataListSystem(List<SystemGroup> listGroup) {
 		// create object data table
+		listGroup = sortBynameSystemGroup(listGroup);
 		DataTable dataListSystem = DataTable.create();
 		// add all columns
 		dataListSystem.addColumn(ColumnType.STRING, "Group Name");
@@ -163,11 +173,11 @@ public class GroupManagement extends AncestorEntryPoint{
 		dataListSystem.addColumn(ColumnType.STRING, "Delete");
 		dataListSystem.addRows(listGroup.size());
 		for (int i = 0; i < listGroup.size(); i++) {
-			dataListSystem.setValue(i, 0,HTMLControl.getLinkEditGroup(listGroup.get(i).getId(), listGroup.get(i).getName()));
-			dataListSystem.setValue(i, 1, listGroup.get(i).getDescription());
+			dataListSystem.setValue(i, 0,HTMLControl.getLinkEditGroup(listGroup.get(i).getId()) + listGroup.get(i).getName());
+			dataListSystem.setValue(i, 1,listGroup.get(i).getDescription());
 			dataListSystem.setValue(i,2,
-							"<a onClick=\"javascript:showConfirmDialogBox('"+ listGroup.get(i).getName()
-									+ "','"+ listGroup.get(i).getId()
+							"<a onClick=\"javascript:showConfirmDialogBox('"
+									+ listGroup.get(i).getId()
 									+ "');\" title=\"Delete\" class=\"icon-2 info-tooltip\"></a>");
 		}
 
@@ -184,6 +194,23 @@ public class GroupManagement extends AncestorEntryPoint{
 		bf.format(dataListSystem, 2);
 		return dataListSystem;
 
+	}
+	
+	public static List<SystemGroup> sortBynameSystemGroup(List<SystemGroup> users) {
+		SystemGroup temp = null;
+		for (int i = 1; i < users.size(); i++) {
+			int j;
+			SystemGroup val = users.get(i);
+			for (j = i - 1; j > -1; j--) {
+				temp = users.get(j);
+				if (temp.compareByName(val) <= 0) {
+					break;
+				}
+				users.set(j+1, temp);
+			}
+			users.set(j+1, val);
+		}
+		return users;
 	}
 	
 	
