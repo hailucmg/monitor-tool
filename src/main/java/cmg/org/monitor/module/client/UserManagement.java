@@ -144,8 +144,8 @@ public class UserManagement extends AncestorEntryPoint {
 		return data;
 	}
 
-	public UserMonitor[] sortByname(UserMonitor[] users) {
-		UserMonitor temp = null;
+	/*public SystemGroup[] sortByname(SystemGroup[] users) {
+		SystemGroup temp = null;
 		for (int i = 1; i < users.length; i++) {
 			int j;
 			UserMonitor val = users[i];
@@ -159,7 +159,7 @@ public class UserManagement extends AncestorEntryPoint {
 			users[j + 1] = val;
 		}
 		return users;
-	}
+	}*/
 
 	private Options option() {
 		Options option = Options.create();
