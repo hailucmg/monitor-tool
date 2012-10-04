@@ -15,6 +15,7 @@ public class MonitorMemcache {
 	 */
 	public static void put(Key key, Object obj) {
 		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService(MEMCACHE_NAMESPACE);
+		System.out.println(key.toString());
 		syncCache.put(key.toString(), obj, null, SetPolicy.SET_ALWAYS);
 	}
 
@@ -25,6 +26,7 @@ public class MonitorMemcache {
 	 */
 	public static Object get(Key key) {
 		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService(MEMCACHE_NAMESPACE);
+		System.out.println(key.toString());
 		return syncCache.get(key.toString());
 	}
 

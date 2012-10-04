@@ -74,7 +74,7 @@ public class ChangeLogMonitor implements IsSerializable{
 	}
 
 	public String getDescription() {
-		return description.getValue();
+		return description == null ? "" : description.getValue();
 	}
 
 	public void setDescription(String description) {

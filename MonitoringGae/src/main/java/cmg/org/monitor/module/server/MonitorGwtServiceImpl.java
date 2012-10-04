@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import cmg.org.monitor.dao.AccountSyncLogDAO;
 import cmg.org.monitor.dao.AlertDao;
 import cmg.org.monitor.dao.CpuDAO;
 import cmg.org.monitor.dao.FileSystemDAO;
@@ -16,6 +17,7 @@ import cmg.org.monitor.dao.SystemAccountDAO;
 import cmg.org.monitor.dao.SystemDAO;
 import cmg.org.monitor.dao.SystemGroupDAO;
 import cmg.org.monitor.dao.UtilityDAO;
+import cmg.org.monitor.dao.impl.AccountSyncLogDaoImpl;
 import cmg.org.monitor.dao.impl.AlertDaoImpl;
 import cmg.org.monitor.dao.impl.CpuDaoImpl;
 import cmg.org.monitor.dao.impl.FileSystemDaoImpl;
@@ -26,6 +28,7 @@ import cmg.org.monitor.dao.impl.SystemAccountDaoImpl;
 import cmg.org.monitor.dao.impl.SystemDaoImpl;
 import cmg.org.monitor.dao.impl.SystemGroupDaoImpl;
 import cmg.org.monitor.dao.impl.UtilityDaoImpl;
+import cmg.org.monitor.entity.shared.AccountSyncLog;
 import cmg.org.monitor.entity.shared.AlertStoreMonitor;
 import cmg.org.monitor.entity.shared.ChangeLogMonitor;
 import cmg.org.monitor.entity.shared.CpuMonitor;
@@ -704,5 +707,19 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	/**
+	 * (non-Javadoc)
+	 * @see cmg.org.monitor.module.client.MonitorGwtService#viewLastestLog(java.lang.String) 
+	 */
+	public String viewLastestLog(String adminAccount) {
+		AccountSyncLogDAO logDao = new AccountSyncLogDaoImpl();
+		try {
+			AccountSyncLog log  = logDao.getLastestLog(adminAccount);
+			return log == null ? "" : log.getLog();
+		} catch (Exception e) {
+			return "Error. Message: " + e.getMessage();
+		}		
 	}
 }

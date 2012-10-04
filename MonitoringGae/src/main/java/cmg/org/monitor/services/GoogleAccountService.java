@@ -20,10 +20,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import cmg.org.monitor.dao.AccountSyncLogDAO;
 import cmg.org.monitor.dao.SystemAccountDAO;
 import cmg.org.monitor.dao.SystemGroupDAO;
+import cmg.org.monitor.dao.impl.AccountSyncLogDaoImpl;
 import cmg.org.monitor.dao.impl.SystemAccountDaoImpl;
 import cmg.org.monitor.dao.impl.SystemGroupDaoImpl;
+import cmg.org.monitor.entity.shared.AccountSyncLog;
 import cmg.org.monitor.entity.shared.GoogleAccount;
 import cmg.org.monitor.entity.shared.SystemRole;
 import cmg.org.monitor.entity.shared.SystemUser;
@@ -77,6 +80,8 @@ public class GoogleAccountService {
 	private static final int LOG_ERROR_LEVEL = 0x003;
 	
 	SystemAccountDAO accountDao = new SystemAccountDaoImpl();
+	
+	AccountSyncLogDAO syncLogDao = new AccountSyncLogDaoImpl();
 
 	StringBuffer bufferLog;
 	GoogleAccount adminAcc;
@@ -108,11 +113,20 @@ public class GoogleAccountService {
 				adminAcc.setToken(us.getValue());
 				
 				userService = new UserService(APPLICATION_NAME);
-				userService.setUserToken(adminAcc.getToken());
-				
+				userService.setUserToken(adminAcc.getToken());				
 			}
 
 		} catch (AuthenticationException e) {
+			AccountSyncLog log = new AccountSyncLog();
+			log.setAdminAccount(adminAcc.getUsername()
+					+ "@" + adminAcc.getDomain());
+			log.setTimestamp(new Date(System.currentTimeMillis()));
+			log.setLog("Authenticantion fail. Message: " + e.getMessage());
+			try {
+				syncLogDao.createLog(log);
+			} catch (Exception e1) {
+				//
+			}
 			logger.log(Level.SEVERE, e.getMessage());
 			throw e;
 		}
@@ -362,8 +376,10 @@ public class GoogleAccountService {
 		}
 		long end = System.currentTimeMillis();
 		long total = end - start;
+		log("User synchronization completed with " + problem
+				+ " problem"+(problem > 1 ? "s" : "")+". Time executed: " + total + " ms");
 		try {
-			adminAcc.setLastSync(new Date(System.currentTimeMillis()));
+			adminAcc.setLastSync(new Date(end));
 			accountDao.updateGoogleAccount(adminAcc);
 			
 		} catch (Exception e) {
@@ -373,8 +389,16 @@ public class GoogleAccountService {
 		groupDao.initSystemGroupMemcache();
 		accountDao.initGoogleAccountMemcache();
 		accountDao.initSystemUserMemcache();
-		log("User synchronization completed with " + problem
-				+ " problem"+(problem > 1 ? "s" : "")+". Time executed: " + total + " ms");
+		AccountSyncLog log = new AccountSyncLog();
+		log.setAdminAccount(adminAcc.getUsername()
+				+ "@" + adminAcc.getDomain());
+		log.setTimestamp(new Date(end));
+		log.setLog(getLog());
+		try {
+			syncLogDao.createLog(log);
+		} catch (Exception e1) {
+			//
+		}
 	}
 
 	public String getLog() {

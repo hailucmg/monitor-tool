@@ -1,5 +1,6 @@
 package cmg.org.monitor.memcache;
 
+import com.google.gson.Gson;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class Key implements IsSerializable {
@@ -32,6 +33,8 @@ public class Key implements IsSerializable {
 	public static final int SYSTEM_GROUP = 0x222;
 	public static final int GOOGLE_ACCOUNT = 0x223;
 	public static final int SYSTEM_USER = 0x224;
+	public static final int ACCOUNT_SYNC_LOG = 0x225;
+	
 	private int type;
 
 	private String sid;
@@ -44,16 +47,9 @@ public class Key implements IsSerializable {
 
 	}
 	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		sb.append(type);
-		sb.append("-");
-		sb.append(sid);
-		sb.append("-");
-		sb.append(options);
-		sb.append("-");
-		sb.append(memType);
-		return sb.toString();
+	public String toString() {		
+		Gson gson = new Gson();
+		return gson.toJson(this);
 	}
 
 	public static Key create(int type) {
