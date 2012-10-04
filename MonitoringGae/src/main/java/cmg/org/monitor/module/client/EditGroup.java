@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cmg.org.monitor.entity.shared.SystemGroup;
-import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.util.shared.HTMLControl;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -104,10 +103,15 @@ public class EditGroup extends AncestorEntryPoint {
 		String msg = "";
 		if (name == null || name.trim().length() == 0) {
 			msg = "This field is required ";
-		} else if (name.contains("$") || name.contains("%")
-				|| name.contains("*")) {
-			msg = "Name is not validate";
 		}else{
+			String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
+			if(name!=null){
+				for(int i =0;i<name.length();i++){
+					if (regex.indexOf(name.charAt(i)) != -1) {
+					  		msg="Name is not vaidate!";
+					  	}
+				}
+			}
 			for(SystemGroup gName : groupNames){
 				if(name.equalsIgnoreCase(gName.getName()) && !name.equalsIgnoreCase(oldGroupName)){
 					msg = "This name is existed	";
