@@ -94,15 +94,15 @@ public class UserRole extends AncestorEntryPoint {
 			data.setValue(j, 1, sortUser.get(j).getUsername());
 			data.setValue(j, 2, sortUser.get(j).getFullName());
 			if(sortUser.get(j).checkRole(SystemRole.ROLE_ADMINISTRATOR)){
-			    data.setValue(j, 3, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_ADMINISTRATOR+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;' checked='checked'>");
+			    data.setValue(j, 3, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_ADMINISTRATOR+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;' checked='checked'>");
 			}else{
-			    data.setValue(j, 3, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_ADMINISTRATOR+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;'>");
+			    data.setValue(j, 3, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_ADMINISTRATOR+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;'>");
 			}
 			
 			if(sortUser.get(j).checkRole(SystemRole.ROLE_USER)){
-			    data.setValue(j, 4, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_USER+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;' checked='checked'>");
+			    data.setValue(j, 4, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_USER+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;' checked='checked'>");
 			}else{
-			    data.setValue(j, 4, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_USER+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;'>");
+			    data.setValue(j, 4, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_USER+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;'>");
 			}
 		}
 		return data;

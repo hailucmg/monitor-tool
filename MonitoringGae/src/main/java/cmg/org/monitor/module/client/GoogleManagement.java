@@ -78,7 +78,7 @@ public class GoogleManagement extends AncestorEntryPoint {
 			txtLog = new TextArea();
 			txtLog.setWidth("1185px");
 			txtLog.setHeight("300px");
-			txtLog.setEnabled(false);
+			txtLog.setReadOnly(true);
 			advancedDisclosure = new DisclosurePanel("View Log");
 			advancedDisclosure.setAnimationEnabled(true);
 			advancedDisclosure.setContent(txtLog);
@@ -245,7 +245,11 @@ public class GoogleManagement extends AncestorEntryPoint {
 		// btnClearAccount = new Button("Clear account");
 
 		txtDomain = new TextBox();
+		txtDomain.getElement().setAttribute("style", "margin-left:2px;");
+		txtDomain.setWidth("167px");
 		txtUsername = new TextBox();
+		txtUsername.getElement().setAttribute("style", "margin-left:2px;");
+		txtUsername.setWidth("167px");
 		txtPassword = new PasswordTextBox();
 		txtConfirmPwd = new PasswordTextBox();
 		txtPassword.getElement().setAttribute("style", "margin-left:2px;");
