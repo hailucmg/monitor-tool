@@ -66,6 +66,7 @@ public class EditSystem extends AncestorEntryPoint {
 	AbsolutePanel paneltxtEmail;
 	AbsolutePanel panelButton;
 	AbsolutePanel panelValidateEmail;
+	AbsolutePanel panelValidateGroups;
 	private static FlexTable tableForm;
 	private static Grid tableNotify;
 	private DisclosurePanel advancedDisclosure;
@@ -126,14 +127,24 @@ public class EditSystem extends AncestorEntryPoint {
 							listGroup.setWidth("198px");
 							listGroup.setHeight("28px");
 							SystemGroup[] groups = container.getListSystemGroup();
+							boolean checkExistGroup = false;
 							if (groups != null && groups.length > 0) {
 								for (int i = 0; i < groups.length; i++) {
 									listGroup.addItem(groups[i].getName());
 									if (system.getGroupEmail().equalsIgnoreCase(groups[i].getName())) {
 										index = i;
+										checkExistGroup = true;
 									}
-									listGroup.setSelectedIndex(index);
+									
 								}
+								//check if group not existed
+								if(checkExistGroup){
+									listGroup.setSelectedIndex(index);
+								}else{
+									listGroup.addItem("");
+									listGroup.setSelectedIndex(groups.length);
+								}
+								
 								tableNotify = new Grid(5, 2);
 								tableNotify.setCellSpacing(3);
 								cbNotifyCpu = new CheckBox();
@@ -334,7 +345,9 @@ public class EditSystem extends AncestorEntryPoint {
 								panelValidateURL = new AbsolutePanel();
 
 								panelValidateRemoteURL = new AbsolutePanel();
-
+								
+								panelValidateGroups = new AbsolutePanel();
+								
 								tableForm.setWidget(0, 0, labelName);
 								tableForm.setWidget(0, 1, txtName);
 								tableForm.setWidget(0, 2, panelValidateName);
@@ -353,6 +366,7 @@ public class EditSystem extends AncestorEntryPoint {
 								tableForm.setWidget(5, 2, panelValidateEmail);
 								tableForm.setWidget(6, 0, labelmailgroup);
 								tableForm.setWidget(6, 1, listGroup);
+								tableForm.setWidget(6, 2, panelValidateGroups);
 								tableForm.setWidget(7, 0, labelremoteurl);
 								tableForm.setWidget(7, 1, txtRemote);
 								tableForm.setWidget(7, 2, panelValidateRemoteURL);
@@ -473,7 +487,8 @@ public class EditSystem extends AncestorEntryPoint {
 			public void onClick(ClickEvent event) {
 				if (listProtocol.getItemText(listProtocol.getSelectedIndex())
 						.equals(MonitorConstant.HTTP_PROTOCOL)) {
-					
+					String validateGroup = listGroup.getItemText(listGroup
+							.getSelectedIndex());
 					String validateName = validateName(txtName.getText());
 					String validateURL = validateURL(txtURL.getText());
 					String validateIp = validateIP(txtIP.getText());
@@ -484,6 +499,7 @@ public class EditSystem extends AncestorEntryPoint {
 					panelValidateName.setVisible(false);
 					panelValidateIP.setVisible(false);
 					panelValidateURL.setVisible(false);
+					panelValidateGroups.setVisible(false);
 					if (validateName != "") {
 						panelValidateName.clear();
 						panelValidateName.add(new HTML(
@@ -494,6 +510,7 @@ public class EditSystem extends AncestorEntryPoint {
 						panelValidateIP.setVisible(false);
 						panelValidateRemoteURL.setVisible(false);
 						panelValidateEmail.setVisible(false);
+						panelValidateGroups.setVisible(false);
 						return;
 					} else if (validateURL != "") {
 						panelValidateURL.clear();
@@ -505,6 +522,7 @@ public class EditSystem extends AncestorEntryPoint {
 						panelValidateRemoteURL.setVisible(false);
 						panelValidateIP.setVisible(false);
 						panelValidateEmail.setVisible(false);
+						panelValidateGroups.setVisible(false);
 						return;
 					} else if (validateIp != "") {
 						panelValidateIP.clear();
@@ -516,6 +534,7 @@ public class EditSystem extends AncestorEntryPoint {
 						panelValidateEmail.setVisible(false);
 						panelValidateIP.setVisible(false);
 						panelValidateURL.setVisible(false);
+						panelValidateGroups.setVisible(false);
 						return;
 					} else if (validateRemoteURL != "") {
 						if (!listProtocol.getItemText(
@@ -529,9 +548,20 @@ public class EditSystem extends AncestorEntryPoint {
 							panelValidateName.setVisible(false);
 							panelValidateEmail.setVisible(false);
 							panelValidateURL.setVisible(false);
+							panelValidateGroups.setVisible(false);
 							return;
 						}
+					}else if(validateGroup == ""){
+						panelValidateGroups.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">Please select a Group</div>"));
+						panelValidateGroups.setVisible(true);
+						panelValidateEmail.setVisible(false);
+						panelValidateIP.setVisible(false);
+						panelValidateName.setVisible(false);
+						panelValidateIP.setVisible(false);
+						panelValidateURL.setVisible(false);
+						return;
 					}
+					panelValidateGroups.setVisible(false);
 					panelValidateEmail.setVisible(false);
 					panelValidateIP.setVisible(false);
 					panelValidateName.setVisible(false);
@@ -566,6 +596,8 @@ public class EditSystem extends AncestorEntryPoint {
 				} else if (listProtocol.getItemText(
 						listProtocol.getSelectedIndex()).equals(
 						MonitorConstant.SMTP_PROTOCOL)) {
+					String validateGroup = listGroup.getItemText(listGroup
+							.getSelectedIndex());
 					String validateName = validateName(txtName.getText());
 					String validateURL = validateURL(txtURL.getText());
 					String validateIp = validateIP(txtIP.getText());
@@ -575,6 +607,7 @@ public class EditSystem extends AncestorEntryPoint {
 					panelValidateName.setVisible(false);
 					panelValidateIP.setVisible(false);
 					panelValidateURL.setVisible(false);
+					panelValidateGroups.setVisible(false);
 					if (validateName != "") {
 						panelValidateName.clear();
 						panelValidateName.add(new HTML(
@@ -585,6 +618,7 @@ public class EditSystem extends AncestorEntryPoint {
 						panelValidateIP.setVisible(false);
 						panelValidateRemoteURL.setVisible(false);
 						panelValidateEmail.setVisible(false);
+						panelValidateGroups.setVisible(false);
 						return;
 					} else if (validateURL != "") {
 						panelValidateURL.clear();
@@ -596,6 +630,7 @@ public class EditSystem extends AncestorEntryPoint {
 						panelValidateRemoteURL.setVisible(false);
 						panelValidateIP.setVisible(false);
 						panelValidateEmail.setVisible(false);
+						panelValidateGroups.setVisible(false);
 						return;
 					} else if (validateIp != "") {
 						panelValidateIP.clear();
@@ -607,6 +642,7 @@ public class EditSystem extends AncestorEntryPoint {
 						panelValidateEmail.setVisible(false);
 						panelValidateIP.setVisible(false);
 						panelValidateURL.setVisible(false);
+						panelValidateGroups.setVisible(false);
 						return;
 					} else if (validateEmail != "") {
 						panelValidateEmail.clear();
@@ -618,9 +654,20 @@ public class EditSystem extends AncestorEntryPoint {
 						panelValidateName.setVisible(false);
 						panelValidateIP.setVisible(false);
 						panelValidateURL.setVisible(false);
+						panelValidateGroups.setVisible(false);
 						return;
 
+					}else if(validateGroup == ""){
+						panelValidateGroups.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">Please select a Group</div>"));
+						panelValidateGroups.setVisible(true);
+						panelValidateEmail.setVisible(false);
+						panelValidateIP.setVisible(false);
+						panelValidateName.setVisible(false);
+						panelValidateIP.setVisible(false);
+						panelValidateURL.setVisible(false);
+						return;
 					}
+					panelValidateGroups.setVisible(false);
 					panelValidateEmail.setVisible(false);
 					panelValidateIP.setVisible(false);
 					panelValidateName.setVisible(false);
