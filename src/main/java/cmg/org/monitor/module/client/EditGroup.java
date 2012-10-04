@@ -104,14 +104,6 @@ public class EditGroup extends AncestorEntryPoint {
 		if (name == null || name.trim().length() == 0) {
 			msg = "This field is required ";
 		}else{
-			String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
-			if(name!=null){
-				for(int i =0;i<name.length();i++){
-					if (regex.indexOf(name.charAt(i)) != -1) {
-					  		msg="Name is not vaidate!";
-					  	}
-				}
-			}
 			for(SystemGroup gName : groupNames){
 				if(name.equalsIgnoreCase(gName.getName()) && !name.equalsIgnoreCase(oldGroupName)){
 					msg = "This name is existed	";
