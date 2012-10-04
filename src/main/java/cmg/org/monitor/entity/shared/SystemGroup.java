@@ -10,6 +10,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import cmg.org.monitor.ext.model.shared.UserMonitor;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /** 
@@ -36,6 +38,20 @@ public class SystemGroup implements IsSerializable  {
 	@Persistent
 	private String[] userIDs;
 	
+	private String tempName;
+	
+	public String getTempName() {
+		return tempName;
+	}
+
+	public void setTempName(String tempName) {
+		this.tempName = tempName;
+	}
+
+	public void setUserIDs(String[] userIDs) {
+		this.userIDs = userIDs;
+	}
+
 	public void addUser(String userId) {
 		boolean check = false;
 		List<String> users =getUserIDs();
@@ -87,7 +103,11 @@ public class SystemGroup implements IsSerializable  {
 			return list;
 		}		
 	}
-
+	
+	public int compareByName(SystemGroup c) {
+		return name.trim().compareTo(c.getName().trim());
+	}
+	
 	/** 
 	 * @param userIDs the userIDs to set 
 	 */
