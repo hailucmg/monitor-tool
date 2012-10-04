@@ -8,7 +8,6 @@ import cmg.org.monitor.util.shared.HTMLControl;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -33,20 +32,16 @@ public class AddNewGroup extends AncestorEntryPoint {
     Button bttBack;
     Button bttReset;
     boolean addSuccess = false;
+    
+    
+    
 
+    
     private String validateGroupName(String name) {
 		String msg = "";
 		if (name == null || name.trim().length() == 0) {
 		    msg = "This field is required ";
 		} else {
-			String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
-			if(name!=null){
-				for(int i =0;i<name.length();i++){
-					if (regex.indexOf(name.charAt(i)) != -1) {
-					  		msg="Name is not vaidate!";
-					  	}
-				}
-			}
 		    if (groupNames != null) {
 			for (SystemGroup gName : groupNames) {
 			    if (name.equalsIgnoreCase(gName.getName())) {
@@ -165,8 +160,8 @@ public class AddNewGroup extends AncestorEntryPoint {
 		panelValidateGroupName.setVisible(false);
 		panelValidateGroupDescription.setVisible(false);
 		panelAdding.setVisible(true);
-		String groupName = URL.encode(txtGroupName.getText());
-		String groupDesc = URL.encode(txtGroupDescription.getText());
+		String groupName = txtGroupName.getText();
+		String groupDesc = txtGroupDescription.getText();
 		sendData(groupName,groupDesc);
 	    }
 	});
