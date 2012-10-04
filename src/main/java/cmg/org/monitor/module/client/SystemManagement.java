@@ -33,6 +33,7 @@ public class SystemManagement extends AncestorEntryPoint {
 	static TextBox linkTxt;
 	static Button updateBtn;
 	static Label linkLb;
+	static Label redirectLb;
 
 	protected void init() {
 		SystemManagement.exportStaticMethod();
@@ -43,7 +44,9 @@ public class SystemManagement extends AncestorEntryPoint {
 			linkTxt = new TextBox();
 			updateBtn = new Button("Update");
 			linkLb = new Label();
-			linkLb.setText("Redirect link ");
+			linkLb.setText("Proxy link ");
+			redirectLb = new Label();
+			redirectLb.setText("This will be used to get data from remote system when the monitor tool can't get data directly because unsigned certificate failure");
 			tableLinkDefault = new FlexTable();
 			rootLinkDefault = new FlexTable();
 			tableLinkDefault.getCellFormatter().setVerticalAlignment(0, 0,
@@ -52,9 +55,12 @@ public class SystemManagement extends AncestorEntryPoint {
 					HasVerticalAlignment.ALIGN_MIDDLE);
 			tableLinkDefault.getCellFormatter().setVerticalAlignment(0, 2,
 					HasVerticalAlignment.ALIGN_MIDDLE);
+			tableLinkDefault.getCellFormatter().setVerticalAlignment(0, 3,
+				HasVerticalAlignment.ALIGN_MIDDLE);
 			tableLinkDefault.setWidget(0, 0, linkLb);
 			tableLinkDefault.setWidget(0, 1, linkTxt);
 			tableLinkDefault.setWidget(0, 2, updateBtn);
+			tableLinkDefault.setWidget(0, 3, redirectLb);
 			rootLinkDefault.setWidget(0, 0, tableLinkDefault);
 			rootLinkDefault.setWidget(1, 0, tableListSystem);
 			updateBtn.addClickHandler(new ClickHandler() {
