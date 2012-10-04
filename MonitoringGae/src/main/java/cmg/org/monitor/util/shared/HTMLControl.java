@@ -2,6 +2,7 @@ package cmg.org.monitor.util.shared;
 
 import cmg.org.monitor.entity.shared.SystemMonitor;
 
+
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.HTML;
 
@@ -372,10 +373,13 @@ public class HTMLControl {
 
 	}
 	
-	public static String getLinkEditGroup(String id, String name){
-		return "<a href=\"" + HTML_EDIT_GROUP_NAME + "/" + id + "\">" + name + "</a>";
-	
+	public static String getLinkEditGroup(String id){
+		String a = "<a href=\"" + HTML_EDIT_GROUP_NAME + "/" + id + "\" >";
+		return a;
 	}
+	
+	
+	
 	
 	public static String getStringTime(int secsIn) {
 		int hours = secsIn / 3600, remainder = secsIn % 3600, minutes = remainder / 60, seconds = remainder % 60;
