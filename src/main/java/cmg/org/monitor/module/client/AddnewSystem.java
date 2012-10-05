@@ -1,5 +1,8 @@
 package cmg.org.monitor.module.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cmg.org.monitor.entity.shared.NotifyMonitor;
 import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemMonitor;
@@ -199,7 +202,24 @@ public class AddnewSystem extends AncestorEntryPoint {
 		}
 		return msg;
 	}
-
+	
+	public static List<SystemGroup> sortBynameSystemGroup(List<SystemGroup> groups) {
+		SystemGroup temp = null;
+		for (int i = 1; i < groups.size(); i++) {
+			int j;
+			SystemGroup val = groups.get(i);
+			for (j = i - 1; j > -1; j--) {
+				temp = groups.get(j);
+				if (temp.compareByName(val) <= 0) {
+					break;
+				}
+				groups.set(j+1, temp);
+			}
+			groups.set(j+1, val);
+		}
+		return groups;
+	}
+	
 	void initUi() {
 		tableNotify = new Grid(5, 2);
 		tableNotify.setCellSpacing(3);
@@ -423,8 +443,14 @@ public class AddnewSystem extends AncestorEntryPoint {
 						container = result;
 						SystemGroup[] groups = container.getListSystemGroup();
 						if (groups != null) {
+							List<SystemGroup> list = new ArrayList<SystemGroup>();
 							for (SystemGroup g : groups) {
-								listGroup.addItem(g.getName());
+								list.add(g);
+							}
+							//sort group;
+							list = sortBynameSystemGroup(list);
+							for(SystemGroup s : list){
+								listGroup.addItem(s.getName());
 							}
 							listGroup.setSelectedIndex(0);
 							addWidget(HTMLControl.ID_BODY_CONTENT, tableForm);
