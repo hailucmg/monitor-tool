@@ -12,14 +12,17 @@ import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.util.shared.HTMLControl;
 
+
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ScrollPanel;
+
 import com.google.gwt.user.client.ui.SimplePanel;
+
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
+
 import com.google.gwt.visualization.client.visualizations.Table;
 import com.google.gwt.visualization.client.visualizations.Table.Options;
 
@@ -77,11 +80,15 @@ public class UserManagement extends AncestorEntryPoint {
 					}else if(checkGroup && checkUser){
 						setVisibleLoadingImage(false);
 						setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+						/*Element div =  Document.get().getElementById("body-content");
+						div.setInnerHTML("<div class=\"userGroupPanel\">" + drawTableHTML(listUser, listGroup) + "</div>");*/
 						drawTable(listUser, listGroup);
 					}
 				}else{
+					
 					setVisibleLoadingImage(false);
 					showMessage("No user found.",HTMLControl.HTML_GOOGLE_MANAGEMENT_NAME, "Goto Google Management",HTMLControl.RED_MESSAGE, true);
+					
 				}
 				
 			}
@@ -115,18 +122,53 @@ public class UserManagement extends AncestorEntryPoint {
 		}
 	}
 	
-	
+	/*private String drawTableHTML(List<SystemUser> listUser ,List<SystemGroup> listGroup){
+		listGroup = sortBynameSystemGroup(listGroup);
+		int indexGroup = listGroup.size();
+		String html = "<table id=\"tableMapping\" border=\"1\">";
+		html = html + "<tr><th>User\\Group</th>";
+		for(int i = 0; i < listGroup.size();i++){
+			html= html + "<th style=\"width : 200px;\">"+listGroup.get(i).getName() +"</th>";
+		}
+		html = html+ "</tr>";
+		for(int j = 0 ; j < listUser.size() ; j++){
+			html = html + "<tr>";
+			html = html + "<td >" + listUser.get(j).getEmail()+" ("+listUser.get(j).getFirstName()  +" " +listUser.get(j).getLastName()+")" + "</td>";
+			for(int k = 0; k < indexGroup ; k++){
+				List<String> listGroupUSer = listUser.get(j).getGroupIDs();
+				boolean checkInGroup = false;
+				for(String g : listGroupUSer){
+					if(g.equalsIgnoreCase(listGroup.get(k).getId())){
+						checkInGroup = true;
+					}
+				}
+				
+				if(checkInGroup){
+					String id =listUser.get(j).getId()+ "-" + listGroup.get(k).getId();
+					html = html + "<td>" + "<input type=\"checkbox\" title=\""+listUser.get(j).getEmail()+"\"  onClick=\"javascript:RecipeData('"+listUser.get(j).getEmail() +"','" + listGroup.get(k).getId() + "','" + id +"');\"      id=\""+id+"\"  class=\"checkbox-size\" ischeck=\"true\"  checked=\"checked\"> " + "</td>";
+				}else{
+					String id =listUser.get(j).getId()+"-"+listGroup.get(k).getId();
+					html = html + "<td>" + "<input type=\"checkbox\" title=\""+listUser.get(j).getEmail()+"\"  onClick=\"javascript:RecipeData('"+listUser.get(j).getEmail() +"','" + listGroup.get(k).getId() + "','" + id +"');\" id=\""+id+"\"  class=\"checkbox-size\" ischeck =\"false\">" +"</td>";
+				}
+				if(k == indexGroup-1){
+					html = html +"</tr>";
+				}
+			}
+		}
+		html = html + "</table>";
+		return html;
+	}*/
 	private AbstractDataTable createData(List<SystemUser> listUser ,List<SystemGroup> listGroup) {
 		listGroup = sortBynameSystemGroup(listGroup);
 		DataTable data = DataTable.create();
 		int indexGroup = listGroup.size();
-		data.addColumn(ColumnType.STRING, "username\\group");
+		data.addColumn(ColumnType.STRING, "user\\group");
 		for(int i = 0; i < listGroup.size();i++){
 			data.addColumn(ColumnType.STRING, listGroup.get(i).getName());
 		}
 		data.addRows(listUser.size());
 		for(int j = 0 ; j < listUser.size() ; j++){
-			data.setValue(j, 0,  listUser.get(j).getEmail()+" ("+listUser.get(j).getFirstName()  +" " +listUser.get(j).getLastName()+")");
+			data.setValue(j, 0,  "<div style=\"min-width:400px\">" + listUser.get(j).getEmail()+" ("+listUser.get(j).getFirstName()  +" " +listUser.get(j).getLastName()+")" + "<div>");
 			for(int k = 0; k < indexGroup ; k++){
 				List<String> listGroupUSer = listUser.get(j).getGroupIDs();
 				boolean checkInGroup = false;
@@ -138,12 +180,13 @@ public class UserManagement extends AncestorEntryPoint {
 				
 				if(checkInGroup){
 					String id =listUser.get(j).getId()+ "-" + listGroup.get(k).getId();	
-					data.setValue(j, k+1, "<input type=\"checkbox\" title=\""+listUser.get(j).getEmail()+"\"  onClick=\"javascript:RecipeData('"+listUser.get(j).getEmail() +"','" + listGroup.get(k).getId() + "','" + id +"');\"      id=\""+id+"\"  style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;' ischeck=\"true\"  checked=\"checked\"> ");
-					
+					data.setValue(j, k+1, "<input type=\"checkbox\" title=\""+listUser.get(j).getEmail()+"\"  onClick=\"javascript:RecipeData('"+listUser.get(j).getEmail() +"','" + listGroup.get(k).getId() + "','" + id +"');\"      id=\""+id+"\"  class=\"checkbox-size\" style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;' ischeck=\"true\"  checked=\"checked\"> ");
 				}else{
 					String id =listUser.get(j).getId()+"-"+listGroup.get(k).getId();	
-					data.setValue(j, k+1, "<input type=\"checkbox\" title=\""+listUser.get(j).getEmail()+"\"  onClick=\"javascript:RecipeData('"+listUser.get(j).getEmail() +"','" + listGroup.get(k).getId() + "','" + id +"');\" id=\""+id+"\" style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;' ischeck =\"false\">");
+					data.setValue(j, k+1, "<input type=\"checkbox\" title=\""+listUser.get(j).getEmail()+"\"  onClick=\"javascript:RecipeData('"+listUser.get(j).getEmail() +"','" + listGroup.get(k).getId() + "','" + id +"');\" id=\""+id+"\"  class=\"checkbox-size\" style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;' ischeck =\"false\">");
+					
 				}
+				
 			}
 		}
 		return data;
@@ -177,6 +220,7 @@ public class UserManagement extends AncestorEntryPoint {
 	private void drawTable(List<SystemUser> listUser , List<SystemGroup> listGroup ) {
 		if(listUser.size() > 0 && listGroup.size() > 0){
 			myTable.draw(createData(listUser,listGroup), option());
+			
 		}else{
 			showMessage("No user found.",HTMLControl.HTML_GOOGLE_MANAGEMENT_NAME, "Goto Google Management",HTMLControl.RED_MESSAGE, true);
 		}

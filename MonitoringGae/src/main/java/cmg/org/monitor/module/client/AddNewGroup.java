@@ -32,11 +32,7 @@ public class AddNewGroup extends AncestorEntryPoint {
     Button bttBack;
     Button bttReset;
     boolean addSuccess = false;
-    
-    
-    
-
-    
+  
     private String validateGroupName(String name) {
     	
 		String msg = "";

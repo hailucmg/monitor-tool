@@ -1,5 +1,8 @@
 package cmg.org.monitor.module.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cmg.org.monitor.entity.shared.NotifyMonitor;
 import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemMonitor;
@@ -127,22 +130,34 @@ public class EditSystem extends AncestorEntryPoint {
 							listGroup.setWidth("198px");
 							listGroup.setHeight("28px");
 							SystemGroup[] groups = container.getListSystemGroup();
+							List<SystemGroup> list = new ArrayList<SystemGroup>();
 							boolean checkExistGroup = false;
 							if (groups != null && groups.length > 0) {
 								for (int i = 0; i < groups.length; i++) {
-									listGroup.addItem(groups[i].getName());
 									if (system.getGroupEmail().equalsIgnoreCase(groups[i].getName())) {
-										index = i;
 										checkExistGroup = true;
+										list.add(groups[i]);
 									}
 									
 								}
 								//check if group not existed
 								if(checkExistGroup){
-									listGroup.setSelectedIndex(index);
+									list = sortBynameSystemGroup(list);
+									for(int i = 0 ; i < list.size();i++){
+										if(list.get(i).getName().equals(system.getName())){
+											listGroup.addItem(list.get(i).getName());
+											listGroup.setSelectedIndex(i);
+										}else{
+											listGroup.addItem(list.get(i).getName());
+										}
+									}	
 								}else{
 									listGroup.addItem("");
-									listGroup.setSelectedIndex(groups.length);
+									listGroup.setSelectedIndex(0);
+									list = sortBynameSystemGroup(list);
+									for(SystemGroup g : list){
+										listGroup.addItem(g.getName());
+									}
 								}
 								
 								tableNotify = new Grid(5, 2);
@@ -734,7 +749,22 @@ public class EditSystem extends AncestorEntryPoint {
 	}
 
 	
-
+	public static List<SystemGroup> sortBynameSystemGroup(List<SystemGroup> groups) {
+		SystemGroup temp = null;
+		for (int i = 1; i < groups.size(); i++) {
+			int j;
+			SystemGroup val = groups.get(i);
+			for (j = i - 1; j > -1; j--) {
+				temp = groups.get(j);
+				if (temp.compareByName(val) <= 0) {
+					break;
+				}
+				groups.set(j+1, temp);
+			}
+			groups.set(j+1, val);
+		}
+		return groups;
+	}
 	private boolean isActive(String active) {
 		boolean isActive = false;
 		if (active.equals("Yes")) {
