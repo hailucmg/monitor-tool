@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import cmg.org.monitor.dao.AccountSyncLogDAO;
 import cmg.org.monitor.dao.AlertDao;
 import cmg.org.monitor.dao.CpuDAO;
@@ -449,6 +451,30 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		SystemGroupDAO sysGroupDao = new SystemGroupDaoImpl();
 		try {
 			SystemGroup[] sysGroup = sysGroupDao.getAllGroup();
+			/*	List<SystemGroup> temp = new ArrayList<SystemGroup>();
+			for(SystemGroup s : sysGroup){
+				temp.add(s);
+			}
+			temp = sysGroupDao.sortBynameSystemGroup(temp);
+			SystemGroup[] sortGroup = new SystemGroup[temp.size()];
+			temp.toArray(sortGroup);*/
+			if(sysGroup!=null){
+				String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
+				for (SystemGroup g: sysGroup) {
+					for(int i=0;i<g.getName().length();i++){
+						if (regex.indexOf(g.getName().charAt(i)) != -1) {
+								g.setName(StringEscapeUtils.escapeHtml3(g.getName()));
+								break;
+						}
+					}
+					for(int i =0; i<g.getDescription().length(); i++){
+						if (regex.indexOf(g.getDescription().charAt(i)) != -1) {
+								g.setDescription(StringEscapeUtils.escapeHtml3(g.getDescription()));
+								break;
+						}
+					}
+				}
+			}
 			return sysGroup;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -619,7 +645,30 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			MonitorContainer container = new MonitorContainer();
 
 			SystemGroup[] sysGroup = sysGroupDao.getAllGroup();
-
+			/*	List<SystemGroup> temp = new ArrayList<SystemGroup>();
+			for(SystemGroup s : sysGroup){
+				temp.add(s);
+			}
+			temp = sysGroupDao.sortBynameSystemGroup(temp);
+			SystemGroup[] sortGroup = new SystemGroup[temp.size()];
+			temp.toArray(sortGroup);*/
+			if(sysGroup!=null){
+				String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
+				for (SystemGroup g: sysGroup) {
+					for(int i=0;i<g.getName().length();i++){
+						if (regex.indexOf(g.getName().charAt(i)) != -1) {
+								g.setName(StringEscapeUtils.escapeHtml3(g.getName()));
+								break;
+						}
+					}
+					for(int i =0; i<g.getDescription().length(); i++){
+						if (regex.indexOf(g.getDescription().charAt(i)) != -1) {
+								g.setDescription(StringEscapeUtils.escapeHtml3(g.getDescription()));
+								break;
+						}
+					}
+				}
+			}
 			container.setListSystemGroup(sysGroup);
 			List<SystemUser> sysUSers = sysAccountDAO.listAllSystemUser(true);
 			SystemUser[] listUser = new SystemUser[sysUSers.size()];
