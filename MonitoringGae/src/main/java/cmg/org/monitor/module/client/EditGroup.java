@@ -104,11 +104,14 @@ public class EditGroup extends AncestorEntryPoint {
 		if (name == null || name.trim().length() == 0) {
 			msg = "This field is required ";
 		}else{
-			for(SystemGroup gName : groupNames){
-				if(name.equalsIgnoreCase(gName.getName()) && !name.equalsIgnoreCase(oldGroupName)){
-					msg = "This name is existed	";
+			if(groupNames!=null){
+				for(SystemGroup gName : groupNames){
+					if(name.equalsIgnoreCase(gName.getName()) && !name.equalsIgnoreCase(oldGroupName)){
+						msg = "This name is existed	";
+					}
 				}
 			}
+			
 		}
 		return msg;
 	}
