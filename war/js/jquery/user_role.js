@@ -10,5 +10,7 @@ jQuery(document).ready(function() {
 			window.updateUserRole(username,role,false);
 		}
 	});
+	
+	
 }
   

@@ -180,6 +180,7 @@ public class AccountSyncLogDaoImpl implements AccountSyncLogDAO {
 		List<AccountSyncLog> store = listAccountSyncLogFromMemcahce(adminAccount);
 		if (store == null || store.isEmpty()) {
 			initAccountSyncLogStore();
+			store = listAccountSyncLogFromMemcahce(adminAccount);
 		}
 		if (store != null && store.size() > 0) {			
 			if (store.size() <= len) {

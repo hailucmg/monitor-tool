@@ -325,7 +325,7 @@ public class HTMLControl {
 		if (healthStatus.equals("dead")) {
 			mes = "System is not working.\nClick the Icon to see more information!";
 		} else if (healthStatus.equals("bored")) {
-			mes = "Insufficient data.\nClick the Icon to see more information!";
+			mes = "A problem may occur to the system.\nClick the Icon to see more information!";
 		} else if (healthStatus.equals("smile")) {
 			mes = "All is working correctly.\nClick the Icon to see more information!";
 		} else {

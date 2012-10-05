@@ -458,7 +458,7 @@ public class GoogleManagement extends AncestorEntryPoint {
 					data.setValue(
 							j,
 							3,
-							"<div class='btnSync' title='Synchronized' id='btnSync' domain_name='"
+							"<div class='btnSync' title='Synchronized' domain_name='"
 									+ sortUser[j].getDomain()
 									+ "' user_name='"
 									+ sortUser[j].getId()
@@ -469,7 +469,7 @@ public class GoogleManagement extends AncestorEntryPoint {
 									+ "','"
 									+ sortUser[j].getUsername()
 									+ "');\"></div>"
-									+ "<div id='btnViewLog' user_name='"
+									+ "<div user_name='"
 									+ sortUser[j].getId()
 									+ "' onClick=\"javascript:viewLastestLog('"
 									+ sortUser[j].getUsername()
@@ -477,8 +477,8 @@ public class GoogleManagement extends AncestorEntryPoint {
 									+ sortUser[j].getDomain()
 									+ "','"
 									+ sortUser[j].getId()
-									+ "');\" title=\"View lastest log\" class=\"btnViewlog\"></div>"
-									+ "<div id='btnDownloadLog'  user_name='"
+									+ "');\" title=\"View lastest log\" class=\"btnViewLog\"></div>"
+									+ "<div user_name='"
 									+ sortUser[j].getId()
 									+ "' onClick=\"javascript:downloadFullLog('"
 									+ sortUser[j].getUsername()
@@ -487,7 +487,7 @@ public class GoogleManagement extends AncestorEntryPoint {
 									+ "','"
 									+ sortUser[j].getId()
 									+ "');\" title=\"Download full log\" class=\"btnDownloadLog\"></div>"
-									+ "<div id='btnClear' domain_name='c-mg.com.vn' user_name='"
+									+ "<div class='btnClear' domain_name='c-mg.com.vn' user_name='"
 									+ sortUser[j].getId()
 									+ "' onClick=\"javascript:showConfirmDialog('"
 									+ sortUser[j].getUsername()

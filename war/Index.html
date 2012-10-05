@@ -104,7 +104,12 @@
 		$(document).ready(function() {
 			$(document).pngFix();
 		});
+		function downloadFullLog(admin, id) {
+			window.location = "/download/log?id=" + encodeURI(admin);
+		
+		}
 	</script>
+	
 	<link rel="stylesheet" href="css/screen.css" type="text/css"
 		media="screen" title="default" />
 </head>
