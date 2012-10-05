@@ -191,7 +191,6 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	public MonitorContainer getSystemMonitorContainer() {
 		MonitorContainer container = null;
 		SystemDAO sysDAO = new SystemDaoImpl();
-		UtilityDAO utilDAO = new UtilityDaoImpl();
 		SystemGroupDaoImpl groupDAO = new SystemGroupDaoImpl();
 		try {
 			container = new MonitorContainer();
@@ -214,9 +213,15 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	public MonitorContainer getSystemMonitorContainer(String sysId) {
 		MonitorContainer container = getSystemMonitorContainer();
 		SystemDAO sysDAO = new SystemDaoImpl();
+		SystemGroupDaoImpl groupDAO = new SystemGroupDaoImpl();
 		try {
 			if (container != null) {
 				SystemMonitor sys = sysDAO.getSystemById(sysId);
+				SystemGroup[] groups = groupDAO.getAllGroup();
+				if(groups == null){
+					System.out.println("groups null");
+				}
+				container.setListSystemGroup(groups);
 				container.setSys(sys);
 				NotifyMonitor nm = sysDAO.getNotifyOption(sys.getCode());
 				if (nm == null) {
