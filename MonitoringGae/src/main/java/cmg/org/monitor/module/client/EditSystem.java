@@ -119,7 +119,6 @@ public class EditSystem extends AncestorEntryPoint {
 	void initFlexTable(String sysID) {
 		monitorGwtSv.getSystemMonitorContainer(sysID,
 				new AsyncCallback<MonitorContainer>() {
-
 					@Override
 					public void onSuccess(MonitorContainer result) {
 						if (result != null) {
@@ -134,30 +133,28 @@ public class EditSystem extends AncestorEntryPoint {
 							boolean checkExistGroup = false;
 							if (groups != null && groups.length > 0) {
 								for (int i = 0; i < groups.length; i++) {
-									if (system.getGroupEmail().equalsIgnoreCase(groups[i].getName())) {
+									if (system.getGroupEmail().equals(groups[i].getName())) {
 										checkExistGroup = true;
-										list.add(groups[i]);
 									}
-									
+									list.add(groups[i]);
 								}
 								//check if group not existed
 								if(checkExistGroup){
 									list = sortBynameSystemGroup(list);
 									for(int i = 0 ; i < list.size();i++){
 										if(list.get(i).getName().equals(system.getName())){
-											listGroup.addItem(list.get(i).getName());
-											listGroup.setSelectedIndex(i);
-										}else{
-											listGroup.addItem(list.get(i).getName());
+											index = i;
 										}
-									}	
+										listGroup.addItem(list.get(i).getName());
+									}
+									listGroup.setSelectedIndex(index);
 								}else{
 									listGroup.addItem("");
-									listGroup.setSelectedIndex(0);
 									list = sortBynameSystemGroup(list);
 									for(SystemGroup g : list){
 										listGroup.addItem(g.getName());
 									}
+									listGroup.setSelectedIndex(0);
 								}
 								
 								tableNotify = new Grid(5, 2);
