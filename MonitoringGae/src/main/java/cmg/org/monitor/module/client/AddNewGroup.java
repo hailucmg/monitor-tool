@@ -38,6 +38,7 @@ public class AddNewGroup extends AncestorEntryPoint {
 
     
     private String validateGroupName(String name) {
+    	
 		String msg = "";
 		if (name == null || name.trim().length() == 0) {
 		    msg = "This field is required ";

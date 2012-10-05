@@ -1713,20 +1713,54 @@ a:hover.back-login	{
 	z-index: 1000;
 }
 	
-a.btnSync	{
+.btnSync	{
+	float:left;
 	background: url(../images/table/reload_all_tabs.png) no-repeat;
 	height: 24px;
 	width: 24px;
 	display:block;
-	}
+	margin-left:10px;
+	margin-top:4px;
+}
 	
-a.btnCancel	{
+a.btnCancel	{	
 	background: url(../images/table/button_cancel.png) no-repeat;
 	height: 24px;
 	width: 24px;
 	display:block;
-	margin-top: -27px;
-	margin-left: 30px;
-	}
+	margin-left: 10px;
+	float:left;
+}
+
+.btnClear	{	
+	background: url(../images/table/button_cancel.png) no-repeat;
+	height: 24px;
+	width: 24px;
+	display:block;
+	margin-left: 10px;
+	margin-top:5px;
+	float:left;
+}
+	
+	
+.btnDownloadLog {
+	background: url(../images/forms/download_log.png) no-repeat;
+	height: 24px;
+	width: 24px;
+	display:block;
+	margin-left: 10px;
+	float:left;
+	margin-top:4px;
+}
+
+.btnViewLog {
+	background: url(../images/forms/lastest_log.png) no-repeat;
+	height: 24px;
+	width: 24px;
+	display:block;
+	margin-left: 10px;
+	float:left;
+	margin-top:4px;
+}
 	
 

@@ -99,4 +99,6 @@ public interface MonitorGwtServiceAsync {
 	void listAllSystemUsers(AsyncCallback<List<SystemUser>> callback);
 
 	void updateUserRole(String email, String role, boolean b, AsyncCallback<Boolean> callback);
+
+	void viewLastestLog(String adminAccount, AsyncCallback<String> callback);
 }

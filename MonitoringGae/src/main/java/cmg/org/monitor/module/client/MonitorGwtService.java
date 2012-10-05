@@ -91,4 +91,6 @@ public interface MonitorGwtService extends RemoteService {
 	List<SystemUser> listAllSystemUsers();
 	
 	boolean updateUserRole(String email, String role, boolean b);
+	
+	String viewLastestLog(String adminAccount);
 }

@@ -47,6 +47,16 @@
   </servlet-mapping>
   
   <servlet>
+    <servlet-name>downloadHandler</servlet-name>
+    <servlet-class>cmg.org.monitor.module.servlet.ChangeLogDownloadHandler</servlet-class>
+  </servlet>
+  
+   <servlet-mapping>
+    <servlet-name>downloadHandler</servlet-name>
+    <url-pattern>/download/log</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
     <servlet-name>LoginServlet</servlet-name>
     <servlet-class>cmg.org.monitor.module.server.LoginServlet</servlet-class>
   </servlet>
