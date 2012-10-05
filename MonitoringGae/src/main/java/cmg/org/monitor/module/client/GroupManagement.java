@@ -188,6 +188,7 @@ public class GroupManagement extends AncestorEntryPoint{
 		ops.setMax(100);
 		ops.setMin(0);
 		ops.setWidth(100);
+		
 
 		BarFormat bf = BarFormat.create(ops);
 		bf.format(dataListSystem, 1);
@@ -196,21 +197,21 @@ public class GroupManagement extends AncestorEntryPoint{
 
 	}
 	
-	public static List<SystemGroup> sortBynameSystemGroup(List<SystemGroup> users) {
+	public static List<SystemGroup> sortBynameSystemGroup(List<SystemGroup> groups) {
 		SystemGroup temp = null;
-		for (int i = 1; i < users.size(); i++) {
+		for (int i = 1; i < groups.size(); i++) {
 			int j;
-			SystemGroup val = users.get(i);
+			SystemGroup val = groups.get(i);
 			for (j = i - 1; j > -1; j--) {
-				temp = users.get(j);
+				temp = groups.get(j);
 				if (temp.compareByName(val) <= 0) {
 					break;
 				}
-				users.set(j+1, temp);
+				groups.set(j+1, temp);
 			}
-			users.set(j+1, val);
+			groups.set(j+1, val);
 		}
-		return users;
+		return groups;
 	}
 	
 	
