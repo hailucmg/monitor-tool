@@ -3,18 +3,20 @@ package cmg.org.monitor.module.client;
 
 
 
+
 import java.util.ArrayList;
 import java.util.List;
 
 import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.ext.model.shared.MonitorContainer;
-import cmg.org.monitor.ext.model.shared.UserMonitor;
 import cmg.org.monitor.util.shared.HTMLControl;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
@@ -26,10 +28,14 @@ public class UserManagement extends AncestorEntryPoint {
 	static private Table myTable;
 	static private List<SystemGroup> listGroup = null;
 	static private List<SystemUser> listUser = null;
+	SimplePanel  panelAuto;
 	protected void init() {
 		if (currentPage == HTMLControl.PAGE_USER_MANAGEMENT) {
+			panelAuto = new SimplePanel();
+			panelAuto.addStyleName("userGroupPanel");
 			myTable = new Table();
-			addWidget(HTMLControl.ID_BODY_CONTENT, myTable);
+			panelAuto.add(myTable);
+			addWidget(HTMLControl.ID_BODY_CONTENT, panelAuto);
 			initUI();
 		}
 	}
@@ -103,16 +109,15 @@ public class UserManagement extends AncestorEntryPoint {
 		if(check.equalsIgnoreCase("true")){
 			sendServer = false;
 			updateUserMapping(idCheckbox,username, groupID, sendServer);
-			/*cb.setAttribute("ischeck", "false");*/
 		}else if(check.equalsIgnoreCase("false")){
 			sendServer = true;
 			updateUserMapping(idCheckbox,username, groupID, sendServer);
-			/*cb.setAttribute("ischeck", "true");*/
 		}
 	}
 	
 	
 	private AbstractDataTable createData(List<SystemUser> listUser ,List<SystemGroup> listGroup) {
+		listGroup = sortBynameSystemGroup(listGroup);
 		DataTable data = DataTable.create();
 		int indexGroup = listGroup.size();
 		data.addColumn(ColumnType.STRING, "username\\group");
@@ -133,33 +138,33 @@ public class UserManagement extends AncestorEntryPoint {
 				
 				if(checkInGroup){
 					String id =listUser.get(j).getId()+ "-" + listGroup.get(k).getId();	
-					data.setValue(j, k+1, "<input type=\"checkbox\"  onClick=\"javascript:RecipeData('"+listUser.get(j).getEmail() +"','" + listGroup.get(k).getId() + "','" + id +"');\"      id=\""+id+"\"  style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;' ischeck=\"true\"  checked=\"checked\"> ");
+					data.setValue(j, k+1, "<input type=\"checkbox\" title=\""+listUser.get(j).getUsername()+"\"  onClick=\"javascript:RecipeData('"+listUser.get(j).getEmail() +"','" + listGroup.get(k).getId() + "','" + id +"');\"      id=\""+id+"\"  style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;' ischeck=\"true\"  checked=\"checked\"> ");
 					
 				}else{
 					String id =listUser.get(j).getId()+"-"+listGroup.get(k).getId();	
-					data.setValue(j, k+1, "<input type=\"checkbox\" onClick=\"javascript:RecipeData('"+listUser.get(j).getEmail() +"','" + listGroup.get(k).getId() + "','" + id +"');\" id=\""+id+"\" style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;' ischeck =\"false\">");
+					data.setValue(j, k+1, "<input type=\"checkbox\" title=\""+listUser.get(j).getUsername()+"\"  onClick=\"javascript:RecipeData('"+listUser.get(j).getEmail() +"','" + listGroup.get(k).getId() + "','" + id +"');\" id=\""+id+"\" style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;' ischeck =\"false\">");
 				}
 			}
 		}
 		return data;
 	}
 
-	/*public SystemGroup[] sortByname(SystemGroup[] users) {
+	public static List<SystemGroup> sortBynameSystemGroup(List<SystemGroup> groups) {
 		SystemGroup temp = null;
-		for (int i = 1; i < users.length; i++) {
+		for (int i = 1; i < groups.size(); i++) {
 			int j;
-			UserMonitor val = users[i];
+			SystemGroup val = groups.get(i);
 			for (j = i - 1; j > -1; j--) {
-				temp = users[j];
+				temp = groups.get(j);
 				if (temp.compareByName(val) <= 0) {
 					break;
 				}
-				users[j + 1] = temp;
+				groups.set(j+1, temp);
 			}
-			users[j + 1] = val;
+			groups.set(j+1, val);
 		}
-		return users;
-	}*/
+		return groups;
+	}
 
 	private Options option() {
 		Options option = Options.create();

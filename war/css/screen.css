@@ -1763,4 +1763,7 @@ a.btnCancel	{
 	margin-top:4px;
 }
 	
-
+.userGroupPanel{
+	overflow-x: auto;
+	width: 1109px;
+}
