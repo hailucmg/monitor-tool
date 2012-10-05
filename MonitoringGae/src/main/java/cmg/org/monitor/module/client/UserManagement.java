@@ -138,11 +138,11 @@ public class UserManagement extends AncestorEntryPoint {
 				
 				if(checkInGroup){
 					String id =listUser.get(j).getId()+ "-" + listGroup.get(k).getId();	
-					data.setValue(j, k+1, "<input type=\"checkbox\" title=\""+listUser.get(j).getUsername()+"\"  onClick=\"javascript:RecipeData('"+listUser.get(j).getEmail() +"','" + listGroup.get(k).getId() + "','" + id +"');\"      id=\""+id+"\"  style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;' ischeck=\"true\"  checked=\"checked\"> ");
+					data.setValue(j, k+1, "<input type=\"checkbox\" title=\""+listUser.get(j).getEmail()+"\"  onClick=\"javascript:RecipeData('"+listUser.get(j).getEmail() +"','" + listGroup.get(k).getId() + "','" + id +"');\"      id=\""+id+"\"  style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;' ischeck=\"true\"  checked=\"checked\"> ");
 					
 				}else{
 					String id =listUser.get(j).getId()+"-"+listGroup.get(k).getId();	
-					data.setValue(j, k+1, "<input type=\"checkbox\" title=\""+listUser.get(j).getUsername()+"\"  onClick=\"javascript:RecipeData('"+listUser.get(j).getEmail() +"','" + listGroup.get(k).getId() + "','" + id +"');\" id=\""+id+"\" style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;' ischeck =\"false\">");
+					data.setValue(j, k+1, "<input type=\"checkbox\" title=\""+listUser.get(j).getEmail()+"\"  onClick=\"javascript:RecipeData('"+listUser.get(j).getEmail() +"','" + listGroup.get(k).getId() + "','" + id +"');\" id=\""+id+"\" style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;' ischeck =\"false\">");
 				}
 			}
 		}
