@@ -87,7 +87,6 @@ public class EditGroup extends AncestorEntryPoint {
 					for(SystemGroup s : listTempGroup){
 						groupNames.add(s);
 					}
-					groupNames = sortBynameSystemGroup(groupNames);
 				}
 			}
 			@Override
@@ -100,22 +99,7 @@ public class EditGroup extends AncestorEntryPoint {
 		});
 	}
 	
-	public static List<SystemGroup> sortBynameSystemGroup(List<SystemGroup> groups) {
-		SystemGroup temp = null;
-		for (int i = 1; i < groups.size(); i++) {
-			int j;
-			SystemGroup val = groups.get(i);
-			for (j = i - 1; j > -1; j--) {
-				temp = groups.get(j);
-				if (temp.compareByName(val) <= 0) {
-					break;
-				}
-				groups.set(j+1, temp);
-			}
-			groups.set(j+1, val);
-		}
-		return groups;
-	}
+	
 	
 	
 	private String validateGroupName(String name){
