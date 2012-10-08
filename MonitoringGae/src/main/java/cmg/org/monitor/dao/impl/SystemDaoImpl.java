@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -134,7 +136,15 @@ public class SystemDaoImpl implements SystemDAO {
 			UserLoginDto user = service.getUserLogin();
 			clm.setUsername(user.getEmail());
 			clm.setDescription(description);
-			clm.setSystemName(sys.toString());
+			String temp = sys.toString();
+			String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
+			for(int i=0;i<temp.length();i++){
+				if (regex.indexOf(temp.charAt(i)) != -1) {
+						temp = StringEscapeUtils.escapeHtml3(temp);
+						break;
+				}
+			}
+			clm.setSystemName(temp);
 			clm.setType(sys.isDeleted() ? ChangeLogMonitor.LOG_DELETE
 					: ChangeLogMonitor.LOG_UPDATE);
 			clm.setDatetime(new Date());
@@ -189,8 +199,19 @@ public class SystemDaoImpl implements SystemDAO {
 		UserLoginDto user = service.getUserLogin();
 		clm.setUsername(user.getEmail());
 		clm.setSid(code);
-		clm.setSystemName(code + " - " + system.getName());
-		clm.setDescription("Add new System Monitor : " + system.getName());
+		String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
+		String temp = system.getName();
+		for(int i=0;i<system.getName().length();i++){
+			if (regex.indexOf(system.getName().charAt(i)) != -1) {
+				temp = StringEscapeUtils.escapeHtml3(temp);
+				/*system.setName(StringEscapeUtils.escapeHtml3(system.getName()));*/
+				break;
+			}
+		}
+		clm.setSystemName(code + " - " + temp);
+		
+		
+		clm.setDescription("Add new System Monitor : " + temp);
 		Date date = new Date();
 		clm.setDatetime(date);
 		clm.setType(ChangeLogMonitor.LOG_ADD);
@@ -699,7 +720,16 @@ public class SystemDaoImpl implements SystemDAO {
 			SystemMonitor sysOld) {
 		StringBuffer description = new StringBuffer();
 		if (sysNew.isDeleted() != sysOld.isDeleted()) {
-			description.append("Delete System Name : " + sysNew.getName());
+			String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
+			String temp = sysNew.getName();
+			for(int i=0;i<sysNew.getName().length();i++){
+				if (regex.indexOf(sysNew.getName().charAt(i)) != -1) {
+					temp = StringEscapeUtils.escapeHtml3(temp);
+					/*sysNew.setName(StringEscapeUtils.escapeHtml3(sysNew.getName()));*/
+						break;
+				}
+			}
+			description.append("Delete System Name : " + temp);
 			return description.toString();
 		}
 		description.append("<UL style=\"margin:0 0 0 20px\">");
@@ -708,8 +738,25 @@ public class SystemDaoImpl implements SystemDAO {
 					+ sysOld.getIp() + " to " + sysNew.getIp() + "</LI>");
 		}
 		if (!sysNew.getName().equals(sysOld.getName())) {
+			String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
+			String tempOld = sysOld.getName();
+			String tempNew = sysNew.getName();
+			for(int i=0;i<sysNew.getName().length();i++){
+				if (regex.indexOf(sysNew.getName().charAt(i)) != -1) {
+					tempNew = StringEscapeUtils.escapeHtml3(tempNew);
+					/*sysNew.setName(StringEscapeUtils.escapeHtml3(sysNew.getName()));*/
+						break;
+				}
+			}
+			for(int i=0;i<sysOld.getName().length();i++){
+				if (regex.indexOf(sysOld.getName().charAt(i)) != -1) {
+					tempOld = StringEscapeUtils.escapeHtml3(tempOld);
+					/*sysOld.setName(StringEscapeUtils.escapeHtml3(sysOld.getName()));*/
+						break;
+				}
+			}
 			description.append("<LI>Change value of Name field from "
-					+ sysOld.getName() + " to " + sysNew.getName() + "</LI>");
+					+tempOld + " to " + tempNew + "</LI>");
 		}
 		String newEmail = sysNew.getEmail() == null ?"": sysNew.getEmail();
 		String oldEmail = sysOld.getEmail()== null ?"": sysOld.getEmail();
@@ -728,8 +775,25 @@ public class SystemDaoImpl implements SystemDAO {
 					+ "</LI>");
 		}
 		if (!sysNew.getGroupEmail().equals(sysOld.getGroupEmail())) {
+			String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
+			String tempOld = sysOld.getGroupEmail();
+			String tempNew = sysNew.getGroupEmail();
+			for(int i=0;i<sysNew.getGroupEmail().length();i++){
+				if (regex.indexOf(sysNew.getGroupEmail().charAt(i)) != -1) {
+					tempNew = StringEscapeUtils.escapeHtml3(sysNew.getGroupEmail());
+					/*sysNew.setGroupEmail(StringEscapeUtils.escapeHtml3(sysNew.getGroupEmail()));*/
+						break;
+				}
+			}
+			for(int i=0;i<sysOld.getGroupEmail().length();i++){
+				if (regex.indexOf(sysOld.getGroupEmail().charAt(i)) != -1) {
+					tempOld = StringEscapeUtils.escapeHtml3(sysOld.getGroupEmail());
+					/*sysOld.setGroupEmail(StringEscapeUtils.escapeHtml3(sysOld.getGroupEmail()));*/
+						break;
+				}
+			}
 			description.append("<LI>Change value of Notify Group mail from "
-					+ sysOld.getGroupEmail() + " to " + sysNew.getGroupEmail()
+					+ tempOld+ " to " + tempNew
 					+ "</LI>");
 		}
 		if (!sysNew.getUrl().equals(sysOld.getUrl())) {

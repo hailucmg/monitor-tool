@@ -223,7 +223,7 @@ public class SystemChangeLog extends AncestorEntryPoint {
 	}
 
 	private static void initContent() {
-		monitorGwtSv.listSystems(new AsyncCallback<SystemMonitor[]>() {
+		monitorGwtSv.listSystemsForChangelog(new AsyncCallback<SystemMonitor[]>() {
 			@Override
 			public void onSuccess(SystemMonitor[] result) {
 				systems = result;
@@ -234,6 +234,8 @@ public class SystemChangeLog extends AncestorEntryPoint {
 					listSystems.clear();
 					listSystems.addItem("All Systems");
 					for (int i = 0; i < result.length; i++) {
+						System.out.println(result[i].getName());
+						System.out.println(result[i].toString());
 						listSystems.addItem(result[i].toString());
 					}
 

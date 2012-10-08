@@ -25,7 +25,8 @@ public interface MonitorGwtService extends RemoteService {
 	UserLoginDto getUserLogin();
 	
 	SystemMonitor[] listSystems();
-
+	SystemMonitor[] listSystemsForChangelog();
+	
 	SystemMonitor validSystemId(String sysID);
 
 	boolean deleteSystem(String id) throws Exception;

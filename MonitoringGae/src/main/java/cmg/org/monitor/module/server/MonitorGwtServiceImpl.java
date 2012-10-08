@@ -119,6 +119,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		} else {
 			String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
 			for (SystemMonitor g: systems) {
+				String temp = g.getName();
 				for(int i=0;i<g.getName().length();i++){
 					if (regex.indexOf(g.getName().charAt(i)) != -1) {
 							g.setName(StringEscapeUtils.escapeHtml3(g.getName()));
@@ -816,5 +817,46 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		} catch (Exception e) {
 			return "Error. Message: " + e.getMessage();
 		}		
+	}
+
+	@Override
+	public SystemMonitor[] listSystemsForChangelog() {
+		SystemDAO sysDAO = new SystemDaoImpl();
+		ArrayList<SystemMonitor> list = null;
+		SystemMonitor[] systems = null;
+		SystemGroupDAO groupDao = new SystemGroupDaoImpl();
+		MonitorLoginService loginSer = new MonitorLoginService();
+		UserLoginDto user = loginSer.getUserLogin();
+		try {
+			list = sysDAO.listSystemsFromMemcache(false);			
+			if (list != null && list.size() > 0) {
+				ArrayList<SystemMonitor> tempList = new ArrayList<SystemMonitor>();
+				for (SystemMonitor sys : list) {
+					boolean check = false;
+					SystemGroup gr = groupDao.getByName(sys.getGroupEmail());
+					if (user.getRole() == MonitorConstant.ROLE_ADMIN) {
+						check = true;
+					} else if (user.checkGroup(gr == null ? "" : gr.getId())) {
+						check = true;
+					}
+					if (check) {
+						tempList.add(sys);
+					}
+				}
+				if (tempList.size() > 0) {
+					systems = new SystemMonitor[tempList.size()];
+					tempList.toArray(systems);
+				}
+			}
+		} catch (Exception ex) {
+			logger.log(Level.SEVERE,
+					" ERROR when load all systems from memcache. Message: "
+							+ ex.getCause().getMessage());
+		}
+		if (systems == null) {
+			return null;
+		} else {
+			return sortByname(systems);
+		}
 	}
 }
