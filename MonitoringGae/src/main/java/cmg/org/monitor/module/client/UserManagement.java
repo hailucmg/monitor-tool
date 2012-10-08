@@ -160,6 +160,7 @@ public class UserManagement extends AncestorEntryPoint {
 	}*/
 	private AbstractDataTable createData(List<SystemUser> listUser ,List<SystemGroup> listGroup) {
 		listGroup = sortBynameSystemGroup(listGroup);
+		listUser = sortBynameSystemUser(listUser);
 		DataTable data = DataTable.create();
 		int indexGroup = listGroup.size();
 		data.addColumn(ColumnType.STRING, "user\\group");
@@ -191,7 +192,23 @@ public class UserManagement extends AncestorEntryPoint {
 		}
 		return data;
 	}
-
+	
+	public static List<SystemUser> sortBynameSystemUser(List<SystemUser> users) {
+		SystemUser temp = null;
+		for (int i = 1; i < users.size(); i++) {
+			int j;
+			SystemUser val = users.get(i);
+			for (j = i - 1; j > -1; j--) {
+				temp = users.get(j);
+				if (temp.compareByName(val) <= 0) {
+					break;
+				}
+				users.set(j+1, temp);
+			}
+			users.set(j+1, val);
+		}
+		return users;
+	}
 	public static List<SystemGroup> sortBynameSystemGroup(List<SystemGroup> groups) {
 		SystemGroup temp = null;
 		for (int i = 1; i < groups.size(); i++) {
