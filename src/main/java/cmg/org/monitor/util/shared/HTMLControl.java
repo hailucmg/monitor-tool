@@ -393,12 +393,9 @@ public class HTMLControl {
 	public static HTML getPageHeading(SystemMonitor sys) {
 		StringBuffer temp = new StringBuffer();
 		temp.append("<h1>");
-		temp.append("<a href=\"" + HTML_DASHBOARD_NAME + "\">Dashboard</a> ");
+		temp.append("<a href=\"" + HTML_DASHBOARD_NAME + "\">Dashboard</a>&nbsp");
 		temp.append(HTML_ARROW_IMAGE);
-		temp.append(" <a ");
-		temp.append("\">");
-		temp.append(sys.getCode() + " - " + sys.getName());
-		temp.append("</a> ");
+		temp.append("&nbsp<a>" + sys.getCode() + " - " + sys.getName() + "</a>");
 		return new HTML(temp.toString());
 	}
 
@@ -409,60 +406,56 @@ public class HTMLControl {
 		if (page == PAGE_DASHBOARD || page == PAGE_SYSTEM_STATISTIC
 				|| page == PAGE_SYSTEM_DETAIL) {
 			temp.append("<a href=\"" + HTML_DASHBOARD_NAME
-					+ "\">Dashboard</a> ");
+					+ "\">Dashboard</a>&nbsp");
 		}
 		if (page == PAGE_SYSTEM_STATISTIC || page == PAGE_SYSTEM_DETAIL) {
 			temp.append(HTML_ARROW_IMAGE);
-			temp.append(" <a ");
-			temp.append("\">");
+			temp.append("&nbsp<a>");
 			temp.append(page == PAGE_SYSTEM_STATISTIC ? "Statistic System" : "");
 			temp.append(page == PAGE_SYSTEM_DETAIL ? "System Information" : "");
-			temp.append("</a> ");
+			temp.append("</a>");
 		}
 		if (page == PAGE_SYSTEM_MANAGEMENT || page == PAGE_ADD_SYSTEM
 				|| page == PAGE_EDIT_SYSTEM) {
 			temp.append("<a href=\"" + HTML_SYSTEM_MANAGEMENT_NAME
-					+ "\">System Management</a> ");
+					+ "\">System Management</a>&nbsp");
 		}
 		if (page == PAGE_ADD_SYSTEM || page == PAGE_EDIT_SYSTEM) {
 			temp.append(HTML_ARROW_IMAGE);
-			temp.append(" <a ");
-			temp.append("\">");
+			temp.append("&nbsp<a>");
 			temp.append(page == PAGE_EDIT_SYSTEM ? "Edit System" : "");
 			temp.append(page == PAGE_ADD_SYSTEM ? "Add New System" : "");
-			temp.append("</a> ");
+			temp.append("</a>");
 		}
 		if (page == PAGE_SYSTEM_CHANGE_LOG) {
 			temp.append("<a href=\"" + HTML_SYSTEM_CHANGELOG
-					+ "\">Change Log</a> ");
+					+ "\">Change Log</a>&nbsp");
 		}
 		
 		if (page == PAGE_GROUP_MANAGEMENT || page == PAGE_ADD_GROUP
 				|| page == PAGE_EDIT_GROUP) {
 			temp.append("<a href=\"" + HTML_GROUP_MANAGEMENT_NAME
-					+ "\">Group Management</a> ");
+					+ "\">Group Management</a>&nbsp");
 		}
 		if (page == PAGE_ADD_GROUP || page == PAGE_EDIT_GROUP) {
 			temp.append(HTML_ARROW_IMAGE);
-			temp.append(" <a ");
-			temp.append("\">");
+			temp.append("&nbsp<a>");
 			temp.append(page == PAGE_EDIT_GROUP ? "Edit Group" : "");
 			temp.append(page == PAGE_ADD_GROUP ? "Add New Group" : "");
-			temp.append("</a> ");
+			temp.append("</a>");
 		}
 		
 		if (page == PAGE_USER_MANAGEMENT || page == PAGE_USER_ROLE || page == PAGE_GOOGLE_MANAGEMENT) {
 			temp.append("<a href=\"" + HTML_USER_MANAGEMENT_NAME
-					+ "\">User Management</a> ");
+					+ "\">User Management</a>&nbsp");
 		}
 		
 		if (page == PAGE_USER_ROLE || page == PAGE_GOOGLE_MANAGEMENT) {
 			temp.append(HTML_ARROW_IMAGE);
-			temp.append(" <a ");
-			temp.append("\">");
+			temp.append("&nbsp<a>");
 			temp.append(page == PAGE_USER_ROLE ? "User Role" : "");
 			temp.append(page == PAGE_GOOGLE_MANAGEMENT ? "Google Management" : "");
-			temp.append("</a> ");
+			temp.append("</a>");
 		}
 		
 		if (page == PAGE_ABOUT) {
