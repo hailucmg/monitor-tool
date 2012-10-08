@@ -28,8 +28,9 @@ public class MailMonitorDaoImpl implements MailMonitorDAO {
 		// get from memcache
 		Object obj = MonitorMemcache.get(Key.create(Key.MAIL_CONFIG_STORE,
 				mailId));
-		if (obj != null && obj instanceof MailConfigMonitor) {
-			Gson gson = new Gson();
+		Gson gson = new Gson();
+		if (obj != null && obj instanceof String) {
+			
 			try {
 				mailConfig = gson.fromJson(String.valueOf(obj), MailConfigMonitor.class); 
 			} catch (Exception ex) {
@@ -49,6 +50,8 @@ public class MailMonitorDaoImpl implements MailMonitorDAO {
 				listData = (List<MailConfigMonitor>) query.execute(mailId);
 				if (listData.size() > 0) {
 					mailConfig = listData.get(0);
+					MonitorMemcache.put(Key.create(Key.MAIL_CONFIG_STORE,
+							mailId), gson.toJson(mailConfig));	
 				}
 				pm.currentTransaction().commit();
 			} catch (Exception ex) {
@@ -58,14 +61,14 @@ public class MailMonitorDaoImpl implements MailMonitorDAO {
 			} finally {
 				query.closeAll();
 				pm.close();
-			}
+			}			
 		}
 		
 		if (mailConfig == null) {
 			mailConfig = new MailConfigMonitor();
 			mailConfig.setMailId(mailId);
 		}
-	
+		
 		return mailConfig;
 	}
 

@@ -117,13 +117,13 @@ public class MonitorService {
 						AlertMonitor alert = new AlertMonitor(
 								AlertMonitor.CANNOT_GATHER_DATA,
 								"System is down",
-								"Cannot get data from the system ("
+								"Unable to retrieve data from the remote system ("
 										+ (aSystem.getProtocol().equals(
 												MonitorConstant.HTTP_PROTOCOL) ? ("Remote URL: " + aSystem
 												.getRemoteUrl())
 												: ("Remote mail: " + aSystem
 														.getEmailRevice()))
-										+ ") , it might not working at the moment, please check the system immediately",
+										+ "). The system is not working as expected. Please check the system immediately.",
 								new Date());
 						alertDAO.storeAlert(aSystem, alert);
 					}// if

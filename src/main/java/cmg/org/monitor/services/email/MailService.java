@@ -267,16 +267,16 @@ public class MailService {
 		}
 	}
 
-	public static String parseContent(ArrayList<AlertStoreMonitor> stores,
+	public String parseContent(ArrayList<AlertStoreMonitor> stores,
 			MailConfigMonitor mailConfig) {
 		SystemDAO sysDao = new SystemDaoImpl();
 		SystemMonitor sys = null;
 		
 		StringBuffer sb = new StringBuffer();
-		sb.append("<p align=\"center\"><img src=\"http://"
+		sb.append("<p><img src=\"http://"
 				+ MonitorConstant.PROJECT_HOST_NAME
 				+ "/images/logo/c-mg_logo.png\" width=\"200px\" height=\"80px\"/></p>");
-		sb.append("<ol>");
+		sb.append("<ol style=\"margin: 0; padding: 0;\">");
 		for (AlertStoreMonitor store : stores) {
 			try {
 				sys = sysDao.getSystemById(store.getSysId());
@@ -313,7 +313,7 @@ public class MailService {
 				mes = "All is working correctly.";
 			}
 
-			sb.append("<ul><li><b>Current Health Status: </b> ");
+			sb.append("<ul  style=\"margin: 0; padding: 0;\"><li><b>Current Health Status: </b> ");
 			sb.append("<img src=\"http://" + MonitorConstant.PROJECT_HOST_NAME
 					+ "/images/icon/" + sys.getHealthStatus()
 					+ "_status_icon.png\" title=\"" + mes + "\" alt=\"" + mes
@@ -327,7 +327,7 @@ public class MailService {
 			}
 			sb.append("<li><b>IP Address: </b> " + sys.getIp()
 					+ "</li></ul><br/>");
-			sb.append("<table cellpadding=\"5\" cellspacing=\"5\"><tbody><tr><th>No.</th><th>Time</th><th>Severity</th><th>Title</th><th>Description</th></tr>");
+			sb.append("<table  style=\"margin: 0; padding: 0;\" cellpadding=\"5\" cellspacing=\"5\"><tbody><tr><th>No.</th><th>Time</th><th>Severity</th><th>Title</th><th>Description</th></tr>");
 			ArrayList<AlertMonitor> alerts = store.getAlerts();
 			if (alerts != null && alerts.size() > 0) {
 				for (int i = 0; i < alerts.size(); i++) {

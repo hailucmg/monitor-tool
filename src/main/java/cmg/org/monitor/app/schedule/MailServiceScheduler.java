@@ -135,7 +135,7 @@ public class MailServiceScheduler extends HttpServlet {
 								MailConfigMonitor config = mailDAO
 										.getMailConfig(user.getId());
 								try {
-									String content = MailService.parseContent(
+									String content = mailService.parseContent(
 											user.getStores(), config);
 									mailService.sendMail(alertName, content,
 											config);
