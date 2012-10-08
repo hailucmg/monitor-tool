@@ -101,4 +101,6 @@ public interface MonitorGwtServiceAsync {
 	void updateUserRole(String email, String role, boolean b, AsyncCallback<Boolean> callback);
 
 	void viewLastestLog(String adminAccount, AsyncCallback<String> callback);
+
+	void listSystemsForChangelog(AsyncCallback<SystemMonitor[]> callback);
 }
