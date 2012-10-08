@@ -206,7 +206,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			container.setRemoteUrls(sysDAO.listRemoteURLs());
 			SystemGroup[] groups = groupDAO.getAllGroup();
 			if (groups != null && groups.length > 0) {
-				//special character will be replace in here
+				/*//special character will be replace in here
 				String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
 				for (SystemGroup g: groups) {
 					for(int i=0;i<g.getName().length();i++){
@@ -221,7 +221,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 								break;
 						}
 					}
-				}
+				}*/
 				container.setListSystemGroup(groups);
 			}
 			container.setEmails(sysDAO.listEmails());
@@ -245,7 +245,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 				SystemGroup[] groups = groupDAO.getAllGroup();
 				if(groups != null){
 					//special character will be replace in here
-					String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
+				/*	String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
 					for (SystemGroup g: groups) {
 						for(int i=0;i<g.getName().length();i++){
 							if (regex.indexOf(g.getName().charAt(i)) != -1) {
@@ -259,7 +259,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 									break;
 							}
 						}
-					}
+					}*/
 					container.setListSystemGroup(groups);
 				}
 				
