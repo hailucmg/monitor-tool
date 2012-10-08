@@ -117,6 +117,15 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		if (systems == null) {
 			return null;
 		} else {
+			String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
+			for (SystemMonitor g: systems) {
+				for(int i=0;i<g.getName().length();i++){
+					if (regex.indexOf(g.getName().charAt(i)) != -1) {
+							g.setName(StringEscapeUtils.escapeHtml3(g.getName()));
+							break;
+					}
+				}
+			}
 			return sortByname(systems);
 		}
 
@@ -197,6 +206,22 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			container.setRemoteUrls(sysDAO.listRemoteURLs());
 			SystemGroup[] groups = groupDAO.getAllGroup();
 			if (groups != null && groups.length > 0) {
+				//special character will be replace in here
+				String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
+				for (SystemGroup g: groups) {
+					for(int i=0;i<g.getName().length();i++){
+						if (regex.indexOf(g.getName().charAt(i)) != -1) {
+								g.setName(StringEscapeUtils.escapeHtml3(g.getName()));
+								break;
+						}
+					}
+					for(int i =0; i<g.getDescription().length(); i++){
+						if (regex.indexOf(g.getDescription().charAt(i)) != -1) {
+								g.setDescription(StringEscapeUtils.escapeHtml3(g.getDescription()));
+								break;
+						}
+					}
+				}
 				container.setListSystemGroup(groups);
 			}
 			container.setEmails(sysDAO.listEmails());
@@ -218,10 +243,26 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			if (container != null) {
 				SystemMonitor sys = sysDAO.getSystemById(sysId);
 				SystemGroup[] groups = groupDAO.getAllGroup();
-				if(groups == null){
-					System.out.println("groups null");
+				if(groups != null){
+					//special character will be replace in here
+					String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
+					for (SystemGroup g: groups) {
+						for(int i=0;i<g.getName().length();i++){
+							if (regex.indexOf(g.getName().charAt(i)) != -1) {
+									g.setName(StringEscapeUtils.escapeHtml3(g.getName()));
+									break;
+							}
+						}
+						for(int i =0; i<g.getDescription().length(); i++){
+							if (regex.indexOf(g.getDescription().charAt(i)) != -1) {
+									g.setDescription(StringEscapeUtils.escapeHtml3(g.getDescription()));
+									break;
+							}
+						}
+					}
+					container.setListSystemGroup(groups);
 				}
-				container.setListSystemGroup(groups);
+				
 				container.setSys(sys);
 				NotifyMonitor nm = sysDAO.getNotifyOption(sys.getCode());
 				if (nm == null) {
