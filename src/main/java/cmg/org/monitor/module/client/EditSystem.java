@@ -777,11 +777,11 @@ public class EditSystem extends AncestorEntryPoint {
 		if (name == null || name.trim().length() == 0) {
 			msg = "This field is required ";
 			
-		} else if (name.contains("$") || name.contains("%")
+		} /*else if (name.contains("$") || name.contains("%")
 				|| name.contains("*")) {
 			msg = "name is not validate";
 			
-		}
+		}*/
 		return msg;
 
 	}
