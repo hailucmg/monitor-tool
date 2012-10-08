@@ -133,20 +133,26 @@ public class EditSystem extends AncestorEntryPoint {
 							boolean checkExistGroup = false;
 							if (groups != null && groups.length > 0) {
 								for (int i = 0; i < groups.length; i++) {
-									if (system.getGroupEmail().equals(groups[i].getName())) {
+									System.out.println(groups[i].getName());
+									if (system.getGroupEmail().equalsIgnoreCase(groups[i].getName())) {
+										System.out.println(system.getGroupEmail());
 										checkExistGroup = true;
 									}
 									list.add(groups[i]);
 								}
+								System.out.println("checking");
 								//check if group not existed
+								System.out.println(checkExistGroup);
 								if(checkExistGroup){
 									list = sortBynameSystemGroup(list);
 									for(int i = 0 ; i < list.size();i++){
-										if(list.get(i).getName().equals(system.getName())){
+										System.out.println(list.get(i).getName());
+										if(list.get(i).getName().equalsIgnoreCase(system.getGroupEmail())){
 											index = i;
 										}
 										listGroup.addItem(list.get(i).getName());
 									}
+									System.out.println(index);
 									listGroup.setSelectedIndex(index);
 								}else{
 									listGroup.addItem("");
@@ -725,7 +731,7 @@ public class EditSystem extends AncestorEntryPoint {
 							HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
 							"View system list. ", HTMLControl.BLUE_MESSAGE,
 							true);
-					initFlexTable(sid);
+					
 				} else {
 					showMessage("Server error! ",
 							HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
