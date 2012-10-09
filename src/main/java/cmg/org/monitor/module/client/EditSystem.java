@@ -722,7 +722,6 @@ public class EditSystem extends AncestorEntryPoint {
 
 	private void editSystem(SystemMonitor sys) {
 		panelAdding.setVisible(false);
-		final String sid = sys.getId();
 		monitorGwtSv.editSystem(sys, new AsyncCallback<Boolean>() {
 			@Override
 			public void onSuccess(Boolean result) {
