@@ -278,7 +278,7 @@ public class MailService {
 		sb.append("<p><img src=\"http://"
 				+ MonitorConstant.PROJECT_HOST_NAME
 				+ "/images/logo/c-mg_logo.png\" width=\"200px\" height=\"80px\"/></p>");
-		sb.append("<ol style=\"margin: 0; padding: 0;\">");
+		sb.append("<ol style=\"margin: 0 0 0 -15px; padding: 0;color: #686868;\">");
 		for (AlertStoreMonitor store : stores) {
 			try {
 				sys = sysDao.getSystemById(store.getSysId());
@@ -286,7 +286,7 @@ public class MailService {
 				logger.log(Level.SEVERE, " ERROR when get system by id.");
 				return null;
 			}
-			sb.append("<li><h4><a href=\"http://"
+			sb.append("<li><h4><a style=\"color: #686868;\" href=\"http://"
 					+ MonitorConstant.PROJECT_HOST_NAME + "/Index.html"
 					+ HTMLControl.HTML_SYSTEM_STATISTIC_NAME + "/"
 					+ sys.getId() + "\" >" + sys + "</a></h4>");
@@ -315,45 +315,45 @@ public class MailService {
 				mes = "All is working correctly.";
 			}
 
-			sb.append("<ul  style=\"margin: 0; padding: 0;\"><li><b>Current Health Status: </b> ");
-			sb.append("<img src=\"http://" + MonitorConstant.PROJECT_HOST_NAME
+			sb.append("<table style=\"margin: 0; padding: 0;\"><tr><td style=\"background: #F1F1F1; color: #686868; font-weight: bold; height: 24px; font-size: 12px; padding: 0 10px 0 2px;\">Current Health Status: </td> ");
+			sb.append("<td style=\"color: #686868; font-weight: bold; height: 24px; font-size: 12px;\"><img src=\"http://" + MonitorConstant.PROJECT_HOST_NAME
 					+ "/images/icon/" + sys.getHealthStatus()
 					+ "_status_icon.png\" title=\"" + mes + "\" alt=\"" + mes
-					+ "\"/></li>");
+					+ "\"/></td></tr>");
 			if (sys.getProtocol().equals(MonitorConstant.HTTP_PROTOCOL)) {
-				sb.append("<li><b>Remote URL: </b> " + sys.getRemoteUrl()
-						+ "</li>");
+				sb.append("<tr><td style=\"background: #F1F1F1; color: #686868; font-weight: bold; height: 24px; font-size: 12px; padding: 0 10px 0 2px;\">Remote URL: </td><td style=\"color: #686868; font-weight: bold; height: 24px; font-size: 12px;\">" + sys.getRemoteUrl()
+						+ "</td></tr>");
 			} else {
-				sb.append("<li><b>Remote Email: </b> " + sys.getEmailRevice()
-						+ "</li>");
+				sb.append("<tr><td style=\"background: #F1F1F1; color: #686868; font-weight: bold; height: 24px; font-size: 12px; padding: 0 10px 0 2px;\">Remote Email: </td><td style=\"color: #686868; font-weight: bold; height: 24px; font-size: 12px;\"> " + sys.getEmailRevice()
+						+ "</td></tr>");
 			}
-			sb.append("<li><b>IP Address: </b> " + sys.getIp()
-					+ "</li></ul><br/>");
-			sb.append("<table  style=\"margin: 0; padding: 0;\" cellpadding=\"5\" cellspacing=\"5\"><tbody><tr><th>No.</th><th>Time</th><th>Severity</th><th>Title</th><th>Description</th></tr>");
+			sb.append("<tr><td style=\"background: #F1F1F1; color: #686868; font-weight: bold; height: 24px; font-size: 12px; padding: 0 10px 0 2px;\">IP Address: </td><td style=\"color: #686868; font-weight: bold; height: 24px; font-size: 12px;\"> " + sys.getIp()
+					+ "</td></tr></table><br/>");
+			sb.append("<table  style=\"margin: 0; padding: 0;width: 100%;\"><tbody><tr style=\"background: #868484;color: #F1F1F1;text-align: center;\"><th style=\"width: 30px;\">No.</th><th style=\"width: 70px;\">Time</th><th style=\"width: 50px;\">Severity</th><th>Title</th><th>Description</th></tr>");
 			ArrayList<AlertMonitor> alerts = store.getAlerts();
 			if (alerts != null && alerts.size() > 0) {
 				for (int i = 0; i < alerts.size(); i++) {
-					sb.append("<tr><td>" + (i + 1) + "</td>");
-					sb.append("<td>"
+					sb.append("<tr "+(i % 2 == 0 ? "" : "style=\"background:#f1f1f1;\"")+"><td style=\"padding:5px;color: #686868;\">" + (i + 1) + "</td>");
+					sb.append("<td style=\"padding:5px;color: #686868;\">"
 							+ MonitorUtil.parseTimeEmail(alerts.get(i)
 									.getTimeStamp()) + "</td>");
 					if (alerts.get(i).getType() == AlertMonitor.CANNOT_GATHER_DATA
 							|| alerts.get(i).getType() == AlertMonitor.SERVICE_ERROR_STATUS) {
-						sb.append("<td bgcolor=\"red\">Critical</td>");
+						sb.append("<td style=\"padding:5px;\"><span style=\"font-weight: bold;color: red;\">Critical</span></td>");
 					} else {
-						sb.append("<td>High</td>");
+						sb.append("<td style=\"padding:5px;color: #686868;\">High</td>");
 					}
 
-					sb.append("<td>" + alerts.get(i).getError() + "</td>");
-					sb.append("<td>" + alerts.get(i).getDescription()
+					sb.append("<td style=\"padding:5px;color: #686868;\">" + alerts.get(i).getError() + "</td>");
+					sb.append("<td style=\"padding:5px;color: #686868;\">" + alerts.get(i).getDescription()
 							+ "</td></tr>");
 				}
 			}// if
 			sb.append("</tbody></table><hr/></li>");
 		}// for
 
-		sb.append("</ol><p style=\"font-size: 0.9em;\">You will continue to receive regular notification alerts until the issue is resolved (default is set to 30 minutes), we recommend creating a filter in your email client to capture all alerts into one folder for easy access.</p>");
-		sb.append("<p style=\"font-size: 0.9em;\">");
+		sb.append("</ol><p style=\"font-size: 0.9em;color: #686868;\">You will continue to receive regular notification alerts until the issue is resolved (default is set to 30 minutes), we recommend creating a filter in your email client to capture all alerts into one folder for easy access.</p>");
+		sb.append("<p style=\"font-size: 0.9em;color: #686868;\">");
 		sb.append("inbox : " + (mailConfig.isInbox() ? "on" : "off") + "<br/>");
 		sb.append("starred : " + (mailConfig.isStarred() ? "on" : "off")
 				+ "<br/>");
@@ -361,9 +361,9 @@ public class MailService {
 				+ (mailConfig.isMarkAsUnread() ? "on" : "off") + "<br/>");
 		sb.append("label : \"" + mailConfig.getLabel() + "\"<br/>");
 		sb.append("</p>");
-		sb.append("--------------------------------------------------------------------------------<br/>");
-		sb.append("<i>Thanks and Best Regards</i><br/><br/>");
-		sb.append("<b>ADMIN-MONITOR</b>");
+		sb.append("<p style=\"font-size: 0.9em;color: #686868;\">--------------------------------------------------------------------------------</p>");
+		sb.append("<p style=\"color: #686868;\"><i>Thanks and Best Regards</i><br/><br/>");
+		sb.append("<b>ADMIN-MONITOR</b></p>");
 		return sb.toString();
 	}
 

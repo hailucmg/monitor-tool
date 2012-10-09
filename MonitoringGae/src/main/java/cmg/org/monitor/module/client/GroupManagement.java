@@ -178,7 +178,7 @@ public class GroupManagement extends AncestorEntryPoint{
 			dataListSystem.setValue(i,2,
 							"<a onClick=\"javascript:showConfirmDialogBox('"
 									+ listGroup.get(i).getId()
-									+ "');\" title=\"Delete\" class=\"icon-2 info-tooltip\"></a>");
+									+ "');\" title=\"Delete\" style=\"margin-left: auto;margin-right: auto;margin-top: 5px;\"  class=\"icon-delete\"></a>");
 		}
 
 		com.google.gwt.visualization.client.formatters.BarFormat.Options ops = com.google.gwt.visualization.client.formatters.BarFormat.Options
