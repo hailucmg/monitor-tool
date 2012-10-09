@@ -6,7 +6,6 @@ import java.util.List;
 
 
 import cmg.org.monitor.entity.shared.SystemGroup;
-import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.util.shared.HTMLControl;
 
 
