@@ -71,17 +71,19 @@ public class MailService {
 			.getName());
 
 	private MailItemService mailItemService;
-	
+
 	GoogleAccount adminAcc;
 
-	public MailService(GoogleAccount acc) {		
+	public MailService(GoogleAccount acc) {
 		adminAcc = acc;
-		mailItemService = new MailItemService(GoogleAccountService.APPLICATION_NAME);
-		if (adminAcc.getToken() != null && adminAcc.getToken().length()> 0){
+		mailItemService = new MailItemService(
+				GoogleAccountService.APPLICATION_NAME);
+		if (adminAcc.getToken() != null && adminAcc.getToken().length() > 0) {
 			mailItemService.setUserToken(acc.getToken());
-		}else{
+		} else {
 			try {
-				mailItemService.setUserCredentials(adminAcc.getUsername() + "@" + adminAcc.getDomain(),
+				mailItemService.setUserCredentials(adminAcc.getUsername() + "@"
+						+ adminAcc.getDomain(),
 						SecurityUtil.decrypt(adminAcc.getPassword()));
 			} catch (AuthenticationException ae) {
 				logger.log(Level.SEVERE,
@@ -89,7 +91,7 @@ public class MailService {
 								+ ae.getMessage());
 			}
 		}
-		
+
 	}
 
 	public boolean sendMail(String subject, String content,
@@ -271,7 +273,7 @@ public class MailService {
 			MailConfigMonitor mailConfig) {
 		SystemDAO sysDao = new SystemDaoImpl();
 		SystemMonitor sys = null;
-		
+
 		StringBuffer sb = new StringBuffer();
 		sb.append("<p><img src=\"http://"
 				+ MonitorConstant.PROJECT_HOST_NAME
@@ -335,30 +337,30 @@ public class MailService {
 					sb.append("<td>"
 							+ MonitorUtil.parseTimeEmail(alerts.get(i)
 									.getTimeStamp()) + "</td>");
-					if (alerts.get(i).getType() == AlertMonitor.CANNOT_GATHER_DATA || alerts.get(i).getType() == AlertMonitor.SERVICE_ERROR_STATUS) {
+					if (alerts.get(i).getType() == AlertMonitor.CANNOT_GATHER_DATA
+							|| alerts.get(i).getType() == AlertMonitor.SERVICE_ERROR_STATUS) {
 						sb.append("<td bgcolor=\"red\">Critical</td>");
 					} else {
 						sb.append("<td>High</td>");
 					}
-					
+
 					sb.append("<td>" + alerts.get(i).getError() + "</td>");
 					sb.append("<td>" + alerts.get(i).getDescription()
 							+ "</td></tr>");
 				}
-			}//if
+			}// if
 			sb.append("</tbody></table><hr/></li>");
-		}//for
+		}// for
 
-		sb.append("</ol><h4>(*) <i>Reply with following content to configure the notification emails.</i></h4>");
-		sb.append("<b>Your current configuration: </b>");
-		sb.append("<blockquote>");
+		sb.append("</ol><p style=\"font-size: 0.9em;\">You will continue to receive regular notification alerts until the issue is resolved (default is set to 30 minutes), we recommend creating a filter in your email client to capture all alerts into one folder for easy access.</p>");
+		sb.append("<p style=\"font-size: 0.9em;\">");
 		sb.append("inbox : " + (mailConfig.isInbox() ? "on" : "off") + "<br/>");
 		sb.append("starred : " + (mailConfig.isStarred() ? "on" : "off")
 				+ "<br/>");
 		sb.append("markAsUnread : "
 				+ (mailConfig.isMarkAsUnread() ? "on" : "off") + "<br/>");
 		sb.append("label : \"" + mailConfig.getLabel() + "\"<br/>");
-		sb.append("</blockquote>");
+		sb.append("</p>");
 		sb.append("--------------------------------------------------------------------------------<br/>");
 		sb.append("<i>Thanks and Best Regards</i><br/><br/>");
 		sb.append("<b>ADMIN-MONITOR</b>");

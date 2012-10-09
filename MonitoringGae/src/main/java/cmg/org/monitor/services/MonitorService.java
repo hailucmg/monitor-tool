@@ -119,7 +119,7 @@ public class MonitorService {
 								"System is down",
 								"Unable to retrieve data from the remote system ("
 										+ (aSystem.getProtocol().equals(
-												MonitorConstant.HTTP_PROTOCOL) ? ("Remote URL: " + aSystem
+												MonitorConstant.HTTP_PROTOCOL) ? ("remote url: " + aSystem
 												.getRemoteUrl())
 												: ("Remote mail: " + aSystem
 														.getEmailRevice()))
