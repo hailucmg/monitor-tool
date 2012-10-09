@@ -374,7 +374,7 @@ public class HTMLControl {
 	}
 	
 	public static String getLinkEditGroup(String id){
-		String a = "<a href=\"" + HTML_EDIT_GROUP_NAME + "/" + id + "\" >";
+		String a = "<a href=\"" + HTML_EDIT_GROUP_NAME + "/" + id + "\" title=\"Update Group\" >";
 		return a;
 	}
 	
