@@ -402,7 +402,7 @@ public class GoogleManagement extends AncestorEntryPoint {
 					panelValidateConfirmPassword.setVisible(true);
 					return;
 				}
-
+				setVisibleLoadingImage(true);
 				GoogleAccount acc = new GoogleAccount();
 				acc.setDomain(txtDomain.getText());
 				acc.setUsername(txtUsername.getText());
@@ -412,14 +412,14 @@ public class GoogleManagement extends AncestorEntryPoint {
 
 							@Override
 							public void onFailure(Throwable caught) {
-
+							    	setVisibleLoadingImage(false);
 								showMessage("Added Failed.", "", "",
 										HTMLControl.RED_MESSAGE, true);
 							}
 
 							@Override
 							public void onSuccess(Boolean result) {
-
+							    	setVisibleLoadingImage(false);
 								showMessage("Successfully", "", "",
 										HTMLControl.BLUE_MESSAGE, true);
 								monitorGwtSv.listAllGoogleAcc(new AsyncCallback<GoogleAccount[]>() {
