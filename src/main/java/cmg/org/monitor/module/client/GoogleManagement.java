@@ -9,6 +9,7 @@ import cmg.org.monitor.util.shared.HTMLControl;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
@@ -50,6 +51,7 @@ public class GoogleManagement extends AncestorEntryPoint {
 	Button btnAddAccount;
 	Button btnSaveAccount;
 	Button btnClearAccount;
+	Button btnResetAccount;
 	static TextArea txtLog;
 
 	static DisclosurePanel advancedDisclosure;
@@ -109,6 +111,10 @@ public class GoogleManagement extends AncestorEntryPoint {
 													$wnd.clearAccount =
 													$entry(@cmg.org.monitor.module.client.GoogleManagement::clearAccount(Ljava/lang/String;))
 													}-*/;
+	
+	public static String getUserAgent(){
+	    return Navigator.getUserAgent();
+	}
 
 	static void viewLastestLog(String adminAccount, String id) {
 		monitorGwtSv.viewLastestLog(adminAccount, new AsyncCallback<String>() {
@@ -265,6 +271,7 @@ public class GoogleManagement extends AncestorEntryPoint {
 		lbConfirmPwd = new Label("Confirm Password:");
 
 		btnAddAccount = new Button("Add/Edit account");
+		btnResetAccount = new Button("Reset Account");
 		// btnSaveAccount = new Button("Update account");
 		// btnClearAccount = new Button("Clear account");
 
@@ -277,9 +284,17 @@ public class GoogleManagement extends AncestorEntryPoint {
 		txtPassword = new PasswordTextBox();
 		txtConfirmPwd = new PasswordTextBox();
 		txtPassword.getElement().setAttribute("style", "margin-left:2px;");
+		txtPassword.getElement().setAttribute("id", "txtPassword");
 		txtPassword.setWidth("159px");
+		if(getUserAgent().contains("Firefox")){
+		    txtPassword.setWidth("179px");
+		}
 		txtConfirmPwd.getElement().setAttribute("style", "margin-left:2px;");
+		txtConfirmPwd.getElement().setAttribute("id", "txtConfirmPwd");
 		txtConfirmPwd.setWidth("159px");
+		if(getUserAgent().contains("Firefox")){
+		    txtConfirmPwd.setWidth("179px");
+		}
 
 		panelValidateDomain = new AbsolutePanel();
 		panelValidateDomain.setVisible(false);
@@ -303,6 +318,7 @@ public class GoogleManagement extends AncestorEntryPoint {
 		flexTable.setWidget(3, 1, txtConfirmPwd);
 		flexTable.setWidget(3, 2, panelValidateConfirmPassword);
 		flexTable.setWidget(4, 0, btnAddAccount);
+		flexTable.setWidget(4, 1, btnResetAccount);
 		// flexTable.setWidget(3, 1, btnSaveAccount);
 		// flexTable.setWidget(3, 2, btnClearAccount);
 		flexTable.getCellFormatter().setVerticalAlignment(0, 0,
@@ -320,6 +336,16 @@ public class GoogleManagement extends AncestorEntryPoint {
 		panelValidateConfirmPassword = new AbsolutePanel();
 		panelValidateConfirmPassword.setVisible(false);
 
+		btnResetAccount.addClickHandler(new ClickHandler(){
+		    @Override
+		    public void onClick(ClickEvent event) {
+			txtDomain.setText("");
+			txtUsername.setText("");
+			txtConfirmPwd.setText("");
+			txtPassword.setText("");
+		    }
+		});
+		
 		btnAddAccount.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
