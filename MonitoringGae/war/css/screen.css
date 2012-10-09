@@ -1576,11 +1576,12 @@ label	{
 	 
 	}
  .checkbox-size	{
-	
+		width:28px;
+		height:28px;
 	}
 .checkbox-size input{
-		width:18px;
-		height:18px;
+		width:28px;
+		height:28px;
 	}	
 #login-inner th	{
 	padding: 0 0 6px 0;
