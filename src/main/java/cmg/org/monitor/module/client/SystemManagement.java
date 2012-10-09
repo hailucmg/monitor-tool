@@ -82,6 +82,15 @@ public class SystemManagement extends AncestorEntryPoint {
 	static void showConfirmDialogBox(final String code, final String id) {
 		dialogBox = new DialogBox();
 		dialogBox.setAnimationEnabled(true);
+		String name = "";
+		if(systems!=null){
+			for(SystemMonitor s : systems){
+				if(s.getId().toString().equals(id)){
+					name = s.getName();
+					System.out.println("true");
+				}
+			}
+		}
 		final Button closeButton = new Button("Cancel");
 		closeButton.setStyleName("margin:6px;");
 		closeButton.addStyleName("form-button");
@@ -99,7 +108,7 @@ public class SystemManagement extends AncestorEntryPoint {
 		});
 		VerticalPanel dialogVPanel = new VerticalPanel();
 		popupContent = new HTML();
-		popupContent.setHTML("<h4>Do you want to delete System ID " + code
+		popupContent.setHTML("<h4>Do you want to delete System "+ name + " ID " + code
 				+ "?</h4>");
 		flexHTML = new FlexTable();
 		flexHTML.setWidget(0, 0, popupContent);
