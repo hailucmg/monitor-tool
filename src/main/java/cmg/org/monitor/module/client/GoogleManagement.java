@@ -168,6 +168,8 @@ public class GoogleManagement extends AncestorEntryPoint {
 	}
 
 	static void syncAccount(String domain, String username) {
+		setOnload(true);
+		setVisibleLoadingImage(true);
 		adminAcc = new GoogleAccount();
 		adminAcc.setDomain(domain);
 		adminAcc.setUsername(username);
@@ -176,6 +178,8 @@ public class GoogleManagement extends AncestorEntryPoint {
 
 				@Override
 				public void onFailure(Throwable caught) {
+					setOnload(false);
+					setVisibleLoadingImage(false);
 					setVisibleMessage(false, HTMLControl.RED_MESSAGE);
 					setVisibleMessage(false, HTMLControl.BLUE_MESSAGE);
 					showMessage("Synchronized failed.", "", "",
@@ -184,6 +188,8 @@ public class GoogleManagement extends AncestorEntryPoint {
 
 				@Override
 				public void onSuccess(String result) {
+					setOnload(false);
+					setVisibleLoadingImage(false);
 					if (result.toLowerCase().startsWith("fail:")) {
 						result = result.substring(6, result.length());
 						setVisibleMessage(false, HTMLControl.RED_MESSAGE);
@@ -210,6 +216,7 @@ public class GoogleManagement extends AncestorEntryPoint {
 
 						});
 					}
+					
 				}
 
 			});
