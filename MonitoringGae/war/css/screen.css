@@ -1804,3 +1804,10 @@ a.btnCancel	{
 	height:auto;
 	width: 1185px;
 }
+.myCaption {
+background: #E3E8F3 url(images/hborder.png) repeat-x 0px -2003px;
+padding: 4px 4px 4px 8px;
+cursor: default;
+border-top: none;
+border-bottom : none;
+}
