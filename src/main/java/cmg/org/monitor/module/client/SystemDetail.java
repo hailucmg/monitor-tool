@@ -18,6 +18,7 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -625,6 +626,15 @@ public class SystemDetail extends AncestorEntryPoint {
 		data.addColumn(ColumnType.STRING, "Label");
 		data.addColumn(ColumnType.NUMBER, "Value");
 		data.addRows(1);
+		if (value != -1 && value != 0) {
+			value = (5 - Random.nextInt(10)) + value;
+			if (value < 0) {
+				value = 0;
+			}
+			if (value > 100) {
+				value = 100;
+			}
+		}
 		data.setValue(0, 0, title);
 		data.setValue(0, 1, value);
 		return data;
