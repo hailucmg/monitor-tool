@@ -197,9 +197,10 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 					
 					if (currentUser.isAdmin() 
 							&& currentUser.isNeedAddAccount()
-							&& currentPage != HTMLControl.PAGE_GOOGLE_MANAGEMENT
-							&& currentPage != HTMLControl.PAGE_ABOUT
-							&& currentPage != HTMLControl.PAGE_HELP) {
+							&& !(currentPage == HTMLControl.PAGE_GOOGLE_MANAGEMENT
+							|| currentPage == HTMLControl.PAGE_ABOUT
+							|| currentPage == HTMLControl.PAGE_HELP
+							|| currentPage == HTMLControl.PAGE_REVISION)) {
 						Window.Location.replace(currentUrl
 								+ HTMLControl.HTML_GOOGLE_MANAGEMENT_NAME);
 						setOnload(false);
@@ -268,7 +269,8 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 										result.getEmail()));
 						if (result.getRole() == MonitorConstant.ROLE_GUEST) {
 							if (currentPage == HTMLControl.PAGE_ABOUT
-									|| currentPage == HTMLControl.PAGE_HELP) {
+									|| currentPage == HTMLControl.PAGE_HELP
+									|| currentPage == HTMLControl.PAGE_REVISION) {
 								setVisibleMessage(false, HTMLControl.YELLOW_MESSAGE);
 								setVisibleMessage(false, HTMLControl.RED_MESSAGE);
 								role = result.getRole();
@@ -356,14 +358,17 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 		timerMess = new Timer() {
 			@Override
 			public void run() {
+				int time = --count;
+				if (time < 0) {
+					count = MonitorConstant.REFRESH_RATE / 1000;
+					time = --count;
+				}
 				showMessage("Latest status of systems. Update in "
-						+ HTMLControl.getStringTime(--count),
+						+ HTMLControl.getStringTime(time),
 						"#dashboard/reload",
 						"<input type=\"button\"  class=\"form-reload\">",
 						typeMessage, false);
-				if (count <= 0) {
-					this.cancel();
-				}
+				
 			}
 		};
 		timerMess.run();

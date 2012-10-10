@@ -456,7 +456,6 @@ public class GoogleManagement extends AncestorEntryPoint {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
 				showMessage("Oops! Error.", HTMLControl.HTML_DASHBOARD_NAME,
 						"Goto Dashboard. ", HTMLControl.RED_MESSAGE, true);
 			}
@@ -465,6 +464,12 @@ public class GoogleManagement extends AncestorEntryPoint {
 			public void onSuccess(GoogleAccount[] result) {
 				setVisibleLoadingImage(false);
 				setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+				if (result == null || result.length == 0) {
+					showMessage(
+							"There are no user in system. Please create a google account to sync. ",
+							"", "",
+							HTMLControl.RED_MESSAGE, true);
+				}
 				listGoogleAcc = result;
 				drawTable(result);
 			}
