@@ -647,6 +647,7 @@ public class GoogleManagement extends AncestorEntryPoint {
 			}
 		});
 		dialogBox.setWidget(dialogVPanel);
+		dialogBox.getCaption().asWidget().setStyleName("myCaption");
 		dialogBox.center();
 	}
 }
