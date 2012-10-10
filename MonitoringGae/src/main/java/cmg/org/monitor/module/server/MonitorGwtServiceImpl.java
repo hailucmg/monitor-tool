@@ -859,4 +859,13 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			return sortByname(systems);
 		}
 	}
+
+	/**
+	 * (non-Javadoc)
+	 * @see cmg.org.monitor.module.client.MonitorGwtService#getRevisionContent() 
+	 */
+	public String getRevisionContent() {
+		UtilityDAO utilDAO = new UtilityDaoImpl();
+		return utilDAO.getRevisionContent();
+	}
 }

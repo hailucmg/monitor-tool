@@ -70,5 +70,7 @@ public final class MonitorConstant {
 	public static final String SITES_HELP_CONTENT_ID = "76479283222030903";
 
 	public static final String SITES_ABOUT_CONTENT_ID = "1702220121101760304";
+	
+	public static final String SITES_REVISIONS_CONTENT_ID = "1353586090532557552";
 
 }

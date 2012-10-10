@@ -35,6 +35,8 @@ public interface MonitorGwtService extends RemoteService {
 	
 	String getHelpContent();
 	
+	String getRevisionContent();
+	
 	String getDefaultContent();
 	
 	MonitorContainer getSystemMonitorContainer();

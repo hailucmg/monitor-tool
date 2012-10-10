@@ -6,6 +6,10 @@ import cmg.org.monitor.ext.model.shared.GroupMonitor;
 import cmg.org.monitor.ext.model.shared.UserMonitor;
 
 public interface UtilityDAO {
+	public void putRevisionContent(String content);
+	
+	public String getRevisionContent();
+	
 	public void putHelpContent(String content);
 	
 	public String getHelpContent();

@@ -6,12 +6,12 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 
-public class MonitorHelp extends AncestorEntryPoint {
+public class MonitorRevision extends AncestorEntryPoint {
 	FlexTable flexTable;
 
 	protected void init() {
-		if (currentPage == HTMLControl.PAGE_HELP) {
-			monitorGwtSv.getHelpContent(new AsyncCallback<String>() {
+		if (currentPage == HTMLControl.PAGE_REVISION) {
+			monitorGwtSv.getRevisionContent(new AsyncCallback<String>() {
 				@Override
 				public void onSuccess(String result) {
 					if (result != null) {
