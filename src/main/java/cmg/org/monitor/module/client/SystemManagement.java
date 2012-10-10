@@ -87,7 +87,6 @@ public class SystemManagement extends AncestorEntryPoint {
 			for(SystemMonitor s : systems){
 				if(s.getId().toString().equals(id)){
 					name = s.getName();
-					System.out.println("true");
 				}
 			}
 		}
@@ -100,6 +99,7 @@ public class SystemManagement extends AncestorEntryPoint {
 		final Button exitButton = new Button();
 		exitButton.setStyleName("");
 		exitButton.getElement().setId("closeButton");
+		exitButton.addStyleName("align=right");
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
@@ -108,21 +108,24 @@ public class SystemManagement extends AncestorEntryPoint {
 		});
 		VerticalPanel dialogVPanel = new VerticalPanel();
 		popupContent = new HTML();
-		popupContent.setHTML("<h4>Do you want to delete System "+ name + " ID " + code
-				+ "?</h4>");
+		popupContent.setHTML("<h4>Do you want to delete System "+ name+ "?</h4>");
 		flexHTML = new FlexTable();
 		flexHTML.setWidget(0, 0, popupContent);
 		flexHTML.setStyleName("table-popup");
-		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
+		flexHTML.addStyleName("align=left");
 		FlexTable table = new FlexTable();
-		table.setCellPadding(10);
-		table.setCellSpacing(10);
+		table.setCellPadding(5);
+		table.setCellSpacing(5);
 		table.setWidget(0, 0, okButton);
 		table.setWidget(0, 1, closeButton);
+		table.getCellFormatter().setHorizontalAlignment(0, 0, VerticalPanel.ALIGN_RIGHT);
+		table.getCellFormatter().setHorizontalAlignment(0, 1, VerticalPanel.ALIGN_RIGHT);
 		dialogVPanel.add(exitButton);
 		dialogVPanel.add(flexHTML);
 		dialogVPanel.add(table);
-		dialogVPanel.setStyleName("dialogVPanel");
+		dialogVPanel.setCellHorizontalAlignment(exitButton, VerticalPanel.ALIGN_RIGHT);
+		dialogVPanel.setCellHorizontalAlignment(flexHTML, VerticalPanel.ALIGN_LEFT);
+		dialogVPanel.setCellHorizontalAlignment(table, VerticalPanel.ALIGN_RIGHT);
 		okButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {

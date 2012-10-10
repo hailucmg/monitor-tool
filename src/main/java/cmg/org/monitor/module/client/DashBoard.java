@@ -106,14 +106,15 @@ public class DashBoard extends AncestorEntryPoint {
 		flexButton.setCellSpacing(5);
 		flexButton.setWidget(0, 0, buttonDetails);
 		flexButton.setWidget(0, 1, buttonStatistic);
+		flexButton.getCellFormatter().setHorizontalAlignment(0, 0, VerticalPanel.ALIGN_RIGHT);
+		flexButton.getCellFormatter().setHorizontalAlignment(0, 1, VerticalPanel.ALIGN_RIGHT);
 		VerticalPanel dialogVPanel = new VerticalPanel();
-
-		dialogVPanel.addStyleName("dialogVPanel");
-
-		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
 		dialogVPanel.add(close);
 		dialogVPanel.add(flexTable);
 		dialogVPanel.add(flexButton);
+		dialogVPanel.setCellHorizontalAlignment(close, VerticalPanel.ALIGN_RIGHT);
+		dialogVPanel.setCellHorizontalAlignment(flexTable, VerticalPanel.ALIGN_LEFT);
+		dialogVPanel.setCellHorizontalAlignment(flexButton, VerticalPanel.ALIGN_RIGHT);
 		dialogBox.setWidget(dialogVPanel);
 	}
 
