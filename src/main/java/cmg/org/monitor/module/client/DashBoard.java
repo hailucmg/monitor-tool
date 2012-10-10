@@ -5,11 +5,14 @@ import cmg.org.monitor.util.shared.Constant;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DialogBox.Caption;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -116,6 +119,7 @@ public class DashBoard extends AncestorEntryPoint {
 		dialogVPanel.setCellHorizontalAlignment(flexTable, VerticalPanel.ALIGN_LEFT);
 		dialogVPanel.setCellHorizontalAlignment(flexButton, VerticalPanel.ALIGN_RIGHT);
 		dialogBox.setWidget(dialogVPanel);
+		dialogBox.getCaption().asWidget().setStyleName("myCaption");
 	}
 
 	/*

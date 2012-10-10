@@ -143,8 +143,9 @@ public class GroupManagement extends AncestorEntryPoint{
 		    }
 		});
 		dialogBox.setWidget(dialogVPanel);
+		dialogBox.getCaption().asWidget().setStyleName("myCaption");
 		dialogBox.center();
-	    }
+	  }
 	
 	   static void drawTable(List<SystemGroup> result) {
 		tableListGroup.draw(createDataListSystem(result), createOptionsTableListSystem());
