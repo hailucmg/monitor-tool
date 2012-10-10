@@ -19,6 +19,7 @@ public class Key implements IsSerializable {
 	
 	public static final int ABOUT_CONTENT = 0x111;
 	public static final int HELP_CONTENT = 0x112;
+	public static final int REVISION_CONTENT = 0x401;
 	
 	public static final int LIST_GROUP = 0x113;
 	public static final int LIST_ALL_USERS = 0x114;

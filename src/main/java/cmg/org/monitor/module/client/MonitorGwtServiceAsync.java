@@ -103,4 +103,6 @@ public interface MonitorGwtServiceAsync {
 	void viewLastestLog(String adminAccount, AsyncCallback<String> callback);
 
 	void listSystemsForChangelog(AsyncCallback<SystemMonitor[]> callback);
+
+	void getRevisionContent(AsyncCallback<String> callback);
 }

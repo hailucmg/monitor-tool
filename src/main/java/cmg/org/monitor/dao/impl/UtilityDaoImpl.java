@@ -36,6 +36,32 @@ import cmg.org.monitor.util.shared.MonitorConstant;
 public class UtilityDaoImpl implements UtilityDAO {
 	private static final Logger logger = Logger.getLogger(UtilityDaoImpl.class
 			.getCanonicalName());
+	
+	
+	@Override
+	public void putRevisionContent(String content) {
+		try {
+			MonitorMemcache.put(Key.create(Key.REVISION_CONTENT), content);
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, "Error:" + ex.getMessage());
+		}
+	}
+
+	@Override
+	public String getRevisionContent() {
+		String temp = "";
+		Object obj = MonitorMemcache.get(Key.create(Key.REVISION_CONTENT));
+		if (obj != null && obj instanceof String) {
+			temp = (String) obj;
+		}
+		if (temp == null || temp.equals("")) {
+			temp = SitesHelper
+					.getSiteEntryContent(MonitorConstant.SITES_REVISIONS_CONTENT_ID);
+			putRevisionContent(temp);
+		}
+		return temp;
+	}
+	
 
 	@Override
 	public void putHelpContent(String content) {

@@ -15,6 +15,7 @@
 	<!-- START Entry point -->
 	<entry-point class="cmg.org.monitor.module.client.MonitorHelp" />
 	<entry-point class="cmg.org.monitor.module.client.MonitorAbout" />
+	<entry-point class="cmg.org.monitor.module.client.MonitorRevision" />
 	<entry-point class="cmg.org.monitor.module.client.DashBoard" />
 	<entry-point class="cmg.org.monitor.module.client.SystemManagement" />
 	<entry-point class="cmg.org.monitor.module.client.SystemChangeLog" />

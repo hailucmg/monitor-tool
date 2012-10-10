@@ -45,45 +45,51 @@ public class SitesHelper {
 					}
 				} catch (MalformedURLException e) {
 					// TODO Auto-generated catch block
-					logger.log(Level.INFO,"getting exception from memcache :" + e.getMessage());
+					logger.log(Level.INFO, "getting exception from memcache :"
+							+ e.getMessage());
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					logger.log(Level.INFO,"getting exception from memcache :" + e.getMessage());
+					logger.log(Level.INFO, "getting exception from memcache :"
+							+ e.getMessage());
 				} catch (ServiceException e) {
 					// TODO Auto-generated catch block
-					logger.log(Level.INFO,"getting exception from memcache :" + e.getMessage());
+					logger.log(Level.INFO, "getting exception from memcache :"
+							+ e.getMessage());
 				}
 			}
-			} else {
-				try {
-					service.setUserCredentials(MonitorConstant.SITES_USERNAME,
-							MonitorConstant.SITES_PASSWORD);
-					ContentFeed contentFeed = service.getFeed(new URL(
-							MonitorConstant.SITES_CONTENT_FEED_URL),
-							ContentFeed.class);
-					for (WebPageEntry entry : contentFeed
-							.getEntries(WebPageEntry.class)) {
-						if (getEntryId(entry).equals(entryID)) {
-							temp = getContentBlob(entry);
-							break;
-						}
+		} else {
+			try {
+				service.setUserCredentials(MonitorConstant.SITES_USERNAME,
+						MonitorConstant.SITES_PASSWORD);
+				ContentFeed contentFeed = service.getFeed(new URL(
+						MonitorConstant.SITES_CONTENT_FEED_URL),
+						ContentFeed.class);
+				for (WebPageEntry entry : contentFeed
+						.getEntries(WebPageEntry.class)) {
+					if (getEntryId(entry).equals(entryID)) {
+						temp = getContentBlob(entry);
+						break;
 					}
-				} catch (AuthenticationException e) {
-					logger.log(Level.INFO,"getting exception from Manual :" + e.getMessage());
-				} catch (IOException e) {
-					logger.log(Level.INFO,"getting exception from Manual :" + e.getMessage());
-				} catch (ServiceException e) {
-					logger.log(Level.INFO,"getting exception from Manual :" + e.getMessage());
 				}
+			} catch (AuthenticationException e) {
+				logger.log(Level.INFO,
+						"getting exception from Manual :" + e.getMessage());
+			} catch (IOException e) {
+				logger.log(Level.INFO,
+						"getting exception from Manual :" + e.getMessage());
+			} catch (ServiceException e) {
+				logger.log(Level.INFO,
+						"getting exception from Manual :" + e.getMessage());
 			}
+		}
 		return temp;
 	}
-	
+
 	public static String getContentBlob(BaseContentEntry<?> entry) {
 		return ((XhtmlTextConstruct) entry.getTextContent().getContent())
 				.getXhtml().getBlob();
 	}
-	
+
 	/**
 	 * Returns an entry's numeric ID.
 	 */
@@ -91,5 +97,40 @@ public class SitesHelper {
 		String selfLink = entry.getSelfLink().getHref();
 		return selfLink.substring(selfLink.lastIndexOf("/") + 1);
 	}
-			
+
+	public static void main(String[] args) {
+		String temp = "";
+		SitesService service = new SitesService(MonitorConstant.SITES_APP_NAME);
+		try {
+			logger.log(Level.INFO, "Getting token from memcache");
+			service.setUserCredentials(MonitorConstant.SITES_USERNAME,
+					MonitorConstant.SITES_PASSWORD);
+			ContentFeed contentFeed;
+
+			contentFeed = service.getFeed(new URL(
+					MonitorConstant.SITES_CONTENT_FEED_URL), ContentFeed.class);
+			for (WebPageEntry entry : contentFeed
+					.getEntries(WebPageEntry.class)) {
+				System.out.println("###################");
+				System.out.println("entry id:" + getEntryId(entry));
+				temp = getContentBlob(entry);
+				System.out.println("->Content:");
+				System.out.println(temp);
+
+			}
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			logger.log(Level.INFO,
+					"getting exception from memcache :" + e.getMessage());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.log(Level.INFO,
+					"getting exception from memcache :" + e.getMessage());
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			logger.log(Level.INFO,
+					"getting exception from memcache :" + e.getMessage());
+		}
+	}
+
 }
