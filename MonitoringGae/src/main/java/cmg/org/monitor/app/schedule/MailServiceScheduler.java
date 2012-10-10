@@ -75,43 +75,47 @@ public class MailServiceScheduler extends HttpServlet {
 		SystemGroupDAO groupDao = new SystemGroupDaoImpl();
 		if (systems != null && systems.size() > 0) {
 			ArrayList<UserMonitor> listUsers = utilDAO.listAllUsers();
-			for (UserMonitor user : listUsers) {
-				for (SystemMonitor sys : systems) {
-					try {
-						SystemGroup gr = groupDao
-								.getByName(sys.getGroupEmail());
-						if (gr != null) {
-							if (user.checkGroup(gr.getId())) {
-								user.addSystem(sys);
+			if (listUsers != null && listUsers.size() > 0) {
+				for (UserMonitor user : listUsers) {
+					for (SystemMonitor sys : systems) {
+						try {
+							SystemGroup gr = groupDao.getByName(sys
+									.getGroupEmail());
+							if (gr != null) {
+								if (user.checkGroup(gr.getId())) {
+									user.addSystem(sys);
+								}
 							}
+						} catch (Exception e) {
+							logger.log(Level.WARNING,
+									"Error: " + e.getMessage());
 						}
-					} catch (Exception e) {
-						logger.log(Level.WARNING, "Error: " + e.getMessage());
 					}
 				}
-			}
 
-			for (UserMonitor user : listUsers) {
-				if (user.getSystems() != null && user.getSystems().size() > 0) {
-					for (Object tempSys : user.getSystems()) {
-						AlertStoreMonitor alertstore = alertDAO
-								.getLastestAlertStore((SystemMonitor) tempSys);
-						if (alertstore != null) {
-							alertstore.setName(alertName);
-							alertstore.setTimeStamp(new Date(start));
-							NotifyMonitor notify = null;
-							try {
-								notify = sysDAO
-										.getNotifyOption(((SystemMonitor) tempSys)
-												.getCode());
-							} catch (Exception e) {
-							}
-							if (notify == null) {
-								notify = new NotifyMonitor();
-							}
-							alertstore.fixAlertList(notify);
-							if (alertstore.getAlerts().size() > 0) {
-								user.addAlertStore(alertstore);
+				for (UserMonitor user : listUsers) {
+					if (user.getSystems() != null
+							&& user.getSystems().size() > 0) {
+						for (Object tempSys : user.getSystems()) {
+							AlertStoreMonitor alertstore = alertDAO
+									.getLastestAlertStore((SystemMonitor) tempSys);
+							if (alertstore != null) {
+								alertstore.setName(alertName);
+								alertstore.setTimeStamp(new Date(start));
+								NotifyMonitor notify = null;
+								try {
+									notify = sysDAO
+											.getNotifyOption(((SystemMonitor) tempSys)
+													.getCode());
+								} catch (Exception e) {
+								}
+								if (notify == null) {
+									notify = new NotifyMonitor();
+								}
+								alertstore.fixAlertList(notify);
+								if (alertstore.getAlerts().size() > 0) {
+									user.addAlertStore(alertstore);
+								}
 							}
 						}
 					}

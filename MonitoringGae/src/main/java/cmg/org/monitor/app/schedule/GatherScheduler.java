@@ -52,9 +52,12 @@ public class GatherScheduler extends HttpServlet {
 			utilDAO.putHelpContent(SitesHelper
 					.getSiteEntryContent(MonitorConstant.SITES_HELP_CONTENT_ID));
 			
-			utilDAO.putGroups();
+			utilDAO.putRevisionContent(SitesHelper
+					.getSiteEntryContent(MonitorConstant.SITES_REVISIONS_CONTENT_ID));
 			
-			utilDAO.putAllUsers();
+			//utilDAO.putGroups();
+			
+			//utilDAO.putAllUsers();
 
 			// END LOG
 			long end = System.currentTimeMillis();
