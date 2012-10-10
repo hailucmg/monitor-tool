@@ -106,7 +106,7 @@ public class GroupManagement extends AncestorEntryPoint{
 		exitButton.addClickHandler(new ClickHandler() {
 		    @Override
 		    public void onClick(ClickEvent event) {
-			dialogBox.hide();
+		    	dialogBox.hide();
 		    }
 		});
 		VerticalPanel dialogVPanel = new VerticalPanel();
@@ -116,8 +116,8 @@ public class GroupManagement extends AncestorEntryPoint{
 		flexHTML.setWidget(0, 0, popupContent);
 		flexHTML.setStyleName("table-popup");
 		FlexTable table = new FlexTable();
-		table.setCellPadding(10);
-		table.setCellSpacing(10);
+		table.setCellPadding(5);
+		table.setCellSpacing(5);
 		table.setWidget(0, 0, okButton);
 		table.setWidget(0, 1, closeButton);
 		table.getCellFormatter().setHorizontalAlignment(0, 0, VerticalPanel.ALIGN_RIGHT);
@@ -139,7 +139,7 @@ public class GroupManagement extends AncestorEntryPoint{
 		closeButton.addClickHandler(new ClickHandler() {
 		    @Override
 		    public void onClick(ClickEvent event) {
-			dialogBox.hide();
+		    	dialogBox.hide();
 		    }
 		});
 		dialogBox.setWidget(dialogVPanel);
