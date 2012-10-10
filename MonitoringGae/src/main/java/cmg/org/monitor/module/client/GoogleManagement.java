@@ -615,16 +615,19 @@ public class GoogleManagement extends AncestorEntryPoint {
 		flexHTML = new FlexTable();
 		flexHTML.setWidget(0, 0, popupContent);
 		flexHTML.setStyleName("table-popup");
-		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
 		FlexTable table = new FlexTable();
 		table.setCellPadding(10);
 		table.setCellSpacing(10);
 		table.setWidget(0, 0, okButton);
 		table.setWidget(0, 1, closeButton);
+		table.getCellFormatter().setHorizontalAlignment(0, 0, VerticalPanel.ALIGN_RIGHT);
+		table.getCellFormatter().setHorizontalAlignment(0, 1, VerticalPanel.ALIGN_RIGHT);
 		dialogVPanel.add(exitButton);
 		dialogVPanel.add(flexHTML);
 		dialogVPanel.add(table);
-		dialogVPanel.setStyleName("dialogVPanel");
+		dialogVPanel.setCellHorizontalAlignment(exitButton, VerticalPanel.ALIGN_RIGHT);
+		dialogVPanel.setCellHorizontalAlignment(flexHTML, VerticalPanel.ALIGN_LEFT);
+		dialogVPanel.setCellHorizontalAlignment(table, VerticalPanel.ALIGN_RIGHT);
 		okButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
