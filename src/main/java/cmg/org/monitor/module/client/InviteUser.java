@@ -39,7 +39,9 @@ public class InviteUser extends AncestorEntryPoint{
 	String DefaulValueOfListTemp = "None Group assigned";
  	@Override
 	protected void init() {
-		// TODO Auto-generated method stub
+ 		if (currentPage == HTMLControl.PAGE_INVITE) {
+ 			initData();
+ 		}
 		
 	}
  	

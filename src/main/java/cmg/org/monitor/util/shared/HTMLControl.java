@@ -68,7 +68,7 @@ public class HTMLControl {
 	public static final int PAGE_GOOGLE_MANAGEMENT = 0x015;
 	public static final int PAGE_EDIT_GROUP = 0x016;
 	public static final int PAGE_REVISION = 0x017;
-
+	public static final int PAGE_INVITE = 0x018;
 	public static final int ERROR_NORMAL = 0x000;
 	public static final int ERROR_SYSTEM_ID = 0x001;
 
