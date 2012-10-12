@@ -105,4 +105,8 @@ public interface MonitorGwtServiceAsync {
 	void listSystemsForChangelog(AsyncCallback<SystemMonitor[]> callback);
 
 	void getRevisionContent(AsyncCallback<String> callback);
+
+	void getAllForInvite(AsyncCallback<MonitorContainer> callback);
+
+	void inviteUser3rd(SystemUser user, AsyncCallback<Boolean> callback);
 }
