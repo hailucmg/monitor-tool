@@ -774,7 +774,6 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	 */
 	@Override
 	public List<SystemUser> listAllSystemUsers() {
-		// TODO Auto-generated method stub return null;
 		SystemAccountDAO accDao = new SystemAccountDaoImpl();
 		try {
 			List<SystemUser> list = accDao.listAllSystemUser(true);
@@ -867,5 +866,16 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	public String getRevisionContent() {
 		UtilityDAO utilDAO = new UtilityDaoImpl();
 		return utilDAO.getRevisionContent();
+	}
+
+	@Override
+	public MonitorContainer getAllForInvite() {
+		MonitorContainer m = new MonitorContainer();
+		return m;
+	}
+
+	@Override
+	public boolean inviteUser3rd(SystemUser user) {
+		return false;
 	}
 }

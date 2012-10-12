@@ -96,4 +96,9 @@ public interface MonitorGwtService extends RemoteService {
 	boolean updateUserRole(String email, String role, boolean b);
 	
 	String viewLastestLog(String adminAccount);
+	
+	MonitorContainer getAllForInvite();
+	
+	boolean inviteUser3rd(SystemUser user);
+	
 }
