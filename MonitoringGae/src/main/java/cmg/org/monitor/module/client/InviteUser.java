@@ -36,7 +36,7 @@ public class InviteUser extends AncestorEntryPoint{
 	Button btt_UnMappingGroup;
 	Button btt_reset;
 	FlexTable tableInvite;
-	String DefaulValueOfListTemp = "None Group assigned";
+	String DefaulValueOfListTemp = "None Group Mapping";
  	@Override
 	protected void init() {
  		if (currentPage == HTMLControl.PAGE_INVITE) {
