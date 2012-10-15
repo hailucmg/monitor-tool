@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import cmg.org.monitor.entity.shared.ChangeLogMonitor;
+import cmg.org.monitor.entity.shared.InvitedUser;
 import cmg.org.monitor.entity.shared.MemoryMonitor;
 import cmg.org.monitor.entity.shared.NotifyMonitor;
 import cmg.org.monitor.entity.shared.SystemGroup;
@@ -47,8 +48,17 @@ public class MonitorContainer implements Serializable {
 	
 	private SystemGroup[] listSystemGroup;
 	private SystemUser[] listSystemUsers;
-
 	
+	private InvitedUser[] listInvitedUsers;
+	
+
+	public InvitedUser[] getListInvitedUsers() {
+		return listInvitedUsers;
+	}
+
+	public void setListInvitedUsers(InvitedUser[] listInvitedUsers) {
+		this.listInvitedUsers = listInvitedUsers;
+	}
 
 	public SystemGroup[] getListSystemGroup() {
 		return listSystemGroup;
