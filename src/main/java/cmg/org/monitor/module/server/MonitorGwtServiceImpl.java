@@ -873,9 +873,11 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		MonitorContainer m = new MonitorContainer();
 		return m;
 	}
-
+	
 	@Override
-	public boolean inviteUser3rd(SystemUser user) {
+	public boolean inviteUser3rd(String[] user) {
 		return false;
 	}
+
+
 }
