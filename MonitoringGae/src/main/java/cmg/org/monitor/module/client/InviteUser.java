@@ -3,7 +3,11 @@ package cmg.org.monitor.module.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.omg.CORBA.DynAnyPackage.Invalid;
+
+import cmg.org.monitor.entity.shared.InvitedUser;
 import cmg.org.monitor.entity.shared.SystemGroup;
+import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.util.shared.HTMLControl;
@@ -14,11 +18,16 @@ import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.visualization.client.AbstractDataTable;
+import com.google.gwt.visualization.client.DataTable;
+import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
+import com.google.gwt.visualization.client.visualizations.Table;
 
 public class InviteUser extends AncestorEntryPoint{
 	AbsolutePanel panelValidateEmail3rd;
@@ -27,7 +36,7 @@ public class InviteUser extends AncestorEntryPoint{
 	TextBox txt_email;
 	Label txt_label_email;
 	List<SystemGroup> listGroup;
-	List<SystemUser> listUser3rds;
+	List<InvitedUser> listUser3rds;
 	Label label_addGroup;
 	ListBox listTemp;
 	ListBox listAll;
@@ -35,18 +44,27 @@ public class InviteUser extends AncestorEntryPoint{
 	Button btt_MappingGroup;
 	Button btt_UnMappingGroup;
 	Button btt_reset;
-	FlexTable tableInvite;
 	String DefaulValueOfListTemp = "None Group Mapping";
+	static private String defaultFilter = "ALL";
+	static private String filter_inActive = "";
+	static private String filter_pending = "";
+	static private String filter_Active = "";
+	FlexTable tableManagement;
+	public static Table table_list_3rdParty;
+	Button invited;
+	ListBox filter_box;
+	DialogBox dialogFunction;
+	DialogBox dialogInvite;
  	@Override
 	protected void init() {
  		if (currentPage == HTMLControl.PAGE_INVITE) {
- 			initData();
+ 			initData(defaultFilter);
  		}
 		
 	}
  	
  	
- 	void initData(){
+ 	void initData(String filter){
  		monitorGwtSv.getAllForInvite(new AsyncCallback<MonitorContainer>() {
 			@Override
 			public void onSuccess(MonitorContainer result) {
@@ -58,15 +76,19 @@ public class InviteUser extends AncestorEntryPoint{
 							 for(SystemGroup g : sg){
 								 listGroup.add(g);
 							 }
-						}
-						SystemUser [] users = result.getListSystemUsers();
-						listUser3rds = new ArrayList<SystemUser>();
-						if(users!=null){
-							for(SystemUser u : users){
-								listUser3rds.add(u);
+							InvitedUser [] users = result.getListInvitedUsers();
+							listUser3rds = new ArrayList<InvitedUser>();
+							if(users!=null){
+								for(InvitedUser u : users){
+									listUser3rds.add(u);
+								}
 							}
+							
+						}else{
+							setVisibleLoadingImage(false);
+							setOnload(false);
+							showMessage("Oops! Error.", HTMLControl.HTML_GROUP_MANAGEMENT_NAME, "Goto Group Management. ", HTMLControl.RED_MESSAGE, true);
 						}
-						initUI(listGroup);
 					}else{
 						setVisibleLoadingImage(false);
 						setOnload(false);
@@ -89,78 +111,60 @@ public class InviteUser extends AncestorEntryPoint{
 		});
  	}
  	
- 	void initUI(List<SystemGroup> list){
- 		tableInvite = new FlexTable();
+ 	void initUI(){
+ 		table_list_3rdParty = new Table();
  		
- 		txt_label_email = new Label();
- 		txt_label_email.setText("Email");
- 		
- 		txt_email = new TextBox();
- 		txt_email.setWidth("196px");
- 		txt_email.setHeight("30px");
- 		
- 		panelValidateEmail3rd = new AbsolutePanel();
- 		
- 		label_addGroup = new Label();
- 		label_addGroup.setText("Mapping Group");
- 		
- 		listAll = new ListBox();
- 		if(list.size() > 0){
- 			for(SystemGroup s : list){
- 				listAll.addItem(s.getName());
- 			}
- 		}
- 		
- 		listTemp = new ListBox();
- 		listTemp.addItem(DefaulValueOfListTemp);
- 		listTemp.setMultipleSelect(true);
- 		
- 		btt_MappingGroup = new Button();
- 		btt_MappingGroup.setTitle("Assign Group");
- 		btt_MappingGroup.addClickHandler(new MappingGroup());
- 		
- 		btt_UnMappingGroup = new Button();
- 		btt_UnMappingGroup.setTitle("Remove This Group");
- 		btt_UnMappingGroup.addClickHandler(new UnMappingGroup());
- 		
- 		panelAssign = new AbsolutePanel();
- 		panelAssign.add(btt_MappingGroup);
- 		panelAssign.add(btt_UnMappingGroup);
- 		
- 		btt_invite = new Button();
- 		btt_invite.setText("Submit");
- 		
- 		btt_reset = new Button();
- 		btt_reset.setText("Reset");
- 		panelButtonInvite = new AbsolutePanel();
- 		panelButtonInvite.add(btt_invite);
- 		panelButtonInvite.add(btt_reset);
- 		
- 		tableInvite.setWidget(0, 0, txt_label_email);
- 		tableInvite.setWidget(0, 2, txt_email);
- 		tableInvite.setWidget(0, 3, panelValidateEmail3rd);
- 		tableInvite.setWidget(1, 0, label_addGroup);
- 		tableInvite.setWidget(1, 1, listAll);
- 		tableInvite.setWidget(1, 2, panelAssign);
- 		tableInvite.setWidget(1, 4, listTemp);
- 		tableInvite.getFlexCellFormatter().setColSpan(2, 0, 3);
- 		tableInvite.setWidget(2, 0, panelButtonInvite);
- 		
- 		tableInvite.getFlexCellFormatter().setWidth(0, 0, "100px");
- 		tableInvite.getFlexCellFormatter().setWidth(0, 1, "100px");
- 		tableInvite.getFlexCellFormatter().setWidth(0, 2, "100px");
- 		tableInvite.getFlexCellFormatter().setWidth(1, 0, "100px");
- 		tableInvite.getFlexCellFormatter().setWidth(1, 1, "100px");
- 		tableInvite.getFlexCellFormatter().setWidth(1, 2, "80px");
- 		tableInvite.getFlexCellFormatter().setWidth(1, 3, "100px");
- 		tableInvite.getFlexCellFormatter().setWidth(2, 0, "100px");
- 		addWidget(HTMLControl.ID_BODY_CONTENT, tableInvite);
-		setVisibleLoadingImage(false);
-		setOnload(false);
-		setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
  	}
  	
- 	
+ 	static AbstractDataTable createDataListSystem(List<InvitedUser> result, String filter) {
+ 		DataTable dataListUser = DataTable.create();
+ 		dataListUser.addColumn(ColumnType.STRING, "USERNAME");
+ 		dataListUser.addColumn(ColumnType.STRING, "STATUS");
+ 		dataListUser.addColumn(ColumnType.STRING, "ACTION");
+ 		
+ 		List<InvitedUser> listTemp = new ArrayList<InvitedUser>();
+ 		
+ 		if(filter.equalsIgnoreCase(defaultFilter)){
+ 			for(InvitedUser u : result){
+ 				listTemp.add(u);
+ 			}
+ 		}else{
+ 			for(InvitedUser u : result){
+ 	 			if(u.getStatus().equalsIgnoreCase(filter)){
+ 	 				listTemp.add(u);
+ 	 			}
+ 	 		}
+ 		}
+ 		
+ 		if(listTemp.size() > 0){
+ 			dataListUser.addRows(listTemp.size());
+ 			for(int i = 0 ; i < listTemp.size() ; i++){
+ 				InvitedUser u = listTemp.get(i);
+ 				dataListUser.setValue(i, 0, u.getEmail());
+ 				dataListUser.setValue(i, 1, u.getStatus());
+ 				if(u.getStatus().equalsIgnoreCase(filter_Active)){
+ 					String html = "<div>" +HTMLControl.getButtonForActiveUser(u)+ "<div>";
+ 				}
+ 				if(u.getStatus().equalsIgnoreCase(filter_inActive)){
+ 					String html = "<div>" +HTMLControl.getButtonForInActiveUser(u) + "<div>";
+ 					dataListUser.setValue(i, 2, html);
+ 				}
+ 				if(u.getStatus().equalsIgnoreCase(filter_pending)){
+ 					String html = "<div>" +HTMLControl.getButtonForPendingUser(u)+ "<div>";
+ 					dataListUser.setValue(i, 2, html);
+ 				}
+ 			}
+ 		}
+ 		return dataListUser;
+ 	}
+ 	static boolean drawTable(List<InvitedUser> users, String filter){
+ 		if(users.size() > 0 ){
+ 			table_list_3rdParty.draw(createDataListSystem(users, filter));
+ 			return true;
+ 		}else{
+ 			return false;
+ 		}
+ 	}
  	
  	class MappingGroup implements ClickHandler{
 
@@ -287,13 +291,8 @@ public class InviteUser extends AncestorEntryPoint{
 			msg = "Email is not validate";
 			check = true;
 		}
-		if(!email.endsWith("gmail.com")){
-			msg = "Email is not validate,only email in domain Google can access to Monitor";
-			check = true;
-		}
-		if (!check) {
-			if (listUser3rds!=null) {
-				for (SystemUser e : listUser3rds) {
+		if (listUser3rds!=null) {
+				for (InvitedUser e : listUser3rds) {
 					if(e.getEmail().toString().equals(email)){
 						msg = "Email is existed";
 						break;
@@ -302,8 +301,6 @@ public class InviteUser extends AncestorEntryPoint{
 				}
 			}
 
-		}
-		
 		return msg;
 	}
 }

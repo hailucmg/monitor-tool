@@ -1,5 +1,6 @@
 package cmg.org.monitor.util.shared;
 
+import cmg.org.monitor.entity.shared.InvitedUser;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 
 import com.google.gwt.i18n.client.NumberFormat;
@@ -626,6 +627,45 @@ public class HTMLControl {
 		return new HTML(temp.toString());
 	}
 
+	public static String getButtonForActiveUser(InvitedUser u){
+		String id = u.getId();
+		String typeDelete = "delete";
+		String typeInactive = "inactive";
+		String filter = "active";
+		String temp = "<table>";
+		temp += "<tr>";
+		String buttonDelete = "<td><input type=\"button\" onclick=\"onClick=\"javascript:showDialogBox('"+ id + "','" + typeDelete +"','"+ filter +"');\"  value=\"Delete\" >" + "</td>";
+		String buttonInactive = "<td><input type=\"button\" onclick=\"onClick=\"javascript:showDialogBox('"+ id + "','" + typeInactive +"','" + filter + "');\" value=\"Delete\" />" + "</td></td>";
+		temp = buttonDelete + buttonInactive;
+		temp += "</tr></table>";
+		return temp;
+	}
+	
+	public static String getButtonForInActiveUser(InvitedUser u){
+		String id = u.getId();
+		String typeInactive = "active";
+		String filter = "inactive";
+		String temp = "<table>";
+		temp += "<tr>";
+		String buttonactive = "<td><input type=\"button\" onclick=\"onClick=\"javascript:showDialogBox('"+ id + "','" + typeInactive +"','" + filter + "');\" value=\"Delete\" />" + "</td></td>";
+		temp +=buttonactive;
+		temp += "</tr></table>";
+		return temp;
+	}
+	
+	public static String getButtonForPendingUser(InvitedUser u){
+		String id = u.getId();
+		String typeDelete = "delete";
+		String filter = "inactive";
+		String temp = "<table>";
+		temp += "<tr>";
+		String buttonDelete = "<td><input type=\"button\" onclick=\"onClick=\"javascript:showDialogBox('"+ id + "','" + typeDelete +"','"+ filter +"');\"  value=\"Delete\" >" + "</td>";
+		temp +=buttonDelete;
+		temp += "</tr></table>";
+		return temp;
+	}
+	
+	
 	public static String trimHashPart(String url) {
 		String temp = url;
 		if (url.contains("#")) {
