@@ -66,7 +66,6 @@ public class InviteUser extends AncestorEntryPoint{
  			InviteUser.exportViewDialogFunction();
  			InviteUser.exportViewDialogInvite();
  			table_list_3rdParty = new Table();
- 	 		table_list_3rdParty.setWidth("1185px");
  	 		tableInterface = new FlexTable();
  	 		tableManagement = new FlexTable();
  	 		filter_box = new ListBox();
@@ -234,19 +233,19 @@ public class InviteUser extends AncestorEntryPoint{
  			dataListUser.addRows(listTemp.size());
  			for(int i = 0 ; i < listTemp.size() ; i++){
  				InvitedUser u = listTemp.get(i);
- 				dataListUser.setValue(i, 0, u.getEmail());
- 				dataListUser.setValue(i, 1, u.getStatus());
+ 				dataListUser.setValue(i, 0,"<div style=\"min-width:450px\">"+ u.getEmail()+ "</div>");
+ 				dataListUser.setValue(i, 1, "<div style=\"min-width:450px\">"+u.getStatus()+ "</div>");
  				if(u.getStatus().equalsIgnoreCase(filter_Active)){
  					String html = HTMLControl.getButtonForActiveUser(u);
- 					dataListUser.setValue(i, 2,html);
+ 					dataListUser.setValue(i, 2,"<div style=\"min-width:220px\">" +html  + "</div>");
  				}
  				if(u.getStatus().equalsIgnoreCase(filter_inActive)){
  					String html = HTMLControl.getButtonForInActiveUser(u);
- 					dataListUser.setValue(i, 2, html);
+ 					dataListUser.setValue(i, 2,"<div style=\"min-width:220px\">" + html + "</div>");
  				}
  				if(u.getStatus().equalsIgnoreCase(filter_pending)){
  					String html = HTMLControl.getButtonForPendingUser(u);
- 					dataListUser.setValue(i, 2, html);
+ 					dataListUser.setValue(i, 2,"<div style=\"min-width:220px\">" + html + "</div>");
  				}
  			}
  		}
