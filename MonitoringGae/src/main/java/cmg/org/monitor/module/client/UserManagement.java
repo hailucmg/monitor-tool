@@ -170,8 +170,8 @@ public class UserManagement extends AncestorEntryPoint {
 		}
 		data.addRows(listUser.size());
 		for(int j = 0 ; j < listUser.size() ; j++){
-			data.setValue(j, 0,  "<div style=\"min-width:200px\">" + listUser.get(j).getEmail()+" ("+listUser.get(j).getFirstName()  +" " +listUser.get(j).getLastName()+")" + "<div>");
-			data.setValue(j, 1,  "<div style=\"min-width:200px\">" + listUser.get(j).getDomain() + "<div>");
+		    	data.setValue(j, 0,  "<div style=\"min-width:200px\">" + listUser.get(j).getDomain() + "<div>");
+			data.setValue(j, 1,  "<div style=\"min-width:200px\">" + listUser.get(j).getEmail()+" ("+listUser.get(j).getFirstName()  +" " +listUser.get(j).getLastName()+")" + "<div>");
 			for(int k = 0; k < indexGroup ; k++){
 				List<String> listGroupUSer = listUser.get(j).getGroupIDs();
 				boolean checkInGroup = false;
