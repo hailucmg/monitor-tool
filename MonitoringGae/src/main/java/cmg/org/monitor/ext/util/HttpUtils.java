@@ -473,6 +473,7 @@ public abstract class HttpUtils {
 				*/
 				// setup the connection
 				connection = (HttpURLConnection) url.openConnection();
+				connection.setConnectTimeout(5 * 60 * 1000);
 				connection.setRequestMethod(mMethod);
 				connection.setDoInput(true);
 				connection.setDoOutput(true);

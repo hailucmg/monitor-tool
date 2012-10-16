@@ -21,7 +21,7 @@ public final class MonitorConstant {
 	
 	public static final String ALERTSTORE_DEFAULT_NAME = "Issue Warning";
 	
-	public static final String PROJECT_HOST_NAME = "mo.c-mg.com.vn";
+	public static final String PROJECT_HOST_NAME = "monitor.c-mg.vn";
 	
 	public static final String ALERT_MAIL_SENDER_NAME = "admin@cmg-app-eng.appspotmail.com";
 
