@@ -20,6 +20,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextArea;
@@ -53,7 +54,7 @@ public class InviteUser extends AncestorEntryPoint{
 	static private String filter_Active = "active";
 	static FlexTable tableManagement;
 	static FlexTable tableInterface;
-	public static Table table_list_3rdParty;
+	static Table table_list_3rdParty;
 	static Button invited;
 	static ListBox filter_box;
 	static DialogBox dialogFunction;
@@ -64,6 +65,17 @@ public class InviteUser extends AncestorEntryPoint{
  		if (currentPage == HTMLControl.PAGE_INVITE) {
  			InviteUser.exportViewDialogFunction();
  			InviteUser.exportViewDialogInvite();
+ 			table_list_3rdParty = new Table();
+ 	 		table_list_3rdParty.setWidth("1185px");
+ 	 		tableInterface = new FlexTable();
+ 	 		tableManagement = new FlexTable();
+ 	 		filter_box = new ListBox();
+ 	 		filter_box.addItem(defaultFilter);
+ 	 		filter_box.addItem(filter_Active);
+ 	 		filter_box.addItem(filter_inActive);
+ 	 		filter_box.addItem(filter_pending);
+ 	 		tableManagement.setWidget(0, 1, new HTML("<input type=\"button\" value=\"Invited\" onClick=\"javascript:showDialogInvited()\" />"));
+ 	 		tableManagement.setWidget(0, 2, filter_box);
  			initData(defaultFilter);
  		}
 		
@@ -128,61 +140,72 @@ public class InviteUser extends AncestorEntryPoint{
  	}
  	
  	static void initUI(List<InvitedUser> users,String filter){
- 		table_list_3rdParty = new Table();
-		table_list_3rdParty.setWidth("1185px");
- 		tableInterface = new FlexTable();
- 		tableInterface.getCellFormatter().setWidth(1, 0, "1185px");
- 		tableManagement = new FlexTable();
- 		filter_box = new ListBox();
- 		filter_box.addItem(defaultFilter);
- 		filter_box.addItem(filter_Active);
- 		filter_box.addItem(filter_inActive);
- 		filter_box.addItem(filter_pending);
- 		filter_box.addClickHandler(new ClickHandler() {
-			
-			@Override
-			public void onClick(ClickEvent event) {
-				String filter_box_value = filter_box.getValue(filter_box.getSelectedIndex());
-				boolean check = checkingFilter(listUser3rds, filter_box_value);
-				if(check){
-		 			table_list_3rdParty.draw(createDataListSystem(listUser3rds, filter_box_value),createOptionsTableListUser());
-		 			tableInterface.setWidget(1, 0, table_list_3rdParty);
-				}else{
-					panelAuto.setWidget(new HTML("There is no users"));
-					tableInterface.setWidget(1, 0, panelAuto);
-				}
-			}
-		});
- 		int index = 0;
- 		for(int i = 0 ; i < filter_box.getItemCount();i++){
- 			if(filter_box.getValue(i).toString().equalsIgnoreCase(filter)){
- 				index = i ;
- 			}
- 		}
- 		filter_box.setSelectedIndex(index);
  		//create table list users
- 		boolean check = checkingFilter(users, filter);
- 		panelAuto = new SimplePanel();
-		panelAuto.setStyleName("userGroupPanel");
- 		if(check){
- 			table_list_3rdParty.draw(createDataListSystem(users, filter),createOptionsTableListUser());
- 			tableInterface.setWidget(1, 0, table_list_3rdParty);
+ 		if(users.size() > 0){
+ 	 		int index = 0;
+ 	 		for(int i = 0 ; i < filter_box.getItemCount();i++){
+ 	 			if(filter_box.getValue(i).toString().equalsIgnoreCase(filter)){
+ 	 				index = i ;
+ 	 			}
+ 	 		}
+ 	 		filter_box.setSelectedIndex(index);
+ 	 		table_list_3rdParty.draw(createDataListSystem(users, filter),createOptionsTableListUser());
+ 	 		//add table conteiner 2 Widget in table interface
+ 	 		tableInterface.setWidget(0, 0, tableManagement);
+ 	 		tableInterface.setWidget(1, 0, table_list_3rdParty);
+ 	 		setVisibleLoadingImage(false);
+ 			setOnload(false);
+ 	 		addWidget(HTMLControl.ID_BODY_CONTENT, tableInterface);
+ 	 		setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+ 	 		filter_box.addClickHandler(new ClickHandler() {
+ 				
+ 				@Override
+ 				public void onClick(ClickEvent event) {
+ 					String filter_box_value = filter_box.getValue(filter_box.getSelectedIndex());
+ 					boolean check = checkingFilter(listUser3rds, filter_box_value);
+ 					if(check){
+ 			 			table_list_3rdParty.draw(createDataListSystem(listUser3rds, filter_box_value),createOptionsTableListUser());
+ 			 			tableInterface.setWidget(1, 0, table_list_3rdParty);
+ 					}else{
+ 						panelAuto.setWidget(new HTML("There is no users"));
+ 						tableInterface.setWidget(1, 0, panelAuto);
+ 					}
+ 				}
+ 			});
  		}else{
+ 	 		int index = 0;
+ 	 		for(int i = 0 ; i < filter_box.getItemCount();i++){
+ 	 			if(filter_box.getValue(i).toString().equalsIgnoreCase(filter)){
+ 	 				index = i ;
+ 	 			}
+ 	 		}
+ 	 		filter_box.setSelectedIndex(index);
+ 			panelAuto = new SimplePanel();
+ 			panelAuto.setStyleName("userGroupPanel");
  			panelAuto.add(new HTML("there is no user"));
+ 			tableInterface.setWidget(0, 0, tableManagement);
  			tableInterface.setWidget(1, 0, panelAuto);
+ 			setVisibleLoadingImage(false);
+ 			setOnload(false);
+ 	 		addWidget(HTMLControl.ID_BODY_CONTENT, tableInterface);
+ 	 		setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+ 	 		filter_box.addClickHandler(new ClickHandler() {
+ 				
+ 				@Override
+ 				public void onClick(ClickEvent event) {
+ 					String filter_box_value = filter_box.getValue(filter_box.getSelectedIndex());
+ 					boolean check = checkingFilter(listUser3rds, filter_box_value);
+ 					if(check){
+ 			 			table_list_3rdParty.draw(createDataListSystem(listUser3rds, filter_box_value),createOptionsTableListUser());
+ 			 			tableInterface.setWidget(1, 0, table_list_3rdParty);
+ 					}else{
+ 						panelAuto.setWidget(new HTML("There is no users"));
+ 						tableInterface.setWidget(1, 0, panelAuto);
+ 					}
+ 				}
+ 			});
  		}
- 		
- 		tableManagement.setWidget(0, 1, new HTML("<input type=\"button\" value=\"Invited\" onClick=\"javascript:showDialogInvited()\" />"));
- 		tableManagement.setWidget(0, 2, filter_box);
- 		
- 		//add table conteiner 2 Widget in table interface
- 		tableInterface.setWidget(0, 0, tableManagement);
- 		
- 		
- 		setVisibleLoadingImage(false);
-		setOnload(false);
- 		addWidget(HTMLControl.ID_BODY_CONTENT, tableInterface);
- 		setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+ 	
  	}
  	
 
