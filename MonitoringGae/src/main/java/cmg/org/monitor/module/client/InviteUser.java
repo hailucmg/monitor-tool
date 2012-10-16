@@ -63,6 +63,7 @@ public class InviteUser extends AncestorEntryPoint{
 	protected void init() {
  		if (currentPage == HTMLControl.PAGE_INVITE) {
  			InviteUser.exportViewDialogFunction();
+ 			InviteUser.exportViewDialogInvite();
  			initData(defaultFilter);
  		}
 		
@@ -71,6 +72,11 @@ public class InviteUser extends AncestorEntryPoint{
  	public static native void exportViewDialogFunction() /*-{
 	$wnd.showDialogBox =
 	$entry(@cmg.org.monitor.module.client.InviteUser::showDialogBox(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;))
+	}-*/;
+ 	
+ 	public static native void exportViewDialogInvite() /*-{
+	$wnd.showDialogInvited =
+	$entry(@cmg.org.monitor.module.client.InviteUser::showDialogInvited())
 	}-*/;
  	
  	static void initData(final String filter){
@@ -122,18 +128,11 @@ public class InviteUser extends AncestorEntryPoint{
  	}
  	
  	static void initUI(List<InvitedUser> users,String filter){
+ 		table_list_3rdParty = new Table();
+		table_list_3rdParty.setWidth("1185px");
  		tableInterface = new FlexTable();
- 		
+ 		tableInterface.getCellFormatter().setWidth(1, 0, "1185px");
  		tableManagement = new FlexTable();
- 		invited = new Button();
- 		invited.setText("Invited");
- 		invited.addClickHandler(new ClickHandler() {
-			
-			@Override
-			public void onClick(ClickEvent event) {
-				showDialogInvited();
-			}
-		});
  		filter_box = new ListBox();
  		filter_box.addItem(defaultFilter);
  		filter_box.addItem(filter_Active);
@@ -144,13 +143,13 @@ public class InviteUser extends AncestorEntryPoint{
 			@Override
 			public void onClick(ClickEvent event) {
 				String filter_box_value = filter_box.getValue(filter_box.getSelectedIndex());
-				boolean check = drawTable(listUser3rds, filter_box_value);
+				boolean check = checkingFilter(listUser3rds, filter_box_value);
 				if(check){
-					panelAuto.remove(panelAuto.getWidget());
-					panelAuto.add(table_list_3rdParty);
+		 			table_list_3rdParty.draw(createDataListSystem(listUser3rds, filter_box_value),createOptionsTableListUser());
+		 			tableInterface.setWidget(1, 0, table_list_3rdParty);
 				}else{
-					panelAuto.remove(panelAuto.getWidget());
-					panelAuto.add(new HTML("there is no user"));
+					panelAuto.setWidget(new HTML("There is no users"));
+					tableInterface.setWidget(1, 0, panelAuto);
 				}
 			}
 		});
@@ -161,25 +160,25 @@ public class InviteUser extends AncestorEntryPoint{
  			}
  		}
  		filter_box.setSelectedIndex(index);
- 		tableManagement.setWidget(0, 1, invited);
+ 		//create table list users
+ 		boolean check = checkingFilter(users, filter);
+ 		panelAuto = new SimplePanel();
+		panelAuto.setStyleName("userGroupPanel");
+ 		if(check){
+ 			table_list_3rdParty.draw(createDataListSystem(users, filter),createOptionsTableListUser());
+ 			tableInterface.setWidget(1, 0, table_list_3rdParty);
+ 		}else{
+ 			panelAuto.add(new HTML("there is no user"));
+ 			tableInterface.setWidget(1, 0, panelAuto);
+ 		}
+ 		
+ 		tableManagement.setWidget(0, 1, new HTML("<input type=\"button\" value=\"Invited\" onClick=\"javascript:showDialogInvited()\" />"));
  		tableManagement.setWidget(0, 2, filter_box);
  		
  		//add table conteiner 2 Widget in table interface
  		tableInterface.setWidget(0, 0, tableManagement);
  		
- 		//create table list users
- 		table_list_3rdParty = new Table();
- 		table_list_3rdParty.setWidth("1185px");
- 		boolean check = drawTable(users, filter);
- 		panelAuto = new SimplePanel();
-		panelAuto.setStyleName("userGroupPanel");
- 		if(check){
- 			panelAuto.add(table_list_3rdParty);
- 			tableInterface.setWidget(1, 0, panelAuto);
- 		}else{
- 			panelAuto.add(new HTML("there is no user"));
- 			tableInterface.setWidget(1, 0, panelAuto);
- 		}
+ 		
  		setVisibleLoadingImage(false);
 		setOnload(false);
  		addWidget(HTMLControl.ID_BODY_CONTENT, tableInterface);
@@ -188,7 +187,7 @@ public class InviteUser extends AncestorEntryPoint{
  	
 
  	
- 	static AbstractDataTable createDataListSystem(List<InvitedUser> result, String filter) {
+ 	public static AbstractDataTable createDataListSystem(List<InvitedUser> result, String filter) {
  		DataTable dataListUser = DataTable.create();
  		dataListUser.addColumn(ColumnType.STRING, "USERNAME");
  		dataListUser.addColumn(ColumnType.STRING, "STATUS");
@@ -234,13 +233,21 @@ public class InviteUser extends AncestorEntryPoint{
  	static Options createOptionsTableListUser() {
 		Options ops = Options.create();
 		ops.setAllowHtml(true);
-		ops.setShowRowNumber(true);
+		ops.setShowRowNumber(false);
 		return ops;
 	}
- 	static boolean drawTable(List<InvitedUser> users, String filter){
+ 	static boolean checkingFilter(List<InvitedUser> users, String filter){
  		if(users.size() > 0 ){
- 			table_list_3rdParty.draw(createDataListSystem(users, filter),createOptionsTableListUser());
- 			return true;
+ 			if(filter.equalsIgnoreCase(defaultFilter))
+ 			{
+ 				return true;
+ 			}
+ 			for(InvitedUser u : users){
+ 				if(u.getStatus().toString().equals(filter)){
+ 					return true;
+ 				}
+ 			}
+ 			return false;
  		}else{
  			return false;
  		}
@@ -468,11 +475,15 @@ public class InviteUser extends AncestorEntryPoint{
  			btt_UnMappingGroup.addClickHandler(new UnMappingGroup());
  			FlexTable flexHTML = new FlexTable();
  			flexHTML.setWidget(0, 0, popupContent);
- 			flexHTML.getCellFormatter().setWidth(0, 0, "400px");
+ 			flexHTML.getCellFormatter().setWidth(1, 0, "100px");
+ 			flexHTML.getCellFormatter().setWidth(1, 1, "100px");
+ 			flexHTML.getCellFormatter().setWidth(1, 2, "100px");
+ 			flexHTML.getCellFormatter().setWidth(1, 3, "200px");
+ 			flexHTML.getFlexCellFormatter().setColSpan(0, 0, 4);
  			flexHTML.setWidget(1, 0, listAll);
- 			flexHTML.setWidget(1, 2, btt_MappingGroup);
- 			flexHTML.setWidget(1, 3, btt_UnMappingGroup);
- 			flexHTML.setWidget(1, 4, listTemp);
+ 			flexHTML.setWidget(1, 1, btt_MappingGroup);
+ 			flexHTML.setWidget(1, 2, btt_UnMappingGroup);
+ 			flexHTML.setWidget(1, 3, listTemp);
  			flexHTML.setStyleName("table-popup");
  			FlexTable table = new FlexTable();
  			table.setCellPadding(5);
@@ -654,7 +665,7 @@ public class InviteUser extends AncestorEntryPoint{
 
 			@Override
 			public void onClick(ClickEvent event) {
-				panelValidateEmail.setVisible(false);
+				/*panelValidateEmail.setVisible(false);
 				String emails = txt_email.getText();
 				String validate = validateEmail(emails);
 				if(validate!= ""){
@@ -664,7 +675,7 @@ public class InviteUser extends AncestorEntryPoint{
 				}
 				String[] data = emails.split(",");
 				setOnload(true);
-				sendData(data , filter_pending);
+				sendData(data , filter_pending);*/
 				
 			}
 		});
@@ -689,6 +700,7 @@ public class InviteUser extends AncestorEntryPoint{
 		panelValidateEmail.setVisible(false);
 		
 		FlexTable table = new FlexTable();
+		table.setTitle("Invite user");
 		table.setCellPadding(5);
 		table.setCellSpacing(5);
 		table.setWidget(0, 0, txt_email);
@@ -702,9 +714,9 @@ public class InviteUser extends AncestorEntryPoint{
 		dialogVPanel.add(exitButton);
 		dialogVPanel.setCellHorizontalAlignment(exitButton, VerticalPanel.ALIGN_RIGHT);
 		dialogVPanel.add(table);
-		dialogBox.setWidget(dialogVPanel);
-		dialogBox.getCaption().asWidget().setStyleName("myCaption");
-		dialogBox.center();
+		dialogInvite.setWidget(dialogVPanel);
+		dialogInvite.getCaption().asWidget().setStyleName("myCaption");
+		dialogInvite.center();
  	}
  	
 }
