@@ -671,12 +671,11 @@ public class HTMLControl {
 		String typeDelete = "delete";
 		String typeInactive = "inactive";
 		String filter = "active";
-		String temp = "<table>";
-		temp += "<tr>";
-		String buttonDelete = "<td><input type=\"button\" onclick=\"onClick=\"javascript:showDialogBox('"+ id + "','" + typeDelete +"','"+ filter +"');\"  value=\"Delete\" >" + "</td>";
-		String buttonInactive = "<td><input type=\"button\" onclick=\"onClick=\"javascript:showDialogBox('"+ id + "','" + typeInactive +"','" + filter + "');\" value=\"Delete\" />" + "</td></td>";
+		String temp;
+		String buttonDelete = "<a title=\"delete\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeDelete +"','"+ filter +"');\">delete</a>";
+		String buttonInactive = "<a title=\"inactive\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeInactive +"','" + filter + "');\" >inactive</a>";
 		temp = buttonDelete + buttonInactive;
-		temp += "</tr></table>";
+		
 		return temp;
 	}
 	
@@ -686,7 +685,7 @@ public class HTMLControl {
 		String filter = "inactive";
 		String temp = "<table>";
 		temp += "<tr>";
-		String buttonactive = "<td><input type=\"button\" onclick=\"onClick=\"javascript:showDialogBox('"+ id + "','" + typeInactive +"','" + filter + "');\" value=\"Delete\" />" + "</td></td>";
+		String buttonactive = "<td><input type=\"button\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeInactive +"','" + filter + "');\" value=\"Active\" />" + "</td>";
 		temp +=buttonactive;
 		temp += "</tr></table>";
 		return temp;
@@ -695,10 +694,10 @@ public class HTMLControl {
 	public static String getButtonForPendingUser(InvitedUser u){
 		String id = u.getId();
 		String typeDelete = "delete";
-		String filter = "inactive";
+		String filter = "pending";
 		String temp = "<table>";
 		temp += "<tr>";
-		String buttonDelete = "<td><input type=\"button\" onclick=\"onClick=\"javascript:showDialogBox('"+ id + "','" + typeDelete +"','"+ filter +"');\"  value=\"Delete\" >" + "</td>";
+		String buttonDelete = "<td><input type=\"button\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeDelete +"','"+ filter +"');\"  value=\"Delete\" >" + "</td>";
 		temp +=buttonDelete;
 		temp += "</tr></table>";
 		return temp;
