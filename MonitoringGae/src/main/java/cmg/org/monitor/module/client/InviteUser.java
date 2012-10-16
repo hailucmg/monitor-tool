@@ -169,6 +169,7 @@ public class InviteUser extends AncestorEntryPoint{
  		
  		//create table list users
  		table_list_3rdParty = new Table();
+ 		table_list_3rdParty.setWidth("1185px");
  		boolean check = drawTable(users, filter);
  		panelAuto = new SimplePanel();
 		panelAuto.setStyleName("userGroupPanel");
@@ -387,8 +388,10 @@ public class InviteUser extends AncestorEntryPoint{
  			});
  			HTML popupContent = new HTML();
  			popupContent.setHTML("<h4>Do you want to "+ actionType +" user : " + tempName + "?</h4>");
+ 			popupContent.setWidth("400px");
  			FlexTable flexHTML = new FlexTable();
  			flexHTML.setWidget(0, 0, popupContent);
+ 			flexHTML.getCellFormatter().setWidth(0, 0, "400px");
  			flexHTML.setStyleName("table-popup");
  			FlexTable table = new FlexTable();
  			table.setCellPadding(5);
@@ -450,7 +453,8 @@ public class InviteUser extends AncestorEntryPoint{
  				   }
  			});
  			HTML popupContent = new HTML();
- 			popupContent.setHTML("<h4>Assgin this " +" user : " + tempName + " to group</h4>");
+ 			popupContent.setHTML("<h4>Assgin this" +" user : " + tempName + " to group</h4>");
+ 			popupContent.setWidth("400px");
  			listTemp = new ListBox();
  			listTemp.setMultipleSelect(true);
  			listTemp.addItem(DefaulValueOfListTemp);
@@ -464,6 +468,7 @@ public class InviteUser extends AncestorEntryPoint{
  			btt_UnMappingGroup.addClickHandler(new UnMappingGroup());
  			FlexTable flexHTML = new FlexTable();
  			flexHTML.setWidget(0, 0, popupContent);
+ 			flexHTML.getCellFormatter().setWidth(0, 0, "400px");
  			flexHTML.setWidget(1, 0, listAll);
  			flexHTML.setWidget(1, 2, btt_MappingGroup);
  			flexHTML.setWidget(1, 3, btt_UnMappingGroup);
@@ -530,8 +535,10 @@ public class InviteUser extends AncestorEntryPoint{
  			});
  			HTML popupContent = new HTML();
  			popupContent.setHTML("<h4>Do you want to "+ actionType +" user : " + tempName + "?</h4>");
+ 			popupContent.setWidth("400px");
  			FlexTable flexHTML = new FlexTable();
  			flexHTML.setWidget(0, 0, popupContent);
+ 			flexHTML.getCellFormatter().setWidth(0, 0, "400px");
  			flexHTML.setStyleName("table-popup");
  			FlexTable table = new FlexTable();
  			table.setCellPadding(5);
@@ -592,10 +599,10 @@ public class InviteUser extends AncestorEntryPoint{
 		@Override
 		public void onClick(ClickEvent event) {
 			List<Integer> listSelected = new ArrayList<Integer>();
-			for(int i = 0 ; i < listTemp.getItemCount();i++){
-				if(listTemp.isItemSelected(i) && listTemp.getValue(i).equalsIgnoreCase(DefaulValueOfListTemp)){
-					listSelected.add(i);
-				}
+			int index1 = listTemp.getSelectedIndex();
+			String value = listTemp.getValue(index1);
+			if(!value.equalsIgnoreCase(DefaulValueOfListTemp)){
+				listSelected.add(index1);
 			}
 			System.out.println(listSelected.size());
 			if(listSelected.size() > 0 ){
@@ -609,8 +616,8 @@ public class InviteUser extends AncestorEntryPoint{
 				
 				if(listValue.size() > 0 ){
 					//add group to list all again
-					for(String value : listValue){
-						listAll.addItem(value);
+					for(String value1 : listValue){
+						listAll.addItem(value1);
 					}
 					//add default value again when list temp is null
 					if(listTemp.getItemCount() == 0){
