@@ -36,6 +36,7 @@ import cmg.org.monitor.entity.shared.ChangeLogMonitor;
 import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
 import cmg.org.monitor.entity.shared.GoogleAccount;
+import cmg.org.monitor.entity.shared.InvitedUser;
 import cmg.org.monitor.entity.shared.JvmMonitor;
 import cmg.org.monitor.entity.shared.MemoryMonitor;
 import cmg.org.monitor.entity.shared.NotifyMonitor;
@@ -871,11 +872,42 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public MonitorContainer getAllForInvite() {
 		MonitorContainer m = new MonitorContainer();
+		SystemGroupDaoImpl sgDAO = new SystemGroupDaoImpl();
+		try {
+			SystemGroup[] sys = sgDAO.getAllGroup();
+			m.setListSystemGroup(sys);
+			InvitedUser u1 = new InvitedUser();
+			u1.setId("a1");
+			u1.setEmail("lan.ta@demo.inactive");
+			u1.setStatus("inactive");
+			InvitedUser u2 = new InvitedUser();
+			u2.setId("a2");
+			u2.setEmail("lan.ta@demo.active");
+			u2.setStatus("active");
+			InvitedUser u3 = new InvitedUser();
+			u3.setId("a3");
+			u3.setEmail("lan.ta@demo.pending");
+			u3.setStatus("pending");
+			List<InvitedUser> mList = new ArrayList<InvitedUser>();
+			mList.add(u1);
+			mList.add(u2);
+			mList.add(u3);
+			InvitedUser[] list = new InvitedUser[3];
+			mList.toArray(list);
+			m.setListInvitedUsers(list);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return m;
 	}
 	
 	@Override
 	public boolean inviteUser3rd(String[] user) {
+		return false;
+	}
+
+	@Override
+	public boolean action3rd(String actionType, InvitedUser u) {
 		return false;
 	}
 
