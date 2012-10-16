@@ -20,7 +20,6 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextArea;
@@ -30,6 +29,7 @@ import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.visualizations.Table;
+import com.google.gwt.visualization.client.visualizations.Table.Options;
 
 public class InviteUser extends AncestorEntryPoint{
     AbsolutePanel panelButtonInvite;
@@ -40,7 +40,6 @@ public class InviteUser extends AncestorEntryPoint{
 	static AbsolutePanel panelValidateEmail;
 	static List<SystemGroup> listGroup;
 	static List<InvitedUser> listUser3rds;
-	Label label_addGroup;
 	static ListBox listTemp;
 	static ListBox listAll;
 	static Button btt_invite;
@@ -49,9 +48,9 @@ public class InviteUser extends AncestorEntryPoint{
 	static Button btt_reset;
 	static String DefaulValueOfListTemp = "None Group Mapping";
 	static private String defaultFilter = "ALL";
-	static private String filter_inActive = "";
-	static private String filter_pending = "";
-	static private String filter_Active = "";
+	static private String filter_inActive = "inactive";
+	static private String filter_pending = "pending";
+	static private String filter_Active = "active";
 	static FlexTable tableManagement;
 	static FlexTable tableInterface;
 	public static Table table_list_3rdParty;
@@ -63,13 +62,14 @@ public class InviteUser extends AncestorEntryPoint{
  	@Override
 	protected void init() {
  		if (currentPage == HTMLControl.PAGE_INVITE) {
+ 			InviteUser.exportViewDialogFunction();
  			initData(defaultFilter);
  		}
 		
 	}
  	
  	public static native void exportViewDialogFunction() /*-{
-	$wnd.viewLastestLog =
+	$wnd.showDialogBox =
 	$entry(@cmg.org.monitor.module.client.InviteUser::showDialogBox(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;))
 	}-*/;
  	
@@ -93,7 +93,6 @@ public class InviteUser extends AncestorEntryPoint{
 								}
 							}
 							//init UI
-							exportViewDialogFunction();
 							initUI(listUser3rds, filter);
 						}else{
 							setVisibleLoadingImage(false);
@@ -139,6 +138,7 @@ public class InviteUser extends AncestorEntryPoint{
  		filter_box.addItem(defaultFilter);
  		filter_box.addItem(filter_Active);
  		filter_box.addItem(filter_inActive);
+ 		filter_box.addItem(filter_pending);
  		filter_box.addClickHandler(new ClickHandler() {
 			
 			@Override
@@ -146,8 +146,10 @@ public class InviteUser extends AncestorEntryPoint{
 				String filter_box_value = filter_box.getValue(filter_box.getSelectedIndex());
 				boolean check = drawTable(listUser3rds, filter_box_value);
 				if(check){
+					panelAuto.remove(panelAuto.getWidget());
 					panelAuto.add(table_list_3rdParty);
 				}else{
+					panelAuto.remove(panelAuto.getWidget());
 					panelAuto.add(new HTML("there is no user"));
 				}
 			}
@@ -212,24 +214,31 @@ public class InviteUser extends AncestorEntryPoint{
  				dataListUser.setValue(i, 0, u.getEmail());
  				dataListUser.setValue(i, 1, u.getStatus());
  				if(u.getStatus().equalsIgnoreCase(filter_Active)){
- 					String html = "<div>" +HTMLControl.getButtonForActiveUser(u)+ "<div>";
- 					dataListUser.setValue(i, 2, html);
+ 					String html = HTMLControl.getButtonForActiveUser(u);
+ 					dataListUser.setValue(i, 2,html);
  				}
  				if(u.getStatus().equalsIgnoreCase(filter_inActive)){
- 					String html = "<div>" +HTMLControl.getButtonForInActiveUser(u) + "<div>";
+ 					String html = HTMLControl.getButtonForInActiveUser(u);
  					dataListUser.setValue(i, 2, html);
  				}
  				if(u.getStatus().equalsIgnoreCase(filter_pending)){
- 					String html = "<div>" +HTMLControl.getButtonForPendingUser(u)+ "<div>";
+ 					String html = HTMLControl.getButtonForPendingUser(u);
  					dataListUser.setValue(i, 2, html);
  				}
  			}
  		}
+ 		
  		return dataListUser;
  	}
+ 	static Options createOptionsTableListUser() {
+		Options ops = Options.create();
+		ops.setAllowHtml(true);
+		ops.setShowRowNumber(true);
+		return ops;
+	}
  	static boolean drawTable(List<InvitedUser> users, String filter){
  		if(users.size() > 0 ){
- 			table_list_3rdParty.draw(createDataListSystem(users, filter));
+ 			table_list_3rdParty.draw(createDataListSystem(users, filter),createOptionsTableListUser());
  			return true;
  		}else{
  			return false;
@@ -241,7 +250,7 @@ public class InviteUser extends AncestorEntryPoint{
  	
  	
  	
- 	
+ 	// this is the method that invited user
  	private static void sendData(String[] data , final String filter) {
  		monitorGwtSv.inviteUser3rd(data, new AsyncCallback<Boolean>() {
 			
@@ -262,6 +271,63 @@ public class InviteUser extends AncestorEntryPoint{
 			}
 		});
  	}
+ 	
+ 	//this is the method that action every popup show
+ 	private static void popupAction(final String filter,final String action_type, String userID){
+ 		InvitedUser u = new InvitedUser();
+ 		for(InvitedUser us : listUser3rds){
+ 			if(us.getId().toString().equals(userID)){
+ 				u.setEmail(us.getEmail());
+ 				u.setId(userID);
+ 				u.setStatus(us.getStatus());
+ 			}
+ 		}
+ 		
+ 		//if action type active user we must set group for this user
+ 		if(action_type.equalsIgnoreCase("active")){
+ 			for(int i = 0 ; i < listTemp.getItemCount();i++){
+				if(listTemp.isItemSelected(i) && listTemp.getValue(i).equalsIgnoreCase(DefaulValueOfListTemp)){
+					for(SystemGroup s : listGroup){
+						if(s.getName().toString().equals(listTemp.getValue(i))){
+							 u.addGroup(s.getId());
+						}
+					}
+				}
+			}
+ 		}
+ 		
+ 		monitorGwtSv.action3rd(action_type, u, new AsyncCallback<Boolean>() {
+			
+			@Override
+			public void onSuccess(Boolean result) {
+				if(result){
+					initData(filter);
+					showMessage(action_type + "sucessfully.", "", "",
+							HTMLControl.BLUE_MESSAGE, true);
+					dialogFunction.hide();
+					
+					
+				}else{
+					showMessage("Cannot "+action_type + ".", "", "",
+							HTMLControl.RED_MESSAGE, true);
+					dialogFunction.hide();
+					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+					setVisibleLoadingImage(false);
+				}
+				
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				showMessage("Cannot "+action_type + ".", "", "",
+						HTMLControl.RED_MESSAGE, true);
+				dialogFunction.hide();
+				setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+				setVisibleLoadingImage(false);
+			}
+		});
+ 	}
+ 	
  	
  	private static String validateEmail(String email) {
 		String msg = "";
@@ -291,12 +357,12 @@ public class InviteUser extends AncestorEntryPoint{
 		return msg;
 	}
  	
- 	static void showDialogBox(String idUser, final String actionType, final String filter){
+ 	static void showDialogBox(final String idUser, final String actionType, final String filter){
  		if(filter.equalsIgnoreCase(filter_Active)){
  			dialogFunction = new DialogBox();
  	 		dialogFunction.setAnimationEnabled(true);
  	 		VerticalPanel dialogVPanel = new VerticalPanel();
- 			//if filter is active so the idUser will be inactive.we will do this in this
+ 			//if filter is active so the idUser will be inactive or delete.we will do this in this
  			String tempName = null;
  			for(InvitedUser u : listUser3rds){
  				if(u.getId().toString().equals(idUser)){
@@ -340,7 +406,9 @@ public class InviteUser extends AncestorEntryPoint{
  			okButton.addClickHandler(new ClickHandler() {
  				    @Override
  				    public void onClick(ClickEvent event) {
- 				    	
+ 				    	setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
+ 						setVisibleLoadingImage(true);
+ 				    	popupAction(filter,actionType, idUser);
  				    }
  			});
  			closeButton.addClickHandler(new ClickHandler() {
@@ -418,6 +486,9 @@ public class InviteUser extends AncestorEntryPoint{
  				    @Override
  				    public void onClick(ClickEvent event) {
  				    	//send to server
+ 				    	setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
+ 						setVisibleLoadingImage(true);
+ 				    	popupAction(filter,actionType, idUser);
  				    }
  			});
  			closeButton.addClickHandler(new ClickHandler() {
@@ -434,7 +505,7 @@ public class InviteUser extends AncestorEntryPoint{
  			dialogFunction = new DialogBox();
  	 		dialogFunction.setAnimationEnabled(true);
  	 		VerticalPanel dialogVPanel = new VerticalPanel();
- 			//if filter is active so the idUser will be inactive.we will do this in this
+ 			//if filter is pending so the idUser will be delete.we will do this in this
  			String tempName = null;
  			for(InvitedUser u : listUser3rds){
  				if(u.getId().toString().equals(idUser)){
@@ -478,7 +549,9 @@ public class InviteUser extends AncestorEntryPoint{
  			okButton.addClickHandler(new ClickHandler() {
  				    @Override
  				    public void onClick(ClickEvent event) {
- 				    	
+ 				    	setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
+ 						setVisibleLoadingImage(true);
+ 				    	popupAction(filter,actionType, idUser);
  				    }
  			});
  			closeButton.addClickHandler(new ClickHandler() {
@@ -524,8 +597,9 @@ public class InviteUser extends AncestorEntryPoint{
 					listSelected.add(i);
 				}
 			}
+			System.out.println(listSelected.size());
 			if(listSelected.size() > 0 ){
-				showMessage("Oops! Error.", "", "Can not un mapping group", HTMLControl.RED_MESSAGE, false);
+				//showMessage("Oops! Error.", "", "Can not un mapping group", HTMLControl.RED_MESSAGE, false);
 				List<String> listValue = new ArrayList<String>();
 				
 				for(int index : listSelected){
@@ -585,19 +659,6 @@ public class InviteUser extends AncestorEntryPoint{
 				setOnload(true);
 				sendData(data , filter_pending);
 				
-			/*	SystemUser userInvite = new SystemUser();
-				userInvite.setEmail(email);
-				userInvite.setUsername(email.split("@")[0]);
-				for(int i = 0 ; i < listTemp.getItemCount();i++){
-					if(listTemp.isItemSelected(i) && listTemp.getValue(i).equalsIgnoreCase(DefaulValueOfListTemp)){
-						for(SystemGroup s : listGroup){
-							if(s.getName().toString().equals(listTemp.getValue(i))){
-								userInvite.addGroup(s.getId());
-							}
-						}
-					}
-				}*/
-				
 			}
 		});
 		
@@ -632,6 +693,7 @@ public class InviteUser extends AncestorEntryPoint{
 		table.getCellFormatter().setHorizontalAlignment(0, 1, VerticalPanel.ALIGN_RIGHT);
 		VerticalPanel dialogVPanel = new VerticalPanel();
 		dialogVPanel.add(exitButton);
+		dialogVPanel.setCellHorizontalAlignment(exitButton, VerticalPanel.ALIGN_RIGHT);
 		dialogVPanel.add(table);
 		dialogBox.setWidget(dialogVPanel);
 		dialogBox.getCaption().asWidget().setStyleName("myCaption");
