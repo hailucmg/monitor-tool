@@ -164,12 +164,14 @@ public class UserManagement extends AncestorEntryPoint {
 		DataTable data = DataTable.create();
 		int indexGroup = listGroup.size();
 		data.addColumn(ColumnType.STRING, "user\\group");
+		data.addColumn(ColumnType.STRING, "domain");
 		for(int i = 0; i < listGroup.size();i++){
 			data.addColumn(ColumnType.STRING, listGroup.get(i).getName());
 		}
 		data.addRows(listUser.size());
 		for(int j = 0 ; j < listUser.size() ; j++){
 			data.setValue(j, 0,  "<div style=\"min-width:200px\">" + listUser.get(j).getEmail()+" ("+listUser.get(j).getFirstName()  +" " +listUser.get(j).getLastName()+")" + "<div>");
+			data.setValue(j, 0,  "<div style=\"min-width:200px\">" + listUser.get(j).getDomain() + "<div>");
 			for(int k = 0; k < indexGroup ; k++){
 				List<String> listGroupUSer = listUser.get(j).getGroupIDs();
 				boolean checkInGroup = false;
