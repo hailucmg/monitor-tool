@@ -8,11 +8,25 @@
  */
 package cmg.org.monitor.ext.util;
 
+import static com.google.appengine.api.urlfetch.FetchOptions.Builder.allowTruncate;
+
+import java.net.URL;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.google.appengine.api.urlfetch.HTTPHeader;
+import com.google.appengine.api.urlfetch.HTTPMethod;
+import com.google.appengine.api.urlfetch.HTTPRequest;
+import com.google.appengine.api.urlfetch.HTTPResponse;
+import com.google.appengine.api.urlfetch.URLFetchService;
+import com.google.appengine.api.urlfetch.URLFetchServiceFactory;
 
 import cmg.org.monitor.ext.util.HttpUtils.Page;
+import cmg.org.monitor.util.shared.Constant;
 
 /**
  * Please enter a short description for this class.
@@ -25,6 +39,12 @@ import cmg.org.monitor.ext.util.HttpUtils.Page;
  * @version 1.0.6 June 11, 2008
  */
 public class URLMonitor {
+	/** the charset static property. */
+	public static final String CHARSET = "charset=";
+
+	/** the charset pattern property. */
+	public static final Pattern CHARSET_PATTERN = Pattern.compile(";\\s*"
+			+ CHARSET + "(.*)$");
 
 	/** Alert name */
 	public static String ALERT_NAME = " alert report ";
@@ -51,13 +71,53 @@ public class URLMonitor {
 		super();
 	}
 
+	public static String retrievesContentWithFetchService(String remoteUrl)
+			throws Exception {
+		URLFetchService service = URLFetchServiceFactory.getURLFetchService();
+		try {
+			String charset = Constant.ENCODING_ISO_8859_1;
+			String content_type = "";
+			URL remoteURL = new URL(remoteUrl);
+			HTTPRequest request = new HTTPRequest(remoteURL, HTTPMethod.GET,
+					allowTruncate().doNotFollowRedirects()
+							.doNotValidateCertificate().setDeadline(new Double(60 * 5)));
+			HTTPResponse res = service.fetch(request);
+			List<HTTPHeader> headers = res.getHeaders();
+			if (headers != null && !headers.isEmpty()) {
+				for (HTTPHeader header : headers) {
+					if (header.getName().equalsIgnoreCase("content-type")) {
+						content_type = header.getValue();
+					}
+				}
+			}
+			if (content_type != null && content_type.length() > 0) {
+				Matcher content_type_matcher = CHARSET_PATTERN
+						.matcher(content_type);
+				if (content_type_matcher.find()) {
+					charset = content_type_matcher.group(1);
+				}
+			}
+
+			byte[] content = res.getContent();
+
+			if (content == null) {
+				return "";
+			} else {
+				return new String(content, charset);
+			}
+		} catch (Exception ex) {
+			logger.log(Level.WARNING, "Error. Message: " + ex.getMessage());
+			return "";
+		}
+	}
+
 	public static String retrievesContent(String remoteUrl) throws Exception {
 		String webContent = "";
 		// Processes page
 		Page page = null;
 		boolean isError = false;
 		try {
-			page = HttpUtils.retrievePage(remoteUrl);			
+			page = HttpUtils.retrievePage(remoteUrl);
 			logger.log(
 					Level.INFO,
 					"The website has been retrieved, content type: "
@@ -65,34 +125,29 @@ public class URLMonitor {
 			if ((page == null) || (page.getContent() == null)) {
 				if ((ConnectionUtil.internetAvail()) && (!isError)) {
 					// Prints out
-					logger.log(Level.SEVERE, "The system can't fetch content of data from the following url : \r\n"
-							 + remoteUrl);
+					logger.log(Level.SEVERE,
+							"The system can't fetch content of data from the following url : \r\n"
+									+ remoteUrl);
 				} else {
 					logger.info("Internet connection failed");
 				}
 			} else if ((page.getContent().equals(ERROR))
 					|| (page.getContent().equals(MonitorUtil.getErrorContent()))) {
-				logger.log(Level.SEVERE, "The system contains error information from the following url : \r\n"
-						+ remoteUrl);
+
 			} else {
 				webContent = page.getContent();
 			}
 		} catch (Exception mx) {
-			logger.log(Level.SEVERE, " -> ERROR: retrieve url. Message: " + mx.getMessage());
 			try {
 				if (ConnectionUtil.internetAvail()) {
-					logger.log(Level.SEVERE, "The system can not achieve data from following url :\r\n"
-							+ remoteUrl);
 					isError = true;
 				} else {
-					logger.log(Level.SEVERE, "Internet connection failed");
+
 				}
 			} catch (Exception e) {
-				logger.log(Level.SEVERE, "The monitoring failed, try to update"
-						+ " project's status but not success, error details: " + e.getMessage());
 			}
-			
-		}		
+
+		}
 		return webContent;
 	}
 

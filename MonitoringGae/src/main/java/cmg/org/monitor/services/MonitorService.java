@@ -77,10 +77,23 @@ public class MonitorService {
 						} else {
 							infoContent = URLMonitor.retrievesContent(aSystem
 									.getRemoteUrl());
-							if (infoContent == null || infoContent.trim().length() == 0) {
-								// try to load again with Redirect url
-								infoContent = URLMonitor.retrievesContent(Constant.REDIRECTOR_WORKER_URL + "?url=" + URLEncoder.encode(aSystem
-										.getRemoteUrl(), Constant.ENCODING_ISO_8859_1));
+							if (infoContent == null
+									|| infoContent.trim().length() == 0) {
+								// try with GAE URLFetchService
+								infoContent = URLMonitor.retrievesContentWithFetchService(aSystem
+										.getRemoteUrl());
+								/*
+								if (infoContent == null
+										|| infoContent.trim().length() == 0) {
+									// try to load again with Redirect url
+									infoContent = URLMonitor
+											.retrievesContent(Constant.REDIRECTOR_WORKER_URL
+													+ "?url="
+													+ URLEncoder.encode(
+															aSystem.getRemoteUrl(),
+															Constant.ENCODING_ISO_8859_1));
+								}
+								*/
 							}
 						}// if-else
 
