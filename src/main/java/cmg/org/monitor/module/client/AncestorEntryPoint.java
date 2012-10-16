@@ -188,7 +188,8 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 									|| currentPage == HTMLControl.PAGE_USER_MANAGEMENT
 									|| currentPage == HTMLControl.PAGE_USER_ROLE
 									|| currentPage == HTMLControl.PAGE_EDIT_GROUP
-									|| currentPage == HTMLControl.PAGE_ADD_GROUP)) {
+									|| currentPage == HTMLControl.PAGE_ADD_GROUP
+									|| currentPage == HTMLControl.PAGE_INVITE)) {
 						Window.Location.replace(currentUrl
 								+ HTMLControl.HTML_DASHBOARD_NAME);
 						setOnload(false);
@@ -225,7 +226,8 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 					|| currentPage == HTMLControl.PAGE_GROUP_MANAGEMENT
 					|| currentPage == HTMLControl.PAGE_USER_MANAGEMENT
 					|| currentPage == HTMLControl.PAGE_USER_ROLE
-					|| currentPage == HTMLControl.PAGE_ADD_GROUP) {
+					|| currentPage == HTMLControl.PAGE_ADD_GROUP
+					|| currentPage == HTMLControl.PAGE_INVITE) {
 
 				addWidget(
 						HTMLControl.ID_STEP_HOLDER,

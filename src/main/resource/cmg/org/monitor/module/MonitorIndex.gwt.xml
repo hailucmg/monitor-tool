@@ -28,6 +28,7 @@
 	<entry-point class="cmg.org.monitor.module.client.GoogleManagement" />
 	<entry-point class="cmg.org.monitor.module.client.GroupManagement" />
 	<entry-point class="cmg.org.monitor.module.client.UserRole" />
+	<entry-point class="cmg.org.monitor.module.client.InviteUser" />
 		<!-- END Entry point -->
 
 	<!-- START Source -->

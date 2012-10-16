@@ -21,6 +21,7 @@ public class HTMLControl {
 	public static final String HTML_SYSTEM_MANAGEMENT_NAME = "#management/system";
 	public static final String HTML_USER_MANAGEMENT_NAME = "#management/user";
 	public static final String HTML_USER_ROLE_NAME = "#management/user/role";
+	public static final String HTML_USER_INVITE = "#management/user/invite";
 	public static final String HTML_GOOGLE_MANAGEMENT_NAME = "#management/user/google";
 	public static final String HTML_ABOUT_NAME = "#about";
 	public static final String HTML_HELP_NAME = "#help";
@@ -70,6 +71,8 @@ public class HTMLControl {
 	public static final int PAGE_EDIT_GROUP = 0x016;
 	public static final int PAGE_REVISION = 0x017;
 	public static final int PAGE_INVITE = 0x018;
+	
+	
 	public static final int ERROR_NORMAL = 0x000;
 	public static final int ERROR_SYSTEM_ID = 0x001;
 
@@ -150,6 +153,8 @@ public class HTMLControl {
 			index = PAGE_EDIT_GROUP;
 		} else if (hash.equalsIgnoreCase(HTML_REVISION_NAME)) {
 			index = PAGE_REVISION;
+		} else if (hash.equalsIgnoreCase(HTML_USER_INVITE)) {
+			index = PAGE_INVITE;
 		}
 		return index;
 	}
@@ -172,7 +177,8 @@ public class HTMLControl {
 				|| hash.equalsIgnoreCase(HTML_GROUP_MANAGEMENT_NAME)
 				|| hash.equalsIgnoreCase(HTML_ADD_NEW_GROUP_NAME)
 				|| hash.startsWith(HTML_EDIT_GROUP_NAME)
-				|| hash.equalsIgnoreCase(HTML_REVISION_NAME);
+				|| hash.equalsIgnoreCase(HTML_REVISION_NAME)
+				|| hash.equalsIgnoreCase(HTML_USER_INVITE);
 	}
 
 	public static HTML getSystemInfo(SystemMonitor sys) {
@@ -227,9 +233,14 @@ public class HTMLControl {
 			temp.append((page == PAGE_USER_MANAGEMENT
 					|| page == PAGE_SYSTEM_CHANGE_LOG
 					|| page == PAGE_SYSTEM_MANAGEMENT
-					|| page == PAGE_ADD_SYSTEM || page == PAGE_EDIT_SYSTEM
-					|| page == PAGE_USER_ROLE || page == PAGE_GOOGLE_MANAGEMENT
-					|| page == PAGE_GROUP_MANAGEMENT || page == PAGE_ADD_GROUP || page == PAGE_EDIT_GROUP) ? "current"
+					|| page == PAGE_ADD_SYSTEM 
+					|| page == PAGE_EDIT_SYSTEM
+					|| page == PAGE_USER_ROLE
+					|| page == PAGE_GOOGLE_MANAGEMENT
+					|| page == PAGE_GROUP_MANAGEMENT
+					|| page == PAGE_ADD_GROUP 
+					|| page == PAGE_EDIT_GROUP
+					|| page == PAGE_INVITE) ? "current"
 					: "select");
 			temp.append("'><li><a href='" + HTML_SYSTEM_MANAGEMENT_NAME
 					+ "'><b>");
@@ -237,11 +248,15 @@ public class HTMLControl {
 			temp.append("</b></a><div class='select_sub");
 			temp.append((page == PAGE_SYSTEM_MANAGEMENT
 					|| page == PAGE_SYSTEM_CHANGE_LOG
-					|| page == PAGE_USER_MANAGEMENT || page == PAGE_ADD_SYSTEM
+					|| page == PAGE_USER_MANAGEMENT 
+					|| page == PAGE_ADD_SYSTEM
 					|| page == PAGE_EDIT_SYSTEM
 					|| page == PAGE_GOOGLE_MANAGEMENT
-					|| page == PAGE_GROUP_MANAGEMENT || page == PAGE_ADD_GROUP
-					|| page == PAGE_EDIT_GROUP || page == PAGE_USER_ROLE) ? " show"
+					|| page == PAGE_GROUP_MANAGEMENT 
+					|| page == PAGE_ADD_GROUP
+					|| page == PAGE_EDIT_GROUP 
+					|| page == PAGE_USER_ROLE
+					|| page == PAGE_INVITE) ? " show"
 					: "");
 			temp.append("'><ul class='sub'>");
 			temp.append("<li");
@@ -264,7 +279,10 @@ public class HTMLControl {
 
 			temp.append("<li");
 			temp.append((page == PAGE_USER_MANAGEMENT
-					|| page == PAGE_GOOGLE_MANAGEMENT || page == PAGE_USER_ROLE) ? " class='sub_show'"
+					|| page == PAGE_GOOGLE_MANAGEMENT 
+					|| page == PAGE_USER_ROLE
+					|| page == PAGE_INVITE) 
+					? " class='sub_show'"
 					: "");
 			temp.append("><a href='" + HTML_USER_MANAGEMENT_NAME
 					+ "'>User Management</a></li></ul></div></li></ul>");
@@ -459,17 +477,23 @@ public class HTMLControl {
 			temp.append("</a>");
 		}
 
-		if (page == PAGE_USER_MANAGEMENT || page == PAGE_USER_ROLE
-				|| page == PAGE_GOOGLE_MANAGEMENT) {
+		if (page == PAGE_USER_MANAGEMENT
+				|| page == PAGE_USER_ROLE
+				|| page == PAGE_GOOGLE_MANAGEMENT
+				|| page == PAGE_INVITE) {
 			temp.append("<a href=\"" + HTML_USER_MANAGEMENT_NAME
 					+ "\">User Management</a>&nbsp");
 		}
 
-		if (page == PAGE_USER_ROLE || page == PAGE_GOOGLE_MANAGEMENT) {
+		if (page == PAGE_USER_ROLE 
+				|| page == PAGE_GOOGLE_MANAGEMENT
+				|| page == PAGE_INVITE) {
 			temp.append(HTML_ARROW_IMAGE);
 			temp.append("&nbsp<a>");
 			temp.append(page == PAGE_USER_ROLE ? "User Role" : "");
 			temp.append(page == PAGE_GOOGLE_MANAGEMENT ? "Google Management"
+					: "");
+			temp.append(page == PAGE_INVITE ? "Invite User"
 					: "");
 			temp.append("</a>");
 		}
@@ -585,8 +609,10 @@ public class HTMLControl {
 					+ ((page == PAGE_ADD_GROUP) ? "dark" : "light")
 					+ "-round\">&nbsp;</div>");
 			temp.append("<div class=\"clear\"></div>");
-		} else if (page == PAGE_USER_MANAGEMENT || page == PAGE_USER_ROLE
-				|| page == PAGE_GOOGLE_MANAGEMENT) {
+		} else if (page == PAGE_USER_MANAGEMENT 
+				|| page == PAGE_USER_ROLE
+				|| page == PAGE_GOOGLE_MANAGEMENT
+				|| page == PAGE_INVITE) {
 			temp.append("<div class=\"step-no"
 					+ ((page == PAGE_USER_MANAGEMENT) ? "" : "-off")
 					+ "\">1</div>");
@@ -599,6 +625,7 @@ public class HTMLControl {
 			temp.append("<div class=\"step-"
 					+ ((page == PAGE_USER_MANAGEMENT) ? "dark" : "light")
 					+ "-right\">&nbsp;</div>");
+			
 			temp.append("<div class=\"step-no"
 					+ ((page == PAGE_USER_ROLE) ? "" : "-off") + "\">2</div>");
 			temp.append("<div class=\"step-"
@@ -609,9 +636,21 @@ public class HTMLControl {
 			temp.append("<div class=\"step-"
 					+ ((page == PAGE_USER_ROLE) ? "dark" : "light")
 					+ "-right\">&nbsp;</div>");
+			
+			temp.append("<div class=\"step-no"
+					+ ((page == PAGE_INVITE) ? "" : "-off") + "\">3</div>");
+			temp.append("<div class=\"step-"
+					+ ((page ==  PAGE_INVITE) ? "dark" : "light")
+					+ "-left\">");
+			temp.append("<a href=\"" + HTML_USER_INVITE + "\">Invite User</a>");
+			temp.append("</div>");
+			temp.append("<div class=\"step-"
+					+ ((page ==  PAGE_INVITE) ? "dark" : "light")
+					+ "-right\">&nbsp;</div>");
+			
 			temp.append("<div class=\"step-no"
 					+ ((page == PAGE_GOOGLE_MANAGEMENT) ? "" : "-off")
-					+ "\">3</div>");
+					+ "\">4</div>");
 			temp.append("<div class=\"step-"
 					+ ((page == PAGE_GOOGLE_MANAGEMENT) ? "dark" : "light")
 					+ "-left\">");
