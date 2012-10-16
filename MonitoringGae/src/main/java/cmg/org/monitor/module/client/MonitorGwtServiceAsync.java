@@ -6,6 +6,7 @@ import cmg.org.monitor.entity.shared.AlertStoreMonitor;
 import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
 import cmg.org.monitor.entity.shared.GoogleAccount;
+import cmg.org.monitor.entity.shared.InvitedUser;
 import cmg.org.monitor.entity.shared.JvmMonitor;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemGroup;
@@ -109,4 +110,7 @@ public interface MonitorGwtServiceAsync {
 	void getAllForInvite(AsyncCallback<MonitorContainer> callback);
 
 	void inviteUser3rd(String[] user, AsyncCallback<Boolean> callback);
+
+	void action3rd(String actionType, InvitedUser u,
+			AsyncCallback<Boolean> callback);
 }

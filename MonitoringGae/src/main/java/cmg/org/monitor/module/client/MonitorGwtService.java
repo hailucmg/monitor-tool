@@ -6,6 +6,7 @@ import cmg.org.monitor.entity.shared.AlertStoreMonitor;
 import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
 import cmg.org.monitor.entity.shared.GoogleAccount;
+import cmg.org.monitor.entity.shared.InvitedUser;
 import cmg.org.monitor.entity.shared.JvmMonitor;
 import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemGroup;
@@ -100,5 +101,6 @@ public interface MonitorGwtService extends RemoteService {
 	MonitorContainer getAllForInvite();
 	
 	boolean inviteUser3rd(String[] user);
+	boolean action3rd(String actionType,InvitedUser u);
 	
 }
