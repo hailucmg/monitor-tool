@@ -72,6 +72,7 @@ public class InviteUser extends AncestorEntryPoint{
  	 		tableInterface = new FlexTable();
  	 		tableManagement = new FlexTable();
  	 		filter_box = new ListBox();
+ 	 		filter_box.setTitle("FILTER");
  	 		filter_box.setStyleName("filter_box");
  	 		filter_box.addItem(defaultFilter);
  	 		filter_box.addItem(filter_Active);
@@ -118,6 +119,7 @@ public class InviteUser extends AncestorEntryPoint{
 								}
 							}
 							//init UI
+						
 							initUI(listUser3rds, filter);
 						}else{
 							setVisibleLoadingImage(false);
