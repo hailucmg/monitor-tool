@@ -671,8 +671,8 @@ public class HTMLControl {
 		String typeDelete = "delete";
 		String typeInactive = "inactive";
 		String temp;
-		String buttonDelete = "<a title=\"delete\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeDelete +"','"+ u.getStatus() +"');\">delete</a>";
-		String buttonInactive = "<a title=\"inactive\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeInactive +"','" + u.getStatus() + "');\" >inactive</a>";
+		String buttonDelete = "<a class=\"btnDeleteUser\" title=\"delete\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeDelete +"','"+ u.getStatus() +"');\" />";
+		String buttonInactive = "<a class=\"btnInActive\" title=\"inactive\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeInactive +"','" + u.getStatus() + "');\" />";
 		temp = buttonDelete + buttonInactive;
 		
 		return temp;
@@ -681,14 +681,14 @@ public class HTMLControl {
 	public static String getButtonForInActiveUser(InvitedUser u){
 		String id = u.getId();
 		String typeInactive = "active";
-		String buttonactive = "<input type=\"button\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeInactive +"','" + u.getStatus() + "');\" value=\"Active\" />";
+		String buttonactive = "<a class=\"btnActive\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeInactive +"','" + u.getStatus() + "');\" title=\"Active\" />";
 		return buttonactive;
 	}
 	
 	public static String getButtonForPendingUser(InvitedUser u){
 		String id = u.getId();
 		String typeDelete = "delete";
-		String buttonDelete = "<input type=\"button\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeDelete +"','"+ u.getStatus() +"');\"  value=\"Delete\" >";
+		String buttonDelete = "<a class=\"btnDeleteUser\" title=\"delete\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeDelete +"','"+ u.getStatus() +"');\"  / >";
 		return buttonDelete;
 	}
 	
