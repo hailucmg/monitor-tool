@@ -77,7 +77,7 @@ public class InviteUser extends AncestorEntryPoint{
  	 		filter_box.addItem(filter_Active);
  	 		filter_box.addItem(filter_inActive);
  	 		filter_box.addItem(filter_pending);
- 	 		tableManagement.setWidget(0, 0, new HTML("<a class=\"btnInviteUser\" title=\"Invited\" onClick=\"javascript:showDialogInvited()\" />"));
+ 	 		tableManagement.setWidget(0, 0, new HTML("<a class=\"btnInviteUser\" title=\"INVITE USER\" onClick=\"javascript:showDialogInvited()\" />"));
  	 		tableManagement.setWidget(0, 1, filter_box);
  	 		/*tableManagement.setWidget(1, 0, panelLog);*/
  	 		tableManagement.setCellPadding(5);
@@ -753,12 +753,20 @@ public class InviteUser extends AncestorEntryPoint{
 		btt_reset = new Button("Reset");
 		btt_reset.setStyleName("margin:6px;");
 		btt_reset.addStyleName("form-button");
-		
+		btt_reset.addClickHandler(new ClickHandler() {
+			
+			@Override
+			public void onClick(ClickEvent event) {
+				txt_email.setText("");
+				listGroupInvi.setSelectedIndex(0);
+			}
+		});
 		
 		
 		txt_email = new TextArea();
 		txt_email.setTitle("Invite user");
-		txt_email.setWidth("200px");
+		txt_email.setWidth("400px");
+		txt_email.setHeight("100px");
 		FlexTable panelButton = new FlexTable();
 		panelButton.setWidget(0, 0, btt_invite);
 		panelButton.setWidget(0, 1, btt_reset);
@@ -767,7 +775,8 @@ public class InviteUser extends AncestorEntryPoint{
 		panelValidateEmail = new AbsolutePanel();
 		panelValidateEmail.setVisible(false);
 		listGroupInvi = new ListBox();
-		listGroupInvi.setWidth("150px");
+		listGroupInvi.setTitle("List Group");
+		listGroupInvi.setWidth("200px");
 		for(SystemGroup s : listGroup){
 			listGroupInvi.addItem(s.getName());
 		}
