@@ -43,6 +43,7 @@ public class InviteUser extends AncestorEntryPoint{
 	static List<InvitedUser> listUser3rds;
 	static ListBox listTemp;
 	static ListBox listAll;
+	static ListBox listGroupInvi;
 	static Button btt_invite;
 	static Button btt_MappingGroup;
 	static Button btt_UnMappingGroup;
@@ -60,6 +61,8 @@ public class InviteUser extends AncestorEntryPoint{
 	static DialogBox dialogFunction;
 	static DialogBox dialogInvite;
 	static SimplePanel panelAuto;
+	static String filterStatic;
+	static String ActionStatic;
  	@Override
 	protected void init() {
  		if (currentPage == HTMLControl.PAGE_INVITE) {
@@ -288,11 +291,11 @@ public class InviteUser extends AncestorEntryPoint{
  	
  	
  	// this is the method that invited user
- 	private static void sendData(String[] data , final String filter) {
- 		monitorGwtSv.inviteUser3rd(data, new AsyncCallback<Boolean>() {
+ 	private static void sendData(String[] data,String groupID ) {
+ 		monitorGwtSv.inviteUser3rd(data,groupID, new AsyncCallback<Boolean>() {
 			@Override
 			public void onSuccess(Boolean result) {
-				initData(filter);
+				initData(filterStatic);
 				dialogInvite.hide();
 				showMessage("Invite sucessfully.", "", "",
 						HTMLControl.BLUE_MESSAGE, true);
@@ -300,7 +303,7 @@ public class InviteUser extends AncestorEntryPoint{
 			
 			@Override
 			public void onFailure(Throwable caught) {
-				initData(filter);
+				initData(filterStatic);
 				dialogInvite.hide();
 				showMessage("Server error.", "", "",
 						HTMLControl.RED_MESSAGE, true);
@@ -309,7 +312,7 @@ public class InviteUser extends AncestorEntryPoint{
  	}
  	
  	//this is the method that action every popup show
- 	private static void popupAction(final String filter,final String action_type, String userID){
+ 	private static void popupAction(String filter, String action_type, String userID){
  		InvitedUser u = new InvitedUser();
  		for(InvitedUser us : listUser3rds){
  			if(us.getId().toString().equals(userID)){
@@ -331,20 +334,21 @@ public class InviteUser extends AncestorEntryPoint{
 				}
 			}
  		}
- 		
+ 		filterStatic = filter;
+ 		ActionStatic = action_type;
  		monitorGwtSv.action3rd(action_type, u, new AsyncCallback<Boolean>() {
 			
 			@Override
 			public void onSuccess(Boolean result) {
 				if(result){
-					initData(filter);
-					showMessage(action_type + "sucessfully.", "", "",
+					initData(filterStatic);
+					showMessage(ActionStatic + "sucessfully.", "", "",
 							HTMLControl.BLUE_MESSAGE, true);
 					dialogFunction.hide();
 					
 					
 				}else{
-					showMessage("Cannot "+action_type + ".", "", "",
+					showMessage("Cannot "+ActionStatic + ".", "", "",
 							HTMLControl.RED_MESSAGE, true);
 					dialogFunction.hide();
 					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
@@ -355,7 +359,7 @@ public class InviteUser extends AncestorEntryPoint{
 			
 			@Override
 			public void onFailure(Throwable caught) {
-				showMessage("Cannot "+action_type + ".", "", "",
+				showMessage("Cannot "+ActionStatic + ".", "", "",
 						HTMLControl.RED_MESSAGE, true);
 				dialogFunction.hide();
 				setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
@@ -393,7 +397,9 @@ public class InviteUser extends AncestorEntryPoint{
 		return msg;
 	}
  	
- 	static void showDialogBox(final String idUser, final String actionType, final String filter){
+ 	static void showDialogBox(final String idUser,  String actionType,  String filter){
+ 		filterStatic = filter;
+ 		ActionStatic = actionType;
  		if(filter.equalsIgnoreCase(filter_Active)){
  			dialogFunction = new DialogBox();
  	 		dialogFunction.setAnimationEnabled(true);
@@ -446,7 +452,7 @@ public class InviteUser extends AncestorEntryPoint{
  				    public void onClick(ClickEvent event) {
  				    	setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
  						setVisibleLoadingImage(true);
- 				    	popupAction(filter,actionType, idUser);
+ 				    	popupAction(filterStatic,ActionStatic, idUser);
  				    }
  			});
  			closeButton.addClickHandler(new ClickHandler() {
@@ -537,7 +543,7 @@ public class InviteUser extends AncestorEntryPoint{
  				    	//send to server
  				    	setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
  						setVisibleLoadingImage(true);
- 				    	popupAction(filter,actionType, idUser);
+ 				    	popupAction(filterStatic,ActionStatic, idUser);
  				    }
  			});
  			closeButton.addClickHandler(new ClickHandler() {
@@ -602,7 +608,7 @@ public class InviteUser extends AncestorEntryPoint{
  				    public void onClick(ClickEvent event) {
  				    	setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
  						setVisibleLoadingImage(true);
- 				    	popupAction(filter,actionType, idUser);
+ 				    	popupAction(filterStatic,ActionStatic, idUser);
  				    }
  			});
  			closeButton.addClickHandler(new ClickHandler() {
@@ -650,11 +656,6 @@ public class InviteUser extends AncestorEntryPoint{
 				 index1 = listTemp.getSelectedIndex();
 				 value = listTemp.getValue(index1);
 			} catch (Exception e) {
-				panelValidateGroups.clear();
-				panelValidateGroups.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">"
-											+ "Can not unmapping"
-											+ "</div>"));
-				panelValidateGroups.setVisible(true);
 				return;
 			}
 			if(!value.equalsIgnoreCase(DefaulValueOfListTemp)){
@@ -722,13 +723,28 @@ public class InviteUser extends AncestorEntryPoint{
 				String emails = txt_email.getText();
 				String validate = validateEmail(emails);
 				if(validate!= ""){
+					panelValidateEmail.clear();
 					panelValidateEmail.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">"+ validate + "</div>"));
 					panelValidateEmail.setVisible(true);
 					return;
 				}
 				String[] data = emails.split(",");
-				setOnload(true);
-				sendData(data , filter_pending);
+				int index = listGroupInvi.getSelectedIndex();
+				String group = listGroupInvi.getValue(index);
+				String groupID = "";
+				for(SystemGroup s : listGroup){
+					if(s.getName().equalsIgnoreCase(group)){
+						groupID = s.getId();
+					}
+				}
+				if(groupID.trim().length() > 0){
+					filterStatic = filter_pending;
+					sendData(data, groupID);
+				}else{
+					
+					return;
+				}
+				
 				
 			}
 		});
@@ -750,7 +766,7 @@ public class InviteUser extends AncestorEntryPoint{
 		panelButton.setCellSpacing(5);
 		panelValidateEmail = new AbsolutePanel();
 		panelValidateEmail.setVisible(false);
-		ListBox listGroupInvi = new ListBox();
+		listGroupInvi = new ListBox();
 		listGroupInvi.setWidth("150px");
 		for(SystemGroup s : listGroup){
 			listGroupInvi.addItem(s.getName());

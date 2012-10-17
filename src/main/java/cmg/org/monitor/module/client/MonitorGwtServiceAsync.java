@@ -109,7 +109,8 @@ public interface MonitorGwtServiceAsync {
 
 	void getAllForInvite(AsyncCallback<MonitorContainer> callback);
 
-	void inviteUser3rd(String[] user, AsyncCallback<Boolean> callback);
+	void inviteUser3rd(String[] user, String groupID,
+			AsyncCallback<Boolean> callback);
 
 	void action3rd(String actionType, InvitedUser u,
 			AsyncCallback<Boolean> callback);
