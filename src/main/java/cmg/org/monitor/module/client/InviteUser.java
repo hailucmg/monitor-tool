@@ -20,7 +20,6 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextArea;
@@ -34,6 +33,7 @@ import com.google.gwt.visualization.client.visualizations.Table.Options;
 
 public class InviteUser extends AncestorEntryPoint{
     AbsolutePanel panelButtonInvite;
+    static AbsolutePanel panelValidateGroups;
     AbsolutePanel panelAssign;
 	static TextArea txt_email;
 	static TextArea txt_log;
@@ -69,12 +69,17 @@ public class InviteUser extends AncestorEntryPoint{
  	 		tableInterface = new FlexTable();
  	 		tableManagement = new FlexTable();
  	 		filter_box = new ListBox();
+ 	 		filter_box.setStyleName("filter_box");
  	 		filter_box.addItem(defaultFilter);
  	 		filter_box.addItem(filter_Active);
  	 		filter_box.addItem(filter_inActive);
  	 		filter_box.addItem(filter_pending);
- 	 		tableManagement.setWidget(0, 1, new HTML("<input type=\"button\" value=\"Invited\" onClick=\"javascript:showDialogInvited()\" />"));
- 	 		tableManagement.setWidget(0, 2, filter_box);
+ 	 		tableManagement.setWidget(0, 0, new HTML("<a class=\"btnInviteUser\" title=\"Invited\" onClick=\"javascript:showDialogInvited()\" />"));
+ 	 		tableManagement.setWidget(0, 1, filter_box);
+ 	 		/*tableManagement.setWidget(1, 0, panelLog);*/
+ 	 		tableManagement.setCellPadding(5);
+ 	 		tableManagement.getCellFormatter().setHorizontalAlignment(0, 1, VerticalPanel.ALIGN_CENTER);
+ 	 		/*tableManagement.setCellSpacing(20);*/
  			initData(defaultFilter);
  		}
 		
@@ -214,9 +219,7 @@ public class InviteUser extends AncestorEntryPoint{
  		dataListUser.addColumn(ColumnType.STRING, "USERNAME");
  		dataListUser.addColumn(ColumnType.STRING, "STATUS");
  		dataListUser.addColumn(ColumnType.STRING, "ACTION");
- 		
  		List<InvitedUser> listTemp = new ArrayList<InvitedUser>();
- 		
  		if(filter.equalsIgnoreCase(defaultFilter)){
  			for(InvitedUser u : result){
  				listTemp.add(u);
@@ -228,22 +231,26 @@ public class InviteUser extends AncestorEntryPoint{
  	 			}
  	 		}
  		}
- 		
  		if(listTemp.size() > 0){
  			dataListUser.addRows(listTemp.size());
  			for(int i = 0 ; i < listTemp.size() ; i++){
  				InvitedUser u = listTemp.get(i);
  				dataListUser.setValue(i, 0,"<div style=\"min-width:450px\">"+ u.getEmail()+ "</div>");
- 				dataListUser.setValue(i, 1, "<div style=\"min-width:450px\">"+u.getStatus()+ "</div>");
  				if(u.getStatus().equalsIgnoreCase(filter_Active)){
+ 					String status = "<a style=\"margin-left:auto;margin-right:auto;\" class=\"stt_userActive\" title=\"ACTIVE\"/>";
+ 					dataListUser.setValue(i, 1, "<div style=\"min-width:450px\">"+status+"</div>");
  					String html = HTMLControl.getButtonForActiveUser(u);
  					dataListUser.setValue(i, 2,"<div style=\"min-width:220px\">" +html  + "</div>");
  				}
  				if(u.getStatus().equalsIgnoreCase(filter_inActive)){
+ 					String status = "<a style=\"margin-left:auto;margin-right:auto;\" class=\"stt_inactive\" title=\"INACTIVE\"/>";
+ 					dataListUser.setValue(i, 1, "<div style=\"min-width:450px\">"+status+"</div>");
  					String html = HTMLControl.getButtonForInActiveUser(u);
  					dataListUser.setValue(i, 2,"<div style=\"min-width:220px\">" + html + "</div>");
  				}
  				if(u.getStatus().equalsIgnoreCase(filter_pending)){
+ 					String status = "<a style=\"margin-left:auto;margin-right:auto;\" class=\"stt_pending\" title=\"PENDING\"/>";
+ 					dataListUser.setValue(i, 1, "<div style=\"min-width:450px\">"+status+"</div>");
  					String html = HTMLControl.getButtonForPendingUser(u);
  					dataListUser.setValue(i, 2,"<div style=\"min-width:220px\">" + html + "</div>");
  				}
@@ -283,7 +290,6 @@ public class InviteUser extends AncestorEntryPoint{
  	// this is the method that invited user
  	private static void sendData(String[] data , final String filter) {
  		monitorGwtSv.inviteUser3rd(data, new AsyncCallback<Boolean>() {
-			
 			@Override
 			public void onSuccess(Boolean result) {
 				initData(filter);
@@ -486,8 +492,11 @@ public class InviteUser extends AncestorEntryPoint{
  			popupContent.setWidth("400px");
  			listTemp = new ListBox();
  			listTemp.setMultipleSelect(true);
+ 			listTemp.setWidth("150px");
+ 			listTemp.setHeight("80px");
  			listTemp.addItem(DefaulValueOfListTemp);
  			listAll = new ListBox();
+ 			listAll.setWidth("100px");
  			for(SystemGroup s : listGroup){
  				listAll.addItem(s.getName());
  			}
@@ -495,13 +504,15 @@ public class InviteUser extends AncestorEntryPoint{
  			btt_MappingGroup.addClickHandler(new MappingGroup());
  			btt_UnMappingGroup = new Button("UnMapping");
  			btt_UnMappingGroup.addClickHandler(new UnMappingGroup());
+ 			panelValidateGroups = new AbsolutePanel();
  			FlexTable flexHTML = new FlexTable();
  			flexHTML.setWidget(0, 0, popupContent);
  			flexHTML.getCellFormatter().setWidth(1, 0, "100px");
  			flexHTML.getCellFormatter().setWidth(1, 1, "100px");
  			flexHTML.getCellFormatter().setWidth(1, 2, "100px");
  			flexHTML.getCellFormatter().setWidth(1, 3, "200px");
- 			flexHTML.getFlexCellFormatter().setColSpan(0, 0, 4);
+ 			flexHTML.getCellFormatter().setWidth(1, 4, "400px");
+ 			flexHTML.getFlexCellFormatter().setColSpan(0, 0, 5);
  			flexHTML.setWidget(1, 0, listAll);
  			flexHTML.setWidget(1, 1, btt_MappingGroup);
  			flexHTML.setWidget(1, 2, btt_UnMappingGroup);
@@ -631,15 +642,25 @@ public class InviteUser extends AncestorEntryPoint{
 
 		@Override
 		public void onClick(ClickEvent event) {
+			panelValidateGroups.setVisible(false);
 			List<Integer> listSelected = new ArrayList<Integer>();
-			int index1 = listTemp.getSelectedIndex();
-			String value = listTemp.getValue(index1);
+			int index1 = 0;
+			String value = DefaulValueOfListTemp;
+			try {
+				 index1 = listTemp.getSelectedIndex();
+				 value = listTemp.getValue(index1);
+			} catch (Exception e) {
+				panelValidateGroups.clear();
+				panelValidateGroups.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">"
+											+ "Can not unmapping"
+											+ "</div>"));
+				panelValidateGroups.setVisible(true);
+				return;
+			}
 			if(!value.equalsIgnoreCase(DefaulValueOfListTemp)){
 				listSelected.add(index1);
 			}
-			System.out.println(listSelected.size());
 			if(listSelected.size() > 0 ){
-				//showMessage("Oops! Error.", "", "Can not un mapping group", HTMLControl.RED_MESSAGE, false);
 				List<String> listValue = new ArrayList<String>();
 				
 				for(int index : listSelected){
@@ -657,10 +678,20 @@ public class InviteUser extends AncestorEntryPoint{
 						listTemp.addItem(DefaulValueOfListTemp);
 					}
 				}else{
-					showMessage("Oops! Error.", "", "Can not un mapping group", HTMLControl.RED_MESSAGE, true);
+					panelValidateGroups.clear();
+					panelValidateGroups.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">"
+							+ "Can not unmapping"
+							+ "</div>"));
+					panelValidateGroups.setVisible(true);
+					return;
 				}
 			}else{
-				showMessage("Oops! Error.", "", "Can not un mapping group", HTMLControl.RED_MESSAGE, true);
+				panelValidateGroups.clear();
+				panelValidateGroups.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">"
+											+ "Can not unmapping"
+											+ "</div>"));
+				panelValidateGroups.setVisible(true);
+				return;
 			}
 			
 		}
@@ -687,7 +718,7 @@ public class InviteUser extends AncestorEntryPoint{
 
 			@Override
 			public void onClick(ClickEvent event) {
-				/*panelValidateEmail.setVisible(false);
+				panelValidateEmail.setVisible(false);
 				String emails = txt_email.getText();
 				String validate = validateEmail(emails);
 				if(validate!= ""){
@@ -697,7 +728,7 @@ public class InviteUser extends AncestorEntryPoint{
 				}
 				String[] data = emails.split(",");
 				setOnload(true);
-				sendData(data , filter_pending);*/
+				sendData(data , filter_pending);
 				
 			}
 		});
@@ -710,32 +741,35 @@ public class InviteUser extends AncestorEntryPoint{
 		
 		
 		txt_email = new TextArea();
-	/*	txt_log = new TextArea();
-		txt_log.setWidth("1185px");
-		txt_log.setHeight("300px");
-		txt_log.setReadOnly(true);
-		panelLog = new DisclosurePanel();
-		panelLog.setTitle("View Log");
-		panelLog.setContent(txt_log);*/
-		
+		txt_email.setTitle("Invite user");
+		txt_email.setWidth("200px");
+		FlexTable panelButton = new FlexTable();
+		panelButton.setWidget(0, 0, btt_invite);
+		panelButton.setWidget(0, 1, btt_reset);
+		panelButton.setCellPadding(5);
+		panelButton.setCellSpacing(5);
 		panelValidateEmail = new AbsolutePanel();
 		panelValidateEmail.setVisible(false);
-		
+		ListBox listGroupInvi = new ListBox();
+		listGroupInvi.setWidth("150px");
+		for(SystemGroup s : listGroup){
+			listGroupInvi.addItem(s.getName());
+		}
 		FlexTable table = new FlexTable();
-		table.setTitle("Invite user");
 		table.setCellPadding(5);
 		table.setCellSpacing(5);
 		table.setWidget(0, 0, txt_email);
 		table.setWidget(0, 1, panelValidateEmail);
-		table.setWidget(1, 0, btt_invite);
-		table.setWidget(1, 1, btt_reset);
+		table.setWidget(0, 2, listGroupInvi);
 		/*table.setWidget(2, 0, panelLog);*/
-		table.getCellFormatter().setHorizontalAlignment(0, 0, VerticalPanel.ALIGN_RIGHT);
+		table.getCellFormatter().setHorizontalAlignment(0, 0, VerticalPanel.ALIGN_LEFT);
 		table.getCellFormatter().setHorizontalAlignment(0, 1, VerticalPanel.ALIGN_RIGHT);
 		VerticalPanel dialogVPanel = new VerticalPanel();
 		dialogVPanel.add(exitButton);
 		dialogVPanel.setCellHorizontalAlignment(exitButton, VerticalPanel.ALIGN_RIGHT);
 		dialogVPanel.add(table);
+		dialogVPanel.add(panelButton);
+		dialogVPanel.setCellHorizontalAlignment(panelButton, VerticalPanel.ALIGN_RIGHT);
 		dialogInvite.setWidget(dialogVPanel);
 		dialogInvite.getCaption().asWidget().setStyleName("myCaption");
 		dialogInvite.center();
