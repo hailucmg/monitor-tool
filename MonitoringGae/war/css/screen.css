@@ -1747,7 +1747,84 @@ a:hover.back-login	{
 	margin-left:10px;
 	margin-top:4px;
 }
-	
+
+.btnInviteUser{
+	float:left;
+	background: url(../images/table/invite_user.png) no-repeat;
+	height: 32px;
+	width: 32px;
+	display:block;
+	margin-left:10px;
+	margin-top:4px;
+}
+
+
+
+.btnActive{
+	float:left;
+	background: url(../images/table/active_user.png) no-repeat;
+	height: 32px;
+	width: 32px;
+	display:block;
+	margin-left:10px;
+	margin-top:4px;
+}
+
+
+.btnInActive{
+	float:left;
+	background: url(../images/table/inactive_user.png) no-repeat;
+	height: 32px;
+	width: 32px;
+	display:block;
+	margin-left:10px;
+	margin-top:4px;
+}
+
+
+.btnDeleteUser{
+	float:left;
+	background: url(../images/table/delete_user.png) no-repeat;
+	height: 32px;
+	width: 32px;
+	display:block;
+	margin-left:10px;
+	margin-top:4px;
+}
+
+.filter_box{
+	width: 150px;
+	height: 20px;
+	margin-top: 8px;
+}
+
+.stt_inactive{
+	background: url(../images/table/status_inactive.png) no-repeat;
+	height: 32px;
+	width: 32px;
+	display:block;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+.stt_pending{
+	background: url(../images/table/status_pending.png) no-repeat;
+	height: 32px;
+	width: 32px;
+	display:block;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+.stt_userActive{
+	background: url(../images/table/status_active_user.png) no-repeat;
+	height: 32px;
+	width: 32px;
+	display:block;
+	margin-left:auto;
+	margin-right:auto;
+}
+
 a.btnCancel	{	
 	background: url(../images/table/button_cancel.png) no-repeat;
 	height: 24px;
