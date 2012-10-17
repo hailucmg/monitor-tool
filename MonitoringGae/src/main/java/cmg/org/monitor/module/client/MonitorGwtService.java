@@ -100,7 +100,7 @@ public interface MonitorGwtService extends RemoteService {
 	
 	MonitorContainer getAllForInvite();
 	
-	boolean inviteUser3rd(String[] user);
+	boolean inviteUser3rd(String[] user, String groupID);
 	boolean action3rd(String actionType,InvitedUser u);
 	
 }
