@@ -212,9 +212,10 @@ public class InviteUserDaoImpl implements InviteUserDAO {
 			user.setGroupIDs(in.getGroupIDs());
 			SystemAccountDAO accountDao = new SystemAccountDaoImpl();
 			check = accountDao.createSystemUser(user, true);
-			accountDao.initSystemUserMemcache();
+			
 		}
-		if (check && list != null && list.size() > 0) {			
+		if (check && list != null && list.size() > 0) {		
+			SystemAccountDAO accountDao = new SystemAccountDaoImpl();
 			for (int i = 0; i< list.size(); i++) {
 				if (list.get(i).getId().equalsIgnoreCase(in.getId())) {
 					list.get(i).setStatus(InvitedUser.STATUS_ACTIVE);
@@ -222,6 +223,7 @@ public class InviteUserDaoImpl implements InviteUserDAO {
 				}
 			}			
 			storeList3rdUserToMemcache(list);
+			accountDao.initSystemUserMemcache();
 		}
 		return check;
 	}

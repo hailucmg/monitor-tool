@@ -52,11 +52,7 @@ public class MonitorGwtServiceImplTest {
     public void testSyncAccount() {
 
 	MonitorGwtServiceImpl asd = new MonitorGwtServiceImpl();
-	GoogleAccount ac = new GoogleAccount();
-	ac.setDomain("c-mg.vn");
-	ac.setUsername("monitor");
-	String out = asd.syncAccount(ac);
-	System.out.println(out);
+	asd.inviteUser3rd(new String[] {"luhonghai@gmail.com"}, "null");
     }
 
 }

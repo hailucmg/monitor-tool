@@ -5,10 +5,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import cmg.org.monitor.dao.InviteUserDAO;
 import cmg.org.monitor.dao.SystemAccountDAO;
 import cmg.org.monitor.dao.UtilityDAO;
+import cmg.org.monitor.dao.impl.InviteUserDaoImpl;
 import cmg.org.monitor.dao.impl.SystemAccountDaoImpl;
 import cmg.org.monitor.dao.impl.UtilityDaoImpl;
+import cmg.org.monitor.entity.shared.InvitedUser;
 import cmg.org.monitor.entity.shared.SystemRole;
 import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
@@ -69,6 +72,19 @@ public class MonitorLoginService {
 							userLogin.setRole(MonitorConstant.ROLE_ADMIN);
 						} else if (sysUser.checkRole(SystemRole.ROLE_USER)) {
 							userLogin.setRole(MonitorConstant.ROLE_NORMAL_USER);
+						}
+					} else {
+						InviteUserDAO invUserDAO = new InviteUserDaoImpl();
+						List<InvitedUser> list3rdUser = invUserDAO.list3rdUser();
+						if (list3rdUser != null && list3rdUser.size() > 0) {
+							for (InvitedUser u : list3rdUser) {
+								if (u.getEmail().equalsIgnoreCase(user.getEmail())
+										&& u.getStatus().equalsIgnoreCase(InvitedUser.STATUS_PENDING)) {
+									userLogin.setRole(MonitorConstant.ROLE_NORMAL_USER);
+									invUserDAO.active3rdUser(u);
+									break;
+								}
+							}
 						}
 					}
 				}

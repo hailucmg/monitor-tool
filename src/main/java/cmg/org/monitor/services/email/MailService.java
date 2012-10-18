@@ -38,7 +38,7 @@ import cmg.org.monitor.entity.shared.MailConfigMonitor;
 import cmg.org.monitor.entity.shared.MailMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.entity.shared.SystemUser;
-import cmg.org.monitor.ext.util.MailUtil;
+import cmg.org.monitor.ext.util.MailAsync;
 import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.memcache.Key;
 import cmg.org.monitor.memcache.MonitorMemcache;
@@ -81,6 +81,10 @@ public class MailService {
 	private MailItemService mailItemService;
 
 	GoogleAccount adminAcc;
+	
+	public MailService() {
+		
+	}
 
 	public MailService(GoogleAccount acc) {
 		adminAcc = acc;
@@ -430,8 +434,7 @@ public class MailService {
 		return content;
 	}
 
-	public static boolean inviteUsers(String[] recipients,
-			String[] groupIDs) {
+	public boolean inviteUsers(String[] recipients, String[] groupIDs) {
 		boolean check = false;
 		if (recipients != null && recipients.length > 0) {
 			InviteUserDAO userDao = new InviteUserDaoImpl();
@@ -445,37 +448,41 @@ public class MailService {
 			}
 			List<String> temp = new ArrayList<String>();
 			for (String rec : recipients) {
-				boolean isValid = false;
+				rec = rec.trim();
+				boolean isValid = true;
 				if (listActiveUser != null && listActiveUser.size() > 0) {
 					for (SystemUser sUser : listActiveUser) {
-						sUser.getEmail().equalsIgnoreCase(rec);
-						isValid = true;
+						if (sUser.getEmail().trim().equalsIgnoreCase(rec)) {
+							isValid = false;
+							break;
+						}
 					}
 				}
-				if (!isValid) {
+				if (isValid) {
 					InvitedUser user = new InvitedUser();
-					user.setEmail(rec);
+					user.setEmail(rec.trim());
 					user.setGroupIDs(groupIDs);
 					user.setStatus(InvitedUser.STATUS_PENDING);
 					try {
-						check = userDao.create3rdUser(user);
-					} catch (Exception ex) {
-						ex.printStackTrace();
+						userDao.create3rdUser(user);
+						temp.add(rec.trim());
+					} catch (Exception ex) {						
 						logger.log(
 								Level.SEVERE,
 								"Error when inviteUsers. Message: "
 										+ ex.getMessage());
-					}
-					temp.add(rec);
+					}					
 				}
 			}
-			String log = MailUtil.send(recipients,
-					MailUtil.getInviteMailSubject(),
-					MailUtil.getInviteMailContent());
-			logger.log(Level.INFO, log);
-			System.out.println(log);
-			userDao.initList3rdUser();
-			check = true;
+			if (!temp.isEmpty()) {
+				String[] newList = new String[temp.size()];
+				temp.toArray(newList);
+				MailAsync mailUtil = new MailAsync(newList, MailAsync.getInviteMailSubject(), MailAsync.getInviteMailContent());
+				mailUtil.run();
+				check = true;
+				userDao.initList3rdUser();
+			}
+			
 		}
 		return check;
 	}

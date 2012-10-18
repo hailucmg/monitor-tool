@@ -890,8 +890,9 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public boolean inviteUser3rd(String[] user, String groupID) {		
-		return MailService.inviteUsers(user, new String[] {groupID});
+	public boolean inviteUser3rd(String[] user, String groupID) {	
+		MailService service = new MailService();
+		return service.inviteUsers(user, new String[] {groupID});
 	}
 
 	@Override
