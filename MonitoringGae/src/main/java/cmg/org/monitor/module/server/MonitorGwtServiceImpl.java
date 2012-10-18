@@ -877,7 +877,6 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		try {
 			SystemGroup[] sys = sgDAO.getAllGroup();
 			m.setListSystemGroup(sys);
-
 			List<InvitedUser> mList = userDao.list3rdUser();
 			if (mList != null && mList.size() > 0) {
 				InvitedUser[] list = new InvitedUser[mList.size()];
@@ -896,13 +895,29 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public boolean action3rd(String actionType, InvitedUser u) {
+	public boolean action3rd(String actionType, InvitedUser u)  {
 		InviteUserDAO userDao = new InviteUserDaoImpl();
+		boolean check = false;
+		if(actionType.equalsIgnoreCase("delete")){
+			try {
+				check = userDao.delete3rdUser(u);
+			} catch (Exception e) {
+				check = false;
+			}
+			
+		}else if(actionType.equalsIgnoreCase("active")){
+			try {
+				check = userDao.active3rdUser(u);
+			} catch (Exception e) {
+				check = false;
+			}
+			
+		}
+		return check;
 		// to delete
 		//userDao.delete3rdUser(id);
 		// to active
 		//userDao.active3rdUser(id);
-		return false;
 	}
 
 }
