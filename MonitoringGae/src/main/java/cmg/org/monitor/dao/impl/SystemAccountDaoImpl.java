@@ -63,10 +63,10 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 		boolean check = false;
 		try {
 			pm.currentTransaction().begin();
-
 			temp.swap(user);
 			if (isAddRole) {
 				temp.setRoleIDs(user.getRoleIDs());
+				temp.setGroupIDs(user.getGroupIDs());
 			}
 			pm.makePersistent(temp);
 			pm.currentTransaction().commit();

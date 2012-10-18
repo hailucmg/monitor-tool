@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) CMG Ltd All rights reserved.
+ *
+ * This software is the confidential and proprietary information of CMG
+ * ("Confidential Information"). You shall not disclose such Confidential
+ * Information and shall use it only in accordance with the terms of the
+ * license agreement you entered into with CMG.
+ */
 package cmg.org.monitor.ext.util;
 
 import java.net.InetAddress;
@@ -10,29 +18,42 @@ import java.util.regex.Pattern;
 
 import cmg.org.monitor.util.shared.Constant;
 
+
+// TODO: Auto-generated Javadoc
 /**
- * Please enter a short description for this class.
- * 
- * <p>
- * Optionally, enter a longer description.
- * </p>
- * 
- * @author Lamphan
- * @version 1.0
+ * The Class MonitorUtil.
  */
 public class MonitorUtil {
-	/** Represent digit pattern value */
+	
+	/** Represent digit pattern value. */
 	public static final String DIGIT_PATTERN = "\\d+";
+	
+	/** The arrow string. */
 	public static String ARROW_STRING = " -> ";
 
+	/** The free memory. */
 	public static String FREE_MEMORY = "freeMemory";
+	
+	/** The total memory. */
 	public static String TOTAL_MEMORY = "totalMemory";
+	
+	/** The max memory. */
 	public static String MAX_MEMORY = "maxMemory";
+	
+	/** The used memory. */
 	public static String USED_MEMORY = "memoryUsed";
 
+	/** The Constant logger. */
 	private static final Logger logger = Logger.getLogger(MonitorUtil.class
 			.getCanonicalName());
 
+	/**
+	 * Parses the date.
+	 * 
+	 * @param date
+	 *            the date
+	 * @return the date
+	 */
 	public static Date parseDate(String date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 		Date d = new Date();
@@ -45,20 +66,51 @@ public class MonitorUtil {
 	}
 	
 
+	/**
+	 * Parses the time.
+	 * 
+	 * @param millis
+	 *            the millis
+	 * @param addArrow
+	 *            the add arrow
+	 * @return the string
+	 */
 	public static String parseTime(long millis, boolean addArrow) {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss:SSS");
 		return sdf.format(millis) + (addArrow ? ARROW_STRING : "");
 	}
 
+	/**
+	 * Parses the time.
+	 * 
+	 * @param date
+	 *            the date
+	 * @return the string
+	 */
 	public static String parseTime(Date date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss:SSS");
 		return sdf.format(date);
 	}
+	
+	/**
+	 * Parses the time email.
+	 * 
+	 * @param date
+	 *            the date
+	 * @return the string
+	 */
 	public static String parseTimeEmail(Date date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		return sdf.format(date);
 	}
 
+	/**
+	 * Parses the href.
+	 * 
+	 * @param inputStr
+	 *            the input str
+	 * @return the string
+	 */
 	public static String parseHref(String inputStr) {
 		Pattern pattern = Pattern.compile(Constant.PATTERN_HREF);
 		Matcher matcher = pattern.matcher(inputStr);
@@ -95,6 +147,13 @@ public class MonitorUtil {
 		return s;
 	}
 
+	/**
+	 * Gets the ip from url.
+	 * 
+	 * @param url
+	 *            the url
+	 * @return the ip from url
+	 */
 	public static String getIpFromUrl(String url) {
 		try {
 			InetAddress addr = InetAddress.getByName("microsoft.com");
@@ -107,6 +166,13 @@ public class MonitorUtil {
 
 	}
 	
+	/**
+	 * Convert memory to string.
+	 * 
+	 * @param value
+	 *            the value
+	 * @return the string
+	 */
 	public static String convertMemoryToString(double value) {
 		String temp = "";
 		value = value / 1024;
@@ -123,9 +189,10 @@ public class MonitorUtil {
 	}
 	
 	/**
-	 * Extract digit number from a string value
+	 * Extract digit number from a string value.
 	 * 
 	 * @param str
+	 *            the str
 	 * @return String value
 	 */
 	public static String extractDigit(String str) {

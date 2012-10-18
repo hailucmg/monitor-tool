@@ -10,6 +10,7 @@ import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.logging.Level;
@@ -22,15 +23,22 @@ import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import cmg.org.monitor.dao.InviteUserDAO;
+import cmg.org.monitor.dao.SystemAccountDAO;
 import cmg.org.monitor.dao.SystemDAO;
 import cmg.org.monitor.dao.impl.AlertDaoImpl;
+import cmg.org.monitor.dao.impl.InviteUserDaoImpl;
+import cmg.org.monitor.dao.impl.SystemAccountDaoImpl;
 import cmg.org.monitor.dao.impl.SystemDaoImpl;
 import cmg.org.monitor.entity.shared.AlertMonitor;
 import cmg.org.monitor.entity.shared.AlertStoreMonitor;
 import cmg.org.monitor.entity.shared.GoogleAccount;
+import cmg.org.monitor.entity.shared.InvitedUser;
 import cmg.org.monitor.entity.shared.MailConfigMonitor;
 import cmg.org.monitor.entity.shared.MailMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.entity.shared.SystemUser;
+import cmg.org.monitor.ext.util.MailUtil;
 import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.memcache.Key;
 import cmg.org.monitor.memcache.MonitorMemcache;
@@ -316,24 +324,30 @@ public class MailService {
 			}
 
 			sb.append("<table style=\"margin: 0; padding: 0;\"><tr><td style=\"background: #F1F1F1; color: #686868; font-weight: bold; height: 24px; font-size: 12px; padding: 0 10px 0 2px;\">Current Health Status: </td> ");
-			sb.append("<td style=\"color: #686868; font-weight: bold; height: 24px; font-size: 12px;\"><img src=\"http://" + MonitorConstant.PROJECT_HOST_NAME
-					+ "/images/icon/" + sys.getHealthStatus()
-					+ "_status_icon.png\" title=\"" + mes + "\" alt=\"" + mes
-					+ "\"/></td></tr>");
+			sb.append("<td style=\"color: #686868; font-weight: bold; height: 24px; font-size: 12px;\"><img src=\"http://"
+					+ MonitorConstant.PROJECT_HOST_NAME
+					+ "/images/icon/"
+					+ sys.getHealthStatus()
+					+ "_status_icon.png\" title=\""
+					+ mes + "\" alt=\"" + mes + "\"/></td></tr>");
 			if (sys.getProtocol().equals(MonitorConstant.HTTP_PROTOCOL)) {
-				sb.append("<tr><td style=\"background: #F1F1F1; color: #686868; font-weight: bold; height: 24px; font-size: 12px; padding: 0 10px 0 2px;\">Remote URL: </td><td style=\"color: #686868; font-weight: bold; height: 24px; font-size: 12px;\">" + sys.getRemoteUrl()
-						+ "</td></tr>");
+				sb.append("<tr><td style=\"background: #F1F1F1; color: #686868; font-weight: bold; height: 24px; font-size: 12px; padding: 0 10px 0 2px;\">Remote URL: </td><td style=\"color: #686868; font-weight: bold; height: 24px; font-size: 12px;\">"
+						+ sys.getRemoteUrl() + "</td></tr>");
 			} else {
-				sb.append("<tr><td style=\"background: #F1F1F1; color: #686868; font-weight: bold; height: 24px; font-size: 12px; padding: 0 10px 0 2px;\">Remote Email: </td><td style=\"color: #686868; font-weight: bold; height: 24px; font-size: 12px;\"> " + sys.getEmailRevice()
-						+ "</td></tr>");
+				sb.append("<tr><td style=\"background: #F1F1F1; color: #686868; font-weight: bold; height: 24px; font-size: 12px; padding: 0 10px 0 2px;\">Remote Email: </td><td style=\"color: #686868; font-weight: bold; height: 24px; font-size: 12px;\"> "
+						+ sys.getEmailRevice() + "</td></tr>");
 			}
-			sb.append("<tr><td style=\"background: #F1F1F1; color: #686868; font-weight: bold; height: 24px; font-size: 12px; padding: 0 10px 0 2px;\">IP Address: </td><td style=\"color: #686868; font-weight: bold; height: 24px; font-size: 12px;\"> " + sys.getIp()
-					+ "</td></tr></table><br/>");
+			sb.append("<tr><td style=\"background: #F1F1F1; color: #686868; font-weight: bold; height: 24px; font-size: 12px; padding: 0 10px 0 2px;\">IP Address: </td><td style=\"color: #686868; font-weight: bold; height: 24px; font-size: 12px;\"> "
+					+ sys.getIp() + "</td></tr></table><br/>");
 			sb.append("<table  style=\"margin: 0; padding: 0;width: 100%;\"><tbody><tr style=\"background: #868484;color: #F1F1F1;text-align: center;\"><th style=\"width: 30px;\">No.</th><th style=\"width: 70px;\">Time</th><th style=\"width: 50px;\">Severity</th><th>Title</th><th>Description</th></tr>");
 			ArrayList<AlertMonitor> alerts = store.getAlerts();
 			if (alerts != null && alerts.size() > 0) {
 				for (int i = 0; i < alerts.size(); i++) {
-					sb.append("<tr "+(i % 2 == 0 ? "" : "style=\"background:#f1f1f1;\"")+"><td style=\"padding:5px;color: #686868;\">" + (i + 1) + "</td>");
+					sb.append("<tr "
+							+ (i % 2 == 0 ? ""
+									: "style=\"background:#f1f1f1;\"")
+							+ "><td style=\"padding:5px;color: #686868;\">"
+							+ (i + 1) + "</td>");
 					sb.append("<td style=\"padding:5px;color: #686868;\">"
 							+ MonitorUtil.parseTimeEmail(alerts.get(i)
 									.getTimeStamp()) + "</td>");
@@ -344,9 +358,10 @@ public class MailService {
 						sb.append("<td style=\"padding:5px;color: #686868;\">High</td>");
 					}
 
-					sb.append("<td style=\"padding:5px;color: #686868;\">" + alerts.get(i).getError() + "</td>");
-					sb.append("<td style=\"padding:5px;color: #686868;\">" + alerts.get(i).getDescription()
-							+ "</td></tr>");
+					sb.append("<td style=\"padding:5px;color: #686868;\">"
+							+ alerts.get(i).getError() + "</td>");
+					sb.append("<td style=\"padding:5px;color: #686868;\">"
+							+ alerts.get(i).getDescription() + "</td></tr>");
 				}
 			}// if
 			sb.append("</tbody></table><hr/></li>");
@@ -367,6 +382,7 @@ public class MailService {
 		return sb.toString();
 	}
 
+	@Deprecated
 	public static String createMailContent(ArrayList<AlertStoreMonitor> stores)
 			throws Exception {
 		String content = "";
@@ -412,6 +428,56 @@ public class MailService {
 				+ "\" width=\"255\" height=\"90\" /> </p>";
 		content += "</body></html>";
 		return content;
+	}
+
+	public static boolean inviteUsers(List<String> recipients,
+			List<String> groupIDs) {
+		boolean check = false;
+		if (recipients != null && recipients.size() > 0) {
+			InviteUserDAO userDao = new InviteUserDaoImpl();
+			SystemAccountDAO accountDao = new SystemAccountDaoImpl();
+			List<SystemUser> listActiveUser = null;
+			try {
+				listActiveUser = accountDao.listAllSystemUser(false);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			List<String> temp = new ArrayList<String>();
+			for (String rec : recipients) {
+				boolean isValid = false;
+				if (listActiveUser != null && listActiveUser.size() > 0) {
+					for (SystemUser sUser : listActiveUser) {
+						sUser.getEmail().equalsIgnoreCase(rec);
+						isValid = true;
+					}
+				}
+				if (!isValid) {
+					InvitedUser user = new InvitedUser();
+					user.setEmail(rec);
+					user.setGroupIDs(groupIDs);
+					user.setStatus(InvitedUser.STATUS_PENDING);
+					try {
+						check = userDao.create3rdUser(user);
+					} catch (Exception ex) {
+						ex.printStackTrace();
+						logger.log(
+								Level.SEVERE,
+								"Error when inviteUsers. Message: "
+										+ ex.getMessage());
+					}
+					temp.add(rec);
+				}
+			}
+			String log = MailUtil.send(recipients,
+					MailUtil.getInviteMailSubject(),
+					MailUtil.getInviteMailContent());
+			logger.log(Level.INFO, log);
+			System.out.println(log);
+			userDao.initList3rdUser();
+			check = true;
+		}
+		return check;
 	}
 
 }

@@ -36,6 +36,8 @@ public class Key implements IsSerializable {
 	public static final int SYSTEM_USER = 0x224;
 	public static final int ACCOUNT_SYNC_LOG = 0x225;
 	
+	public static final int INVITE_USER = 0x300;
+	
 	private int type;
 
 	private String sid;
