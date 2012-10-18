@@ -119,7 +119,6 @@ public class InviteUser extends AncestorEntryPoint{
 								}
 							}
 							//init UI
-						
 							initUI(listUser3rds, filter);
 						}else{
 							setVisibleLoadingImage(false);
