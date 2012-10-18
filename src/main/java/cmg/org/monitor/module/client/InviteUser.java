@@ -469,7 +469,7 @@ public class InviteUser extends AncestorEntryPoint{
  			
  		}
  		if(filter.equalsIgnoreCase(filter_requesting)){
- 			//if filter inActive,so they will action to active this user
+ 			//if filter requesting,so they will action to active this user
  			dialogFunction = new DialogBox();
  	 		dialogFunction.setAnimationEnabled(true);
  	 		VerticalPanel dialogVPanel = new VerticalPanel();
@@ -807,4 +807,6 @@ public class InviteUser extends AncestorEntryPoint{
 		}
  		
  	}
+ 	
+ 	
 }
