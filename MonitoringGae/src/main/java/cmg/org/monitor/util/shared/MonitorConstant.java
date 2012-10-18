@@ -1,6 +1,8 @@
 package cmg.org.monitor.util.shared;
 
-public final class MonitorConstant {	
+public final class MonitorConstant {
+	public static final boolean DEBUG = true;
+	
 	
 	public static final int MAX_ROW_COUNT_CHANGELOG = 10;
 	

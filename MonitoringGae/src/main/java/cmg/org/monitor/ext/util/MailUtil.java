@@ -57,6 +57,15 @@ public class MailUtil {
 		long start = System.currentTimeMillis();
 		StringBuffer sb = new StringBuffer();
 		Properties props = new Properties();
+		if (MonitorConstant.DEBUG) {
+			props.put("mail.smtp.host", "smtp.gmail.com");
+			props.put("mail.smtp.socketFactory.port", "465");
+			props.put("mail.smtp.socketFactory.class",
+			"javax.net.ssl.SSLSocketFactory");
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.port", "465");			
+		}
+		
 		Session session = Session.getDefaultInstance(props, null);
 		int problem = 0;
 		Message msg = new MimeMessage(session);
@@ -85,7 +94,14 @@ public class MailUtil {
 			
 			msg.setSubject(subject);
 			msg.setText(body);
-			Transport.send(msg);
+			if (MonitorConstant.DEBUG) {
+				Transport transport = session.getTransport("smtp");
+				transport.connect("smtp.gmail.com", MonitorConstant.SITES_USERNAME, MonitorConstant.SITES_PASSWORD);
+				transport.sendMessage(msg, msg.getAllRecipients());
+				transport.close();
+			} else {
+				Transport.send(msg);
+			}
 			sb.append("DONE.");
 		} catch (Exception ex) {
 			problem++;
