@@ -50,9 +50,9 @@ public class InviteUser extends AncestorEntryPoint{
 	static Button btt_reset;
 	static String DefaulValueOfListTemp = "None Group Mapping";
 	static private String defaultFilter = "ALL";
-	static private String filter_inActive = "inactive";
-	static private String filter_pending = "pending";
-	static private String filter_Active = "active";
+	static private String filter_requesting = InvitedUser.STATUS_REQUESTING;
+	static private String filter_pending = InvitedUser.STATUS_PENDING;
+	static private String filter_Active = InvitedUser.STATUS_ACTIVE;
 	static FlexTable tableManagement;
 	static FlexTable tableInterface;
 	static Table table_list_3rdParty;
@@ -76,7 +76,7 @@ public class InviteUser extends AncestorEntryPoint{
  	 		filter_box.setStyleName("filter_box");
  	 		filter_box.addItem(defaultFilter);
  	 		filter_box.addItem(filter_Active);
- 	 		filter_box.addItem(filter_inActive);
+ 	 		filter_box.addItem(filter_requesting);
  	 		filter_box.addItem(filter_pending);
  	 		tableManagement.setWidget(0, 0, new HTML("<a class=\"btnInviteUser\" title=\"INVITE USER\" onClick=\"javascript:showDialogInvited()\" />"));
  	 		tableManagement.setWidget(0, 1, filter_box);
@@ -241,19 +241,19 @@ public class InviteUser extends AncestorEntryPoint{
  				InvitedUser u = listTemp.get(i);
  				dataListUser.setValue(i, 0,"<div style=\"min-width:450px\">"+ u.getEmail()+ "</div>");
  				if(u.getStatus().equalsIgnoreCase(filter_Active)){
- 					String status = "<a style=\"margin-left:auto;margin-right:auto;\" class=\"stt_userActive\" title=\"ACTIVE\"/>";
+ 					String status = "<a style=\"margin-left:auto;margin-right:auto;\" class=\"stt_userActive\" title=\""+filter_Active+"\"/>";
  					dataListUser.setValue(i, 1, "<div style=\"min-width:450px\">"+status+"</div>");
  					String html = HTMLControl.getButtonForActiveUser(u);
  					dataListUser.setValue(i, 2,"<div style=\"min-width:220px\">" +html  + "</div>");
  				}
- 				if(u.getStatus().equalsIgnoreCase(filter_inActive)){
- 					String status = "<a style=\"margin-left:auto;margin-right:auto;\" class=\"stt_inactive\" title=\"INACTIVE\"/>";
+ 				if(u.getStatus().equalsIgnoreCase(filter_requesting)){
+ 					String status = "<a style=\"margin-left:auto;margin-right:auto;\" class=\"stt_inactive\" title=\""+filter_requesting+"\"/>";
  					dataListUser.setValue(i, 1, "<div style=\"min-width:450px\">"+status+"</div>");
  					String html = HTMLControl.getButtonForInActiveUser(u);
  					dataListUser.setValue(i, 2,"<div style=\"min-width:220px\">" + html + "</div>");
  				}
  				if(u.getStatus().equalsIgnoreCase(filter_pending)){
- 					String status = "<a style=\"margin-left:auto;margin-right:auto;\" class=\"stt_pending\" title=\"PENDING\"/>";
+ 					String status = "<a style=\"margin-left:auto;margin-right:auto;\" class=\"stt_pending\" title=\""+filter_pending+"\"/>";
  					dataListUser.setValue(i, 1, "<div style=\"min-width:450px\">"+status+"</div>");
  					String html = HTMLControl.getButtonForPendingUser(u);
  					dataListUser.setValue(i, 2,"<div style=\"min-width:220px\">" + html + "</div>");
@@ -467,7 +467,7 @@ public class InviteUser extends AncestorEntryPoint{
  			dialogFunction.center();
  			
  		}
- 		if(filter.equalsIgnoreCase(filter_inActive)){
+ 		if(filter.equalsIgnoreCase(filter_requesting)){
  			//if filter inActive,so they will action to active this user
  			dialogFunction = new DialogBox();
  	 		dialogFunction.setAnimationEnabled(true);
