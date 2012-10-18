@@ -669,11 +669,10 @@ public class HTMLControl {
 	public static String getButtonForActiveUser(InvitedUser u){
 		String id = u.getId();
 		String typeDelete = "delete";
-		String typeInactive = "inactive";
 		String temp;
 		String buttonDelete = "<a class=\"btnDeleteUser\" title=\"delete\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeDelete +"','"+ u.getStatus() +"');\" />";
-		String buttonInactive = "<a class=\"btnInActive\" title=\"inactive\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeInactive +"','" + u.getStatus() + "');\" />";
-		temp = buttonDelete + buttonInactive;
+		//String buttonInactive = "<a class=\"btnInActive\" title=\"inactive\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeInactive +"','" + u.getStatus() + "');\" />";
+		temp = buttonDelete /*+ buttonInactive*/;
 		
 		return temp;
 	}
