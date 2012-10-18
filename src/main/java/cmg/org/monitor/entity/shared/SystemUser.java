@@ -22,6 +22,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
 public class SystemUser implements IsSerializable {
+	public static final String THIRD_PARTY_USER = "Third Party";
+	
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	@Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
@@ -54,6 +56,11 @@ public class SystemUser implements IsSerializable {
 	@Persistent
 	private boolean isDomainAdmin;
 
+	public SystemUser() {
+		isSuspended = false;
+		isDomainAdmin = false;
+	}
+	
 	public void swap(SystemUser in) {
 		this.username = in.username;
 		this.domain = in.domain;

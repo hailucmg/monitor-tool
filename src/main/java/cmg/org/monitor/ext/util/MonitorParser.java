@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) CMG Ltd All rights reserved.
+ *
+ * This software is the confidential and proprietary information of CMG
+ * ("Confidential Information"). You shall not disclose such Confidential
+ * Information and shall use it only in accordance with the terms of the
+ * license agreement you entered into with CMG.
+ */
+
 package cmg.org.monitor.ext.util;
 
 import java.io.IOException;
@@ -43,6 +52,10 @@ import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.util.shared.Constant;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MonitorParser.
+ */
 public class MonitorParser {
 
 	/** The element component . */
@@ -54,6 +67,7 @@ public class MonitorParser {
 	/** The element component . */
 	public static String ERROR = "error";
 
+	/** The none. */
 	public static String NONE = "none";
 
 	/** The element component . */
@@ -89,14 +103,28 @@ public class MonitorParser {
 	/** The array of component . */
 	public static String[] COMPONENT_ITEMS = { LDAP_ITEM, DATABASE_ITEM };
 
+	/** The Constant logger. */
 	private static final Logger logger = Logger.getLogger(MonitorParser.class
 			.getCanonicalName());
 
+	/**
+	 * Check content type.
+	 *
+	 * @param content the content
+	 * @return true, if successful
+	 */
 	private static boolean checkContentType(String content) {
 		return (content.toLowerCase().contains("<cmg>") && content
 				.toLowerCase().contains("</cmg>"));
 	}
 
+	/**
+	 * Parses the data.
+	 *
+	 * @param content the content
+	 * @param sys the sys
+	 * @return the system monitor
+	 */
 	public static SystemMonitor parseData(String content, SystemMonitor sys) {
 		// BEGIN LOG
 		long start = System.currentTimeMillis();
@@ -329,9 +357,8 @@ public class MonitorParser {
 	/**
 	 * Get every element of database and ldap tag 1. Parse the xml content. 2.
 	 * Parse by database tag 3. Parse it by ldap tag
-	 * 
-	 * @param xmlContent
-	 *            the content of xml.
+	 *
+	 * @param doc the doc
 	 * @return components list of object
 	 */
 	private static ArrayList<ServiceMonitor> getServiceComponent(Document doc) {
@@ -398,6 +425,12 @@ public class MonitorParser {
 		return list;
 	}
 
+	/**
+	 * Gets the service component.
+	 *
+	 * @param webContent the web content
+	 * @return the service component
+	 */
 	private static ArrayList<ServiceMonitor> getServiceComponent(
 			String webContent) {
 		logger.log(Level.INFO, "START Service Information");
@@ -466,8 +499,10 @@ public class MonitorParser {
 	}
 
 	/**
-	 * @param xmlContent
-	 * @return
+	 * Gets the jVM component.
+	 *
+	 * @param doc the doc
+	 * @return the jVM component
 	 */
 	private static JvmMonitor getJVMComponent(Document doc) {
 		logger.log(Level.INFO, "START Jvm Information");
@@ -545,6 +580,12 @@ public class MonitorParser {
 		return jvm;
 	}
 
+	/**
+	 * Gets the jVM component.
+	 *
+	 * @param webContent the web content
+	 * @return the jVM component
+	 */
 	private static JvmMonitor getJVMComponent(String webContent) {
 		logger.log(Level.INFO, "START Jvm Information");
 		JvmMonitor jvm = null;
@@ -621,8 +662,10 @@ public class MonitorParser {
 	}
 
 	/**
-	 * @param xmlContent
-	 * @return
+	 * Gets the original cpu.
+	 *
+	 * @param doc the doc
+	 * @return the original cpu
 	 */
 	private static CpuMonitor getOriginalCPU(Document doc) {
 		logger.log(Level.INFO, "START CPU Information");
@@ -691,6 +734,12 @@ public class MonitorParser {
 		return cpu;
 	}
 
+	/**
+	 * Gets the original cpu.
+	 *
+	 * @param webContent the web content
+	 * @return the original cpu
+	 */
 	private static CpuMonitor getOriginalCPU(String webContent) {
 		logger.log(Level.INFO, "START CPU Information");
 		CpuMonitor cpu = null;
@@ -766,8 +815,10 @@ public class MonitorParser {
 	}
 
 	/**
-	 * @param xmlContent
-	 * @return
+	 * Gets the file system.
+	 *
+	 * @param doc the doc
+	 * @return the file system
 	 */
 	private static ArrayList<FileSystemMonitor> getFileSystem(Document doc) {
 		logger.log(Level.INFO, "START File System Information");
@@ -845,6 +896,12 @@ public class MonitorParser {
 		return list;
 	}
 
+	/**
+	 * Gets the file system.
+	 *
+	 * @param webContent the web content
+	 * @return the file system
+	 */
 	private static ArrayList<FileSystemMonitor> getFileSystem(String webContent) {
 		logger.log(Level.INFO, "START File System Information");
 		ArrayList<FileSystemMonitor> list = null;
@@ -915,8 +972,10 @@ public class MonitorParser {
 	}
 
 	/**
-	 * @param xmlContent
-	 * @return
+	 * Gets the memories.
+	 *
+	 * @param doc the doc
+	 * @return the memories
 	 */
 	private static ArrayList<MemoryMonitor> getMemories(Document doc) {
 		logger.log(Level.INFO, "START Memory Information");
@@ -978,6 +1037,12 @@ public class MonitorParser {
 		return list;
 	}
 
+	/**
+	 * Gets the memories.
+	 *
+	 * @param webContent the web content
+	 * @return the memories
+	 */
 	private static ArrayList<MemoryMonitor> getMemories(String webContent) {
 		logger.log(Level.INFO, "START Memory Information");
 		ArrayList<MemoryMonitor> list = null;
@@ -1074,6 +1139,12 @@ public class MonitorParser {
 		return list;
 	}
 
+	/**
+	 * Gets the character data from element.
+	 *
+	 * @param e the e
+	 * @return the character data from element
+	 */
 	private static String getCharacterDataFromElement(Element e) {
 		Node child = e.getFirstChild();
 		if (child instanceof CharacterData) {
