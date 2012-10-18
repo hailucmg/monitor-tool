@@ -249,7 +249,7 @@ public class InviteUser extends AncestorEntryPoint{
  				if(u.getStatus().equalsIgnoreCase(filter_requesting)){
  					String status = "<a style=\"margin-left:auto;margin-right:auto;\" class=\"stt_inactive\" title=\""+filter_requesting+"\"/>";
  					dataListUser.setValue(i, 1, "<div style=\"min-width:450px\">"+status+"</div>");
- 					String html = HTMLControl.getButtonForInActiveUser(u);
+ 					String html = HTMLControl.getButtonForRequestingUser(u);
  					dataListUser.setValue(i, 2,"<div style=\"min-width:220px\">" + html + "</div>");
  				}
  				if(u.getStatus().equalsIgnoreCase(filter_pending)){
@@ -325,8 +325,9 @@ public class InviteUser extends AncestorEntryPoint{
  		
  		//if action type active user we must set group for this user
  		if(action_type.equalsIgnoreCase("active")){
+ 			
  			for(int i = 0 ; i < listTemp.getItemCount();i++){
-				if(listTemp.isItemSelected(i) && listTemp.getValue(i).equalsIgnoreCase(DefaulValueOfListTemp)){
+				if(listTemp.isItemSelected(i) && !listTemp.getValue(i).equalsIgnoreCase(DefaulValueOfListTemp)){
 					for(SystemGroup s : listGroup){
 						if(s.getName().toString().equals(listTemp.getValue(i))){
 							 u.addGroup(s.getId());
@@ -499,11 +500,11 @@ public class InviteUser extends AncestorEntryPoint{
  			popupContent.setWidth("400px");
  			listTemp = new ListBox();
  			listTemp.setMultipleSelect(true);
- 			listTemp.setWidth("150px");
+ 			listTemp.setWidth("300px");
  			listTemp.setHeight("80px");
  			listTemp.addItem(DefaulValueOfListTemp);
  			listAll = new ListBox();
- 			listAll.setWidth("100px");
+ 			listAll.setWidth("150px");
  			for(SystemGroup s : listGroup){
  				listAll.addItem(s.getName());
  			}
@@ -513,13 +514,13 @@ public class InviteUser extends AncestorEntryPoint{
  			btt_UnMappingGroup.addClickHandler(new UnMappingGroup());
  			panelValidateGroups = new AbsolutePanel();
  			FlexTable flexHTML = new FlexTable();
- 			flexHTML.setWidget(0, 0, popupContent);
  			flexHTML.getCellFormatter().setWidth(1, 0, "100px");
  			flexHTML.getCellFormatter().setWidth(1, 1, "100px");
  			flexHTML.getCellFormatter().setWidth(1, 2, "100px");
  			flexHTML.getCellFormatter().setWidth(1, 3, "200px");
  			flexHTML.getCellFormatter().setWidth(1, 4, "400px");
  			flexHTML.getFlexCellFormatter().setColSpan(0, 0, 5);
+ 			flexHTML.setWidget(0, 0, popupContent);
  			flexHTML.setWidget(1, 0, listAll);
  			flexHTML.setWidget(1, 1, btt_MappingGroup);
  			flexHTML.setWidget(1, 2, btt_UnMappingGroup);
@@ -542,9 +543,15 @@ public class InviteUser extends AncestorEntryPoint{
  				    @Override
  				    public void onClick(ClickEvent event) {
  				    	//send to server
- 				    	setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
- 						setVisibleLoadingImage(true);
- 				    	popupAction(filterStatic,ActionStatic, idUser);
+ 				    	if(listTemp.getValue(0).equalsIgnoreCase(DefaulValueOfListTemp)){
+ 				    		listTemp.setFocus(true);
+ 				    		return;
+ 				    	}else{
+ 				    		setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
+ 	 						setVisibleLoadingImage(true);
+ 	 				    	popupAction(filterStatic,ActionStatic, idUser);
+ 				    	}
+ 				    	
  				    }
  			});
  			closeButton.addClickHandler(new ClickHandler() {
@@ -742,7 +749,6 @@ public class InviteUser extends AncestorEntryPoint{
 					filterStatic = filter_pending;
 					sendData(data, groupID);
 				}else{
-					
 					return;
 				}
 				
@@ -758,6 +764,8 @@ public class InviteUser extends AncestorEntryPoint{
 			
 			@Override
 			public void onClick(ClickEvent event) {
+				panelValidateEmail.clear();
+				panelValidateEmail.setVisible(false);
 				txt_email.setText("");
 				listGroupInvi.setSelectedIndex(0);
 			}
