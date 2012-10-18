@@ -25,6 +25,8 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
+import com.summatech.gwt.client.HourMinutePicker;
+import com.summatech.gwt.client.HourMinutePicker.PickerFormat;
 
 public class AddnewSystem extends AncestorEntryPoint {
 	ListBox listGroup;
@@ -70,12 +72,17 @@ public class AddnewSystem extends AncestorEntryPoint {
 	AbsolutePanel panelTextEmail;
 	MonitorContainer container;
 	DisclosurePanel advancedDisclosure;
-
+	HourMinutePicker startTime;
+	HourMinutePicker endTime;
+	Label lblExclusionTime;
+	Label lblStartTime;
+	Label lblEndTime;
+	Grid tableExTime;
 	@Override
 	protected void init() {
 		if (currentPage == HTMLControl.PAGE_ADD_SYSTEM) {
 			initUi();
-			initFlextTable();
+			initFlextTable();			
 		}
 	}
 
@@ -221,6 +228,10 @@ public class AddnewSystem extends AncestorEntryPoint {
 	}
 	
 	void initUi() {
+		lblStartTime = new Label("Start");
+		lblEndTime = new Label("End");
+		tableExTime = new Grid(1, 4);
+		tableExTime.setCellPadding(2);
 		tableNotify = new Grid(5, 2);
 		tableNotify.setCellSpacing(3);
 		
@@ -255,9 +266,22 @@ public class AddnewSystem extends AncestorEntryPoint {
 		cbNotifyJVM.setValue(true);
 		lblNotifyJVM = new Label(MonitorConstant.Notify_JVM);
 		
+		lblExclusionTime = new Label(MonitorConstant.EXCLUSION_TIME);
 		
+		startTime = new HourMinutePicker(PickerFormat._24_HOUR);
 		
+		startTime.setTitle("Start");
+		startTime.setSize("90","280");
+		startTime.setTime("24h", 0, 0);
 		
+		endTime = new HourMinutePicker(PickerFormat._24_HOUR);
+		endTime.setTitle("End");
+		endTime.setSize("4em","2em");
+		endTime.setTime("24h", 0, 0);
+		tableExTime.setWidget(0, 0, lblStartTime);
+		tableExTime.setWidget(0, 1, startTime);
+		tableExTime.setWidget(0, 2, lblEndTime);
+		tableExTime.setWidget(0, 3, endTime);
 		
 		tableNotify.setWidget(0, 0, lblNotifyCpu);
 		tableNotify.setWidget(0, 1, cbNotifyCpu);
@@ -285,8 +309,8 @@ public class AddnewSystem extends AncestorEntryPoint {
 		tableForm.getFlexCellFormatter().setWidth(5, 0, "100px");
 		tableForm.getFlexCellFormatter().setWidth(6, 0, "100px");
 		tableForm.getFlexCellFormatter().setWidth(7, 0, "100px");
-		tableForm.getFlexCellFormatter().setWidth(8, 0, "298px");
-		tableForm.getFlexCellFormatter().setWidth(9, 0, "100px");
+		tableForm.getFlexCellFormatter().setWidth(8, 0, "100px");
+		tableForm.getFlexCellFormatter().setWidth(9, 0, "298px");
 		tableForm.getFlexCellFormatter().setWidth(10, 0, "100px");
 		tableForm.getFlexCellFormatter().setWidth(11, 0, "100px");
 		
@@ -415,24 +439,26 @@ public class AddnewSystem extends AncestorEntryPoint {
 		tableForm.setWidget(2, 0, labelip);
 		tableForm.setWidget(2, 1, txtIP);
 		tableForm.setWidget(2, 2, panelValidateIP);
-		tableForm.setWidget(3, 0, labelactive);
-		tableForm.setWidget(3, 1, listActive);
-		tableForm.setWidget(4, 0, labelprotocol);
-		tableForm.setWidget(4, 1, listProtocol);
-		tableForm.setWidget(5, 0, panelLabelEmail);
-		tableForm.setWidget(5, 1, panelTextEmail);
-		tableForm.setWidget(5, 2, panelValidateEmail);
-		tableForm.setWidget(6, 0, labelmailgroup);
-		tableForm.setWidget(6, 1, listGroup);
-		tableForm.setWidget(7, 0, labelremoteurl);
-		tableForm.setWidget(7, 1, txtRemote);
-		tableForm.setWidget(7, 2, panelValidateRemoteURL);
-		tableForm.getFlexCellFormatter().setColSpan(8, 0, 2);
-		tableForm.setWidget(8, 0, advancedDisclosure);
+		tableForm.setWidget(3, 0, lblExclusionTime);
+		tableForm.setWidget(3, 1, tableExTime);	
+		tableForm.setWidget(4, 0, labelactive);
+		tableForm.setWidget(4, 1, listActive);
+		tableForm.setWidget(5, 0, labelprotocol);
+		tableForm.setWidget(5, 1, listProtocol);
+		tableForm.setWidget(6, 0, panelLabelEmail);
+		tableForm.setWidget(6, 1, panelTextEmail);
+		tableForm.setWidget(6, 2, panelValidateEmail);
+		tableForm.setWidget(7, 0, labelmailgroup);
+		tableForm.setWidget(7, 1, listGroup);
+		tableForm.setWidget(8, 0, labelremoteurl);
+		tableForm.setWidget(8, 1, txtRemote);
+		tableForm.setWidget(8, 2, panelValidateRemoteURL);	
 		tableForm.getFlexCellFormatter().setColSpan(9, 0, 2);
-		tableForm.setWidget(9, 0, panelAdding);
-		tableForm.getFlexCellFormatter().setColSpan(10, 0, 3);
-		tableForm.setWidget(10, 0, panelButton);
+		tableForm.setWidget(9, 0, advancedDisclosure);
+		tableForm.getFlexCellFormatter().setColSpan(10, 0, 2);
+		tableForm.setWidget(10, 0, panelAdding);
+		tableForm.getFlexCellFormatter().setColSpan(11, 0, 3);
+		tableForm.setWidget(11, 0, panelButton);
 	}
 
 	protected void initFlextTable() {
@@ -666,6 +692,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 			}
 		}
 
+		
 		/**
 		 * @param system
 		 * @param url
@@ -767,5 +794,14 @@ public class AddnewSystem extends AncestorEntryPoint {
 
 		}
 
+	}
+
+	/**
+	 * (non-Javadoc)
+	 * @see cmg.org.monitor.module.client.AncestorEntryPoint#initDialog() 
+	 */
+	@Override
+	protected void initDialog() {
+		
 	}
 }

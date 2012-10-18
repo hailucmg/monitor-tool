@@ -5,15 +5,12 @@ import cmg.org.monitor.util.shared.Constant;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
-
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.DialogBox.Caption;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
@@ -51,12 +48,10 @@ public class DashBoard extends AncestorEntryPoint {
 	static TextArea txtDesciption;
 	protected void init() {
 		DashBoard.exportStaticMethod();
-		DashBoard.exportRequest();
 		if (currentPage == HTMLControl.PAGE_DASHBOARD) {
 			tableListSystem = new Table();
 			createOptionsTableListSystem();
 			addWidget(HTMLControl.ID_BODY_CONTENT, tableListSystem);
-			initDialogBox();
 			timerReload = new Timer() {
 				@Override
 				public void run() {
@@ -70,62 +65,7 @@ public class DashBoard extends AncestorEntryPoint {
 	}
 
 	
-	public static void showRequestForm(){
-		dialogRequest = new DialogBox();
-		dialogRequest.setAnimationEnabled(true);
-		Button close = new Button();
-		close.setStyleName("");
-		close.getElement().setId("closeButton");
-		close.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				dialogRequest.hide();
-			}
-		});
-		FlexTable tableContainer = new FlexTable();
-		tableContainer.setCellPadding(3);
-		tableContainer.setCellSpacing(3);
-		tableContainer.getFlexCellFormatter().setWidth(0, 0, "100px");
-		tableContainer.getFlexCellFormatter().setWidth(1, 0, "100px");
-		tableContainer.getFlexCellFormatter().setWidth(2, 0, "100px");
-		tableContainer.getFlexCellFormatter().setWidth(3, 0, "100px");
-		tableContainer.getFlexCellFormatter().setWidth(4, 0, "100px");
-		Label lblFname = new Label("First Name :");
-		Label lblLname = new Label("Last Name :");
-		Label lblDesc = new Label("Description");
-		 txtFname = new TextBox();
-		 txtLname = new TextBox();
-		 txtDesciption = new TextArea();
-		tableContainer.setWidget(0, 0, lblFname);
-		tableContainer.setWidget(0, 1, txtFname);
-		tableContainer.setWidget(1, 0, lblLname);
-		tableContainer.setWidget(1, 1, txtLname);
-		tableContainer.setWidget(2, 0, lblDesc);
-		tableContainer.setWidget(2, 1, txtDesciption);
-		
-		FlexTable flexButton = new FlexTable();
-		final Button resetButton = new Button("Reset");
-		resetButton.setStyleName("margin:6px;");
-		resetButton.addStyleName("form-button");
-		resetButton.addClickHandler(new resetRequestHandler());
-		final Button okButton = new Button("OK");
-		okButton.setStyleName("margin:6px;");
-		okButton.addStyleName("form-button"); 
-		okButton.addClickHandler(new requestHandler());
-		flexButton.setCellPadding(5);
-		flexButton.setCellSpacing(5);
-		flexButton.setWidget(0, 0, okButton);
-		flexButton.setWidget(0, 1, resetButton);
-		flexButton.getCellFormatter().setHorizontalAlignment(0, 0, VerticalPanel.ALIGN_RIGHT);
-		flexButton.getCellFormatter().setHorizontalAlignment(0, 1, VerticalPanel.ALIGN_RIGHT);
-		VerticalPanel dialogVPanel = new VerticalPanel();
-		dialogVPanel.add(close);
-		dialogVPanel.add(tableContainer);
-		dialogVPanel.add(flexButton);
-		dialogVPanel.setCellHorizontalAlignment(close, VerticalPanel.ALIGN_RIGHT);
-		dialogVPanel.setCellHorizontalAlignment(flexButton, VerticalPanel.ALIGN_RIGHT);
-		dialogRequest.setWidget(dialogVPanel);
-		dialogRequest.getCaption().asWidget().setStyleName("myCaption");
+	public static void showRequestForm(){		
 		dialogRequest.center();
 	}
 	static class requestHandler implements ClickHandler{
@@ -191,15 +131,68 @@ public class DashBoard extends AncestorEntryPoint {
 			// do nothing
 		}
 	}
-
-	
-	
-	
-	
-	
-	void initDialogBox() {
-		dialogBox.setAnimationEnabled(true);
+	@Override
+	protected void initDialog() {
+		dialogRequest = new DialogBox();
+		dialogRequest.setAnimationEnabled(true);
 		Button close = new Button();
+		close.setStyleName("");
+		close.getElement().setId("closeButton");
+		close.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				
+				dialogRequest.hide();
+			}
+		});
+		FlexTable tableContainer = new FlexTable();
+		tableContainer.setCellPadding(3);
+		tableContainer.setCellSpacing(3);
+		tableContainer.getFlexCellFormatter().setWidth(0, 0, "100px");
+		tableContainer.getFlexCellFormatter().setWidth(1, 0, "100px");
+		tableContainer.getFlexCellFormatter().setWidth(2, 0, "100px");
+		tableContainer.getFlexCellFormatter().setWidth(3, 0, "100px");
+		tableContainer.getFlexCellFormatter().setWidth(4, 0, "100px");
+		Label lblFname = new Label("First Name :");
+		Label lblLname = new Label("Last Name :");
+		Label lblDesc = new Label("Description");
+		 txtFname = new TextBox();
+		 txtLname = new TextBox();
+		 txtDesciption = new TextArea();
+		tableContainer.setWidget(0, 0, lblFname);
+		tableContainer.setWidget(0, 1, txtFname);
+		tableContainer.setWidget(1, 0, lblLname);
+		tableContainer.setWidget(1, 1, txtLname);
+		tableContainer.setWidget(2, 0, lblDesc);
+		tableContainer.setWidget(2, 1, txtDesciption);
+		
+		FlexTable flexButton = new FlexTable();
+		final Button resetButton = new Button("Reset");
+		resetButton.setStyleName("margin:6px;");
+		resetButton.addStyleName("form-button");
+		resetButton.addClickHandler(new resetRequestHandler());
+		final Button okButton = new Button("OK");
+		okButton.setStyleName("margin:6px;");
+		okButton.addStyleName("form-button"); 
+		okButton.addClickHandler(new requestHandler());
+		flexButton.setCellPadding(5);
+		flexButton.setCellSpacing(5);
+		flexButton.setWidget(0, 0, okButton);
+		flexButton.setWidget(0, 1, resetButton);
+		flexButton.getCellFormatter().setHorizontalAlignment(0, 0, VerticalPanel.ALIGN_RIGHT);
+		flexButton.getCellFormatter().setHorizontalAlignment(0, 1, VerticalPanel.ALIGN_RIGHT);
+		VerticalPanel dialogVPanel = new VerticalPanel();
+		dialogVPanel.add(close);
+		dialogVPanel.add(tableContainer);
+		dialogVPanel.add(flexButton);
+		dialogVPanel.setCellHorizontalAlignment(close, VerticalPanel.ALIGN_RIGHT);
+		dialogVPanel.setCellHorizontalAlignment(flexButton, VerticalPanel.ALIGN_RIGHT);
+		dialogRequest.setWidget(dialogVPanel);
+		dialogRequest.getCaption().asWidget().setStyleName("myCaption");
+		
+		//
+		dialogBox.setAnimationEnabled(true);
+		close = new Button();
 		close.setStyleName("");
 		close.getElement().setId("closeButton");
 		close.addClickHandler(new ClickHandler() {
@@ -213,7 +206,7 @@ public class DashBoard extends AncestorEntryPoint {
 		flexTable = new FlexTable();
 		flexTable.setWidget(0, 0, popupContent);
 		flexTable.setStyleName("table-popup");
-		FlexTable flexButton = new FlexTable();
+		flexButton = new FlexTable();
 		buttonDetails = new HTML();
 		buttonStatistic = new HTML();
 		flexButton.setCellPadding(5);
@@ -222,7 +215,7 @@ public class DashBoard extends AncestorEntryPoint {
 		flexButton.setWidget(0, 1, buttonStatistic);
 		flexButton.getCellFormatter().setHorizontalAlignment(0, 0, VerticalPanel.ALIGN_RIGHT);
 		flexButton.getCellFormatter().setHorizontalAlignment(0, 1, VerticalPanel.ALIGN_RIGHT);
-		VerticalPanel dialogVPanel = new VerticalPanel();
+		dialogVPanel = new VerticalPanel();
 		dialogVPanel.add(close);
 		dialogVPanel.add(flexTable);
 		dialogVPanel.add(flexButton);

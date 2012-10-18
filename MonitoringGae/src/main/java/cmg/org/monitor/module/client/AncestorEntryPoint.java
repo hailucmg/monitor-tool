@@ -62,6 +62,8 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 
 	@Override
 	public void onModuleLoad() {
+		initDialog();
+		DashBoard.exportRequest();
 		dialogBox = new DialogBox();
 		dialogFix = new DialogBox();
 		dialogFix.setStyleName("");
@@ -281,13 +283,7 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 							} else {
 								setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
 								setVisibleLoadingImage(false);
-								showMessage(
-										"Hello "
-												+ result.getNickName()
-												+ ". You might not have permission to use Health Monitoring System. ",
-										result.getLogoutUrl(),
-										"Login with another account.",
-										HTMLControl.YELLOW_MESSAGE, true);
+								showPermissionWarningMessage(result.getNickName(), result.getLogoutUrl());								
 							}
 						} else {
 							showMessage(
@@ -318,6 +314,8 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 	}
 
 	protected abstract void init();
+	
+	protected abstract void initDialog();
 
 	protected static void showRedirectCountMessage(final String mes,
 			final String url, final String titleUrl, final int typeMessage) {
@@ -411,6 +409,19 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 		if (isVisible) {
 			setVisibleMessage(isVisible, type);
 		}
+		setOnload(false);
+	}
+	
+	protected static void showPermissionWarningMessage(String user, String logoutURL) {
+		clear(DOM.getElementById("content-" + HTMLControl.getColor(HTMLControl.YELLOW_MESSAGE)));
+		DOM.getElementById("content-" + HTMLControl.getColor(HTMLControl.YELLOW_MESSAGE))
+				.setInnerHTML("Hello "
+						+ user
+						+ ". You might not have permission to use Health Monitoring System. "			
+				
+								+ "  <a href=\"" + logoutURL + "\">Login with another account</a>" + "&nbsp;<span style=\"font-weight: normal;\">or</span>&nbsp;<a onclick=\"javascript:showRequestForm();return false;\">send request permission</a>");
+		
+		setVisibleMessage(true, HTMLControl.YELLOW_MESSAGE);		
 		setOnload(false);
 	}
 }

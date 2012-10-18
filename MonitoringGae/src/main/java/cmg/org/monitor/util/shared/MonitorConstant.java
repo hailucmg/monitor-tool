@@ -6,6 +6,7 @@ public final class MonitorConstant {
 	
 	public static final int MAX_ROW_COUNT_CHANGELOG = 10;
 	
+	public static final String EXCLUSION_TIME = "Exclusion time";
 	public static final String Notify_Cpu = "When system uses more than 90% CPU :";
 	
 	public static final String Notify_JVM = "When system uses more than 90% JVM :";
