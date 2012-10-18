@@ -650,4 +650,14 @@ public class GoogleManagement extends AncestorEntryPoint {
 		dialogBox.getCaption().asWidget().setStyleName("myCaption");
 		dialogBox.center();
 	}
+
+	/**
+	 * (non-Javadoc)
+	 * @see cmg.org.monitor.module.client.AncestorEntryPoint#initDialog() 
+	 */
+	@Override
+	protected void initDialog() {
+		// TODO Auto-generated method stub
+		
+	}
 }

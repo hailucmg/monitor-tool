@@ -253,5 +253,15 @@ public class GroupManagement extends AncestorEntryPoint{
 			}
 		});
 	}
+
+	/**
+	 * (non-Javadoc)
+	 * @see cmg.org.monitor.module.client.AncestorEntryPoint#initDialog() 
+	 */
+	@Override
+	protected void initDialog() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

@@ -5,6 +5,7 @@
 	<!-- START Inherits -->
 	<inherits name="com.google.gwt.user.User" />
 	<inherits name='com.google.gwt.visualization.Visualization' />
+	<inherits name="com.summatech.gwt.GwtTimepicker" />
 	<inherits name='cmg.org.monitor.ext.model.MonitorDto' />
 	<inherits name='cmg.org.monitor.entity.Entity' />
 	<inherits name='cmg.org.monitor.util.MonitorUtil' />

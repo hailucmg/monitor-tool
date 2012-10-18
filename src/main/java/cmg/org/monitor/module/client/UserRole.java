@@ -4,15 +4,12 @@ import java.util.List;
 
 import cmg.org.monitor.entity.shared.SystemRole;
 import cmg.org.monitor.entity.shared.SystemUser;
-import cmg.org.monitor.ext.model.shared.UserMonitor;
 import cmg.org.monitor.util.shared.HTMLControl;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.visualization.client.AbstractDataTable;
-import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
+import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.visualizations.Table;
 import com.google.gwt.visualization.client.visualizations.Table.Options;
 
@@ -139,6 +136,16 @@ public class UserRole extends AncestorEntryPoint {
 
 	private void drawTable(List<SystemUser> result) {
 		myTable.draw(createData(result), option());
+	}
+
+	/**
+	 * (non-Javadoc)
+	 * @see cmg.org.monitor.module.client.AncestorEntryPoint#initDialog() 
+	 */
+	@Override
+	protected void initDialog() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

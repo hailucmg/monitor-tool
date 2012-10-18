@@ -163,15 +163,17 @@ public class UserManagement extends AncestorEntryPoint {
 		listUser = sortBynameSystemUser(listUser);
 		DataTable data = DataTable.create();
 		int indexGroup = listGroup.size();
-		data.addColumn(ColumnType.STRING, "domain");
-		data.addColumn(ColumnType.STRING, "user\\group");
+		data.addColumn(ColumnType.STRING, "Domain");
+		data.addColumn(ColumnType.STRING, "Username");
+		data.addColumn(ColumnType.STRING, "Fullname");
 		for(int i = 0; i < listGroup.size();i++){
 			data.addColumn(ColumnType.STRING, listGroup.get(i).getName());
 		}
 		data.addRows(listUser.size());
 		for(int j = 0 ; j < listUser.size() ; j++){
-		    	data.setValue(j, 0,  "<div style=\"min-width:200px\">" + listUser.get(j).getDomain() + "<div>");
-			data.setValue(j, 1,  "<div style=\"min-width:200px\">" + listUser.get(j).getEmail()+" ("+listUser.get(j).getFirstName()  +" " +listUser.get(j).getLastName()+")" + "<div>");
+		    	data.setValue(j, 0,  "<div style=\"min-width:80px\">" + listUser.get(j).getDomain() + "<div>");
+			data.setValue(j, 1,  "<div style=\"min-width:80px\">" + listUser.get(j).getUsername() + "<div>");
+			data.setValue(j, 2,  "<div style=\"min-width:80px\">" + listUser.get(j).getFullName() + "<div>");
 			for(int k = 0; k < indexGroup ; k++){
 				List<String> listGroupUSer = listUser.get(j).getGroupIDs();
 				boolean checkInGroup = false;
@@ -183,10 +185,10 @@ public class UserManagement extends AncestorEntryPoint {
 				
 				if(checkInGroup){
 					String id =listUser.get(j).getId()+ "-" + listGroup.get(k).getId();	
-					data.setValue(j, k+2, "<input type=\"checkbox\" title=\""+listUser.get(j).getEmail()+'-' + listGroup.get(k).getName() + "\"  onClick=\"javascript:RecipeData('"+listUser.get(j).getEmail() +"','" + listGroup.get(k).getId() + "','" + id +"');\"      id=\""+id+"\"  class=\"checkbox-size\" style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;' ischeck=\"true\"  checked=\"checked\"> ");
+					data.setValue(j, k+3, "<input type=\"checkbox\" title=\""+listUser.get(j).getEmail()+'-' + listGroup.get(k).getName() + "\"  onClick=\"javascript:RecipeData('"+listUser.get(j).getEmail() +"','" + listGroup.get(k).getId() + "','" + id +"');\"      id=\""+id+"\"  class=\"checkbox-size\" style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;' ischeck=\"true\"  checked=\"checked\"> ");
 				}else{
 					String id =listUser.get(j).getId()+"-"+listGroup.get(k).getId();	
-					data.setValue(j, k+2, "<input type=\"checkbox\" title=\""+listUser.get(j).getEmail()+ '-' + listGroup.get(k).getName() +  "\"  onClick=\"javascript:RecipeData('"+listUser.get(j).getEmail() +"','" + listGroup.get(k).getId() + "','" + id +"');\" id=\""+id+"\"  class=\"checkbox-size\" style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;' ischeck =\"false\">");
+					data.setValue(j, k+3, "<input type=\"checkbox\" title=\""+listUser.get(j).getEmail()+ '-' + listGroup.get(k).getName() +  "\"  onClick=\"javascript:RecipeData('"+listUser.get(j).getEmail() +"','" + listGroup.get(k).getId() + "','" + id +"');\" id=\""+id+"\"  class=\"checkbox-size\" style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;' ischeck =\"false\">");
 					
 				}
 				
@@ -286,6 +288,16 @@ public class UserManagement extends AncestorEntryPoint {
 				 showMessage("Server error. ","","", HTMLControl.RED_MESSAGE, true);
 			}
 		});
+	}
+
+	/**
+	 * (non-Javadoc)
+	 * @see cmg.org.monitor.module.client.AncestorEntryPoint#initDialog() 
+	 */
+	@Override
+	protected void initDialog() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
