@@ -30,8 +30,8 @@ import cmg.org.monitor.util.shared.MonitorConstant;
  * @Last changed: $LastChangedDate$
  */
 
-public class MailUtil {
-	private static final Logger logger = Logger.getLogger(MailUtil.class
+public class MailAsync extends Thread {
+	private static final Logger logger = Logger.getLogger(MailAsync.class
 			.getName());
 
 	
@@ -42,7 +42,20 @@ public class MailUtil {
 	public static String getInviteMailContent() {
 		return "";
 	}
+	private String[] recipients;
+	private String subject;
+	private String body;
+	public MailAsync(String[] recipients, String subject, String body) {
+		this.setRecipients(recipients);
+		this.setSubject(subject);
+		this.setBody(body);
+	}
 	
+	
+	@Override
+	public void run() {
+		send(recipients, subject, body);
+	}
 	/**
 	 * 
 	 * @param recipients
@@ -50,7 +63,7 @@ public class MailUtil {
 	 * @param body
 	 * @return the log
 	 */
-	public static String send(String[] recipients, String subject, String body) {		
+	public String send(String[] recipients, String subject, String body) {		
 		if (recipients == null || recipients.length == 0) {
 			return "No recipient found.";
 		}
@@ -79,10 +92,9 @@ public class MailUtil {
 		}
 		for (String rec : recipients) {
 			sb.append("\nAdd recipient " + rec + " ... ");
-			try {
-				
+			try {			
 				msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
-						rec));
+						rec));				
 				sb.append("DONE.");
 			} catch (Exception ex) {
 				problem++;
@@ -113,6 +125,52 @@ public class MailUtil {
 			sb.append("\n" + "Sendmail completed with " + problem
 				+ " problem"+(problem > 1 ? "s" : "")+". Time executed: " + total + " ms");
 		}
+		System.out.println(sb.toString());
 		return sb.toString();
+	}
+
+	/** 
+	 * @return the recipients 
+	 */
+	public String[] getRecipients() {
+		return recipients;
+	}
+
+	/** 
+	 * @param recipients the recipients to set 
+	 */
+	
+	public void setRecipients(String[] recipients) {
+		this.recipients = recipients;
+	}
+
+	/** 
+	 * @return the subject 
+	 */
+	public String getSubject() {
+		return subject;
+	}
+
+	/** 
+	 * @param subject the subject to set 
+	 */
+	
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+
+	/** 
+	 * @return the body 
+	 */
+	public String getBody() {
+		return body;
+	}
+
+	/** 
+	 * @param body the body to set 
+	 */
+	
+	public void setBody(String body) {
+		this.body = body;
 	}
 }
