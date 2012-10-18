@@ -12,9 +12,13 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DialogBox.Caption;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
@@ -40,9 +44,14 @@ public class DashBoard extends AncestorEntryPoint {
 	private SystemMonitor[] systems;
 
 	private FlexTable flexTable;
-
+	
+	static DialogBox dialogRequest;
+	static TextBox txtFname;
+	static TextBox txtLname;
+	static TextArea txtDesciption;
 	protected void init() {
 		DashBoard.exportStaticMethod();
+		DashBoard.exportRequest();
 		if (currentPage == HTMLControl.PAGE_DASHBOARD) {
 			tableListSystem = new Table();
 			createOptionsTableListSystem();
@@ -60,6 +69,103 @@ public class DashBoard extends AncestorEntryPoint {
 
 	}
 
+	
+	public static void showRequestForm(){
+		dialogRequest = new DialogBox();
+		dialogRequest.setAnimationEnabled(true);
+		Button close = new Button();
+		close.setStyleName("");
+		close.getElement().setId("closeButton");
+		close.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				dialogRequest.hide();
+			}
+		});
+		FlexTable tableContainer = new FlexTable();
+		tableContainer.setCellPadding(3);
+		tableContainer.setCellSpacing(3);
+		tableContainer.getFlexCellFormatter().setWidth(0, 0, "100px");
+		tableContainer.getFlexCellFormatter().setWidth(1, 0, "100px");
+		tableContainer.getFlexCellFormatter().setWidth(2, 0, "100px");
+		tableContainer.getFlexCellFormatter().setWidth(3, 0, "100px");
+		tableContainer.getFlexCellFormatter().setWidth(4, 0, "100px");
+		Label lblFname = new Label("First Name :");
+		Label lblLname = new Label("Last Name :");
+		Label lblDesc = new Label("Description");
+		 txtFname = new TextBox();
+		 txtLname = new TextBox();
+		 txtDesciption = new TextArea();
+		tableContainer.setWidget(0, 0, lblFname);
+		tableContainer.setWidget(0, 1, txtFname);
+		tableContainer.setWidget(1, 0, lblLname);
+		tableContainer.setWidget(1, 1, txtLname);
+		tableContainer.setWidget(2, 0, lblDesc);
+		tableContainer.setWidget(2, 1, txtDesciption);
+		
+		FlexTable flexButton = new FlexTable();
+		final Button resetButton = new Button("Reset");
+		resetButton.setStyleName("margin:6px;");
+		resetButton.addStyleName("form-button");
+		resetButton.addClickHandler(new resetRequestHandler());
+		final Button okButton = new Button("OK");
+		okButton.setStyleName("margin:6px;");
+		okButton.addStyleName("form-button"); 
+		okButton.addClickHandler(new requestHandler());
+		flexButton.setCellPadding(5);
+		flexButton.setCellSpacing(5);
+		flexButton.setWidget(0, 0, okButton);
+		flexButton.setWidget(0, 1, resetButton);
+		flexButton.getCellFormatter().setHorizontalAlignment(0, 0, VerticalPanel.ALIGN_RIGHT);
+		flexButton.getCellFormatter().setHorizontalAlignment(0, 1, VerticalPanel.ALIGN_RIGHT);
+		VerticalPanel dialogVPanel = new VerticalPanel();
+		dialogVPanel.add(close);
+		dialogVPanel.add(tableContainer);
+		dialogVPanel.add(flexButton);
+		dialogVPanel.setCellHorizontalAlignment(close, VerticalPanel.ALIGN_RIGHT);
+		dialogVPanel.setCellHorizontalAlignment(flexButton, VerticalPanel.ALIGN_RIGHT);
+		dialogRequest.setWidget(dialogVPanel);
+		dialogRequest.getCaption().asWidget().setStyleName("myCaption");
+		dialogRequest.center();
+	}
+	static class requestHandler implements ClickHandler{
+		@Override
+		public void onClick(ClickEvent event) {
+			String fname = txtFname.getValue();
+			if(fname==null || fname.trim().length() == 0 ){
+				txtFname.setFocus(true);
+				return;
+			}
+			String lname = txtLname.getValue();
+			if(lname==null || lname.trim().length() == 0 ){
+				txtLname.setFocus(true);
+				return;
+			}
+			String descript = txtDesciption.getValue();
+			if(descript==null || descript.trim().length() == 0 ){
+				txtDesciption.setFocus(true);
+				return;
+			}
+			
+			
+		}
+	}
+	
+	static class resetRequestHandler implements ClickHandler{
+		@Override
+		public void onClick(ClickEvent event) {
+			 txtFname.setText("");
+			 txtLname.setText("");
+			 txtDesciption.setText("");
+		}
+		
+	}
+	
+	public static native void exportRequest() /*-{
+	$wnd.showRequestForm =
+	$entry(@cmg.org.monitor.module.client.DashBoard::showRequestForm())
+	}-*/;
+	
 	public static native void exportStaticMethod() /*-{
 	$wnd.showStatusDialogBox =
 	$entry(@cmg.org.monitor.module.client.DashBoard::showStatusDialogBox(Ljava/lang/String;Ljava/lang/String;))
@@ -86,6 +192,11 @@ public class DashBoard extends AncestorEntryPoint {
 		}
 	}
 
+	
+	
+	
+	
+	
 	void initDialogBox() {
 		dialogBox.setAnimationEnabled(true);
 		Button close = new Button();
