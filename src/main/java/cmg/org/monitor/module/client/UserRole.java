@@ -93,10 +93,14 @@ public class UserRole extends AncestorEntryPoint {
 			data.setValue(j, 0, sortUser.get(j).getDomain());
 			data.setValue(j, 1, sortUser.get(j).getUsername());
 			data.setValue(j, 2, sortUser.get(j).getFullName());
+			if (!sortUser.get(j).getDomain().equalsIgnoreCase(SystemUser.THIRD_PARTY_USER)) {
 			if(sortUser.get(j).checkRole(SystemRole.ROLE_ADMINISTRATOR)){
 			    data.setValue(j, 3, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_ADMINISTRATOR+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;' checked='checked'>");
 			}else{
 			    data.setValue(j, 3, "<input class='ckUserRole' type='checkbox' name='user_role' role='"+SystemRole.ROLE_ADMINISTRATOR+"' username='"+sortUser.get(j).getEmail()+"' style='display:block;margin-left:auto;margin-right:auto;border-color:green;box-sizing:content-box;'>");
+			}
+			} else {
+				data.setValue(j, 3, "");
 			}
 			
 			if(sortUser.get(j).checkRole(SystemRole.ROLE_USER)){
