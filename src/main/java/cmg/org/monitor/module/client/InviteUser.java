@@ -123,17 +123,17 @@ public class InviteUser extends AncestorEntryPoint{
 						}else{
 							setVisibleLoadingImage(false);
 							setOnload(false);
-							showMessage("Oops! Error.", HTMLControl.HTML_GROUP_MANAGEMENT_NAME, "Goto Group Management. ", HTMLControl.RED_MESSAGE, true);
+							showMessage("Oops!There are no group in system.", HTMLControl.HTML_GROUP_MANAGEMENT_NAME, "Goto Group Management. ", HTMLControl.RED_MESSAGE, true);
 						}
 					}else{
 						setVisibleLoadingImage(false);
 						setOnload(false);
-						showMessage("Oops! Error.", HTMLControl.HTML_GROUP_MANAGEMENT_NAME, "Goto Group Management. ", HTMLControl.RED_MESSAGE, true);
+						showMessage("Oops!There are no group in system.", HTMLControl.HTML_GROUP_MANAGEMENT_NAME, "Goto Group Management. ", HTMLControl.RED_MESSAGE, true);
 					}
 				}else{
 					setVisibleLoadingImage(false);
 					setOnload(false);
-					showMessage("Oops! Error.", HTMLControl.HTML_GROUP_MANAGEMENT_NAME, "Goto Group Management. ", HTMLControl.RED_MESSAGE, true);
+					showMessage("Oops!Server Error please try again!.", HTMLControl.HTML_USER_INVITE, "Goto Group Management. ", HTMLControl.RED_MESSAGE, true);
 				}
 			}
 			
