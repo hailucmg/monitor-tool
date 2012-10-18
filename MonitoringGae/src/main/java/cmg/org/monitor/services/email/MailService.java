@@ -430,10 +430,10 @@ public class MailService {
 		return content;
 	}
 
-	public static boolean inviteUsers(List<String> recipients,
-			List<String> groupIDs) {
+	public static boolean inviteUsers(String[] recipients,
+			String[] groupIDs) {
 		boolean check = false;
-		if (recipients != null && recipients.size() > 0) {
+		if (recipients != null && recipients.length > 0) {
 			InviteUserDAO userDao = new InviteUserDaoImpl();
 			SystemAccountDAO accountDao = new SystemAccountDaoImpl();
 			List<SystemUser> listActiveUser = null;

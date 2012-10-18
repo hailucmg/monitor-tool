@@ -12,6 +12,7 @@ import cmg.org.monitor.dao.AccountSyncLogDAO;
 import cmg.org.monitor.dao.AlertDao;
 import cmg.org.monitor.dao.CpuDAO;
 import cmg.org.monitor.dao.FileSystemDAO;
+import cmg.org.monitor.dao.InviteUserDAO;
 import cmg.org.monitor.dao.JvmDAO;
 import cmg.org.monitor.dao.MemoryDAO;
 import cmg.org.monitor.dao.ServiceDAO;
@@ -23,6 +24,7 @@ import cmg.org.monitor.dao.impl.AccountSyncLogDaoImpl;
 import cmg.org.monitor.dao.impl.AlertDaoImpl;
 import cmg.org.monitor.dao.impl.CpuDaoImpl;
 import cmg.org.monitor.dao.impl.FileSystemDaoImpl;
+import cmg.org.monitor.dao.impl.InviteUserDaoImpl;
 import cmg.org.monitor.dao.impl.JvmDaoImpl;
 import cmg.org.monitor.dao.impl.MemoryDaoImpl;
 import cmg.org.monitor.dao.impl.ServiceDaoImpl;
@@ -50,6 +52,7 @@ import cmg.org.monitor.ext.model.shared.UserMonitor;
 import cmg.org.monitor.module.client.MonitorGwtService;
 import cmg.org.monitor.services.GoogleAccountService;
 import cmg.org.monitor.services.MonitorLoginService;
+import cmg.org.monitor.services.email.MailService;
 import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 import cmg.org.monitor.util.shared.SecurityUtil;
@@ -90,7 +93,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		MonitorLoginService loginSer = new MonitorLoginService();
 		UserLoginDto user = loginSer.getUserLogin();
 		try {
-			list = sysDAO.listSystemsFromMemcache(false);			
+			list = sysDAO.listSystemsFromMemcache(false);
 			if (list != null && list.size() > 0) {
 				ArrayList<SystemMonitor> tempList = new ArrayList<SystemMonitor>();
 				for (SystemMonitor sys : list) {
@@ -118,13 +121,13 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		if (systems == null) {
 			return null;
 		} else {
-			String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
-			for (SystemMonitor g: systems) {
+			String regex = "!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
+			for (SystemMonitor g : systems) {
 				String temp = g.getName();
-				for(int i=0;i<g.getName().length();i++){
+				for (int i = 0; i < g.getName().length(); i++) {
 					if (regex.indexOf(g.getName().charAt(i)) != -1) {
-							g.setName(StringEscapeUtils.escapeHtml3(g.getName()));
-							break;
+						g.setName(StringEscapeUtils.escapeHtml3(g.getName()));
+						break;
 					}
 				}
 			}
@@ -208,22 +211,18 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			container.setRemoteUrls(sysDAO.listRemoteURLs());
 			SystemGroup[] groups = groupDAO.getAllGroup();
 			if (groups != null && groups.length > 0) {
-				/*//special character will be replace in here
-				String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
-				for (SystemGroup g: groups) {
-					for(int i=0;i<g.getName().length();i++){
-						if (regex.indexOf(g.getName().charAt(i)) != -1) {
-								g.setName(StringEscapeUtils.escapeHtml3(g.getName()));
-								break;
-						}
-					}
-					for(int i =0; i<g.getDescription().length(); i++){
-						if (regex.indexOf(g.getDescription().charAt(i)) != -1) {
-								g.setDescription(StringEscapeUtils.escapeHtml3(g.getDescription()));
-								break;
-						}
-					}
-				}*/
+				/*
+				 * //special character will be replace in here String regex
+				 * ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_"; for (SystemGroup g:
+				 * groups) { for(int i=0;i<g.getName().length();i++){ if
+				 * (regex.indexOf(g.getName().charAt(i)) != -1) {
+				 * g.setName(StringEscapeUtils.escapeHtml3(g.getName())); break;
+				 * } } for(int i =0; i<g.getDescription().length(); i++){ if
+				 * (regex.indexOf(g.getDescription().charAt(i)) != -1) {
+				 * g.setDescription
+				 * (StringEscapeUtils.escapeHtml3(g.getDescription())); break; }
+				 * } }
+				 */
 				container.setListSystemGroup(groups);
 			}
 			container.setEmails(sysDAO.listEmails());
@@ -245,26 +244,22 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			if (container != null) {
 				SystemMonitor sys = sysDAO.getSystemById(sysId);
 				SystemGroup[] groups = groupDAO.getAllGroup();
-				if(groups != null){
-					//special character will be replace in here
-				/*	String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
-					for (SystemGroup g: groups) {
-						for(int i=0;i<g.getName().length();i++){
-							if (regex.indexOf(g.getName().charAt(i)) != -1) {
-									g.setName(StringEscapeUtils.escapeHtml3(g.getName()));
-									break;
-							}
-						}
-						for(int i =0; i<g.getDescription().length(); i++){
-							if (regex.indexOf(g.getDescription().charAt(i)) != -1) {
-									g.setDescription(StringEscapeUtils.escapeHtml3(g.getDescription()));
-									break;
-							}
-						}
-					}*/
+				if (groups != null) {
+					// special character will be replace in here
+					/*
+					 * String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_"; for
+					 * (SystemGroup g: groups) { for(int
+					 * i=0;i<g.getName().length();i++){ if
+					 * (regex.indexOf(g.getName().charAt(i)) != -1) {
+					 * g.setName(StringEscapeUtils.escapeHtml3(g.getName()));
+					 * break; } } for(int i =0; i<g.getDescription().length();
+					 * i++){ if (regex.indexOf(g.getDescription().charAt(i)) !=
+					 * -1) { g.setDescription(StringEscapeUtils.escapeHtml3(g.
+					 * getDescription())); break; } } }
+					 */
 					container.setListSystemGroup(groups);
 				}
-				
+
 				container.setSys(sys);
 				NotifyMonitor nm = sysDAO.getNotifyOption(sys.getCode());
 				if (nm == null) {
@@ -499,26 +494,26 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		SystemGroupDAO sysGroupDao = new SystemGroupDaoImpl();
 		try {
 			SystemGroup[] sysGroup = sysGroupDao.getAllGroup();
-			/*	List<SystemGroup> temp = new ArrayList<SystemGroup>();
-			for(SystemGroup s : sysGroup){
-				temp.add(s);
-			}
-			temp = sysGroupDao.sortBynameSystemGroup(temp);
-			SystemGroup[] sortGroup = new SystemGroup[temp.size()];
-			temp.toArray(sortGroup);*/
-			if(sysGroup!=null){
-				String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
-				for (SystemGroup g: sysGroup) {
-					for(int i=0;i<g.getName().length();i++){
+			/*
+			 * List<SystemGroup> temp = new ArrayList<SystemGroup>();
+			 * for(SystemGroup s : sysGroup){ temp.add(s); } temp =
+			 * sysGroupDao.sortBynameSystemGroup(temp); SystemGroup[] sortGroup
+			 * = new SystemGroup[temp.size()]; temp.toArray(sortGroup);
+			 */
+			if (sysGroup != null) {
+				String regex = "!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
+				for (SystemGroup g : sysGroup) {
+					for (int i = 0; i < g.getName().length(); i++) {
 						if (regex.indexOf(g.getName().charAt(i)) != -1) {
-								g.setName(StringEscapeUtils.escapeHtml3(g.getName()));
-								break;
+							g.setName(StringEscapeUtils.escapeHtml3(g.getName()));
+							break;
 						}
 					}
-					for(int i =0; i<g.getDescription().length(); i++){
+					for (int i = 0; i < g.getDescription().length(); i++) {
 						if (regex.indexOf(g.getDescription().charAt(i)) != -1) {
-								g.setDescription(StringEscapeUtils.escapeHtml3(g.getDescription()));
-								break;
+							g.setDescription(StringEscapeUtils.escapeHtml3(g
+									.getDescription()));
+							break;
 						}
 					}
 				}
@@ -535,7 +530,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		SystemGroupDAO sysGroupDao = new SystemGroupDaoImpl();
 		SystemAccountDAO accountDao = new SystemAccountDaoImpl();
 		try {
-			boolean check =sysGroupDao.deleteGroup(id);
+			boolean check = sysGroupDao.deleteGroup(id);
 			if (check) {
 				accountDao.initSystemUserMemcache();
 				sysGroupDao.initSystemGroupMemcache();
@@ -561,7 +556,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			if (b) {
 				sysAccDao.initSystemUserMemcache();
 				groupDao.initSystemGroupMemcache();
-			}			
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -575,7 +570,8 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			String id) {
 		SystemGroupDAO sysGroupDao = new SystemGroupDaoImpl();
 		try {
-			boolean check = sysGroupDao.updateGroup(id, groupName, groupDescription);
+			boolean check = sysGroupDao.updateGroup(id, groupName,
+					groupDescription);
 			if (check) {
 				sysGroupDao.initSystemGroupMemcache();
 			}
@@ -596,7 +592,8 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		GoogleAccountService service;
 		SystemAccountDAO accountDao = new SystemAccountDaoImpl();
 		try {
-			GoogleAccount ac = accountDao.getGoogleAccountByDomain(googleacc.getDomain());
+			GoogleAccount ac = accountDao.getGoogleAccountByDomain(googleacc
+					.getDomain());
 			if (ac.getUsername().equalsIgnoreCase(googleacc.getUsername())) {
 				service = new GoogleAccountService(ac);
 				service.sync();
@@ -604,11 +601,12 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			} else {
 				return "FAIL: Can not sync google account. Wrong username!";
 			}
-			
+
 		} catch (AuthenticationException ae) {
 			return "FAIL: Authenticantion fail. Exception: " + ae.getMessage();
-		}  catch (Exception e) {
-			return "FAIL: Can not sync google account. Exception: " + e.getMessage();
+		} catch (Exception e) {
+			return "FAIL: Can not sync google account. Exception: "
+					+ e.getMessage();
 		}
 	}
 
@@ -617,7 +615,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	 * cmg.org.monitor.module.client.MonitorGwtService#listAllGoogleAcc()
 	 */
 	@Override
-	public GoogleAccount[] listAllGoogleAcc() throws Exception {		
+	public GoogleAccount[] listAllGoogleAcc() throws Exception {
 		SystemAccountDAO dao = new SystemAccountDaoImpl();
 		List<GoogleAccount> list = new ArrayList<GoogleAccount>();
 		try {
@@ -654,7 +652,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			} else {
 				acc.setPassword(SecurityUtil.encrypt(acc.getPassword()));
 				b = dao.createGoogleAccount(acc);
-			}		
+			}
 			if (b) {
 				dao.initGoogleAccountMemcache();
 			}
@@ -693,26 +691,26 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			MonitorContainer container = new MonitorContainer();
 
 			SystemGroup[] sysGroup = sysGroupDao.getAllGroup();
-			/*	List<SystemGroup> temp = new ArrayList<SystemGroup>();
-			for(SystemGroup s : sysGroup){
-				temp.add(s);
-			}
-			temp = sysGroupDao.sortBynameSystemGroup(temp);
-			SystemGroup[] sortGroup = new SystemGroup[temp.size()];
-			temp.toArray(sortGroup);*/
-			if(sysGroup!=null){
-				String regex ="!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
-				for (SystemGroup g: sysGroup) {
-					for(int i=0;i<g.getName().length();i++){
+			/*
+			 * List<SystemGroup> temp = new ArrayList<SystemGroup>();
+			 * for(SystemGroup s : sysGroup){ temp.add(s); } temp =
+			 * sysGroupDao.sortBynameSystemGroup(temp); SystemGroup[] sortGroup
+			 * = new SystemGroup[temp.size()]; temp.toArray(sortGroup);
+			 */
+			if (sysGroup != null) {
+				String regex = "!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_";
+				for (SystemGroup g : sysGroup) {
+					for (int i = 0; i < g.getName().length(); i++) {
 						if (regex.indexOf(g.getName().charAt(i)) != -1) {
-								g.setName(StringEscapeUtils.escapeHtml3(g.getName()));
-								break;
+							g.setName(StringEscapeUtils.escapeHtml3(g.getName()));
+							break;
 						}
 					}
-					for(int i =0; i<g.getDescription().length(); i++){
+					for (int i = 0; i < g.getDescription().length(); i++) {
 						if (regex.indexOf(g.getDescription().charAt(i)) != -1) {
-								g.setDescription(StringEscapeUtils.escapeHtml3(g.getDescription()));
-								break;
+							g.setDescription(StringEscapeUtils.escapeHtml3(g
+									.getDescription()));
+							break;
 						}
 					}
 				}
@@ -807,16 +805,17 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 
 	/**
 	 * (non-Javadoc)
-	 * @see cmg.org.monitor.module.client.MonitorGwtService#viewLastestLog(java.lang.String) 
+	 * 
+	 * @see cmg.org.monitor.module.client.MonitorGwtService#viewLastestLog(java.lang.String)
 	 */
 	public String viewLastestLog(String adminAccount) {
 		AccountSyncLogDAO logDao = new AccountSyncLogDaoImpl();
 		try {
-			AccountSyncLog log  = logDao.getLastestLog(adminAccount);
+			AccountSyncLog log = logDao.getLastestLog(adminAccount);
 			return log == null ? "" : log.getLog();
 		} catch (Exception e) {
 			return "Error. Message: " + e.getMessage();
-		}		
+		}
 	}
 
 	@Override
@@ -828,7 +827,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		MonitorLoginService loginSer = new MonitorLoginService();
 		UserLoginDto user = loginSer.getUserLogin();
 		try {
-			list = sysDAO.listSystemsFromMemcache(false);			
+			list = sysDAO.listSystemsFromMemcache(false);
 			if (list != null && list.size() > 0) {
 				ArrayList<SystemMonitor> tempList = new ArrayList<SystemMonitor>();
 				for (SystemMonitor sys : list) {
@@ -862,7 +861,8 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 
 	/**
 	 * (non-Javadoc)
-	 * @see cmg.org.monitor.module.client.MonitorGwtService#getRevisionContent() 
+	 * 
+	 * @see cmg.org.monitor.module.client.MonitorGwtService#getRevisionContent()
 	 */
 	public String getRevisionContent() {
 		UtilityDAO utilDAO = new UtilityDaoImpl();
@@ -873,43 +873,36 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	public MonitorContainer getAllForInvite() {
 		MonitorContainer m = new MonitorContainer();
 		SystemGroupDaoImpl sgDAO = new SystemGroupDaoImpl();
+		InviteUserDAO userDao = new InviteUserDaoImpl();
 		try {
 			SystemGroup[] sys = sgDAO.getAllGroup();
 			m.setListSystemGroup(sys);
-			InvitedUser u1 = new InvitedUser();
-			u1.setId("a1");
-			u1.setEmail("lan.ta@demo.inactive");
-			u1.setStatus("inactive");
-			InvitedUser u2 = new InvitedUser();
-			u2.setId("a2");
-			u2.setEmail("lan.ta@demo.active");
-			u2.setStatus("active");
-			InvitedUser u3 = new InvitedUser();
-			u3.setId("a3");
-			u3.setEmail("lan.ta@demo.pending");
-			u3.setStatus("pending");
-			List<InvitedUser> mList = new ArrayList<InvitedUser>();
-			mList.add(u1);
-			mList.add(u2);
-			mList.add(u3);
-			InvitedUser[] list = new InvitedUser[3];
-			mList.toArray(list);
-			m.setListInvitedUsers(list);
+
+			List<InvitedUser> mList = userDao.list3rdUser();
+			if (mList != null && mList.size() > 0) {
+				InvitedUser[] list = new InvitedUser[mList.size()];
+				mList.toArray(list);
+				m.setListInvitedUsers(list);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return m;
 	}
-	
+
 	@Override
-	public boolean inviteUser3rd(String[] user,String groupID) {
-		return false;
+	public boolean inviteUser3rd(String[] user, String groupID) {		
+		return MailService.inviteUsers(user, new String[] {groupID});
 	}
 
 	@Override
 	public boolean action3rd(String actionType, InvitedUser u) {
+		InviteUserDAO userDao = new InviteUserDaoImpl();
+		// to delete
+		//userDao.delete3rdUser(id);
+		// to active
+		//userDao.active3rdUser(id);
 		return false;
 	}
-
 
 }

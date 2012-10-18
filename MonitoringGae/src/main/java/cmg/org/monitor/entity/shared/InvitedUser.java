@@ -226,4 +226,8 @@ public class InvitedUser implements IsSerializable{
 		    groupIDs = null;
 		}
 	}
+	
+	public void setGroupIDs(String[] listGroupIDs) {
+		groupIDs = listGroupIDs;
+	}
 }
