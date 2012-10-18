@@ -9,7 +9,6 @@
 
 package cmg.org.monitor.ext.util;
 
-import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,8 +50,8 @@ public class MailUtil {
 	 * @param body
 	 * @return the log
 	 */
-	public static String send(List<String> recipients, String subject, String body) {		
-		if (recipients == null || recipients.size() == 0) {
+	public static String send(String[] recipients, String subject, String body) {		
+		if (recipients == null || recipients.length == 0) {
 			return "No recipient found.";
 		}
 		long start = System.currentTimeMillis();
