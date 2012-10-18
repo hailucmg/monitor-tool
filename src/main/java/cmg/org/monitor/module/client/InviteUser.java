@@ -651,7 +651,7 @@ public class InviteUser extends AncestorEntryPoint{
 		}
  		
  	}
- 	
+
  	static class UnMappingGroup implements ClickHandler{
 
 		@Override
@@ -723,55 +723,11 @@ public class InviteUser extends AncestorEntryPoint{
 		btt_invite = new Button("Invite");
 		btt_invite.setStyleName("margin:6px;");
 		btt_invite.addStyleName("form-button");
-		btt_invite.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				panelValidateEmail.setVisible(false);
-				String emails = txt_email.getText();
-				String validate = validateEmail(emails);
-				if(validate!= ""){
-					panelValidateEmail.clear();
-					panelValidateEmail.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">"+ validate + "</div>"));
-					panelValidateEmail.setVisible(true);
-					return;
-				}
-				String[] data = emails.split(",");
-				int index = listGroupInvi.getSelectedIndex();
-				String group = listGroupInvi.getValue(index);
-				String groupID = "";
-				for(SystemGroup s : listGroup){
-					if(s.getName().equalsIgnoreCase(group)){
-						groupID = s.getId();
-					}
-				}
-				if(groupID.trim().length() > 0){
-					filterStatic = filter_pending;
-					sendData(data, groupID);
-				}else{
-					return;
-				}
-				
-				
-			}
-		});
-		
-		
+		btt_invite.addClickHandler(new inviteUserHandler());
 		btt_reset = new Button("Reset");
 		btt_reset.setStyleName("margin:6px;");
 		btt_reset.addStyleName("form-button");
-		btt_reset.addClickHandler(new ClickHandler() {
-			
-			@Override
-			public void onClick(ClickEvent event) {
-				panelValidateEmail.clear();
-				panelValidateEmail.setVisible(false);
-				txt_email.setText("");
-				listGroupInvi.setSelectedIndex(0);
-			}
-		});
-		
-		
+		btt_reset.addClickHandler(new ResetInviteHandler());
 		txt_email = new TextArea();
 		txt_email.setTitle("Invite user");
 		txt_email.setWidth("400px");
@@ -808,5 +764,47 @@ public class InviteUser extends AncestorEntryPoint{
 		dialogInvite.getCaption().asWidget().setStyleName("myCaption");
 		dialogInvite.center();
  	}
- 	
+	static class ResetInviteHandler implements ClickHandler{
+
+		@Override
+		public void onClick(ClickEvent event) {
+			panelValidateEmail.clear();
+			panelValidateEmail.setVisible(false);
+			txt_email.setText("");
+			listGroupInvi.setSelectedIndex(0);
+		}
+		
+	}
+ 	static class inviteUserHandler implements ClickHandler{
+
+		@Override
+		public void onClick(ClickEvent event) {
+			panelValidateEmail.setVisible(false);
+			String emails = txt_email.getText();
+			String validate = validateEmail(emails);
+			if(validate!= ""){
+				panelValidateEmail.clear();
+				panelValidateEmail.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">"+ validate + "</div>"));
+				panelValidateEmail.setVisible(true);
+				return;
+			}
+			String[] data = emails.split(",");
+			int index = listGroupInvi.getSelectedIndex();
+			String group = listGroupInvi.getValue(index);
+			String groupID = "";
+			for(SystemGroup s : listGroup){
+				if(s.getName().equalsIgnoreCase(group)){
+					groupID = s.getId();
+				}
+			}
+			if(groupID.trim().length() > 0){
+				filterStatic = filter_pending;
+				sendData(data, groupID);
+			}else{
+				return;
+			}
+			
+		}
+ 		
+ 	}
 }
