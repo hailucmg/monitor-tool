@@ -344,13 +344,13 @@ public class InviteUser extends AncestorEntryPoint{
 			public void onSuccess(Boolean result) {
 				if(result){
 					initData(filterStatic);
-					showMessage(ActionStatic + "sucessfully.", "", "",
+					showMessage(ActionStatic + " sucessfully!", "", "",
 							HTMLControl.BLUE_MESSAGE, true);
 					dialogFunction.hide();
 					
 					
 				}else{
-					showMessage("Cannot "+ActionStatic + ".", "", "",
+					showMessage("Cannot "+ ActionStatic + ".", "", "",
 							HTMLControl.RED_MESSAGE, true);
 					dialogFunction.hide();
 					setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
@@ -361,7 +361,7 @@ public class InviteUser extends AncestorEntryPoint{
 			
 			@Override
 			public void onFailure(Throwable caught) {
-				showMessage("Cannot "+ActionStatic + ".", "", "",
+				showMessage("Cannot "+ ActionStatic + ".", "", "",
 						HTMLControl.RED_MESSAGE, true);
 				dialogFunction.hide();
 				setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
