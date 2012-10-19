@@ -71,6 +71,7 @@ public class InviteUser extends AncestorEntryPoint{
 	static SimplePanel panelAuto;
 	static String filterStatic;
 	static String ActionStatic;
+	static String finalId;
  	@Override
 	protected void init() {
  		if (currentPage == HTMLControl.PAGE_INVITE) {
@@ -335,7 +336,7 @@ public class InviteUser extends AncestorEntryPoint{
 				initData(filterStatic);
 				dialogInvite.hide();
 				showMessage("Invite sucessfully.", "", "",
-						HTMLControl.BLUE_MESSAGE, true);
+						HTMLControl.YELLOW_MESSAGE, true);
 			}
 			
 			@Override
@@ -374,16 +375,39 @@ public class InviteUser extends AncestorEntryPoint{
  		}
  		filterStatic = filter;
  		ActionStatic = action_type;
+ 		finalId = u.getId();
  		monitorGwtSv.action3rd(action_type, u, new AsyncCallback<Boolean>() {
 			
 			@Override
 			public void onSuccess(Boolean result) {
 				if(result){
-					initData(filterStatic);
-					showMessage(ActionStatic + " sucessfully!", "", "",
-							HTMLControl.BLUE_MESSAGE, true);
-					dialogFunction.hide();
-					
+					if(ActionStatic.equalsIgnoreCase("delete")){
+						for(int i = 0 ; i < listUser3rds.size();i++){
+							if(listUser3rds.get(i).getId().toString().equalsIgnoreCase(finalId)){
+								listUser3rds.remove(i);
+							}
+						}
+						boolean check = checkingFilter(listUser3rds, filterStatic);
+						if(check){
+							setVisibleMessage(false, HTMLControl.BLUE_MESSAGE);
+							table_list_3rdParty.draw(createDataListSystem(listUser3rds, filterStatic),createOptionsTableListUser());
+				 			tableInterface.setWidget(1, 0, table_list_3rdParty);
+						}else{
+							showMessage("There are no user!.","", "", HTMLControl.BLUE_MESSAGE, true);
+							tableInterface.remove(table_list_3rdParty);
+						}
+						setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+						dialogFunction.hide();
+	 					setVisibleLoadingImage(false);
+						showMessage(ActionStatic + " sucessfully!", "", "",
+								HTMLControl.YELLOW_MESSAGE, true);
+						
+					}else{
+						initData(filterStatic);
+						showMessage(ActionStatic + " sucessfully!", "", "",
+								HTMLControl.YELLOW_MESSAGE, true);
+						dialogFunction.hide();
+					}
 					
 				}else{
 					showMessage("Cannot "+ ActionStatic + ".", "", "",
