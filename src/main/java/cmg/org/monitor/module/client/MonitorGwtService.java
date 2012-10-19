@@ -103,4 +103,6 @@ public interface MonitorGwtService extends RemoteService {
 	boolean inviteUser3rd(String[] user, String groupID);
 	boolean action3rd(String actionType,InvitedUser u);
 	
+	boolean sendRequestPermission(String firstname, String lastname, String description);
+	
 }

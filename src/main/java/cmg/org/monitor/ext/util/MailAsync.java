@@ -40,11 +40,16 @@ public class MailAsync extends Thread {
 	}
 	
 	public static String getInviteMailContent() {
-		return "";
+		return "<p>Dear Sir/Madam," +
+				"<p>This is an automated email to advise you that you have been granted access to "+MonitorConstant.PROJECT_NAME+". Please select the link below to view:" +
+				"<p><b>Link : <a href=\"http://"+MonitorConstant.PROJECT_HOST_NAME+"\"></a>" +
+				"<p>Kind regards,<br>" +
+				"ADMIN-MONITOR";
 	}
 	private String[] recipients;
 	private String subject;
 	private String body;
+	
 	public MailAsync(String[] recipients, String subject, String body) {
 		this.setRecipients(recipients);
 		this.setSubject(subject);

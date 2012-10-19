@@ -37,6 +37,7 @@ import cmg.org.monitor.entity.shared.InvitedUser;
 import cmg.org.monitor.entity.shared.MailConfigMonitor;
 import cmg.org.monitor.entity.shared.MailMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.entity.shared.SystemRole;
 import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.ext.util.MailAsync;
 import cmg.org.monitor.ext.util.MonitorUtil;
@@ -81,9 +82,9 @@ public class MailService {
 	private MailItemService mailItemService;
 
 	GoogleAccount adminAcc;
-	
+
 	public MailService() {
-		
+
 	}
 
 	public MailService(GoogleAccount acc) {
@@ -434,6 +435,41 @@ public class MailService {
 		return content;
 	}
 
+	public boolean requestPermission(String mail, String firstName,
+			String lastName, String description) {
+		boolean check = false;
+		InviteUserDAO userDao = new InviteUserDaoImpl();
+		SystemAccountDAO accountDao = new SystemAccountDaoImpl();
+		InvitedUser user = new InvitedUser();
+		user.setEmail(mail);
+		user.setFirstName(firstName);
+		user.setLastName(lastName);		
+		user.setStatus(InvitedUser.STATUS_REQUESTING);
+		try {
+			check = userDao.create3rdUser(user);			
+		} catch (Exception ex) {
+			logger.log(
+					Level.SEVERE,
+					"Error when requestPermission. Message: "
+							+ ex.getMessage());
+		}
+		List<SystemUser> listActiveUser = null;
+		List<String> adminEmails = new ArrayList<String>();
+		try {
+			listActiveUser = accountDao.listAllSystemUser(false);
+			for (SystemUser u : listActiveUser) {
+				if (u.checkRole(SystemRole.ROLE_ADMINISTRATOR)) {
+					adminEmails.add(u.getEmail());
+				}
+			}
+		} catch (Exception e) {
+			//
+		}
+		if (adminEmails != null && adminEmails.s)
+		MailAsync mailUtil = new MailAsync(adminEmails, "Request Permission", "");
+		return check;
+	}
+
 	public boolean inviteUsers(String[] recipients, String[] groupIDs) {
 		boolean check = false;
 		if (recipients != null && recipients.length > 0) {
@@ -466,23 +502,25 @@ public class MailService {
 					try {
 						userDao.create3rdUser(user);
 						temp.add(rec.trim());
-					} catch (Exception ex) {						
+					} catch (Exception ex) {
 						logger.log(
 								Level.SEVERE,
 								"Error when inviteUsers. Message: "
 										+ ex.getMessage());
-					}					
+					}
 				}
 			}
 			if (!temp.isEmpty()) {
 				String[] newList = new String[temp.size()];
 				temp.toArray(newList);
-				MailAsync mailUtil = new MailAsync(newList, MailAsync.getInviteMailSubject(), MailAsync.getInviteMailContent());
+				MailAsync mailUtil = new MailAsync(newList,
+						MailAsync.getInviteMailSubject(),
+						MailAsync.getInviteMailContent());
 				mailUtil.run();
 				check = true;
 				userDao.initList3rdUser();
 			}
-			
+
 		}
 		return check;
 	}

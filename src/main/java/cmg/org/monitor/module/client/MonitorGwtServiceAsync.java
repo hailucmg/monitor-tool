@@ -114,4 +114,7 @@ public interface MonitorGwtServiceAsync {
 
 	void action3rd(String actionType, InvitedUser u,
 			AsyncCallback<Boolean> callback);
+
+	void sendRequestPermission(String firstname, String lastname,
+			String description, AsyncCallback<Boolean> callback);
 }
