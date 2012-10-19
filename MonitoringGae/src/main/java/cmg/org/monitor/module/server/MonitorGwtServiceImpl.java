@@ -57,6 +57,8 @@ import cmg.org.monitor.util.shared.HTMLControl;
 import cmg.org.monitor.util.shared.MonitorConstant;
 import cmg.org.monitor.util.shared.SecurityUtil;
 
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -919,6 +921,17 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		//userDao.delete3rdUser(id);
 		// to active
 		//userDao.active3rdUser(id);
+	}
+
+	/**
+	 * (non-Javadoc)
+	 * @see cmg.org.monitor.module.client.MonitorGwtService#sendRequestPermission(java.lang.String, java.lang.String, java.lang.String) 
+	 */
+	public boolean sendRequestPermission(String firstname, String lastname,
+			String description) {
+		UserService userService = UserServiceFactory.getUserService();
+		MailService mailService = new MailService();
+		return mailService.requestPermission(userService.getCurrentUser().getEmail(), firstname, lastname, description);
 	}
 
 }
