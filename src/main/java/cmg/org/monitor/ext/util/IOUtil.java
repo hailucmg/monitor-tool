@@ -13,6 +13,8 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 
+import cmg.org.monitor.ext.model.MailContent;
+
 /**
  * DOCME
  * 
@@ -23,12 +25,28 @@ import org.apache.commons.io.FileUtils;
  */
 
 public class IOUtil {
-	public static final String CMG_SIGNATURE_TEMPLATE_PATH = "/cmg/org/monitor/mail/template/cmg-signature.html";	
-
+	
+	public static final String SUBJECT_FILE_EXTENSION = ".subject";
+	public static final String BODY_FILE_EXTENSION = ".html";	
+	
+	public static final String CMG_SIGNATURE_TEMPLATE_PATH = "/cmg/org/monitor/mail/template/cmg-signature.html";
+	public static final String TEMPLATE_PATH = "/cmg/org/monitor/mail/template/";
+	
 	public static String readResource(String path) throws IOException {
 		try {
 			return FileUtils.readFileToString(FileUtils
 					.toFile(IOUtil.class.getResource(path)));			
+		} catch (IOException e) {
+			throw e;
+		}
+	}
+	
+	public static MailContent getMailTemplate(String name) throws IOException {
+		try {
+			String subject = readResource(TEMPLATE_PATH + name + SUBJECT_FILE_EXTENSION);
+			String body = readResource(TEMPLATE_PATH + name + BODY_FILE_EXTENSION);
+			String signature = readResource(CMG_SIGNATURE_TEMPLATE_PATH);
+			return new MailContent(subject, body + signature);
 		} catch (IOException e) {
 			throw e;
 		}
