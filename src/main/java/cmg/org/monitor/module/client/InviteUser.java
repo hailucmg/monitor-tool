@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) CMG Ltd All rights reserved.
+ *
+ * This software is the confidential and proprietary information of CMG
+ * ("Confidential Information"). You shall not disclose such Confidential
+ * Information and shall use it only in accordance with the terms of the
+ * license agreement you entered into with CMG.
+ */
 package cmg.org.monitor.module.client;
 
 import java.util.ArrayList;
@@ -149,9 +157,9 @@ public class InviteUser extends AncestorEntryPoint{
  	
  	static void initUI(List<InvitedUser> users,String filter){
  		//create table list users
- 			panelAuto = new SimplePanel();
+ 			/*panelAuto = new SimplePanel();
 			panelAuto.setStyleName("userGroupPanel");
-			panelAuto.add(new HTML("there is no user"));
+			panelAuto.add(new HTML("there is no user"));*/
  		if(users.size() > 0){
  	 		int index = 0;
  	 		for(int i = 0 ; i < filter_box.getItemCount();i++){
@@ -168,9 +176,13 @@ public class InviteUser extends AncestorEntryPoint{
  			setOnload(false);
  	 		addWidget(HTMLControl.ID_BODY_CONTENT, tableInterface);
  	 		setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
- 	 		filter_box.addClickHandler(new ClickHandler() {
+ 	 		filter_box.addClickHandler(new clickFilter());
+ 	 	/*	filter_box.addClickHandler(new ClickHandler() {
  				
- 				@Override
+ 				 (non-Javadoc)
+				  * @see com.google.gwt.event.dom.client.ClickHandler#onClick(com.google.gwt.event.dom.client.ClickEvent)
+				  
+				 @Override
  				public void onClick(ClickEvent event) {
  					String filter_box_value = filter_box.getValue(filter_box.getSelectedIndex());
  					boolean check = checkingFilter(listUser3rds, filter_box_value);
@@ -178,12 +190,15 @@ public class InviteUser extends AncestorEntryPoint{
  			 			table_list_3rdParty.draw(createDataListSystem(listUser3rds, filter_box_value),createOptionsTableListUser());
  			 			tableInterface.setWidget(1, 0, table_list_3rdParty);
  					}else{
+ 						showMessage("There are no user!.","", "", HTMLControl.RED_MESSAGE, true);
+ 						tableInterface.remove(table_list_3rdParty);
  						panelAuto.setWidget(new HTML("There is no users"));
  						tableInterface.setWidget(1, 0, panelAuto);
  					}
  				}
- 			});
+ 			});*/
  		}else{
+ 			showMessage("There are no user!.","", "", HTMLControl.BLUE_MESSAGE, true);
  	 		int index = 0;
  	 		for(int i = 0 ; i < filter_box.getItemCount();i++){
  	 			if(filter_box.getValue(i).toString().equalsIgnoreCase(filter)){
@@ -192,12 +207,13 @@ public class InviteUser extends AncestorEntryPoint{
  	 		}
  	 		filter_box.setSelectedIndex(index);
  			tableInterface.setWidget(0, 0, tableManagement);
- 			tableInterface.setWidget(1, 0, panelAuto);
+ 			/*tableInterface.setWidget(1, 0, panelAuto);*/
  			setVisibleLoadingImage(false);
  			setOnload(false);
  	 		addWidget(HTMLControl.ID_BODY_CONTENT, tableInterface);
  	 		setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
- 	 		filter_box.addClickHandler(new ClickHandler() {
+ 	 		filter_box.addClickHandler(new clickFilter());
+ 	 	/*	filter_box.addClickHandler(new ClickHandler() {
  				
  				@Override
  				public void onClick(ClickEvent event) {
@@ -207,17 +223,37 @@ public class InviteUser extends AncestorEntryPoint{
  			 			table_list_3rdParty.draw(createDataListSystem(listUser3rds, filter_box_value),createOptionsTableListUser());
  			 			tableInterface.setWidget(1, 0, table_list_3rdParty);
  					}else{
+ 						showMessage("There are no user!.","", "", HTMLControl.RED_MESSAGE, true);
+ 						tableInterface.remove(table_list_3rdParty);
  						panelAuto.setWidget(new HTML("There is no users"));
  						tableInterface.setWidget(1, 0, panelAuto);
  					}
  				}
- 			});
+ 			});*/
  		}
  	
  	}
  	
 
- 	
+ 	static class clickFilter implements ClickHandler{
+		@Override
+		public void onClick(ClickEvent event) {
+				String filter_box_value = filter_box.getValue(filter_box.getSelectedIndex());
+				boolean check = checkingFilter(listUser3rds, filter_box_value);
+				if(check){
+					setVisibleMessage(false, HTMLControl.BLUE_MESSAGE);
+		 			table_list_3rdParty.draw(createDataListSystem(listUser3rds, filter_box_value),createOptionsTableListUser());
+		 			tableInterface.setWidget(1, 0, table_list_3rdParty);
+				}else{
+					showMessage("There are no user!.","", "", HTMLControl.BLUE_MESSAGE, true);
+					tableInterface.remove(table_list_3rdParty);
+					/*panelAuto.setWidget(new HTML("There is no users"));
+					tableInterface.setWidget(1, 0, panelAuto);*/
+				}
+			
+		}
+ 		
+ 	}
  	public static AbstractDataTable createDataListSystem(List<InvitedUser> result, String filter) {
  		DataTable dataListUser = DataTable.create();
  		dataListUser.addColumn(ColumnType.STRING, "USERNAME");
