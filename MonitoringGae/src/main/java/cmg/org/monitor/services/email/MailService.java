@@ -495,6 +495,11 @@ public class MailService {
 				Map<String, String> map = new HashMap<String, String>();
 				map.put("PROJECT_NAME", MonitorConstant.PROJECT_NAME);
 				map.put("PROJECT_HOST_NAME", MonitorConstant.PROJECT_HOST_NAME);
+				map.put("USERNAME", mail);
+				map.put("FIRSTNAME", firstName);
+				map.put("LASTNAME", lastName);
+				map.put("DESCRIPTION", description);
+				map.put("ACTIVE_USER_LINK", "http://" + MonitorConstant.PROJECT_HOST_NAME + "/Index.html" + HTMLControl.HTML_USER_INVITE);
 				map.put("QRCODE_LINK", MonitorConstant.QRCODE_LINK);
 				mailContent.setMap(map);
 				mailContent.init();

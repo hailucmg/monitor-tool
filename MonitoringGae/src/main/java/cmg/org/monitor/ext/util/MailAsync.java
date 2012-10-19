@@ -120,8 +120,8 @@ public class MailAsync extends Thread {
 		try {			
 			msg.setSubject(subject);
 			msg.setDataHandler(new DataHandler(new HTMLDATASource(body)));
-			msg.setSentDate(new Date(System.currentTimeMillis()));
-			msg.saveChanges();
+			//msg.setSentDate(new Date(System.currentTimeMillis()));
+			//msg.saveChanges();
 			if (MonitorConstant.DEBUG) {
 				Transport transport = session.getTransport("smtp");
 				transport.connect("smtp.gmail.com", MonitorConstant.SITES_USERNAME, MonitorConstant.SITES_PASSWORD);
@@ -142,6 +142,7 @@ public class MailAsync extends Thread {
 				+ " problem"+(problem > 1 ? "s" : "")+". Time executed: " + total + " ms");
 		}
 		System.out.println(sb.toString());
+		logger.log(Level.INFO, sb.toString());
 		return sb.toString();
 	}
 

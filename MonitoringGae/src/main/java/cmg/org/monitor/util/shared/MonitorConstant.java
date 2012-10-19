@@ -1,7 +1,7 @@
 package cmg.org.monitor.util.shared;
 
 public final class MonitorConstant {
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	
 	public static final String QRCODE_LINK = "http://qr.kaywa.com/?s=8&d=http%3A%2F%2Fmo.c-mg.com.vn";
 	
@@ -21,13 +21,13 @@ public final class MonitorConstant {
 	public static final int CPU_MEMORY_REFRESH_RATE = 1000;
 	
 	// Alert mail sender service
-	public static final String IMAGES_FOR_EMAIL ="monitor.c-mg.vn\\images\\logo\\c-mg_logo.png" ;
+	public static final String IMAGES_FOR_EMAIL ="mo.c-mg.com.vn\\images\\logo\\c-mg_logo.png" ;
 	
 	public static final String ALERTSTORE_DEFAULT_NAME = "Issue Warning";
 	
-	public static final String PROJECT_HOST_NAME = "monitor.c-mg.vn";
+	public static final String PROJECT_HOST_NAME = "mo.c-mg.com.vn";
 	
-	public static final String ALERT_MAIL_SENDER_NAME = "admin@cmg-app-eng.appspotmail.com";
+	public static final String ALERT_MAIL_SENDER_NAME = "admin@cmgmonitor.appspotmail.com";
 
 	public static final int STATISTIC_HISTORY_LENGTH = 999;
 

@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) CMG Ltd All rights reserved.
+ *
+ * This software is the confidential and proprietary information of CMG
+ * ("Confidential Information"). You shall not disclose such Confidential
+ * Information and shall use it only in accordance with the terms of the
+ * license agreement you entered into with CMG.
+ */
 package cmg.org.monitor.app.schedule;
 
 import java.io.IOException;
@@ -13,23 +21,33 @@ import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.services.MonitorService;
 
 /**
+ * The Class GlobalScheduler.
+ *
  * @author Lamphan
  * @version 1.0
  */
 public class GlobalScheduler extends HttpServlet {
 
-	/** Default UUID value */
+	/** Default UUID value. */
 	private static final long serialVersionUID = -5005043235328590690L;
 
-	/** The log of application */
+	/** The log of application. */
 	private static final Logger logger = Logger.getLogger(GlobalScheduler.class
 			.getCanonicalName());
 
+	/**
+	 * (non-Javadoc)
+	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse) 
+	 */
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		doPost(req, resp);
 	}
 
+	/**
+	 * (non-Javadoc)
+	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse) 
+	 */
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException {		
 		doSchedule();

@@ -16,8 +16,8 @@ import org.apache.commons.io.FileUtils;
 import cmg.org.monitor.ext.model.MailContent;
 
 /**
- * DOCME
- * 
+ * DOCME.
+ *
  * @Creator Hai Lu
  * @author $Author$
  * @version $Revision$
@@ -26,12 +26,25 @@ import cmg.org.monitor.ext.model.MailContent;
 
 public class IOUtil {
 	
+	/** The Constant SUBJECT_FILE_EXTENSION. */
 	public static final String SUBJECT_FILE_EXTENSION = ".subject";
+	
+	/** The Constant BODY_FILE_EXTENSION. */
 	public static final String BODY_FILE_EXTENSION = ".html";	
 	
+	/** The Constant CMG_SIGNATURE_TEMPLATE_PATH. */
 	public static final String CMG_SIGNATURE_TEMPLATE_PATH = "/cmg/org/monitor/mail/template/cmg-signature.html";
+	
+	/** The Constant TEMPLATE_PATH. */
 	public static final String TEMPLATE_PATH = "/cmg/org/monitor/mail/template/";
 	
+	/**
+	 * Read resource.
+	 *
+	 * @param path the path
+	 * @return the string
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public static String readResource(String path) throws IOException {
 		try {
 			return FileUtils.readFileToString(FileUtils
@@ -41,6 +54,13 @@ public class IOUtil {
 		}
 	}
 	
+	/**
+	 * Gets the mail template.
+	 *
+	 * @param name the name
+	 * @return the mail template
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public static MailContent getMailTemplate(String name) throws IOException {
 		try {
 			String subject = readResource(TEMPLATE_PATH + name + SUBJECT_FILE_EXTENSION);
