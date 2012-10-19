@@ -9,11 +9,14 @@
 
 package cmg.org.monitor.ext.util;
 
-import static org.junit.Assert.*;
-
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
+
+import cmg.org.monitor.ext.model.MailContent;
+import cmg.org.monitor.util.shared.MonitorConstant;
 
 /** 
  * DOCME
@@ -34,7 +37,18 @@ public class IOUtilTest {
 		String a;
 		try {
 			a = IOUtil.readResource(IOUtil.CMG_SIGNATURE_TEMPLATE_PATH);
-			System.out.println(a);
+			
+			MailContent mail = IOUtil.getMailTemplate("invite-monitor-user");
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("PROJECT_NAME", MonitorConstant.PROJECT_NAME);
+			map.put("PROJECT_HOST_NAME", MonitorConstant.PROJECT_HOST_NAME);
+			map.put("QRCODE_LINK", "http://qr.kaywa.com/?s=8&d=http%3A%2F%2Fmo.c-mg.com.vn");
+			mail.setMap(map);
+			mail.init();
+			System.out.println(mail.getBody());
+			MailAsync mailUtil = new MailAsync(new String[] {"hai.lu@c-mg.com", "lan.ta@c-mg.com", "long.nguyen@c-mg.com"}, mail);
+			
+			mailUtil.run();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

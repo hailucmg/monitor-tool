@@ -9,16 +9,20 @@
 
 package cmg.org.monitor.ext.util;
 
+import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.activation.DataHandler;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import cmg.org.monitor.ext.model.HTMLDATASource;
+import cmg.org.monitor.ext.model.MailContent;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
 /**
@@ -56,6 +60,11 @@ public class MailAsync extends Thread {
 		this.setBody(body);
 	}
 	
+	public MailAsync(String[] recipients, MailContent content) {		
+		this.setRecipients(recipients);
+		this.setSubject(content.getSubject());
+		this.setBody(content.getBody());
+	}
 	
 	@Override
 	public void run() {
@@ -86,8 +95,9 @@ public class MailAsync extends Thread {
 		
 		Session session = Session.getDefaultInstance(props, null);
 		int problem = 0;
-		Message msg = new MimeMessage(session);
+		Message msg = new MimeMessage(session);		
 		try {
+			msg.setHeader("Content-Type", "text/html");
 			msg.setFrom(new InternetAddress(
 					MonitorConstant.ALERT_MAIL_SENDER_NAME));
 		} catch (Exception ex) {
@@ -107,10 +117,11 @@ public class MailAsync extends Thread {
 			}
 		}
 		sb.append("\n" + "Start sendmail ...");
-		try {
-			
+		try {			
 			msg.setSubject(subject);
-			msg.setText(body);
+			msg.setDataHandler(new DataHandler(new HTMLDATASource(body)));
+			msg.setSentDate(new Date());
+			msg.saveChanges();
 			if (MonitorConstant.DEBUG) {
 				Transport transport = session.getTransport("smtp");
 				transport.connect("smtp.gmail.com", MonitorConstant.SITES_USERNAME, MonitorConstant.SITES_PASSWORD);
