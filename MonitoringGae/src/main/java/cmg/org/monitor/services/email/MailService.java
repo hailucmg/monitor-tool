@@ -465,8 +465,12 @@ public class MailService {
 		} catch (Exception e) {
 			//
 		}
-		if (adminEmails != null && adminEmails.s)
-		MailAsync mailUtil = new MailAsync(adminEmails, "Request Permission", "");
+		if (adminEmails != null && adminEmails.size() > 0) {
+			String[] temp = new String[adminEmails.size()];
+			adminEmails.toArray(temp);
+			MailAsync mailUtil = new MailAsync(temp, "Request Permission", "");
+			mailUtil.run();
+		}
 		return check;
 	}
 
