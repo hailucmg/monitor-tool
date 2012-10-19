@@ -149,6 +149,9 @@ public class InviteUser extends AncestorEntryPoint{
  	
  	static void initUI(List<InvitedUser> users,String filter){
  		//create table list users
+ 			panelAuto = new SimplePanel();
+			panelAuto.setStyleName("userGroupPanel");
+			panelAuto.add(new HTML("there is no user"));
  		if(users.size() > 0){
  	 		int index = 0;
  	 		for(int i = 0 ; i < filter_box.getItemCount();i++){
@@ -188,9 +191,6 @@ public class InviteUser extends AncestorEntryPoint{
  	 			}
  	 		}
  	 		filter_box.setSelectedIndex(index);
- 			panelAuto = new SimplePanel();
- 			panelAuto.setStyleName("userGroupPanel");
- 			panelAuto.add(new HTML("there is no user"));
  			tableInterface.setWidget(0, 0, tableManagement);
  			tableInterface.setWidget(1, 0, panelAuto);
  			setVisibleLoadingImage(false);
