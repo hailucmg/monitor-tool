@@ -61,7 +61,7 @@ public class MailAsync extends Thread {
 	}
 	
 	public MailAsync(String[] recipients, MailContent content) {		
-		this.setRecipients(recipients);
+		this.setRecipients(recipients);		
 		this.setSubject(content.getSubject());
 		this.setBody(content.getBody());
 	}
@@ -120,7 +120,7 @@ public class MailAsync extends Thread {
 		try {			
 			msg.setSubject(subject);
 			msg.setDataHandler(new DataHandler(new HTMLDATASource(body)));
-			msg.setSentDate(new Date());
+			msg.setSentDate(new Date(System.currentTimeMillis()));
 			msg.saveChanges();
 			if (MonitorConstant.DEBUG) {
 				Transport transport = session.getTransport("smtp");

@@ -3,6 +3,7 @@ package cmg.org.monitor.util.shared;
 public final class MonitorConstant {
 	public static final boolean DEBUG = true;
 	
+	public static final String QRCODE_LINK = "http://qr.kaywa.com/?s=8&d=http%3A%2F%2Fmo.c-mg.com.vn";
 	
 	public static final int MAX_ROW_COUNT_CHANGELOG = 10;
 	

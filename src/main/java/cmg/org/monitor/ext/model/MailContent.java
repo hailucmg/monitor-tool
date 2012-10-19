@@ -22,6 +22,8 @@ import java.util.Set;
  */
 
 public class MailContent {
+	public static final String INVITE_USER = "invite-monitor-user";
+	
 	private String subject;
 	private String body;
 	
