@@ -45,7 +45,6 @@ public class IOUtilTest {
 			map.put("QRCODE_LINK", "http://qr.kaywa.com/?s=8&d=http%3A%2F%2Fmo.c-mg.com.vn");
 			mail.setMap(map);
 			mail.init();
-			System.out.println(mail.getBody());
 			MailAsync mailUtil = new MailAsync(new String[] {"hai.lu@c-mg.com", "lan.ta@c-mg.com", "long.nguyen@c-mg.com"}, mail);
 			
 			mailUtil.run();

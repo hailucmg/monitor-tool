@@ -10,7 +10,9 @@ import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.logging.Level;
@@ -39,6 +41,8 @@ import cmg.org.monitor.entity.shared.MailMonitor;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.entity.shared.SystemRole;
 import cmg.org.monitor.entity.shared.SystemUser;
+import cmg.org.monitor.ext.model.MailContent;
+import cmg.org.monitor.ext.util.IOUtil;
 import cmg.org.monitor.ext.util.MailAsync;
 import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.memcache.Key;
@@ -517,12 +521,23 @@ public class MailService {
 			if (!temp.isEmpty()) {
 				String[] newList = new String[temp.size()];
 				temp.toArray(newList);
-				MailAsync mailUtil = new MailAsync(newList,
-						MailAsync.getInviteMailSubject(),
-						MailAsync.getInviteMailContent());
-				mailUtil.run();
-				check = true;
-				userDao.initList3rdUser();
+				MailContent mail;
+				try {
+					mail = IOUtil.getMailTemplate(MailContent.INVITE_USER);
+					Map<String, String> map = new HashMap<String, String>();
+					map.put("PROJECT_NAME", MonitorConstant.PROJECT_NAME);
+					map.put("PROJECT_HOST_NAME", MonitorConstant.PROJECT_HOST_NAME);
+					map.put("QRCODE_LINK", MonitorConstant.QRCODE_LINK);
+					mail.setMap(map);
+					mail.init();					
+					MailAsync mailUtil = new MailAsync(newList, mail);
+					mailUtil.run();
+					check = true;
+					userDao.initList3rdUser();
+				} catch (Exception e) {
+					logger.log(Level.SEVERE, "Cannot invite user. Message: " + e.getMessage());
+				}
+				
 			}
 
 		}
