@@ -292,7 +292,7 @@ public class MailService {
 		SystemMonitor sys = null;
 
 		StringBuffer sb = new StringBuffer();
-		sb.append("<p><img src=\"http://"
+		sb.append("<div><p><img src=\"http://"
 				+ MonitorConstant.PROJECT_HOST_NAME
 				+ "/images/logo/c-mg_logo.png\" width=\"200px\" height=\"80px\"/></p>");
 		sb.append("<ol style=\"margin: 0 0 0 -15px; padding: 0;color: #686868;\">");
@@ -384,10 +384,14 @@ public class MailService {
 		sb.append("markAsUnread : "
 				+ (mailConfig.isMarkAsUnread() ? "on" : "off") + "<br/>");
 		sb.append("label : \"" + mailConfig.getLabel() + "\"<br/>");
-		sb.append("</p>");
-		sb.append("<p style=\"font-size: 0.9em;color: #686868;\">--------------------------------------------------------------------------------</p>");
-		sb.append("<p style=\"color: #686868;\"><i>Thanks and Best Regards</i><br/><br/>");
-		sb.append("<b>ADMIN-MONITOR</b></p>");
+		sb.append("</p></div>");
+		try {
+			String sign = IOUtil
+					.readResource(IOUtil.CMG_SIGNATURE_TEMPLATE_PATH);
+			sb.append(sign);
+		} catch (IOException e) {
+			//
+		}
 		return sb.toString();
 	}
 
@@ -396,7 +400,7 @@ public class MailService {
 			throws Exception {
 		String content = "";
 		SystemDAO sysDAO = new SystemDaoImpl();
-		content += "<html><HEAD align=\"center\">ALERT MAIL<HEAD><body>";
+		content += "<div>";
 		content += "<OL>";
 		for (int i = 0; i < stores.size(); i++) {
 			AlertStoreMonitor alertstore = stores.get(i);
@@ -429,13 +433,7 @@ public class MailService {
 		content += "<p><or><li><i>With the choosen of inbox you can choose on or off if you want or don't our alert email sending to your inbox !  </i></li>";
 		content += "<li><i>With the choosen of starred you can choose on or off if you want or don't alert email is starred in your mail !  </i></li>";
 		content += "<li><i>With the choosen of markAsUnread you can choose on or off if you want or don't alert email is marked !  </i></li>";
-		content += "<li><i>With the choosen of label,you can create any thing to set up a label that our alert email sending to this!</i></li></or></p>";
-		content += "<p>----------------------------------------------------------------------------------------------------------- </p>";
-		content += "<p><i>Thank and Best Regard</i></p>";
-		content += "<p><strong> ADMIN-MONITOR</strong></p>";
-		content += "<p><img src=\"" + MonitorConstant.IMAGES_FOR_EMAIL
-				+ "\" width=\"255\" height=\"90\" /> </p>";
-		content += "</body></html>";
+		content += "<li><i>With the choosen of label,you can create any thing to set up a label that our alert email sending to this!</i></li></or></p></div>";
 		return content;
 	}
 
@@ -444,23 +442,42 @@ public class MailService {
 		boolean check = false;
 		InviteUserDAO userDao = new InviteUserDaoImpl();
 		SystemAccountDAO accountDao = new SystemAccountDaoImpl();
+		List<SystemUser> listActiveUser = null;
+		try {
+			listActiveUser = accountDao.listAllSystemUser(false);
+			List<InvitedUser> users = userDao.list3rdUser();
+			if (users != null && users.size() > 0) {
+				for (InvitedUser u : users) {
+					if (u.getEmail().equalsIgnoreCase(mail)) {
+						return false;
+					}
+				}
+			}
+			if (listActiveUser != null && listActiveUser.size() > 0) {
+				for (SystemUser u : listActiveUser) {
+					if (u.getEmail().equalsIgnoreCase(mail)) {
+						return false;
+					}
+				}
+			}
+		} catch (Exception e) {
+			return false;
+		}
+		
 		InvitedUser user = new InvitedUser();
 		user.setEmail(mail);
 		user.setFirstName(firstName);
-		user.setLastName(lastName);		
+		user.setLastName(lastName);
 		user.setStatus(InvitedUser.STATUS_REQUESTING);
 		try {
-			check = userDao.create3rdUser(user);			
+			check = userDao.create3rdUser(user);
 		} catch (Exception ex) {
-			logger.log(
-					Level.SEVERE,
-					"Error when requestPermission. Message: "
-							+ ex.getMessage());
+			logger.log(Level.SEVERE, "Error when requestPermission. Message: "
+					+ ex.getMessage());
 		}
-		List<SystemUser> listActiveUser = null;
+		
 		List<String> adminEmails = new ArrayList<String>();
-		try {
-			listActiveUser = accountDao.listAllSystemUser(false);
+		try {			
 			for (SystemUser u : listActiveUser) {
 				if (u.checkRole(SystemRole.ROLE_ADMINISTRATOR)) {
 					adminEmails.add(u.getEmail());
@@ -472,8 +489,21 @@ public class MailService {
 		if (adminEmails != null && adminEmails.size() > 0) {
 			String[] temp = new String[adminEmails.size()];
 			adminEmails.toArray(temp);
-			MailAsync mailUtil = new MailAsync(temp, "Request Permission", "");
-			mailUtil.run();
+			try {
+				MailContent mailContent = IOUtil
+						.getMailTemplate(MailContent.REQUEST_PERMISSION);
+				Map<String, String> map = new HashMap<String, String>();
+				map.put("PROJECT_NAME", MonitorConstant.PROJECT_NAME);
+				map.put("PROJECT_HOST_NAME", MonitorConstant.PROJECT_HOST_NAME);
+				map.put("QRCODE_LINK", MonitorConstant.QRCODE_LINK);
+				mailContent.setMap(map);
+				mailContent.init();
+
+				MailAsync mailUtil = new MailAsync(temp, mailContent);
+				mailUtil.run();
+			} catch (Exception ex) {
+				logger.log(Level.SEVERE, "Cannot not send request permission. Message: " + ex.getMessage());
+			}
 		}
 		return check;
 	}
@@ -521,23 +551,25 @@ public class MailService {
 			if (!temp.isEmpty()) {
 				String[] newList = new String[temp.size()];
 				temp.toArray(newList);
-				MailContent mail;
 				try {
-					mail = IOUtil.getMailTemplate(MailContent.INVITE_USER);
+					MailContent mail = IOUtil
+							.getMailTemplate(MailContent.INVITE_USER);
 					Map<String, String> map = new HashMap<String, String>();
 					map.put("PROJECT_NAME", MonitorConstant.PROJECT_NAME);
-					map.put("PROJECT_HOST_NAME", MonitorConstant.PROJECT_HOST_NAME);
+					map.put("PROJECT_HOST_NAME",
+							MonitorConstant.PROJECT_HOST_NAME);
 					map.put("QRCODE_LINK", MonitorConstant.QRCODE_LINK);
 					mail.setMap(map);
-					mail.init();					
+					mail.init();
 					MailAsync mailUtil = new MailAsync(newList, mail);
 					mailUtil.run();
 					check = true;
 					userDao.initList3rdUser();
 				} catch (Exception e) {
-					logger.log(Level.SEVERE, "Cannot invite user. Message: " + e.getMessage());
+					logger.log(Level.SEVERE, "Cannot invite user. Message: "
+							+ e.getMessage());
 				}
-				
+
 			}
 
 		}

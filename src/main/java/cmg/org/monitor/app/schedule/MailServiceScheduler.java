@@ -30,8 +30,10 @@ import cmg.org.monitor.entity.shared.MailConfigMonitor;
 import cmg.org.monitor.entity.shared.NotifyMonitor;
 import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.ext.model.shared.GroupMonitor;
 import cmg.org.monitor.ext.model.shared.UserMonitor;
+import cmg.org.monitor.ext.util.MailAsync;
 import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.services.email.MailService;
 import cmg.org.monitor.util.shared.MonitorConstant;
@@ -129,6 +131,32 @@ public class MailServiceScheduler extends HttpServlet {
 			}
 			if (listUsers != null && listUsers.size() > 0 && googleAccs != null
 					&& googleAccs.size() > 0) {
+				for (UserMonitor user : listUsers) {
+					if (user.getUser().getDomain()
+							.equalsIgnoreCase(SystemUser.THIRD_PARTY_USER)) {
+						if (user.getStores() != null
+								&& user.getStores().size() > 0) {
+							MailConfigMonitor config = mailDAO
+									.getMailConfig(user.getId());
+							MailService mailService = new MailService();
+							try {
+								String content = mailService.parseContent(
+										user.getStores(), config);
+								MailAsync mailUtil = new MailAsync(new String[] {user.getId()}, alertName, content);
+								mailUtil.run();
+								logger.log(Level.INFO, "send mail"
+										+ content);
+							} catch (Exception e) {
+								logger.log(Level.INFO, "Can not send mail"
+										+ e.getMessage());
+							}
+
+						}
+					}
+
+				}
+				
+				
 				for (GoogleAccount gAcc : googleAccs) {
 					MailService mailService = new MailService(gAcc);
 					for (UserMonitor user : listUsers) {

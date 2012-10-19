@@ -23,6 +23,7 @@ import java.util.Set;
 
 public class MailContent {
 	public static final String INVITE_USER = "invite-monitor-user";
+	public static final String REQUEST_PERMISSION = "request-permission";
 	
 	private String subject;
 	private String body;
