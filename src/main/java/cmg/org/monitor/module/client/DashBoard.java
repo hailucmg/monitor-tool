@@ -41,11 +41,12 @@ public class DashBoard extends AncestorEntryPoint {
 	private SystemMonitor[] systems;
 
 	private FlexTable flexTable;
-	
+
 	static DialogBox dialogRequest;
 	static TextBox txtFname;
 	static TextBox txtLname;
 	static TextArea txtDesciption;
+
 	protected void init() {
 		DashBoard.exportStaticMethod();
 		if (currentPage == HTMLControl.PAGE_DASHBOARD) {
@@ -64,48 +65,68 @@ public class DashBoard extends AncestorEntryPoint {
 
 	}
 
-	
-	public static void showRequestForm(){		
+	public static void showRequestForm() {
 		dialogRequest.center();
 	}
-	static class requestHandler implements ClickHandler{
+
+	static class requestHandler implements ClickHandler {
 		@Override
 		public void onClick(ClickEvent event) {
 			String fname = txtFname.getValue();
-			if(fname==null || fname.trim().length() == 0 ){
+			if (fname == null || fname.trim().length() == 0) {
 				txtFname.setFocus(true);
 				return;
 			}
 			String lname = txtLname.getValue();
-			if(lname==null || lname.trim().length() == 0 ){
+			if (lname == null || lname.trim().length() == 0) {
 				txtLname.setFocus(true);
 				return;
 			}
 			String descript = txtDesciption.getValue();
-			if(descript==null || descript.trim().length() == 0 ){
+			if (descript == null || descript.trim().length() == 0) {
 				txtDesciption.setFocus(true);
 				return;
 			}
-			
-			
+			monitorGwtSv.sendRequestPermission(fname, lname, descript,
+					new AsyncCallback<Boolean>() {
+						public void onFailure(Throwable caught) {
+							showMessage("Server error! ",
+									HTMLControl.HTML_ABOUT_NAME,
+									"Contact us. ", HTMLControl.RED_MESSAGE,
+									true);
+						}
+
+						public void onSuccess(Boolean result) {
+							if (result) {
+								showMessage("Send request sucessfully. ", "",
+										"", HTMLControl.BLUE_MESSAGE, true);
+							} else {
+								showMessage(
+										"Cannot send the request. Your request is exists or you account has been suspended.",
+										HTMLControl.HTML_ABOUT_NAME,
+										"Contact us. ",
+										HTMLControl.RED_MESSAGE, true);
+							}
+						}
+					});
 		}
 	}
-	
-	static class resetRequestHandler implements ClickHandler{
+
+	static class resetRequestHandler implements ClickHandler {
 		@Override
 		public void onClick(ClickEvent event) {
-			 txtFname.setText("");
-			 txtLname.setText("");
-			 txtDesciption.setText("");
+			txtFname.setText("");
+			txtLname.setText("");
+			txtDesciption.setText("");
+
 		}
-		
+
 	}
-	
+
 	public static native void exportRequest() /*-{
-	$wnd.showRequestForm =
-	$entry(@cmg.org.monitor.module.client.DashBoard::showRequestForm())
+		$wnd.showRequestForm = $entry(@cmg.org.monitor.module.client.DashBoard::showRequestForm())
 	}-*/;
-	
+
 	public static native void exportStaticMethod() /*-{
 	$wnd.showStatusDialogBox =
 	$entry(@cmg.org.monitor.module.client.DashBoard::showStatusDialogBox(Ljava/lang/String;Ljava/lang/String;))
@@ -131,6 +152,7 @@ public class DashBoard extends AncestorEntryPoint {
 			// do nothing
 		}
 	}
+
 	@Override
 	protected void initDialog() {
 		dialogRequest = new DialogBox();
@@ -141,7 +163,7 @@ public class DashBoard extends AncestorEntryPoint {
 		close.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				
+
 				dialogRequest.hide();
 			}
 		});
@@ -156,16 +178,16 @@ public class DashBoard extends AncestorEntryPoint {
 		Label lblFname = new Label("First Name :");
 		Label lblLname = new Label("Last Name :");
 		Label lblDesc = new Label("Description");
-		 txtFname = new TextBox();
-		 txtLname = new TextBox();
-		 txtDesciption = new TextArea();
+		txtFname = new TextBox();
+		txtLname = new TextBox();
+		txtDesciption = new TextArea();
 		tableContainer.setWidget(0, 0, lblFname);
 		tableContainer.setWidget(0, 1, txtFname);
 		tableContainer.setWidget(1, 0, lblLname);
 		tableContainer.setWidget(1, 1, txtLname);
 		tableContainer.setWidget(2, 0, lblDesc);
 		tableContainer.setWidget(2, 1, txtDesciption);
-		
+
 		FlexTable flexButton = new FlexTable();
 		final Button resetButton = new Button("Reset");
 		resetButton.setStyleName("margin:6px;");
@@ -173,23 +195,27 @@ public class DashBoard extends AncestorEntryPoint {
 		resetButton.addClickHandler(new resetRequestHandler());
 		final Button okButton = new Button("OK");
 		okButton.setStyleName("margin:6px;");
-		okButton.addStyleName("form-button"); 
+		okButton.addStyleName("form-button");
 		okButton.addClickHandler(new requestHandler());
 		flexButton.setCellPadding(5);
 		flexButton.setCellSpacing(5);
 		flexButton.setWidget(0, 0, okButton);
 		flexButton.setWidget(0, 1, resetButton);
-		flexButton.getCellFormatter().setHorizontalAlignment(0, 0, VerticalPanel.ALIGN_RIGHT);
-		flexButton.getCellFormatter().setHorizontalAlignment(0, 1, VerticalPanel.ALIGN_RIGHT);
+		flexButton.getCellFormatter().setHorizontalAlignment(0, 0,
+				VerticalPanel.ALIGN_RIGHT);
+		flexButton.getCellFormatter().setHorizontalAlignment(0, 1,
+				VerticalPanel.ALIGN_RIGHT);
 		VerticalPanel dialogVPanel = new VerticalPanel();
 		dialogVPanel.add(close);
 		dialogVPanel.add(tableContainer);
 		dialogVPanel.add(flexButton);
-		dialogVPanel.setCellHorizontalAlignment(close, VerticalPanel.ALIGN_RIGHT);
-		dialogVPanel.setCellHorizontalAlignment(flexButton, VerticalPanel.ALIGN_RIGHT);
+		dialogVPanel.setCellHorizontalAlignment(close,
+				VerticalPanel.ALIGN_RIGHT);
+		dialogVPanel.setCellHorizontalAlignment(flexButton,
+				VerticalPanel.ALIGN_RIGHT);
 		dialogRequest.setWidget(dialogVPanel);
 		dialogRequest.getCaption().asWidget().setStyleName("myCaption");
-		
+
 		//
 		dialogBox.setAnimationEnabled(true);
 		close = new Button();
@@ -213,15 +239,20 @@ public class DashBoard extends AncestorEntryPoint {
 		flexButton.setCellSpacing(5);
 		flexButton.setWidget(0, 0, buttonDetails);
 		flexButton.setWidget(0, 1, buttonStatistic);
-		flexButton.getCellFormatter().setHorizontalAlignment(0, 0, VerticalPanel.ALIGN_RIGHT);
-		flexButton.getCellFormatter().setHorizontalAlignment(0, 1, VerticalPanel.ALIGN_RIGHT);
+		flexButton.getCellFormatter().setHorizontalAlignment(0, 0,
+				VerticalPanel.ALIGN_RIGHT);
+		flexButton.getCellFormatter().setHorizontalAlignment(0, 1,
+				VerticalPanel.ALIGN_RIGHT);
 		dialogVPanel = new VerticalPanel();
 		dialogVPanel.add(close);
 		dialogVPanel.add(flexTable);
 		dialogVPanel.add(flexButton);
-		dialogVPanel.setCellHorizontalAlignment(close, VerticalPanel.ALIGN_RIGHT);
-		dialogVPanel.setCellHorizontalAlignment(flexTable, VerticalPanel.ALIGN_LEFT);
-		dialogVPanel.setCellHorizontalAlignment(flexButton, VerticalPanel.ALIGN_RIGHT);
+		dialogVPanel.setCellHorizontalAlignment(close,
+				VerticalPanel.ALIGN_RIGHT);
+		dialogVPanel.setCellHorizontalAlignment(flexTable,
+				VerticalPanel.ALIGN_LEFT);
+		dialogVPanel.setCellHorizontalAlignment(flexButton,
+				VerticalPanel.ALIGN_RIGHT);
 		dialogBox.setWidget(dialogVPanel);
 		dialogBox.getCaption().asWidget().setStyleName("myCaption");
 	}

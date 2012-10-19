@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) CMG Ltd All rights reserved.
+ *
+ * This software is the confidential and proprietary information of CMG
+ * ("Confidential Information"). You shall not disclose such Confidential
+ * Information and shall use it only in accordance with the terms of the
+ * license agreement you entered into with CMG.
+ */
 package cmg.org.monitor.app.schedule;
 
 import java.io.IOException;
@@ -23,20 +31,31 @@ import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.services.email.MailService;
 import cmg.org.monitor.util.shared.Constant;
 
+/**
+ * The Class AlertMailHandlerServlet.
+ */
 public class AlertMailHandlerServlet extends HttpServlet {
-	/**
-	 * 
-	 */
+	
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -7599950554394002744L;
 
+	/** The Constant logger. */
 	private static final Logger logger = Logger
 			.getLogger(AlertMailHandlerServlet.class.getCanonicalName());
 
+	/**
+	 * (non-Javadoc)
+	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse) 
+	 */
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		doPost(req, resp);
 	}
 
+	/**
+	 * (non-Javadoc)
+	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse) 
+	 */
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException {
 		try {

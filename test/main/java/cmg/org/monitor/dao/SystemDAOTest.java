@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) CMG Ltd All rights reserved.
+ *
+ * This software is the confidential and proprietary information of CMG
+ * ("Confidential Information"). You shall not disclose such Confidential
+ * Information and shall use it only in accordance with the terms of the
+ * license agreement you entered into with CMG.
+ */
 package cmg.org.monitor.dao;
 
 import static org.junit.Assert.*;
@@ -18,19 +26,40 @@ import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 
+/**
+ * The Class SystemDAOTest.
+ */
 public class SystemDAOTest {
+	
+	/** The helper. */
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(
 			new LocalDatastoreServiceTestConfig());
+	
+	/**
+	 * Sets the up.
+	 *
+	 * @throws Exception the exception
+	 */
 	@Before
 	public void setUp() throws Exception {
 		helper.setUp();
 	}
 
+	/**
+	 * Tear down.
+	 *
+	 * @throws Exception the exception
+	 */
 	@After
 	public void tearDown() throws Exception {
 		helper.tearDown();
 	}
 
+	/**
+	 * Test get notify option.
+	 *
+	 * @throws Exception the exception
+	 */
 	@Test
 	public void testGetNotifyOption() throws Exception {
 		SystemDAO sysDAO = new SystemDaoImpl();
