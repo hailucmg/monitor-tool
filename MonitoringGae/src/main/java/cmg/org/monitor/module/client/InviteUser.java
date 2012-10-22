@@ -39,40 +39,112 @@ import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.visualizations.Table;
 import com.google.gwt.visualization.client.visualizations.Table.Options;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class InviteUser.
+ */
 public class InviteUser extends AncestorEntryPoint{
+    
+    /** The panel button invite. */
     AbsolutePanel panelButtonInvite;
+    
+    /** The panel validate groups. */
     static AbsolutePanel panelValidateGroups;
+    
+    /** The panel assign. */
     AbsolutePanel panelAssign;
+	
+	/** The txt_email. */
 	static TextArea txt_email;
+	
+	/** The txt_log. */
 	static TextArea txt_log;
+	
+	/** The panel log. */
 	static DisclosurePanel panelLog;
+	
+	/** The panel validate email. */
 	static AbsolutePanel panelValidateEmail;
+	
+	/** The list group. */
 	static List<SystemGroup> listGroup;
+	
+	/** The list user3rds. */
 	static List<InvitedUser> listUser3rds;
+	
+	/** The list temp. */
 	static ListBox listTemp;
+	
+	/** The list all. */
 	static ListBox listAll;
+	
+	/** The list group invi. */
 	static ListBox listGroupInvi;
+	
+	/** The btt_invite. */
 	static Button btt_invite;
+	
+	/** The btt_ mapping group. */
 	static Button btt_MappingGroup;
+	
+	/** The btt_ un mapping group. */
 	static Button btt_UnMappingGroup;
+	
+	/** The btt_reset. */
 	static Button btt_reset;
+	
+	/** The Defaul value of list temp. */
 	static String DefaulValueOfListTemp = "None Group Mapping";
+	
+	/** The default filter. */
 	static private String defaultFilter = "ALL";
+	
+	/** The filter_requesting. */
 	static private String filter_requesting = InvitedUser.STATUS_REQUESTING;
+	
+	/** The filter_pending. */
 	static private String filter_pending = InvitedUser.STATUS_PENDING;
+	
+	/** The filter_ active. */
 	static private String filter_Active = InvitedUser.STATUS_ACTIVE;
+	
+	/** The table management. */
 	static FlexTable tableManagement;
+	
+	/** The table interface. */
 	static FlexTable tableInterface;
+	
+	/** The table_list_3rd party. */
 	static Table table_list_3rdParty;
+	
+	/** The invited. */
 	static Button invited;
+	
+	/** The filter_box. */
 	static ListBox filter_box;
+	
+	/** The dialog function. */
 	static DialogBox dialogFunction;
+	
+	/** The dialog invite. */
 	static DialogBox dialogInvite;
+	
+	/** The panel auto. */
 	static SimplePanel panelAuto;
+	
+	/** The filter static. */
 	static String filterStatic;
+	
+	/** The Action static. */
 	static String ActionStatic;
+	
+	/** The final id. */
 	static String finalId;
- 	@Override
+ 	
+	 /**
+	  * Inits the.
+	  */
+	 @Override
 	protected void init() {
  		if (currentPage == HTMLControl.PAGE_INVITE) {
  			InviteUser.exportViewDialogFunction();
@@ -98,17 +170,28 @@ public class InviteUser extends AncestorEntryPoint{
 		
 	}
  	
- 	public static native void exportViewDialogFunction() /*-{
+ 	/**
+	  * Export view dialog function.
+	  */
+	 public static native void exportViewDialogFunction() /*-{
 	$wnd.showDialogBox =
 	$entry(@cmg.org.monitor.module.client.InviteUser::showDialogBox(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;))
 	}-*/;
  	
- 	public static native void exportViewDialogInvite() /*-{
+ 	/**
+	  * Export view dialog invite.
+	  */
+	 public static native void exportViewDialogInvite() /*-{
 	$wnd.showDialogInvited =
 	$entry(@cmg.org.monitor.module.client.InviteUser::showDialogInvited())
 	}-*/;
  	
- 	static void initData(final String filter){
+ 	/**
+	  * Inits the data.
+	  *
+	  * @param filter the filter
+	  */
+	 static void initData(final String filter){
  		monitorGwtSv.getAllForInvite(new AsyncCallback<MonitorContainer>() {
 			@Override
 			public void onSuccess(MonitorContainer result) {
@@ -156,7 +239,13 @@ public class InviteUser extends AncestorEntryPoint{
 		});
  	}
  	
- 	static void initUI(List<InvitedUser> users,String filter){
+ 	/**
+	  * Inits the ui.
+	  *
+	  * @param users the users
+	  * @param filter the filter
+	  */
+	 static void initUI(List<InvitedUser> users,String filter){
  		//create table list users
  			/*panelAuto = new SimplePanel();
 			panelAuto.setStyleName("userGroupPanel");
@@ -236,7 +325,16 @@ public class InviteUser extends AncestorEntryPoint{
  	}
  	
 
- 	static class clickFilter implements ClickHandler{
+ 	/**
+	  * The Class clickFilter.
+	  */
+	 static class clickFilter implements ClickHandler{
+		
+		/**
+		 * On click.
+		 *
+		 * @param event the event
+		 */
 		@Override
 		public void onClick(ClickEvent event) {
 				String filter_box_value = filter_box.getValue(filter_box.getSelectedIndex());
@@ -255,7 +353,15 @@ public class InviteUser extends AncestorEntryPoint{
 		}
  		
  	}
- 	public static AbstractDataTable createDataListSystem(List<InvitedUser> result, String filter) {
+ 	
+	 /**
+	  * Creates the data list system.
+	  *
+	  * @param result the result
+	  * @param filter the filter
+	  * @return the abstract data table
+	  */
+	 public static AbstractDataTable createDataListSystem(List<InvitedUser> result, String filter) {
  		DataTable dataListUser = DataTable.create();
  		dataListUser.addColumn(ColumnType.STRING, "USERNAME");
  		dataListUser.addColumn(ColumnType.STRING, "STATUS");
@@ -300,13 +406,27 @@ public class InviteUser extends AncestorEntryPoint{
  		
  		return dataListUser;
  	}
- 	static Options createOptionsTableListUser() {
+ 	
+	 /**
+	  * Creates the options table list user.
+	  *
+	  * @return the options
+	  */
+	 static Options createOptionsTableListUser() {
 		Options ops = Options.create();
 		ops.setAllowHtml(true);
 		ops.setShowRowNumber(false);
 		return ops;
 	}
- 	static boolean checkingFilter(List<InvitedUser> users, String filter){
+ 	
+	 /**
+	  * Checking filter.
+	  *
+	  * @param users the users
+	  * @param filter the filter
+	  * @return true, if successful
+	  */
+	 static boolean checkingFilter(List<InvitedUser> users, String filter){
  		if(users.size() > 0 ){
  			if(filter.equalsIgnoreCase(defaultFilter))
  			{
@@ -322,14 +442,14 @@ public class InviteUser extends AncestorEntryPoint{
  			return false;
  		}
  	}
- 	
- 	
- 	
- 	
- 	
- 	
  	// this is the method that invited user
- 	private static void sendData(String[] data,String groupID ) {
+ 	/**
+	  * Send data.
+	  *
+	  * @param data the data
+	  * @param groupID the group id
+	  */
+	 private static void sendData(String[] data,String groupID ) {
  		monitorGwtSv.inviteUser3rd(data,groupID, new AsyncCallback<Boolean>() {
 			@Override
 			public void onSuccess(Boolean result) {
@@ -350,12 +470,19 @@ public class InviteUser extends AncestorEntryPoint{
  	}
  	
  	//this is the method that action every popup show
- 	private static void popupAction(String filter, String action_type, String userID){
+ 	/**
+	  * Popup action.
+	  *
+	  * @param filter the filter
+	  * @param action_type the action_type
+	  * @param userID the user id
+	  */
+	 private static void popupAction(String filter, String action_type, String userID){
  		InvitedUser u = new InvitedUser();
  		for(InvitedUser us : listUser3rds){
- 			if(us.getId().toString().equals(userID)){
+ 			if(us.getEmail().toString().equals(userID)){
  				u.setEmail(us.getEmail());
- 				u.setId(userID);
+ 				/*u.setId(userID);*/
  				u.setStatus(us.getStatus());
  			}
  		}
@@ -375,7 +502,7 @@ public class InviteUser extends AncestorEntryPoint{
  		}
  		filterStatic = filter;
  		ActionStatic = action_type;
- 		finalId = u.getId();
+ 		finalId = u.getEmail();
  		monitorGwtSv.action3rd(action_type, u, new AsyncCallback<Boolean>() {
 			
 			@Override
@@ -383,7 +510,7 @@ public class InviteUser extends AncestorEntryPoint{
 				if(result){
 					if(ActionStatic.equalsIgnoreCase("delete")){
 						for(int i = 0 ; i < listUser3rds.size();i++){
-							if(listUser3rds.get(i).getId().toString().equalsIgnoreCase(finalId)){
+							if(listUser3rds.get(i).getEmail().toString().equalsIgnoreCase(finalId)){
 								listUser3rds.remove(i);
 							}
 						}
@@ -431,7 +558,13 @@ public class InviteUser extends AncestorEntryPoint{
  	}
  	
  	
- 	private static String validateEmail(String email) {
+ 	/**
+	  * Validate email.
+	  *
+	  * @param email the email
+	  * @return the string
+	  */
+	 private static String validateEmail(String email) {
 		String msg = "";
 		if (email == null || email == "") {
 			msg = "This field is required";
@@ -459,7 +592,14 @@ public class InviteUser extends AncestorEntryPoint{
 		return msg;
 	}
  	
- 	static void showDialogBox(final String idUser,  String actionType,  String filter){
+ 	/**
+	  * Show dialog box.
+	  *
+	  * @param idUser the id user
+	  * @param actionType the action type
+	  * @param filter the filter
+	  */
+	 static void showDialogBox(final String idUser,  String actionType,  String filter){
  		filterStatic = filter;
  		ActionStatic = actionType;
  		if(filter.equalsIgnoreCase(filter_Active)){
@@ -469,7 +609,7 @@ public class InviteUser extends AncestorEntryPoint{
  			//if filter is active so the idUser will be inactive or delete.we will do this in this
  			String tempName = null;
  			for(InvitedUser u : listUser3rds){
- 				if(u.getId().toString().equals(idUser)){
+ 				if(u.getEmail().toString().equals(idUser)){
  					tempName = u.getEmail();
  				}
  			}
@@ -536,7 +676,7 @@ public class InviteUser extends AncestorEntryPoint{
  			//if filter is active so the idUser will be inactive.we will do this in this
  			String tempName = null;
  			for(InvitedUser u : listUser3rds){
- 				if(u.getId().toString().equals(idUser)){
+ 				if(u.getEmail().toString().equals(idUser)){
  					tempName = u.getEmail();
  				}
  			}
@@ -631,7 +771,7 @@ public class InviteUser extends AncestorEntryPoint{
  			//if filter is pending so the idUser will be delete.we will do this in this
  			String tempName = null;
  			for(InvitedUser u : listUser3rds){
- 				if(u.getId().toString().equals(idUser)){
+ 				if(u.getEmail().toString().equals(idUser)){
  					tempName = u.getEmail();
  				}
  			}
@@ -692,8 +832,16 @@ public class InviteUser extends AncestorEntryPoint{
  	}
  	
  	
- 	static class MappingGroup implements ClickHandler{
+ 	/**
+	  * The Class MappingGroup.
+	  */
+	 static class MappingGroup implements ClickHandler{
 
+		/**
+		 * On click.
+		 *
+		 * @param event the event
+		 */
 		@Override
 		public void onClick(ClickEvent event) {
 			//get value of select then delete it in list
@@ -712,8 +860,16 @@ public class InviteUser extends AncestorEntryPoint{
  		
  	}
 
- 	static class UnMappingGroup implements ClickHandler{
+ 	/**
+	  * The Class UnMappingGroup.
+	  */
+	 static class UnMappingGroup implements ClickHandler{
 
+		/**
+		 * On click.
+		 *
+		 * @param event the event
+		 */
 		@Override
 		public void onClick(ClickEvent event) {
 			panelValidateGroups.setVisible(false);
@@ -767,6 +923,9 @@ public class InviteUser extends AncestorEntryPoint{
  		
  	}
  	
+	/**
+	 * Show dialog invited.
+	 */
 	static void showDialogInvited(){
  		dialogInvite = new DialogBox();
  		dialogInvite.setAnimationEnabled(true);
@@ -824,8 +983,17 @@ public class InviteUser extends AncestorEntryPoint{
 		dialogInvite.getCaption().asWidget().setStyleName("myCaption");
 		dialogInvite.center();
  	}
+	
+	/**
+	 * The Class ResetInviteHandler.
+	 */
 	static class ResetInviteHandler implements ClickHandler{
 
+		/**
+		 * On click.
+		 *
+		 * @param event the event
+		 */
 		@Override
 		public void onClick(ClickEvent event) {
 			panelValidateEmail.clear();
@@ -835,8 +1003,17 @@ public class InviteUser extends AncestorEntryPoint{
 		}
 		
 	}
- 	static class inviteUserHandler implements ClickHandler{
+ 	
+	 /**
+	  * The Class inviteUserHandler.
+	  */
+	 static class inviteUserHandler implements ClickHandler{
 
+		/**
+		 * On click.
+		 *
+		 * @param event the event
+		 */
 		@Override
 		public void onClick(ClickEvent event) {
 			panelValidateEmail.setVisible(false);
@@ -869,8 +1046,9 @@ public class InviteUser extends AncestorEntryPoint{
  	}
 
 	/**
-	 * (non-Javadoc)
-	 * @see cmg.org.monitor.module.client.AncestorEntryPoint#initDialog() 
+	 * (non-Javadoc).
+	 *
+	 * @see cmg.org.monitor.module.client.AncestorEntryPoint#initDialog()
 	 */
 	@Override
 	protected void initDialog() {

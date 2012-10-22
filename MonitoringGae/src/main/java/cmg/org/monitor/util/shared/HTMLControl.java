@@ -667,7 +667,7 @@ public class HTMLControl {
 	}
 
 	public static String getButtonForActiveUser(InvitedUser u){
-		String id = u.getId();
+		String id = u.getEmail();
 		String typeDelete = "delete";
 		String temp;
 		String buttonDelete = "<a style=\"margin-left:auto;margin-right:auto;\"  class=\"btnDeleteUser\" title=\"delete\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeDelete +"','"+ u.getStatus() +"');\" />";
@@ -678,14 +678,14 @@ public class HTMLControl {
 	}
 	
 	public static String getButtonForRequestingUser(InvitedUser u){
-		String id = u.getId();
+		String id = u.getEmail();
 		String typeInactive = "active";
 		String buttonactive = "<a style=\"margin-left:auto;margin-right:auto;\" class=\"btnActive\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeInactive +"','" + u.getStatus() + "');\" title=\"Active\" />";
 		return buttonactive;
 	}
 	
 	public static String getButtonForPendingUser(InvitedUser u){
-		String id = u.getId();
+		String id = u.getEmail();
 		String typeDelete = "delete";
 		String buttonDelete = "<a style=\"margin-left:auto;margin-right:auto;\" class=\"btnDeleteUser\" title=\"delete\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeDelete +"','"+ u.getStatus() +"');\"  / >";
 		return buttonDelete;
