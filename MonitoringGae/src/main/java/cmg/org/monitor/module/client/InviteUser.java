@@ -28,6 +28,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextArea;
@@ -964,12 +965,14 @@ public class InviteUser extends AncestorEntryPoint{
 		for(SystemGroup s : listGroup){
 			listGroupInvi.addItem(s.getName());
 		}
+		Label lblEmail = new Label("Gmail Address");
 		FlexTable table = new FlexTable();
 		table.setCellPadding(5);
 		table.setCellSpacing(5);
-		table.setWidget(0, 0, txt_email);
-		table.setWidget(0, 1, panelValidateEmail);
-		table.setWidget(0, 2, listGroupInvi);
+		table.setWidget(0, 0, lblEmail);
+		table.setWidget(0, 1, txt_email);
+		table.setWidget(0, 2, panelValidateEmail);
+		table.setWidget(0, 3, listGroupInvi);
 		/*table.setWidget(2, 0, panelLog);*/
 		table.getCellFormatter().setHorizontalAlignment(0, 0, VerticalPanel.ALIGN_LEFT);
 		table.getCellFormatter().setHorizontalAlignment(0, 1, VerticalPanel.ALIGN_RIGHT);
