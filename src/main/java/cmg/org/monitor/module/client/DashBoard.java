@@ -100,12 +100,14 @@ public class DashBoard extends AncestorEntryPoint {
 							if (result) {
 								showMessage("Send request sucessfully. ", "",
 										"", HTMLControl.BLUE_MESSAGE, true);
+								dialogRequest.hide();
 							} else {
 								showMessage(
 										"Cannot send the request. Your request is exists or you account has been suspended.",
 										HTMLControl.HTML_ABOUT_NAME,
 										"Contact us. ",
 										HTMLControl.RED_MESSAGE, true);
+								dialogRequest.hide();
 							}
 						}
 					});
