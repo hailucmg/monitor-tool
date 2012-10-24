@@ -41,7 +41,7 @@ public class DashBoard extends AncestorEntryPoint {
 	private SystemMonitor[] systems;
 
 	private FlexTable flexTable;
-
+	static DialogBox dialogBox;
 	static DialogBox dialogRequest;
 	static TextBox txtFname;
 	static TextBox txtLname;
@@ -219,11 +219,12 @@ public class DashBoard extends AncestorEntryPoint {
 		dialogRequest.getCaption().asWidget().setStyleName("myCaption");
 
 		//
+		dialogBox = new DialogBox();
 		dialogBox.setAnimationEnabled(true);
-		close = new Button();
-		close.setStyleName("");
-		close.getElement().setId("closeButton");
-		close.addClickHandler(new ClickHandler() {
+		Button close1 = new Button();
+		close1.setStyleName("");
+		close1.getElement().setId("closeButton");
+		close1.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
@@ -234,28 +235,28 @@ public class DashBoard extends AncestorEntryPoint {
 		flexTable = new FlexTable();
 		flexTable.setWidget(0, 0, popupContent);
 		flexTable.setStyleName("table-popup");
-		flexButton = new FlexTable();
+		FlexTable flexButton1 = new FlexTable();
 		buttonDetails = new HTML();
 		buttonStatistic = new HTML();
-		flexButton.setCellPadding(5);
-		flexButton.setCellSpacing(5);
-		flexButton.setWidget(0, 0, buttonDetails);
-		flexButton.setWidget(0, 1, buttonStatistic);
-		flexButton.getCellFormatter().setHorizontalAlignment(0, 0,
+		flexButton1.setCellPadding(5);
+		flexButton1.setCellSpacing(5);
+		flexButton1.setWidget(0, 0, buttonDetails);
+		flexButton1.setWidget(0, 1, buttonStatistic);
+		flexButton1.getCellFormatter().setHorizontalAlignment(0, 0,
 				VerticalPanel.ALIGN_RIGHT);
-		flexButton.getCellFormatter().setHorizontalAlignment(0, 1,
+		flexButton1.getCellFormatter().setHorizontalAlignment(0, 1,
 				VerticalPanel.ALIGN_RIGHT);
-		dialogVPanel = new VerticalPanel();
-		dialogVPanel.add(close);
-		dialogVPanel.add(flexTable);
-		dialogVPanel.add(flexButton);
-		dialogVPanel.setCellHorizontalAlignment(close,
+		VerticalPanel dialogVPanel1 = new VerticalPanel();
+		dialogVPanel1.add(close1);
+		dialogVPanel1.add(flexTable);
+		dialogVPanel1.add(flexButton1);
+		dialogVPanel1.setCellHorizontalAlignment(close1,
 				VerticalPanel.ALIGN_RIGHT);
 		dialogVPanel.setCellHorizontalAlignment(flexTable,
 				VerticalPanel.ALIGN_LEFT);
-		dialogVPanel.setCellHorizontalAlignment(flexButton,
+		dialogVPanel.setCellHorizontalAlignment(flexButton1,
 				VerticalPanel.ALIGN_RIGHT);
-		dialogBox.setWidget(dialogVPanel);
+		dialogBox.setWidget(dialogVPanel1);
 		dialogBox.getCaption().asWidget().setStyleName("myCaption");
 	}
 

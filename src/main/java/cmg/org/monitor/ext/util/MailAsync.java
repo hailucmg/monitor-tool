@@ -34,7 +34,7 @@ import cmg.org.monitor.util.shared.MonitorConstant;
  * @Last changed: $LastChangedDate$
  */
 
-public class MailAsync extends Thread {
+public class MailAsync {
 	private static final Logger logger = Logger.getLogger(MailAsync.class
 			.getName());
 
@@ -60,13 +60,12 @@ public class MailAsync extends Thread {
 		this.setBody(body);
 	}
 	
-	public MailAsync(String[] recipients, MailContent content) {		
+	public MailAsync(String[] recipients, MailContent content) {
 		this.setRecipients(recipients);		
 		this.setSubject(content.getSubject());
 		this.setBody(content.getBody());
 	}
 	
-	@Override
 	public void run() {
 		send(recipients, subject, body);
 	}
@@ -78,6 +77,7 @@ public class MailAsync extends Thread {
 	 * @return the log
 	 */
 	public String send(String[] recipients, String subject, String body) {		
+		
 		if (recipients == null || recipients.length == 0) {
 			return "No recipient found.";
 		}
@@ -99,7 +99,7 @@ public class MailAsync extends Thread {
 		try {
 			msg.setHeader("Content-Type", "text/html");
 			msg.setFrom(new InternetAddress(
-					MonitorConstant.ALERT_MAIL_SENDER_NAME));
+					MonitorConstant.ALERT_MAIL_SENDER_NAME, "Admin Monitor"));
 		} catch (Exception ex) {
 			problem++;
 			logger.log(Level.SEVERE,
@@ -140,9 +140,9 @@ public class MailAsync extends Thread {
 			long total = end - start;
 			sb.append("\n" + "Sendmail completed with " + problem
 				+ " problem"+(problem > 1 ? "s" : "")+". Time executed: " + total + " ms");
-		}
-		System.out.println(sb.toString());
-		logger.log(Level.INFO, sb.toString());
+			System.out.println(sb.toString());
+			logger.log(Level.INFO, sb.toString());
+		}				
 		return sb.toString();
 	}
 

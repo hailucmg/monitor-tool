@@ -9,6 +9,7 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.annotations.Unique;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -32,6 +33,7 @@ public class SystemUser implements IsSerializable {
 	@Persistent
 	private String username;
 
+	@Unique
 	@Persistent
 	private String email;
 

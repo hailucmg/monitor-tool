@@ -522,7 +522,6 @@ public class MailService {
 			try {
 				listActiveUser = accountDao.listAllSystemUser(false);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			List<String> temp = new ArrayList<String>();
@@ -559,6 +558,7 @@ public class MailService {
 				try {
 					MailContent mail = IOUtil
 							.getMailTemplate(MailContent.INVITE_USER);
+					System.out.println("Start mapping data");
 					Map<String, String> map = new HashMap<String, String>();
 					map.put("PROJECT_NAME", MonitorConstant.PROJECT_NAME);
 					map.put("PROJECT_HOST_NAME",

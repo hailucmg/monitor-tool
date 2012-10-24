@@ -1,6 +1,8 @@
 package cmg.org.monitor.util.shared;
 
 public final class MonitorConstant {
+	public static final String DEFAULT_SYSTEM_TIME_ZONE = "Europe/London";
+	
 	public static final boolean DEBUG = false;
 	
 	public static final String QRCODE_LINK = "http://qr.kaywa.com/?s=8&d=http%3A%2F%2Fmo.c-mg.com.vn";

@@ -37,6 +37,10 @@ public class Key implements IsSerializable {
 	public static final int ACCOUNT_SYNC_LOG = 0x225;
 	
 	public static final int INVITE_USER = 0x300;
+	public static final int TEMP_INVITED_USERS = 0x301;
+	
+	public static final int CURRENT_ZONE = 0x350;
+	public static final int LIST_AVAILABLE_TIME_ZONE = 0x351;
 	
 	private int type;
 

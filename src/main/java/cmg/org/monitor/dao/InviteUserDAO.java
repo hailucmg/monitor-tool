@@ -36,7 +36,7 @@ public interface InviteUserDAO {
 	
 	public boolean active3rdUser(InvitedUser user) throws Exception;
 	
-	public boolean active3rdUser(String id) throws Exception;
+	public boolean active3rdUser(String email) throws Exception;
 	
 	public void initList3rdUser();
 	

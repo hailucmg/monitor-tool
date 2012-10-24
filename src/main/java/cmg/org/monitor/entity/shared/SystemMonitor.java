@@ -9,6 +9,9 @@ import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.annotations.Unique;
+
+import cmg.org.monitor.util.shared.Utility;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -38,6 +41,7 @@ public class SystemMonitor implements IsSerializable  {
 	@Persistent
 	private String code;
 
+	@Unique
 	@Persistent
 	private String name;
 
@@ -83,6 +87,22 @@ public class SystemMonitor implements IsSerializable  {
 	@NotPersistent
 	private NotifyMonitor notify;
 	
+	@Persistent
+	private
+	int startHour;
+	
+	@Persistent
+	private
+	int startMinute;
+	
+	@Persistent
+	private
+	int endHour;
+	
+	@Persistent
+	private
+	int endMinute;
+	
 
 
 	public NotifyMonitor getNotify() {
@@ -105,6 +125,10 @@ public class SystemMonitor implements IsSerializable  {
 		this.isDeleted = false;
 		this.lastestCpuUsage = -1;
 		this.lastestMemoryUsage = -1;
+		this.startHour = 0;
+		this.startMinute = 0;
+		this.endHour = 0;
+		this.endMinute = 0;
 	}
 
 	public SystemMonitor(String code, String name, String url,
@@ -287,5 +311,65 @@ public class SystemMonitor implements IsSerializable  {
 		return code.compareTo(sys.getCode());
 	}
 
+	/** 
+	 * @return the startHour 
+	 */
+	public int getStartHour() {
+		return Utility.getIntegerValue(startHour, 0);
+	}
+
+	/** 
+	 * @param startHour the startHour to set 
+	 */
+	
+	public void setStartHour(int startHour) {
+		this.startHour = startHour;
+	}
+
+	/** 
+	 * @return the startMinute 
+	 */
+	public int getStartMinute() {
+		return Utility.getIntegerValue(startMinute, 0);
+	}
+
+	/** 
+	 * @param startMinute the startMinute to set 
+	 */
+	
+	public void setStartMinute(int startMinute) {
+		
+		this.startMinute = startMinute;
+	}
+
+	/** 
+	 * @return the endHour 
+	 */
+	public int getEndHour() {		
+		return Utility.getIntegerValue(endHour, 0);
+	}
+
+	/** 
+	 * @param endHour the endHour to set 
+	 */
+	
+	public void setEndHour(int endHour) {
+		this.endHour = endHour;
+	}
+
+	/** 
+	 * @return the endMinute 
+	 */
+	public int getEndMinute() {
+		return Utility.getIntegerValue(endMinute, 0);
+	}
+
+	/** 
+	 * @param endMinute the endMinute to set 
+	 */
+	
+	public void setEndMinute(int endMinute) {
+		this.endMinute = endMinute;
+	}
 
 }
