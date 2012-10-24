@@ -47,6 +47,11 @@ public class DashBoard extends AncestorEntryPoint {
 	static TextBox txtLname;
 	static TextArea txtDesciption;
 
+	static DialogBox dialogConfirm;
+	static TextBox txtFname_confirm;
+	static TextBox txtLname_confirm;
+	
+	
 	protected void init() {
 		DashBoard.exportStaticMethod();
 		if (currentPage == HTMLControl.PAGE_DASHBOARD) {
@@ -128,7 +133,11 @@ public class DashBoard extends AncestorEntryPoint {
 	public static native void exportRequest() /*-{
 		$wnd.showRequestForm = $entry(@cmg.org.monitor.module.client.DashBoard::showRequestForm())
 	}-*/;
-
+	
+	public static native void exporConfirmt() /*-{
+		$wnd.showConfirm = $entry(@cmg.org.monitor.module.client.DashBoard::showConfirm())
+	}-*/;
+	
 	public static native void exportStaticMethod() /*-{
 	$wnd.showStatusDialogBox =
 	$entry(@cmg.org.monitor.module.client.DashBoard::showStatusDialogBox(Ljava/lang/String;Ljava/lang/String;))
@@ -154,9 +163,95 @@ public class DashBoard extends AncestorEntryPoint {
 			// do nothing
 		}
 	}
+	public static void showConfirm() {
+		dialogConfirm.center();
+	}
+	static class resetConfirmHanlder implements ClickHandler{
 
+		@Override
+		public void onClick(ClickEvent event) {
+			txtFname_confirm.setText("");
+			txtLname_confirm.setText("");
+		}
+		
+	}
+	static class ConfirmHandler implements ClickHandler{
+		@Override
+		public void onClick(ClickEvent event) {
+			String fname = txtFname_confirm.getText();
+			if(fname.trim().length() == 0 ){
+				txtFname_confirm.setFocus(true);
+				return;
+			}
+			String lname = txtLname_confirm.getText();
+			if(fname.trim().length() == 0 ){
+				txtLname_confirm.setFocus(true);
+				return;
+			}
+			
+			//do function call server
+			
+		}
+		
+	}
 	@Override
 	protected void initDialog() {
+		dialogConfirm = new DialogBox();
+		dialogConfirm.setAnimationEnabled(true);
+		Button closeConfirm = new Button();
+		closeConfirm.setStyleName("");
+		closeConfirm.getElement().setId("closeButton");
+		closeConfirm.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				dialogConfirm.hide();
+			}
+		});
+		FlexTable tableContainerConfirm = new FlexTable();
+		tableContainerConfirm.setCellPadding(3);
+		tableContainerConfirm.setCellSpacing(3);
+		tableContainerConfirm.getFlexCellFormatter().setWidth(0, 0, "100px");
+		tableContainerConfirm.getFlexCellFormatter().setWidth(1, 0, "100px");
+		tableContainerConfirm.getFlexCellFormatter().setWidth(2, 0, "100px");
+		tableContainerConfirm.getFlexCellFormatter().setWidth(3, 0, "100px");
+		tableContainerConfirm.getFlexCellFormatter().setWidth(4, 0, "100px");
+		Label lblFnameConfirm = new Label("First Name :");
+		Label lblLnameConfirm = new Label("Last Name :");
+		txtFname_confirm = new TextBox();
+		txtLname_confirm = new TextBox();
+		tableContainerConfirm.setWidget(0, 0, lblFnameConfirm);
+		tableContainerConfirm.setWidget(0, 1, txtFname_confirm);
+		tableContainerConfirm.setWidget(1, 0, lblLnameConfirm);
+		tableContainerConfirm.setWidget(1, 1, txtLname_confirm);
+		FlexTable flexButtonConfirm = new FlexTable();
+		final Button resetButtonConfirm = new Button("Reset");
+		resetButtonConfirm.setStyleName("margin:6px;");
+		resetButtonConfirm.addStyleName("form-button");
+		resetButtonConfirm.addClickHandler(new resetConfirmHanlder());
+		final Button okButtonConfirm = new Button("OK");
+		okButtonConfirm.setStyleName("margin:6px;");
+		okButtonConfirm.addStyleName("form-button");
+		okButtonConfirm.addClickHandler(new ConfirmHandler());
+		flexButtonConfirm.setCellPadding(5);
+		flexButtonConfirm.setCellSpacing(5);
+		flexButtonConfirm.setWidget(0, 0, okButtonConfirm);
+		flexButtonConfirm.setWidget(0, 1, resetButtonConfirm);
+		flexButtonConfirm.getCellFormatter().setHorizontalAlignment(0, 0,
+				VerticalPanel.ALIGN_RIGHT);
+		flexButtonConfirm.getCellFormatter().setHorizontalAlignment(0, 1,
+				VerticalPanel.ALIGN_RIGHT);
+		VerticalPanel dialogVPanelConfirm = new VerticalPanel();
+		dialogVPanelConfirm.add(closeConfirm);
+		dialogVPanelConfirm.add(tableContainerConfirm);
+		dialogVPanelConfirm.add(flexButtonConfirm);
+		dialogVPanelConfirm.setCellHorizontalAlignment(closeConfirm,
+				VerticalPanel.ALIGN_RIGHT);
+		dialogVPanelConfirm.setCellHorizontalAlignment(flexButtonConfirm,
+				VerticalPanel.ALIGN_RIGHT);
+		dialogConfirm.setWidget(dialogVPanelConfirm);
+		dialogConfirm.getCaption().asWidget().setStyleName("myCaption");
+		
+		//
 		dialogRequest = new DialogBox();
 		dialogRequest.setAnimationEnabled(true);
 		Button close = new Button();
@@ -372,4 +467,5 @@ public class DashBoard extends AncestorEntryPoint {
 		 * bf.format(dataListSystem, 5);
 		 */
 	}
+
 }
