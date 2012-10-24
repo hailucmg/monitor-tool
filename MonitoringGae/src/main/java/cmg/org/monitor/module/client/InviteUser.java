@@ -492,7 +492,7 @@ public class InviteUser extends AncestorEntryPoint{
  		if(action_type.equalsIgnoreCase("active")){
  			
  			for(int i = 0 ; i < listTemp.getItemCount();i++){
-				if(listTemp.isItemSelected(i) && !listTemp.getValue(i).equalsIgnoreCase(DefaulValueOfListTemp)){
+				if(!listTemp.getValue(i).equalsIgnoreCase(DefaulValueOfListTemp)){
 					for(SystemGroup s : listGroup){
 						if(s.getName().toString().equals(listTemp.getValue(i))){
 							 u.addGroup(s.getId());
@@ -533,7 +533,7 @@ public class InviteUser extends AncestorEntryPoint{
 					}else{
 						initData(filterStatic);
 						showMessage(ActionStatic + " sucessfully!", "", "",
-								HTMLControl.YELLOW_MESSAGE, true);
+								HTMLControl.BLUE_MESSAGE, true);
 						dialogFunction.hide();
 					}
 					

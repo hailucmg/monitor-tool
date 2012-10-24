@@ -53,7 +53,7 @@ public class MailContent {
 			if (keys.size() > 0) {
 				for (String key : keys) {
 					if (subject.contains("%(" + key + ")%")) {
-						subject = subject.replaceAll("%(" + key + ")%", map.get(key));
+						subject = subject.replace("%(" + key + ")%", map.get(key));
 					}
 					if (body.contains("%(" + key + ")%")) {
 						body = body.replace("%(" + key + ")%", map.get(key));

@@ -905,6 +905,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			try {
 				check = userDao.delete3rdUser(u);
 			} catch (Exception e) {
+				logger.log(Level.SEVERE, "Cannot delete 3rd User. Message: " + e.getMessage());
 				check = false;
 			}
 			
@@ -912,6 +913,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 			try {
 				check = userDao.active3rdUser(u);
 			} catch (Exception e) {
+				logger.log(Level.SEVERE, "Cannot active 3rd User. Message: " + e.getMessage());
 				check = false;
 			}
 			

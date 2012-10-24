@@ -66,6 +66,8 @@ public class AddnewSystem extends AncestorEntryPoint {
 	AbsolutePanel panelValidateRemoteURL;
 	AbsolutePanel panelButton;
 	AbsolutePanel panelValidateEmail;
+	AbsolutePanel panelValidateExcTime;
+	
 	private static FlexTable tableForm;
 	private static Grid tableNotify;
 	AbsolutePanel panelLabelEmail;
@@ -148,6 +150,20 @@ public class AddnewSystem extends AncestorEntryPoint {
 
 		return msg;
 
+	}
+	
+	private String validateExcTime() {
+		if (startTime.getMinutes() == null) {
+			return "Please set value of start time";
+		}
+		if (endTime.getMinutes() == null) {
+			return "Please set value of end time";
+		}
+		
+		if (startTime.getMinutes() > endTime.getMinutes()) {
+			return "Please set value of end time greater than value of start time";
+		} 
+		return "";
 	}
 
 	/**
@@ -415,11 +431,14 @@ public class AddnewSystem extends AncestorEntryPoint {
 		panelValidateName = new AbsolutePanel();
 		panelValidateURL = new AbsolutePanel();
 		panelValidateRemoteURL = new AbsolutePanel();
+		panelValidateExcTime = new AbsolutePanel();
+		
 		panelValidateName.setVisible(false);
 		panelValidateIP.setVisible(false);
 		panelValidateURL.setVisible(false);
 		panelValidateRemoteURL.setVisible(false);
 		panelValidateEmail.setVisible(false);
+		panelValidateExcTime.setVisible(false);
 
 		MyHandler handler = new MyHandler();
 		bttCreate.addClickHandler(handler);

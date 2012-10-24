@@ -89,11 +89,13 @@ public class InviteUserDaoImpl implements InviteUserDAO {
 	 * @see cmg.org.monitor.dao.InvitedUserDAO#create3rdUser(cmg.org.monitor.module.client.InvitedUser) 
 	 */
 	public boolean create3rdUser(InvitedUser user) throws Exception {
+		List<InvitedUser> list = list3rdUserFromMemcache();
 		initPersistence();
 		boolean check = false;
 		try {
 			pm.currentTransaction().begin();
 			pm.makePersistent(user);
+			
 			pm.currentTransaction().commit();
 			check = true;
 		} catch (Exception ex) {
@@ -103,6 +105,10 @@ public class InviteUserDaoImpl implements InviteUserDAO {
 			throw ex;
 		} finally {
 			pm.close();
+		}
+		if (check) {
+			list.add(user);
+			storeList3rdUserToMemcache(list);
 		}
 		return check;
 	}
@@ -138,10 +144,15 @@ public class InviteUserDaoImpl implements InviteUserDAO {
 		List<InvitedUser> list = list3rdUserFromMemcache();
 		boolean check = false;
 		initPersistence();
-		InvitedUser temp;
+		InvitedUser temp = null;
+		
+		Query query = pm.newQuery(InvitedUser.class);
+		query.setFilter("email == para");
+		query.declareParameters("String para");
 		try {
-			temp = pm.getObjectById(InvitedUser.class, id);
-			if (temp != null) {
+			List<InvitedUser> tempList = (List<InvitedUser>) query.execute(id);			
+			if (tempList != null && tempList.size() > 0) {
+				temp = tempList.get(0);
 				pm.deletePersistent(temp);
 				check = true;
 			}
@@ -177,7 +188,7 @@ public class InviteUserDaoImpl implements InviteUserDAO {
 	 * @see cmg.org.monitor.dao.InvitedUserDAO#delete3rdUser(cmg.org.monitor.module.client.InvitedUser) 
 	 */
 	public boolean delete3rdUser(InvitedUser user) throws Exception {
-		return delete3rdUser(user.getId());
+		return delete3rdUser(user.getEmail());
 	}
 
 	/**
@@ -185,22 +196,39 @@ public class InviteUserDaoImpl implements InviteUserDAO {
 	 * @see cmg.org.monitor.dao.InvitedUserDAO#active3rdUser(cmg.org.monitor.module.client.InvitedUser) 
 	 */
 	public boolean active3rdUser(InvitedUser in) throws Exception {
+		SystemAccountDAO accountDao = new SystemAccountDaoImpl();
+		List<SystemUser> listUsers = accountDao.listAllSystemUser(false);
+		if (listUsers!= null && listUsers.size() > 0) {
+			for (SystemUser u : listUsers) {
+				if (u.getEmail().equalsIgnoreCase(in.getEmail())) {
+					return false;
+				}
+			}
+		}
 		List<InvitedUser> list = list3rdUserFromMemcache();
 		boolean check = false;
 		initPersistence();
-		InvitedUser temp;
+		InvitedUser temp = null;
+		Query query = pm.newQuery(InvitedUser.class);
+		query.setFilter("email == para");
+		query.declareParameters("String para");
 		try {
-			temp = pm.getObjectById(InvitedUser.class, in.getId());
-			if (temp != null) {
+			List<InvitedUser> tempList = (List<InvitedUser>) query.execute(in.getEmail());
+			if (!tempList.isEmpty()) {
+				temp = tempList.get(0);
 				temp.setStatus(InvitedUser.STATUS_ACTIVE);
 				pm.makePersistent(temp);
 				check = true;
-			}
-		} catch (Exception ex) {
-			throw ex;
+			}			
+		} catch (Exception e) {
+			logger.log(
+					Level.SEVERE,
+					" ERROR when initList3rdUser. Message: "
+							+ e.getMessage());
 		} finally {
 			pm.close();
-		}
+		}	
+		
 		if (check) {
 			SystemUser user = new SystemUser();
 			user.setFirstName(temp.getFirstName());
@@ -210,15 +238,13 @@ public class InviteUserDaoImpl implements InviteUserDAO {
 			user.setDomain(SystemUser.THIRD_PARTY_USER);
 			user.addUserRole(SystemRole.ROLE_USER);
 			user.setGroupIDs(in.getGroupIDs());
-			SystemAccountDAO accountDao = new SystemAccountDaoImpl();
 			check = accountDao.createSystemUser(user, true);
 			
 		}
-		if (check && list != null && list.size() > 0) {		
-			SystemAccountDAO accountDao = new SystemAccountDaoImpl();
-			for (int i = 0; i< list.size(); i++) {
-				if (list.get(i).getId().equalsIgnoreCase(in.getId())) {
-					list.get(i).setStatus(InvitedUser.STATUS_ACTIVE);
+		if (check && list != null && list.size() > 0) {
+			for (InvitedUser u:  list) {
+				if (u.getEmail().equalsIgnoreCase(in.getEmail())) {
+					u.setStatus(InvitedUser.STATUS_ACTIVE);
 					break;
 				}
 			}			
@@ -232,8 +258,28 @@ public class InviteUserDaoImpl implements InviteUserDAO {
 	 * (non-Javadoc)
 	 * @see cmg.org.monitor.dao.InvitedUserDAO#active3rdUser(java.lang.String) 
 	 */
-	@Deprecated
-	public boolean active3rdUser(String id) throws Exception {
+	
+	public boolean active3rdUser(String email) throws Exception {		
+		initPersistence();
+		Query query = pm.newQuery(InvitedUser.class);
+		query.setFilter("email == para");
+		query.declareParameters("String para");
+		List<InvitedUser> temp = null;
+		try {
+			temp = (List<InvitedUser>) query.execute(email);
+			if (!temp.isEmpty()) {
+				InvitedUser u = temp.get(0);
+				u.setStatus(InvitedUser.STATUS_ACTIVE);
+				pm.makePersistent(u);
+			}			
+		} catch (Exception e) {
+			logger.log(
+					Level.SEVERE,
+					" ERROR when initList3rdUser. Message: "
+							+ e.getMessage());
+		} finally {
+			pm.close();
+		}	
 		return false;
 		
 	}

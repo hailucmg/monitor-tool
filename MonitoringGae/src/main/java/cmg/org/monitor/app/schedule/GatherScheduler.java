@@ -9,6 +9,8 @@
 package cmg.org.monitor.app.schedule;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,9 +19,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cmg.org.monitor.dao.InviteUserDAO;
+import cmg.org.monitor.dao.SystemAccountDAO;
 import cmg.org.monitor.dao.UtilityDAO;
+import cmg.org.monitor.dao.impl.InviteUserDaoImpl;
+import cmg.org.monitor.dao.impl.SystemAccountDaoImpl;
 import cmg.org.monitor.dao.impl.UtilityDaoImpl;
+import cmg.org.monitor.entity.shared.InvitedUser;
+import cmg.org.monitor.entity.shared.SystemRole;
+import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.ext.util.MonitorUtil;
+import cmg.org.monitor.services.MonitorLoginService;
 import cmg.org.monitor.services.SitesHelper;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
@@ -40,7 +50,7 @@ public class GatherScheduler extends HttpServlet {
 
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException {
-		
+
 		doSchedule();
 	}
 
@@ -54,7 +64,90 @@ public class GatherScheduler extends HttpServlet {
 			logger.log(Level.INFO, MonitorUtil.parseTime(start, true)
 					+ " -> START: Scheduled gather system data ...");
 			// BEGIN LOG
+			SystemAccountDAO accountDao = new SystemAccountDaoImpl();
+			InviteUserDAO userDao = new InviteUserDaoImpl();
+			logger.log(Level.INFO, MonitorUtil.parseTime(start, true)
+					+ " -> init DAO");
+			if (MonitorLoginService.temp3rdUsers != null) {
+				synchronized (MonitorLoginService.temp3rdUsers) {
+					logger.log(Level.INFO, MonitorUtil.parseTime(start, true)
+							+ " -> sync list");
+					if (MonitorLoginService.temp3rdUsers.size() > 0) {
+						logger.log(Level.INFO, MonitorUtil.parseTime(start, true)
+								+ " -> init temp list");
+						List<InvitedUser> inviteList = new ArrayList<InvitedUser>();
+						for (Object u : MonitorLoginService.temp3rdUsers) {
+							boolean check = false;
+							InvitedUser temp = (InvitedUser) u;
+							for (InvitedUser iu : inviteList) {
+								if (iu.getEmail().equalsIgnoreCase(
+										temp.getEmail())) {
+									check = true;
+									break;
+								}
+							}
+							if (!check) {
+								inviteList.add(temp);
+							}
+						}
+						logger.log(Level.INFO, MonitorUtil.parseTime(start, true)
+								+ " -> start check");
+						if (!inviteList.isEmpty()) {
+							List<SystemUser> listUsers = accountDao
+									.listAllSystemUser(false);
 
+							List<InvitedUser> list = userDao
+									.list3rdUserFromMemcache();
+							logger.log(Level.INFO, MonitorUtil.parseTime(start, true)
+									+ " -> init list system user, 3rd User");
+							for (InvitedUser iu : inviteList) {
+								boolean check = false;
+								if (listUsers != null && listUsers.size() > 0) {
+									for (SystemUser u : listUsers) {
+										if (u.getEmail().equalsIgnoreCase(
+												iu.getEmail())) {
+											check = true;
+											break;
+										}
+									}
+								}
+								if (!check) {
+									logger.log(Level.INFO, MonitorUtil.parseTime(start, true)
+											+ " -> start check invite list");
+									if (list != null && list.size() > 0) {
+										for (InvitedUser u : list) {
+											if (u.getEmail().equalsIgnoreCase(
+													iu.getEmail())) {
+												u.setStatus(InvitedUser.STATUS_ACTIVE);
+												SystemUser user = new SystemUser();
+												user.setFirstName(u
+														.getFirstName());
+												user.setLastName(u
+														.getLastName());
+												user.setUsername(u.getEmail());
+												user.setEmail(u.getEmail());
+												user.setDomain(SystemUser.THIRD_PARTY_USER);
+												user.addUserRole(SystemRole.ROLE_USER);
+												user.setGroupIDs(u
+														.getGroupIDs());
+												accountDao.createSystemUser(
+														user, true);
+												userDao.active3rdUser(u
+														.getEmail());
+												break;
+											}
+										}
+									}
+								}
+							}
+							accountDao.initSystemUserMemcache();
+							userDao.storeList3rdUserToMemcache(list);
+							MonitorLoginService.temp3rdUsers = new ArrayList<InvitedUser>();
+						}
+
+					}
+				}
+			}
 			UtilityDAO utilDAO = new UtilityDaoImpl();
 
 			utilDAO.putAboutContent(SitesHelper
@@ -62,13 +155,13 @@ public class GatherScheduler extends HttpServlet {
 
 			utilDAO.putHelpContent(SitesHelper
 					.getSiteEntryContent(MonitorConstant.SITES_HELP_CONTENT_ID));
-			
+
 			utilDAO.putRevisionContent(SitesHelper
 					.getSiteEntryContent(MonitorConstant.SITES_REVISIONS_CONTENT_ID));
-			
-			//utilDAO.putGroups();
-			
-			//utilDAO.putAllUsers();
+
+			// utilDAO.putGroups();
+
+			// utilDAO.putAllUsers();
 
 			// END LOG
 			long end = System.currentTimeMillis();

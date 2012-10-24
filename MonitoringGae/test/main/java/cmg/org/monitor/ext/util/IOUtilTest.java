@@ -9,14 +9,17 @@
 
 package cmg.org.monitor.ext.util;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
+import org.joda.time.DateTime;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
-import cmg.org.monitor.ext.model.MailContent;
-import cmg.org.monitor.util.shared.MonitorConstant;
+import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 
 /** 
  * DOCME
@@ -28,12 +31,28 @@ import cmg.org.monitor.util.shared.MonitorConstant;
  */
 
 public class IOUtilTest {
+	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(
+			new LocalDatastoreServiceTestConfig());
+
+
+	@Before
+	public void setUp() throws Exception {
+		helper.setUp();
+		
+	}
+
+	@After
+	public void tearDown() throws Exception {		
+		helper.tearDown();
+	}
 
 	/**
 	 * Test method for {@link cmg.org.monitor.ext.util.IOUtil#readResource(java.lang.String)}.
 	 */
 	@Test
 	public void testReadResource() {
+		new Date(System.currentTimeMillis());
+		/*
 		String a;
 		try {
 			a = IOUtil.readResource(IOUtil.CMG_SIGNATURE_TEMPLATE_PATH);
@@ -52,7 +71,17 @@ public class IOUtilTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
+
+		Date now = new Date(System.currentTimeMillis());
+		Date dtLondon = DateTimeUtils.convertDateWithZone(DateTime.now().toDate());
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT+1"));
+		System.out.println("London:" + sdf.format(dtLondon));
+		System.out.println("Here: " + sdf.format(now));		
+		//Date abc = new Date(dtLondon.getMillis());
 		
+		//System.out.println(abc + "/" + dtLondon.getHourOfDay());
 	}
 
 }
