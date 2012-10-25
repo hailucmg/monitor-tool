@@ -49,6 +49,7 @@ import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.ext.model.shared.UserMonitor;
+import cmg.org.monitor.ext.util.DateTimeUtils;
 import cmg.org.monitor.module.client.MonitorGwtService;
 import cmg.org.monitor.services.GoogleAccountService;
 import cmg.org.monitor.services.MonitorLoginService;
@@ -892,48 +893,105 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public boolean inviteUser3rd(String[] user, String groupID) {	
+	public boolean inviteUser3rd(String[] user, String groupID) {
 		MailService service = new MailService();
-		return service.inviteUsers(user, new String[] {groupID});
+		return service.inviteUsers(user, new String[] { groupID });
 	}
 
 	@Override
-	public boolean action3rd(String actionType, InvitedUser u)  {
+	public boolean action3rd(String actionType, InvitedUser u) {
 		InviteUserDAO userDao = new InviteUserDaoImpl();
 		boolean check = false;
-		if(actionType.equalsIgnoreCase("delete")){
+		if (actionType.equalsIgnoreCase("delete")) {
 			try {
 				check = userDao.delete3rdUser(u);
 			} catch (Exception e) {
-				logger.log(Level.SEVERE, "Cannot delete 3rd User. Message: " + e.getMessage());
+				logger.log(Level.SEVERE, "Cannot delete 3rd User. Message: "
+						+ e.getMessage());
 				check = false;
 			}
-			
-		}else if(actionType.equalsIgnoreCase("active")){
+
+		} else if (actionType.equalsIgnoreCase("active")) {
 			try {
 				check = userDao.active3rdUser(u);
 			} catch (Exception e) {
-				logger.log(Level.SEVERE, "Cannot active 3rd User. Message: " + e.getMessage());
+				logger.log(Level.SEVERE, "Cannot active 3rd User. Message: "
+						+ e.getMessage());
 				check = false;
 			}
-			
+
 		}
 		return check;
 		// to delete
-		//userDao.delete3rdUser(id);
+		// userDao.delete3rdUser(id);
 		// to active
-		//userDao.active3rdUser(id);
+		// userDao.active3rdUser(id);
 	}
 
 	/**
 	 * (non-Javadoc)
-	 * @see cmg.org.monitor.module.client.MonitorGwtService#sendRequestPermission(java.lang.String, java.lang.String, java.lang.String) 
+	 * 
+	 * @see cmg.org.monitor.module.client.MonitorGwtService#sendRequestPermission(java.lang.String,
+	 *      java.lang.String, java.lang.String)
 	 */
 	public boolean sendRequestPermission(String firstname, String lastname,
 			String description) {
 		UserService userService = UserServiceFactory.getUserService();
 		MailService mailService = new MailService();
-		return mailService.requestPermission(userService.getCurrentUser().getEmail(), firstname, lastname, description);
+		return mailService.requestPermission(userService.getCurrentUser()
+				.getEmail(), firstname, lastname, description);
+	}
+
+	/**
+	 * (non-Javadoc)
+	 * 
+	 * @see cmg.org.monitor.module.client.MonitorGwtService#updateFullName(java.lang.String,
+	 *      java.lang.String)
+	 */
+	public boolean updateFullName(String firstname, String lastname) {
+		InviteUserDAO userDao = new InviteUserDaoImpl();
+		UserService userService = UserServiceFactory.getUserService();
+		try {
+			InvitedUser user = new InvitedUser();
+			user.setEmail(userService.getCurrentUser().getEmail());
+			user.setFirstName(firstname);
+			user.setLastName(lastname);
+			return userDao.updateFullname(user);
+		} catch (Exception ex) {
+			logger.log(Level.SEVERE, "Cannot update user fullname. Message: "
+					+ ex.getMessage());
+			return false;
+		}
+	}
+
+	/**
+	 * (non-Javadoc)
+	 * 
+	 * @see cmg.org.monitor.module.client.MonitorGwtService#listTimeZone()
+	 */
+	public MonitorContainer listTimeZone() {
+		UtilityDAO utilDao = new UtilityDaoImpl();
+		MonitorContainer mc = new MonitorContainer();
+		mc.setListTimeZone(DateTimeUtils.listAllTimeZone());
+		mc.setCurrentTimeZone(utilDao.getCurrentTimeZone());
+		return mc;
+	}
+
+	/**
+	 * (non-Javadoc)
+	 * 
+	 * @see cmg.org.monitor.module.client.MonitorGwtService#updateTimeZone(java.lang.String)
+	 */
+	public boolean updateTimeZone(String timeZone) {
+		UtilityDAO utilDao = new UtilityDaoImpl();
+		try {
+			return utilDao.setCurrentTimeZone(timeZone);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE,
+					"Cannot update time zone. Message: " + e.getMessage());
+			return false;
+		}
+
 	}
 
 }

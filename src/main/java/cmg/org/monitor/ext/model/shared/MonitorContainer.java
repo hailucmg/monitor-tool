@@ -1,8 +1,5 @@
 package cmg.org.monitor.ext.model.shared;
 
-import java.io.Serializable;
-import java.util.List;
-
 import cmg.org.monitor.entity.shared.ChangeLogMonitor;
 import cmg.org.monitor.entity.shared.InvitedUser;
 import cmg.org.monitor.entity.shared.MemoryMonitor;
@@ -10,6 +7,8 @@ import cmg.org.monitor.entity.shared.NotifyMonitor;
 import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.entity.shared.SystemUser;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /** 
 	* DOCME
@@ -19,12 +18,7 @@ import cmg.org.monitor.entity.shared.SystemUser;
 	* @version $Revision$
 	* @Last changed: $LastChangedDate$
 */
-public class MonitorContainer implements Serializable {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7534556803682802817L;
+public class MonitorContainer implements IsSerializable {
 
 	private GroupMonitor[] groups;
 	
@@ -50,6 +44,10 @@ public class MonitorContainer implements Serializable {
 	private SystemUser[] listSystemUsers;
 	
 	private InvitedUser[] listInvitedUsers;
+	
+	private String[] listTimeZone;
+	
+	private String currentTimeZone;
 	
 
 	public InvitedUser[] getListInvitedUsers() {
@@ -155,6 +153,36 @@ public class MonitorContainer implements Serializable {
 
 	public void setChangelog(ChangeLogMonitor changelog) {
 		this.changelog = changelog;
+	}
+
+	/** 
+	 * @return the listTimeZone 
+	 */
+	public String[] getListTimeZone() {
+		return listTimeZone;
+	}
+
+	/** 
+	 * @param listTimeZone the listTimeZone to set 
+	 */
+	
+	public void setListTimeZone(String[] listTimeZone) {
+		this.listTimeZone = listTimeZone;
+	}
+
+	/** 
+	 * @return the currentTimeZone 
+	 */
+	public String getCurrentTimeZone() {
+		return currentTimeZone;
+	}
+
+	/** 
+	 * @param currentTimeZone the currentTimeZone to set 
+	 */
+	
+	public void setCurrentTimeZone(String currentTimeZone) {
+		this.currentTimeZone = currentTimeZone;
 	}	
 	
 }

@@ -124,4 +124,6 @@ public interface SystemAccountDAO {
 	public List<SystemUser> listSystemUserFromMemcache();
 	public void storeListGoogleAccountToMemcache(List<GoogleAccount> list);
 	public List<GoogleAccount> listGoogleAccountFromMemcache();
+	
+	boolean updateFullname(String email, String firstName, String lastName) throws Exception ;
 }

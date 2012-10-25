@@ -2,6 +2,7 @@ package cmg.org.monitor.entity.shared;
 
 import java.util.Date;
 
+import javax.annotation.Nullable;
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -89,20 +90,27 @@ public class SystemMonitor implements IsSerializable  {
 	
 	@Persistent
 	private
-	int startHour;
+	Integer startHour;
 	
 	@Persistent
 	private
-	int startMinute;
+	Integer startMinute;
 	
 	@Persistent
 	private
-	int endHour;
+	Integer endHour;
 	
 	@Persistent
 	private
-	int endMinute;
+	Integer endMinute;	
 	
+	@Persistent
+	private
+	Integer endMinutes;
+	
+	@Persistent
+	private
+	Integer startMinutes;
 
 
 	public NotifyMonitor getNotify() {
@@ -129,6 +137,8 @@ public class SystemMonitor implements IsSerializable  {
 		this.startMinute = 0;
 		this.endHour = 0;
 		this.endMinute = 0;
+		this.endMinutes = 0;
+		this.startMinutes = 0;
 	}
 
 	public SystemMonitor(String code, String name, String url,
@@ -166,6 +176,12 @@ public class SystemMonitor implements IsSerializable  {
 		timeStamp = sys.getTimeStamp();
 		lastestCpuUsage = sys.getLastestCpuUsage();
 		lastestMemoryUsage = sys.getLastestMemoryUsage();
+		startHour = sys.getStartHour();
+		startMinute = sys.getStartMinute();
+		endHour = sys.getEndHour();
+		endMinute = sys.getEndMinute();
+		endMinutes = sys.getEndMinutes();
+		startMinutes = sys.getStartMinutes();
 	}
 
 	public String getId() {
@@ -370,6 +386,36 @@ public class SystemMonitor implements IsSerializable  {
 	
 	public void setEndMinute(int endMinute) {
 		this.endMinute = endMinute;
+	}
+
+	/** 
+	 * @return the endMinutes 
+	 */
+	public Integer getEndMinutes() {
+		return endMinutes == null ? 0 : endMinutes;
+	}
+
+	/** 
+	 * @param endMinutes the endMinutes to set 
+	 */
+	
+	public void setEndMinutes(Integer endMinutes) {
+		this.endMinutes = endMinutes;
+	}
+
+	/** 
+	 * @return the startMinutes 
+	 */
+	public Integer getStartMinutes() {
+		return startMinutes == null ? 0 : startMinutes;
+	}
+
+	/** 
+	 * @param startMinutes the startMinutes to set 
+	 */
+	
+	public void setStartMinutes(Integer startMinutes) {
+		this.startMinutes = startMinutes;
 	}
 
 }

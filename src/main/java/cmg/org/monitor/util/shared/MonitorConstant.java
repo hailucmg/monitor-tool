@@ -1,6 +1,9 @@
 package cmg.org.monitor.util.shared;
 
 public final class MonitorConstant {
+	public static final String QR_CODE_LINK_START = "https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=";
+	public static final String QR_CODE_LINK_END = "&chld=L%7C1&choe=UTF-8";
+	
 	public static final String DEFAULT_SYSTEM_TIME_ZONE = "Europe/London";
 	
 	public static final boolean DEBUG = false;

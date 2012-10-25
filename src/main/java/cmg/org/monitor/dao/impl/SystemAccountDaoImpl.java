@@ -915,4 +915,50 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 			pm.close();
 		}
 	}
+
+	/**
+	 * (non-Javadoc)
+	 * @see cmg.org.monitor.dao.SystemAccountDAO#updateFullname(java.lang.String, java.lang.String, java.lang.String) 
+	 */
+	public boolean updateFullname(String email, String firstName,
+			String lastName) throws Exception {
+		boolean check = false;
+		initPersistence();
+		Query query = pm.newQuery(SystemUser.class);
+		query.setFilter("email == emailPara");
+		query.declareParameters("String emailPara");
+		List<SystemUser> temp = null;
+		try {
+			temp = (List<SystemUser>) query.execute(email);
+			if (!temp.isEmpty()) {
+				SystemUser user = temp.get(0);
+				user.setFirstName(firstName);
+				user.setLastName(lastName);
+				pm.makePersistent(user);			
+				check = true;
+			}
+		} catch (Exception e) {
+			logger.log(
+					Level.SEVERE,
+					" ERROR when getSystemUserByEmail. Message: "
+							+ e.getMessage());
+			throw e;
+		} finally {
+			pm.close();
+		}
+		if (check) {
+			List<SystemUser> list = listSystemUserFromMemcache();
+			if (list != null && list.size() > 0) {
+				for (SystemUser u : list ) {
+					if (u.getEmail().equalsIgnoreCase(email)) {
+						u.setFirstName(firstName);
+						u.setLastName(lastName);
+						break;
+					}
+				}
+			}
+			storeListSystemUserToMemcache(list);
+		}
+		return check;
+	}
 }

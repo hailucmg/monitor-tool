@@ -324,6 +324,12 @@ public class SystemDaoImpl implements SystemDAO {
 		temp.setRemoteUrl(sys.getRemoteUrl());
 		temp.setActive(sys.isActive());
 		temp.setNotify(sys.getNotify());
+		temp.setStartHour(sys.getStartHour());
+		temp.setEndHour(sys.getEndHour());
+		temp.setStartMinute(sys.getStartMinute());
+		temp.setEndMinute(sys.getEndMinute());
+		temp.setEndMinutes(sys.getEndMinutes());
+		temp.setStartMinutes(sys.getStartMinutes());
 		return updateSystem(temp, true);
 	}
 

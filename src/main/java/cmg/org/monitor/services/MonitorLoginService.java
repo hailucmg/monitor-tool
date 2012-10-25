@@ -66,12 +66,15 @@ public class MonitorLoginService {
 						for (SystemUser u : list) {
 							if (u.getEmail().equalsIgnoreCase(user.getEmail())) {
 								sysUser = u;
+								break;
 							}
 						}
 					}
 
 					userLogin.setRole(MonitorConstant.ROLE_GUEST);
 					if (sysUser != null) {
+						userLogin.setFirstName(sysUser.getFirstName());
+						userLogin.setLastName(sysUser.getLastName());
 						userLogin.setGroupIds(sysUser.getGroupIDs());
 						if (sysUser.checkRole(SystemRole.ROLE_ADMINISTRATOR)) {
 							userLogin.setRole(MonitorConstant.ROLE_ADMIN);
@@ -106,6 +109,8 @@ public class MonitorLoginService {
 										userLogin
 												.setRole(MonitorConstant.ROLE_NORMAL_USER);
 										userLogin.setGroupIds(u.getGroupIDs());
+										userLogin.setFirstName(u.getFirstName());
+										userLogin.setLastName(u.getLastName());
 										getTemp3rdUsers().add(u);
 										Gson gson = new Gson();
 										MonitorMemcache

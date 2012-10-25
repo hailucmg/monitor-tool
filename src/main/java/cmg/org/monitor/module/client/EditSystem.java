@@ -72,6 +72,8 @@ public class EditSystem extends AncestorEntryPoint {
 	AbsolutePanel panelButton;
 	AbsolutePanel panelValidateEmail;
 	AbsolutePanel panelValidateGroups;
+	AbsolutePanel panelValidateExcTime;	
+	
 	private static FlexTable tableForm;
 	private static Grid tableNotify;
 	private DisclosurePanel advancedDisclosure;
@@ -149,9 +151,6 @@ public class EditSystem extends AncestorEntryPoint {
 									}
 									list.add(groups[i]);
 								}
-								System.out.println("checking");
-								//check if group not existed
-								System.out.println(checkExistGroup);
 								if(checkExistGroup){
 									list = sortBynameSystemGroup(list);
 									for(int i = 0 ; i < list.size();i++){
@@ -182,12 +181,12 @@ public class EditSystem extends AncestorEntryPoint {
 								
 								startTime.setTitle("Start");
 								startTime.setSize("90","280");
-								startTime.setTime("24h", 0, 0);
+								startTime.setTime("24h", system.getStartHour(), system.getStartMinute());
 								
 								endTime = new HourMinutePicker(PickerFormat._24_HOUR);
 								endTime.setTitle("End");
 								endTime.setSize("4em","2em");
-								endTime.setTime("24h", 0, 0);
+								endTime.setTime("24h", system.getEndHour(), system.getEndMinute());
 								tableExTime.setWidget(0, 0, lblStartTime);
 								tableExTime.setWidget(0, 1, startTime);
 								tableExTime.setWidget(0, 2, lblEndTime);
@@ -396,6 +395,8 @@ public class EditSystem extends AncestorEntryPoint {
 								
 								panelValidateGroups = new AbsolutePanel();
 								
+								panelValidateExcTime = new AbsolutePanel();
+								
 								tableForm.setWidget(0, 0, labelName);
 								tableForm.setWidget(0, 1, txtName);
 								tableForm.setWidget(0, 2, panelValidateName);
@@ -406,7 +407,8 @@ public class EditSystem extends AncestorEntryPoint {
 								tableForm.setWidget(2, 1, txtIP);
 								tableForm.setWidget(2, 2, panelValidateIP);
 								tableForm.setWidget(3, 0, lblExclusionTime);
-								tableForm.setWidget(3, 1, tableExTime);	
+								tableForm.setWidget(3, 1, tableExTime);
+								tableForm.setWidget(3, 2, panelValidateExcTime);	
 								tableForm.setWidget(4, 0, labelactive);
 								tableForm.setWidget(4, 1, listActive);
 								tableForm.setWidget(5, 0, labelprotocol);
@@ -540,12 +542,15 @@ public class EditSystem extends AncestorEntryPoint {
 					String validateIp = validateIP(txtIP.getText());
 					String validateRemoteURL = validateRemoteURL(txtRemote
 							.getText());
+					String validateExctime = validateExcTime();
+					
 					panelValidateEmail.setVisible(false);
 					panelValidateIP.setVisible(false);
 					panelValidateName.setVisible(false);
 					panelValidateIP.setVisible(false);
 					panelValidateURL.setVisible(false);
 					panelValidateGroups.setVisible(false);
+					panelValidateExcTime.setVisible(false);
 					if (validateName != "") {
 						panelValidateName.clear();
 						panelValidateName.add(new HTML(
@@ -557,6 +562,7 @@ public class EditSystem extends AncestorEntryPoint {
 						panelValidateRemoteURL.setVisible(false);
 						panelValidateEmail.setVisible(false);
 						panelValidateGroups.setVisible(false);
+						panelValidateExcTime.setVisible(false);
 						return;
 					} else if (validateURL != "") {
 						panelValidateURL.clear();
@@ -569,6 +575,7 @@ public class EditSystem extends AncestorEntryPoint {
 						panelValidateIP.setVisible(false);
 						panelValidateEmail.setVisible(false);
 						panelValidateGroups.setVisible(false);
+						panelValidateExcTime.setVisible(false);
 						return;
 					} else if (validateIp != "") {
 						panelValidateIP.clear();
@@ -581,8 +588,21 @@ public class EditSystem extends AncestorEntryPoint {
 						panelValidateIP.setVisible(false);
 						panelValidateURL.setVisible(false);
 						panelValidateGroups.setVisible(false);
+						panelValidateExcTime.setVisible(false);
 						return;
-					} else if (validateRemoteURL != "") {
+					}  else if (validateExctime != "") {
+						panelValidateExcTime.clear();
+						panelValidateExcTime.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">"
+								+ validateExctime + "</div>"));
+						panelValidateExcTime.setVisible(true);
+						panelValidateIP.setVisible(false);
+						panelValidateName.setVisible(false);
+						panelValidateRemoteURL.setVisible(false);
+						panelValidateURL.setVisible(false);
+						panelValidateEmail.setVisible(false);
+						panelValidateGroups.setVisible(false);
+						return;
+					}  else if (validateRemoteURL != "") {
 						if (!listProtocol.getItemText(
 								listProtocol.getSelectedIndex()).equals("SMTP")) {
 							panelValidateRemoteURL.clear();
@@ -595,6 +615,7 @@ public class EditSystem extends AncestorEntryPoint {
 							panelValidateEmail.setVisible(false);
 							panelValidateURL.setVisible(false);
 							panelValidateGroups.setVisible(false);
+							panelValidateExcTime.setVisible(false);
 							return;
 						}
 					}else if(validateGroup == ""){
@@ -605,6 +626,7 @@ public class EditSystem extends AncestorEntryPoint {
 						panelValidateName.setVisible(false);
 						panelValidateIP.setVisible(false);
 						panelValidateURL.setVisible(false);
+						panelValidateExcTime.setVisible(false);
 						return;
 					}
 					panelValidateGroups.setVisible(false);
@@ -614,6 +636,7 @@ public class EditSystem extends AncestorEntryPoint {
 					panelValidateIP.setVisible(false);
 					panelValidateURL.setVisible(false);
 					panelAdding.setVisible(true);
+					panelValidateExcTime.setVisible(false);
 
 					NotifyMonitor nm = new NotifyMonitor();
 					nm.setNotifyCpu(cbNotifyCpu.getValue());
@@ -636,8 +659,13 @@ public class EditSystem extends AncestorEntryPoint {
 					sysNew.setEmailRevice(txtEmail.getText());
 					sysNew.setActive(isActive(listActive.getItemText(listActive
 							.getSelectedIndex())));
+					sysNew.setStartHour(startTime.getHour());
+					sysNew.setEndHour(endTime.getHour());
+					sysNew.setStartMinute(startTime.getMinute());
+					sysNew.setEndMinute(endTime.getMinute());
 					sysNew.setNotify(nm);
-				
+					sysNew.setStartMinutes(startTime.getMinutes());
+					sysNew.setEndMinutes(endTime.getMinutes());
 					editSystem(sysNew);
 				} else if (listProtocol.getItemText(
 						listProtocol.getSelectedIndex()).equals(
@@ -645,6 +673,7 @@ public class EditSystem extends AncestorEntryPoint {
 					String validateGroup = listGroup.getItemText(listGroup
 							.getSelectedIndex());
 					String validateName = validateName(txtName.getText());
+					String validateExctime = validateExcTime();
 					String validateURL = validateURL(txtURL.getText());
 					String validateIp = validateIP(txtIP.getText());
 					String validateEmail = validateEmail(txtEmail.getText());
@@ -654,6 +683,7 @@ public class EditSystem extends AncestorEntryPoint {
 					panelValidateIP.setVisible(false);
 					panelValidateURL.setVisible(false);
 					panelValidateGroups.setVisible(false);
+					panelValidateExcTime.setVisible(false);
 					if (validateName != "") {
 						panelValidateName.clear();
 						panelValidateName.add(new HTML(
@@ -665,6 +695,7 @@ public class EditSystem extends AncestorEntryPoint {
 						panelValidateRemoteURL.setVisible(false);
 						panelValidateEmail.setVisible(false);
 						panelValidateGroups.setVisible(false);
+						panelValidateExcTime.setVisible(false);
 						return;
 					} else if (validateURL != "") {
 						panelValidateURL.clear();
@@ -677,6 +708,7 @@ public class EditSystem extends AncestorEntryPoint {
 						panelValidateIP.setVisible(false);
 						panelValidateEmail.setVisible(false);
 						panelValidateGroups.setVisible(false);
+						panelValidateExcTime.setVisible(false);
 						return;
 					} else if (validateIp != "") {
 						panelValidateIP.clear();
@@ -689,8 +721,21 @@ public class EditSystem extends AncestorEntryPoint {
 						panelValidateIP.setVisible(false);
 						panelValidateURL.setVisible(false);
 						panelValidateGroups.setVisible(false);
+						panelValidateExcTime.setVisible(false);
 						return;
-					} else if (validateEmail != "") {
+					} else if (validateExctime != "") {
+						panelValidateExcTime.clear();
+						panelValidateExcTime.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">"
+								+ validateExctime + "</div>"));
+						panelValidateExcTime.setVisible(true);
+						panelValidateIP.setVisible(false);
+						panelValidateName.setVisible(false);
+						panelValidateRemoteURL.setVisible(false);
+						panelValidateURL.setVisible(false);
+						panelValidateEmail.setVisible(false);
+						panelValidateGroups.setVisible(false);
+						return;
+					}  else if (validateEmail != "") {
 						panelValidateEmail.clear();
 						panelValidateEmail.add(new HTML(
 								"<div class=\"error-left\"></div><div class=\"error-inner\">"
@@ -701,6 +746,7 @@ public class EditSystem extends AncestorEntryPoint {
 						panelValidateIP.setVisible(false);
 						panelValidateURL.setVisible(false);
 						panelValidateGroups.setVisible(false);
+						panelValidateExcTime.setVisible(false);
 						return;
 
 					}else if(validateGroup == ""){
@@ -711,6 +757,7 @@ public class EditSystem extends AncestorEntryPoint {
 						panelValidateName.setVisible(false);
 						panelValidateIP.setVisible(false);
 						panelValidateURL.setVisible(false);
+						panelValidateExcTime.setVisible(false);
 						return;
 					}
 					panelValidateGroups.setVisible(false);
@@ -719,6 +766,7 @@ public class EditSystem extends AncestorEntryPoint {
 					panelValidateName.setVisible(false);
 					panelValidateIP.setVisible(false);
 					panelValidateURL.setVisible(false);
+					panelValidateExcTime.setVisible(false);
 					panelAdding.setVisible(true);
 
 					NotifyMonitor nm = new NotifyMonitor();
@@ -742,6 +790,12 @@ public class EditSystem extends AncestorEntryPoint {
 					sysNew.setActive(isActive(listActive.getItemText(listActive
 							.getSelectedIndex())));
 					sysNew.setNotify(nm);
+					sysNew.setStartHour(startTime.getHour());
+					sysNew.setEndHour(endTime.getHour());
+					sysNew.setStartMinute(startTime.getMinute());
+					sysNew.setEndMinute(endTime.getMinute());
+					sysNew.setStartMinutes(startTime.getMinutes());
+					sysNew.setEndMinutes(endTime.getMinutes());
 					editSystem(sysNew);
 				}
 			}
@@ -927,5 +981,20 @@ public class EditSystem extends AncestorEntryPoint {
 	protected void initDialog() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+
+	private String validateExcTime() {
+		if (startTime.getMinutes() == null) {
+			return "Please set value of start time";
+		}
+		if (endTime.getMinutes() == null) {
+			return "Please set value of end time";
+		}
+
+		if (startTime.getMinutes() > endTime.getMinutes()) {
+			return "Please set end time greater than start time";
+		}
+		return "";
 	}
 }

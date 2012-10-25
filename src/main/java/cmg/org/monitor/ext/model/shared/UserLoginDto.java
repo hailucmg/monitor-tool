@@ -20,6 +20,10 @@ public class UserLoginDto implements Serializable {
 	private boolean isLogin;
 	private String logoutUrl;
 	private String loginUrl;
+	
+	private String firstName;
+	
+	private String lastName;
 
 	private boolean isAdmin;
 	private List<String> groupIds;
@@ -164,5 +168,43 @@ public class UserLoginDto implements Serializable {
 	
 	public void setNeedAddAccount(boolean needAddAccount) {
 		this.needAddAccount = needAddAccount;
+	}
+
+	/** 
+	 * @return the firstName 
+	 */
+	public String getFirstName() {
+		return firstName;
+	}
+
+	/** 
+	 * @param firstName the firstName to set 
+	 */
+	
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	/** 
+	 * @return the lastName 
+	 */
+	public String getLastName() {
+		return lastName;
+	}
+
+	/** 
+	 * @param lastName the lastName to set 
+	 */
+	
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+	
+	public String getFullname() {
+		if (firstName == null || firstName.length() == 0
+				|| lastName == null || lastName.length() == 0) {
+			return "";
+		}		
+		return firstName + " " + lastName;
 	}
 }

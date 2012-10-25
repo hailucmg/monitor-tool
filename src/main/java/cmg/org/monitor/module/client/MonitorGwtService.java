@@ -105,4 +105,10 @@ public interface MonitorGwtService extends RemoteService {
 	
 	boolean sendRequestPermission(String firstname, String lastname, String description);
 	
+	boolean updateFullName(String firstname, String lastname);
+	
+	MonitorContainer listTimeZone();
+	
+	boolean updateTimeZone(String timeZone);
+	
 }

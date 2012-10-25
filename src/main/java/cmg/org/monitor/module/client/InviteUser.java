@@ -521,14 +521,14 @@ public class InviteUser extends AncestorEntryPoint{
 							table_list_3rdParty.draw(createDataListSystem(listUser3rds, filterStatic),createOptionsTableListUser());
 				 			tableInterface.setWidget(1, 0, table_list_3rdParty);
 						}else{
-							showMessage("There are no user!.","", "", HTMLControl.BLUE_MESSAGE, true);
+							showMessage("There are no user!.","", "", HTMLControl.RED_MESSAGE, true);
 							tableInterface.remove(table_list_3rdParty);
 						}
 						setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
 						dialogFunction.hide();
 	 					setVisibleLoadingImage(false);
 						showMessage(ActionStatic + " sucessfully!", "", "",
-								HTMLControl.YELLOW_MESSAGE, true);
+								HTMLControl.BLUE_MESSAGE, true);
 						
 					}else{
 						initData(filterStatic);

@@ -37,4 +37,8 @@ public interface UtilityDAO {
 	public void putLinkDefault(String link);
 	
 	public String getLinkDefault();
+	
+	public String getCurrentTimeZone();
+	
+	public boolean setCurrentTimeZone(String timezone) throws Exception;
 }
