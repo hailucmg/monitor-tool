@@ -186,7 +186,23 @@ public class InviteUser extends AncestorEntryPoint{
 	$wnd.showDialogInvited =
 	$entry(@cmg.org.monitor.module.client.InviteUser::showDialogInvited())
 	}-*/;
- 	
+	 
+	 public static List<SystemGroup> sortBynameSystemGroup(List<SystemGroup> groups) {
+			SystemGroup temp = null;
+			for (int i = 1; i < groups.size(); i++) {
+				int j;
+				SystemGroup val = groups.get(i);
+				for (j = i - 1; j > -1; j--) {
+					temp = groups.get(j);
+					if (temp.compareByName(val) <= 0) {
+						break;
+					}
+					groups.set(j+1, temp);
+				}
+				groups.set(j+1, val);
+			}
+			return groups;
+		}
  	/**
 	  * Inits the data.
 	  *
@@ -211,6 +227,7 @@ public class InviteUser extends AncestorEntryPoint{
 									listUser3rds.add(u);
 								}
 							}
+							listGroup = sortBynameSystemGroup(listGroup);
 							//init UI
 							initUI(listUser3rds, filter);
 						}else{
