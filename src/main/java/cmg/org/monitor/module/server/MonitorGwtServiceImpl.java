@@ -7,6 +7,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import cmg.org.monitor.dao.AccountSyncLogDAO;
 import cmg.org.monitor.dao.AlertDao;
@@ -322,8 +326,18 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		ServiceMonitor[] services = null;
 		ArrayList<ServiceMonitor> list = serviceDAO.listService(sys);
 		if (list != null && list.size() > 0) {
+			UtilityDAO utilDao = new UtilityDaoImpl();
+			String currentZone = utilDao.getCurrentTimeZone();
+			DateTime temp = null;
+			
 			services = new ServiceMonitor[list.size()];
-			list.toArray(services);
+			for (int i = 0; i < list.size(); i++) {
+				ServiceMonitor s = list.get(i);
+				temp = new DateTime(s.getSystemDate());
+				temp = temp.withZone(DateTimeZone.forID(currentZone));
+				s.setStrSystemDate(temp.toString(DateTimeFormat.forPattern(MonitorConstant.SYSTEM_DATE_FORMAT)));
+				services[i] = s;
+			}			
 		}
 		return services;
 	}
@@ -429,8 +443,19 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		}
 		ChangeLogMonitor[] list = null;
 		if (changelogs != null && changelogs.size() > 0) {
+			UtilityDAO utilDao = new UtilityDaoImpl();
+			String currentZone = utilDao.getCurrentTimeZone();
+			DateTime temp = null;
+			
 			list = new ChangeLogMonitor[changelogs.size()];
-			changelogs.toArray(list);
+			
+			for (int i = 0; i < changelogs.size(); i++) {
+				ChangeLogMonitor c =changelogs.get(i);
+				temp = new DateTime(c.getDatetime());
+				temp = temp.withZone(DateTimeZone.forID(currentZone));
+				c.setStrDateTime(temp.toString(DateTimeFormat.forPattern(MonitorConstant.SYSTEM_DATE_FORMAT)));
+				list[i] = c;
+			}			
 		}
 		container.setChangelogCount(count);
 		container.setChangelogs(list);
@@ -620,16 +645,26 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public GoogleAccount[] listAllGoogleAcc() throws Exception {
 		SystemAccountDAO dao = new SystemAccountDaoImpl();
+		UtilityDAO utilDao = new UtilityDaoImpl();
+		String currentZone = utilDao.getCurrentTimeZone();
+		DateTime temp = null;
 		List<GoogleAccount> list = new ArrayList<GoogleAccount>();
+		
 		try {
 			list = dao.listAllGoogleAccount();
 			if (list != null && !list.isEmpty()) {
 				GoogleAccount[] tempList = new GoogleAccount[list.size()];
-				list.toArray(tempList);
+				for (int i = 0; i < list.size(); i++) {
+					GoogleAccount acc = list.get(i);
+					temp = new DateTime(acc.getLastSync());
+					temp = temp.withZone(DateTimeZone.forID(currentZone));
+					acc.setStrLastSync(temp.toString(DateTimeFormat.forPattern(MonitorConstant.SYSTEM_DATE_FORMAT)));
+					tempList[i] = acc;
+				}				
 				return tempList;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.log(Level.SEVERE, "Cannot list google account. Message: " + e.getMessage());
 		}
 		return null;
 	}

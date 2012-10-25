@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
@@ -51,7 +52,8 @@ public class ChangeLogMonitor implements IsSerializable{
 	@Persistent
 	private int type;
 	
-	
+	@NotPersistent
+	private String strDateTime;
 	
 	public ChangeLogMonitor(){
 		
@@ -115,6 +117,21 @@ public class ChangeLogMonitor implements IsSerializable{
 
 	public void setSystemName(String systemName) {
 		this.systemName = systemName;
+	}
+
+	/** 
+	 * @return the strDateTime 
+	 */
+	public String getStrDateTime() {
+		return strDateTime;
+	}
+
+	/** 
+	 * @param strDateTime the strDateTime to set 
+	 */
+	
+	public void setStrDateTime(String strDateTime) {
+		this.strDateTime = strDateTime;
 	}
 
 	

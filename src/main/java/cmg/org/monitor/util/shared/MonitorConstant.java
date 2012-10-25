@@ -1,6 +1,8 @@
 package cmg.org.monitor.util.shared;
 
 public final class MonitorConstant {
+	public static final String SYSTEM_DATE_FORMAT ="dd/MM/yyyy hh:mm:ss";
+	
 	public static final String QR_CODE_LINK_START = "https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=";
 	public static final String QR_CODE_LINK_END = "&chld=L%7C1&choe=UTF-8";
 	

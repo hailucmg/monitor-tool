@@ -284,14 +284,14 @@ public class SystemChangeLog extends AncestorEntryPoint {
 	static AbstractDataTable createDataListChangeLog(ChangeLogMonitor[] result) {
 		DataTable data = DataTable.create();
 		data.addColumn(ColumnType.STRING, "System Name");
-		data.addColumn(ColumnType.DATETIME, "Date Change");
+		data.addColumn(ColumnType.STRING, "Date Change");
 		data.addColumn(ColumnType.STRING, "Changed By");
 		data.addColumn(ColumnType.STRING, "Description");
 		if (result != null && result.length > 0) {
 			data.addRows(result.length);
 			for (int i = 0; i < result.length; i++) {
 				data.setValue(i, 0, result[i].getSystemName());
-				data.setValue(i, 1, result[i].getDatetime());
+				data.setValue(i, 1, result[i].getStrDateTime());
 				data.setValue(i, 2, result[i].getUsername());
 				data.setValue(i, 3, result[i].getDescription());
 			}

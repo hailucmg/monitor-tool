@@ -19,6 +19,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+
 import cmg.org.monitor.dao.AlertDao;
 import cmg.org.monitor.dao.MailMonitorDAO;
 import cmg.org.monitor.dao.SystemAccountDAO;
@@ -71,12 +75,16 @@ public class MailServiceScheduler extends HttpServlet {
 	 */
 	public void doSchedule() {
 		// BEGIN LOG
+		UtilityDAO utilDAO = new UtilityDaoImpl();
 		long start = System.currentTimeMillis();
 		logger.log(Level.INFO, MonitorUtil.parseTime(start, true)
 				+ " -> START: Scheduled send alert mail ...");
+		String currentZone = utilDAO.getCurrentTimeZone();
+		DateTime dtStart = new DateTime(start);
+		dtStart = dtStart.withZone(DateTimeZone.forID(currentZone));
 		// BEGIN LOG
 		String alertName = MonitorConstant.ALERTSTORE_DEFAULT_NAME + ": "
-				+ MonitorUtil.parseTime(start, false);
+				+ dtStart.toString(DateTimeFormat.forPattern(MonitorConstant.SYSTEM_DATE_FORMAT));
 		SystemAccountDAO accountDao = new SystemAccountDaoImpl();
 		SystemDAO sysDAO = new SystemDaoImpl();
 		AlertDao alertDAO = new AlertDaoImpl();
@@ -84,7 +92,7 @@ public class MailServiceScheduler extends HttpServlet {
 				.listSystemsFromMemcache(false);
 
 		MailMonitorDAO mailDAO = new MailMonitorDaoImpl();
-		UtilityDAO utilDAO = new UtilityDaoImpl();
+		
 		SystemGroupDAO groupDao = new SystemGroupDaoImpl();
 		if (systems != null && systems.size() > 0) {
 			ArrayList<UserMonitor> listUsers = utilDAO.listAllUsers();
