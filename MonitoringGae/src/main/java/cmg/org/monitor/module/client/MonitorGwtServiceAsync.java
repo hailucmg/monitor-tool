@@ -117,4 +117,11 @@ public interface MonitorGwtServiceAsync {
 
 	void sendRequestPermission(String firstname, String lastname,
 			String description, AsyncCallback<Boolean> callback);
+
+	void updateFullName(String firstname, String lastname,
+			AsyncCallback<Boolean> callback);
+
+	void listTimeZone(AsyncCallback<MonitorContainer> callback);
+
+	void updateTimeZone(String timeZone, AsyncCallback<Boolean> callback);
 }

@@ -45,6 +45,7 @@ import cmg.org.monitor.ext.model.MailContent;
 import cmg.org.monitor.ext.util.IOUtil;
 import cmg.org.monitor.ext.util.MailAsync;
 import cmg.org.monitor.ext.util.MonitorUtil;
+import cmg.org.monitor.ext.util.StringUtils;
 import cmg.org.monitor.memcache.Key;
 import cmg.org.monitor.memcache.MonitorMemcache;
 import cmg.org.monitor.services.GoogleAccountService;
@@ -292,9 +293,16 @@ public class MailService {
 		SystemMonitor sys = null;
 
 		StringBuffer sb = new StringBuffer();
-		sb.append("<div><p><img src=\"http://"
+		sb.append("<div><table width=\"100%\"><tbody><tr><td style=\"vertical-align: top;\">");
+		sb.append("<p><img src=\"http://"
 				+ MonitorConstant.PROJECT_HOST_NAME
 				+ "/images/logo/c-mg_logo.png\" width=\"200px\" height=\"80px\"/></p>");
+		sb.append("</td><td width=\"20%\" style=\"text-align: right;\">");
+		sb.append("<img alt=\""+MonitorConstant.PROJECT_NAME+"\" width=\"100%\" src="
+				+ StringUtils.getQRImageLink("http://"
+						+ MonitorConstant.PROJECT_HOST_NAME)
+				+ " /></td></tr></tbody></table>");
+
 		sb.append("<ol style=\"margin: 0 0 0 -15px; padding: 0;color: #686868;\">");
 		for (AlertStoreMonitor store : stores) {
 			try {
@@ -378,12 +386,6 @@ public class MailService {
 
 		sb.append("</ol><p style=\"font-size: 0.9em;color: #686868;\">You will continue to receive regular notification alerts until the issue is resolved (default is set to 30 minutes), we recommend creating a filter in your email client to capture all alerts into one folder for easy access.</p>");
 		sb.append("<p style=\"font-size: 0.9em;color: #686868;\">");
-		sb.append("inbox : " + (mailConfig.isInbox() ? "on" : "off") + "<br/>");
-		sb.append("starred : " + (mailConfig.isStarred() ? "on" : "off")
-				+ "<br/>");
-		sb.append("markAsUnread : "
-				+ (mailConfig.isMarkAsUnread() ? "on" : "off") + "<br/>");
-		sb.append("label : \"" + mailConfig.getLabel() + "\"<br/>");
 		sb.append("</p></div>");
 		try {
 			String sign = IOUtil
@@ -463,7 +465,7 @@ public class MailService {
 		} catch (Exception e) {
 			return false;
 		}
-		
+
 		InvitedUser user = new InvitedUser();
 		user.setEmail(mail);
 		user.setFirstName(firstName);
@@ -475,9 +477,9 @@ public class MailService {
 			logger.log(Level.SEVERE, "Error when requestPermission. Message: "
 					+ ex.getMessage());
 		}
-		
+
 		List<String> adminEmails = new ArrayList<String>();
-		try {			
+		try {
 			for (SystemUser u : listActiveUser) {
 				if (u.checkRole(SystemRole.ROLE_ADMINISTRATOR)) {
 					adminEmails.add(u.getEmail());
@@ -499,15 +501,23 @@ public class MailService {
 				map.put("FIRSTNAME", firstName);
 				map.put("LASTNAME", lastName);
 				map.put("DESCRIPTION", description);
-				map.put("ACTIVE_USER_LINK", "http://" + MonitorConstant.PROJECT_HOST_NAME + "/Index.html" + HTMLControl.HTML_USER_INVITE);
-				map.put("QRCODE_LINK", MonitorConstant.QRCODE_LINK);
+				map.put("ACTIVE_USER_LINK", "http://"
+						+ MonitorConstant.PROJECT_HOST_NAME + "/Index.html"
+						+ HTMLControl.HTML_USER_INVITE);
+				map.put("QRCODE_LINK",
+						StringUtils.getQRImageLink("http://"
+								+ MonitorConstant.PROJECT_HOST_NAME
+								+ "/Index.html" + HTMLControl.HTML_USER_INVITE));
 				mailContent.setMap(map);
 				mailContent.init();
 
 				MailAsync mailUtil = new MailAsync(temp, mailContent);
 				mailUtil.run();
 			} catch (Exception ex) {
-				logger.log(Level.SEVERE, "Cannot not send request permission. Message: " + ex.getMessage());
+				logger.log(
+						Level.SEVERE,
+						"Cannot not send request permission. Message: "
+								+ ex.getMessage());
 			}
 		}
 		return check;
@@ -563,7 +573,9 @@ public class MailService {
 					map.put("PROJECT_NAME", MonitorConstant.PROJECT_NAME);
 					map.put("PROJECT_HOST_NAME",
 							MonitorConstant.PROJECT_HOST_NAME);
-					map.put("QRCODE_LINK", MonitorConstant.QRCODE_LINK);
+					map.put("QRCODE_LINK",
+							StringUtils.getQRImageLink("http://"
+									+ MonitorConstant.PROJECT_HOST_NAME));
 					mail.setMap(map);
 					mail.init();
 					MailAsync mailUtil = new MailAsync(newList, mail);

@@ -20,12 +20,18 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+
 import cmg.org.monitor.dao.AccountSyncLogDAO;
 import cmg.org.monitor.dao.SystemAccountDAO;
 import cmg.org.monitor.dao.SystemGroupDAO;
+import cmg.org.monitor.dao.UtilityDAO;
 import cmg.org.monitor.dao.impl.AccountSyncLogDaoImpl;
 import cmg.org.monitor.dao.impl.SystemAccountDaoImpl;
 import cmg.org.monitor.dao.impl.SystemGroupDaoImpl;
+import cmg.org.monitor.dao.impl.UtilityDaoImpl;
 import cmg.org.monitor.entity.shared.AccountSyncLog;
 import cmg.org.monitor.entity.shared.GoogleAccount;
 import cmg.org.monitor.entity.shared.SystemRole;
@@ -85,6 +91,7 @@ public class GoogleAccountService {
 
 	StringBuffer bufferLog;
 	GoogleAccount adminAcc;
+	String currentZone;
 
 	protected GoogleAccountService() {
 		//
@@ -93,6 +100,8 @@ public class GoogleAccountService {
 	public GoogleAccountService(GoogleAccount admin)
 			throws AuthenticationException {
 		try {
+			UtilityDAO utilDao = new UtilityDaoImpl();
+			currentZone = utilDao.getCurrentTimeZone();
 			if (admin == null) {
 				throw new AuthenticationException("Null account object");
 			}
@@ -133,7 +142,9 @@ public class GoogleAccountService {
 	}
 	
 	private String getTimestampString() {
-		return sdfTimestamp.format(new Date(System.currentTimeMillis()));
+		DateTime t = new DateTime(new Date(System.currentTimeMillis()));
+		t = t.withZone(DateTimeZone.forID(currentZone));	
+		return t.toString(DateTimeFormat.forPattern("dd/MM/yyyy hh:mm:ss.SSS"));
 	}
 
 	private void log(String input) {

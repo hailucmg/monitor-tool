@@ -55,8 +55,10 @@ public class Utility {
 	 * @param def the default value if input is null or empty
 	 * @return the integer value
 	 */
-	public static int getIntegerValue(int input, int def) {		
-		return (Integer.valueOf(input) == null) ? def : input;
+	public static int getIntegerValue(Integer input, int def) {		
+		return (input == null) ? def : input;
 	}
+	
+	
 
 }

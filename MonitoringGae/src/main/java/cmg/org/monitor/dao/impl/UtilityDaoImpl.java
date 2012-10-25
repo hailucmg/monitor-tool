@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+
 import org.mortbay.log.Log;
 
 import com.google.gdata.client.GoogleAuthTokenFactory.UserToken;
@@ -21,6 +24,8 @@ import cmg.org.monitor.app.schedule.MailServiceScheduler;
 import cmg.org.monitor.dao.SystemAccountDAO;
 import cmg.org.monitor.dao.UtilityDAO;
 import cmg.org.monitor.entity.shared.LinkDefaultMonitor;
+import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.entity.shared.SystemTimeZone;
 import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.ext.model.shared.GroupMonitor;
 import cmg.org.monitor.ext.model.shared.UserMonitor;
@@ -29,6 +34,7 @@ import cmg.org.monitor.memcache.MonitorMemcache;
 import cmg.org.monitor.services.Appforyourdomain;
 import cmg.org.monitor.services.GoogleAccountService;
 import cmg.org.monitor.services.LinkService;
+import cmg.org.monitor.services.PMF;
 import cmg.org.monitor.services.SitesHelper;
 import cmg.org.monitor.util.shared.Constant;
 import cmg.org.monitor.util.shared.MonitorConstant;
@@ -36,8 +42,14 @@ import cmg.org.monitor.util.shared.MonitorConstant;
 public class UtilityDaoImpl implements UtilityDAO {
 	private static final Logger logger = Logger.getLogger(UtilityDaoImpl.class
 			.getCanonicalName());
-	
-	
+	PersistenceManager pm;
+
+	void initPersistence() {
+		if (pm == null || pm.isClosed()) {
+			pm = PMF.get().getPersistenceManager();
+		}
+	}
+
 	@Override
 	public void putRevisionContent(String content) {
 		try {
@@ -61,7 +73,6 @@ public class UtilityDaoImpl implements UtilityDAO {
 		}
 		return temp;
 	}
-	
 
 	@Override
 	public void putHelpContent(String content) {
@@ -141,53 +152,42 @@ public class UtilityDaoImpl implements UtilityDAO {
 	public ArrayList<UserMonitor> listAllUsers() {
 		ArrayList<UserMonitor> list = null;
 		try {
-		SystemAccountDAO accountDao = new SystemAccountDaoImpl();
-		List<SystemUser> users = accountDao.listAllSystemUser(true);
-		if (users != null && users.size() > 0) {
-			list = new ArrayList<UserMonitor>();
-			for (SystemUser user: users) {
-				UserMonitor um = new UserMonitor();
-				um.setId(user.getEmail());
-				um.setUser(user);
-				um.setGroupIds(user.getGroupIDs());
-				list.add(um);
+			SystemAccountDAO accountDao = new SystemAccountDaoImpl();
+			List<SystemUser> users = accountDao.listAllSystemUser(true);
+			if (users != null && users.size() > 0) {
+				list = new ArrayList<UserMonitor>();
+				for (SystemUser user : users) {
+					UserMonitor um = new UserMonitor();
+					um.setId(user.getEmail());
+					um.setUser(user);
+					um.setGroupIds(user.getGroupIDs());
+					list.add(um);
+				}
 			}
-		}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			logger.log(Level.WARNING, "Error:" + ex.getMessage());
 		}
 		return list;
 		/*
-		ArrayList<UserMonitor> list = null;
-		Gson gson = new Gson();
-		Type type = new TypeToken<Collection<UserMonitor>>() {
-		}.getType();
-		Object obj = MonitorMemcache.get(Key.create(Key.LIST_ALL_USERS));
-		if (obj != null && obj instanceof String) {
-			try {
-				list = (ArrayList<UserMonitor>) gson.fromJson(
-						String.valueOf(obj), type);
-			} catch (Exception e) {
-				logger.log(Level.WARNING, "Error:" + e.getMessage());
-			}
-		}
-
-		if (list == null || list.size() <= 0) {
-			Appforyourdomain app = new Appforyourdomain(
-					MonitorConstant.ADMIN_EMAIL,
-					MonitorConstant.ADMIN_PASSWORD, MonitorConstant.DOMAIN);
-
-			list = app.listAllUsers();
-			try {
-				MonitorMemcache.put(Key.create(Key.LIST_ALL_USERS),
-						gson.toJson(list));
-			} catch (Exception ex) {
-				logger.log(Level.WARNING, "Error:" + ex.getMessage());
-			}
-		}
-		return list;
-		*/
+		 * ArrayList<UserMonitor> list = null; Gson gson = new Gson(); Type type
+		 * = new TypeToken<Collection<UserMonitor>>() { }.getType(); Object obj
+		 * = MonitorMemcache.get(Key.create(Key.LIST_ALL_USERS)); if (obj !=
+		 * null && obj instanceof String) { try { list =
+		 * (ArrayList<UserMonitor>) gson.fromJson( String.valueOf(obj), type); }
+		 * catch (Exception e) { logger.log(Level.WARNING, "Error:" +
+		 * e.getMessage()); } }
+		 * 
+		 * if (list == null || list.size() <= 0) { Appforyourdomain app = new
+		 * Appforyourdomain( MonitorConstant.ADMIN_EMAIL,
+		 * MonitorConstant.ADMIN_PASSWORD, MonitorConstant.DOMAIN);
+		 * 
+		 * list = app.listAllUsers(); try {
+		 * MonitorMemcache.put(Key.create(Key.LIST_ALL_USERS),
+		 * gson.toJson(list)); } catch (Exception ex) {
+		 * logger.log(Level.WARNING, "Error:" + ex.getMessage()); } } return
+		 * list;
+		 */
 	}
 
 	@Override
@@ -418,5 +418,56 @@ public class UtilityDaoImpl implements UtilityDAO {
 			}
 		}
 		return temp;
+	}
+
+	/**
+	 * (non-Javadoc)
+	 * 
+	 * @see cmg.org.monitor.dao.UtilityDAO#getCurrentTimeZone()
+	 */
+	public String getCurrentTimeZone() {
+		String currentZone = "";
+		Object obj = MonitorMemcache.get(Key.create(Key.CURRENT_ZONE));
+		if (obj != null && obj instanceof String) {
+			currentZone = (String) obj;
+		} else {
+			initPersistence();
+			Query query = pm.newQuery(SystemTimeZone.class);
+			List<SystemTimeZone> list = (List<SystemTimeZone>) query.execute();
+			if (list != null && !list.isEmpty()) {
+				currentZone = list.get(0).getTimezone();
+
+			}
+			if (currentZone == null || currentZone.length() == 0) {
+				currentZone = MonitorConstant.DEFAULT_SYSTEM_TIME_ZONE;
+			}
+			MonitorMemcache.put(Key.create(Key.CURRENT_ZONE), currentZone);
+		}
+		return currentZone;
+	}
+
+	/**
+	 * (non-Javadoc)
+	 * 
+	 * @see cmg.org.monitor.dao.UtilityDAO#setCurrentTimeZone(java.lang.String)
+	 */
+	public boolean setCurrentTimeZone(String timezone) throws Exception {
+		initPersistence();
+		try {
+			Query query = pm.newQuery(SystemTimeZone.class);
+			List<SystemTimeZone> list = (List<SystemTimeZone>) query.execute();
+			SystemTimeZone temp = null;
+			if (list != null && !list.isEmpty()) {
+				temp = list.get(0);
+			} else {
+				temp = new SystemTimeZone();
+			}
+			temp.setTimezone(timezone);
+			pm.makePersistent(temp);
+			MonitorMemcache.put(Key.create(Key.CURRENT_ZONE), timezone);
+			return true;
+		} catch (Exception ex) {
+			throw ex;
+		}
 	}
 }

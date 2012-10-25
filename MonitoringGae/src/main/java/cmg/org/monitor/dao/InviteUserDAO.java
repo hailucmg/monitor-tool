@@ -43,4 +43,6 @@ public interface InviteUserDAO {
 	public List<InvitedUser> list3rdUserFromMemcache();
 	
 	public void storeList3rdUserToMemcache(List<InvitedUser> list);
+	
+	public boolean updateFullname(InvitedUser user) throws Exception;
 }

@@ -67,7 +67,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 	AbsolutePanel panelButton;
 	AbsolutePanel panelValidateEmail;
 	AbsolutePanel panelValidateExcTime;
-	
+
 	private static FlexTable tableForm;
 	private static Grid tableNotify;
 	AbsolutePanel panelLabelEmail;
@@ -80,11 +80,12 @@ public class AddnewSystem extends AncestorEntryPoint {
 	Label lblStartTime;
 	Label lblEndTime;
 	Grid tableExTime;
+
 	@Override
 	protected void init() {
 		if (currentPage == HTMLControl.PAGE_ADD_SYSTEM) {
 			initUi();
-			initFlextTable();			
+			initFlextTable();
 		}
 	}
 
@@ -143,15 +144,15 @@ public class AddnewSystem extends AncestorEntryPoint {
 		String msg = "";
 		if (name == null || name.trim().length() == 0) {
 			msg = "This field is required ";
-		} /*else if (name.contains("$") || name.contains("%")
-				|| name.contains("*")) {
-			msg = "name is not validate";
-		}*/
+		} /*
+		 * else if (name.contains("$") || name.contains("%") ||
+		 * name.contains("*")) { msg = "name is not validate"; }
+		 */
 
 		return msg;
 
 	}
-	
+
 	private String validateExcTime() {
 		if (startTime.getMinutes() == null) {
 			return "Please set value of start time";
@@ -159,10 +160,10 @@ public class AddnewSystem extends AncestorEntryPoint {
 		if (endTime.getMinutes() == null) {
 			return "Please set value of end time";
 		}
-		
+
 		if (startTime.getMinutes() > endTime.getMinutes()) {
-			return "Please set value of end time greater than value of start time";
-		} 
+			return "Please set end time greater than start time";
+		}
 		return "";
 	}
 
@@ -225,8 +226,9 @@ public class AddnewSystem extends AncestorEntryPoint {
 		}
 		return msg;
 	}
-	
-	public static List<SystemGroup> sortBynameSystemGroup(List<SystemGroup> groups) {
+
+	public static List<SystemGroup> sortBynameSystemGroup(
+			List<SystemGroup> groups) {
 		SystemGroup temp = null;
 		for (int i = 1; i < groups.size(); i++) {
 			int j;
@@ -236,13 +238,13 @@ public class AddnewSystem extends AncestorEntryPoint {
 				if (temp.compareByName(val) <= 0) {
 					break;
 				}
-				groups.set(j+1, temp);
+				groups.set(j + 1, temp);
 			}
-			groups.set(j+1, val);
+			groups.set(j + 1, val);
 		}
 		return groups;
 	}
-	
+
 	void initUi() {
 		lblStartTime = new Label("Start");
 		lblEndTime = new Label("End");
@@ -250,55 +252,53 @@ public class AddnewSystem extends AncestorEntryPoint {
 		tableExTime.setCellPadding(2);
 		tableNotify = new Grid(5, 2);
 		tableNotify.setCellSpacing(3);
-		
+
 		cbNotifyCpu = new CheckBox();
 		cbNotifyCpu.setValue(true);
 		cbNotifyCpu.setStyleName("");
 		cbNotifyCpu.setStyleName("checkbox-size");
 		lblNotifyCpu = new Label(MonitorConstant.Notify_Cpu);
-		
+
 		cbNotifyMemory = new CheckBox();
 		cbNotifyMemory.setValue(true);
 		cbNotifyMemory.setStyleName("");
 		cbNotifyMemory.setStyleName("checkbox-size");
 		lblNotifyMemory = new Label(MonitorConstant.Notify_Memory);
-		
+
 		cbNotifyServices = new CheckBox();
 		cbNotifyServices.setValue(true);
 		cbNotifyServices.setStyleName("");
 		cbNotifyServices.setStyleName("checkbox-size");
 		lblNotifyServices = new Label(MonitorConstant.Notify_Service);
-		
+
 		cbNotifyServicesConnection = new CheckBox();
 		cbNotifyServicesConnection.setValue(true);
 		cbNotifyServicesConnection.setStyleName("");
 		cbNotifyServicesConnection.setStyleName("checkbox-size");
 		lblNotifyServicesConnection = new Label(
 				MonitorConstant.Notify_ServiceConnection);
-		
+
 		cbNotifyJVM = new CheckBox();
 		cbNotifyJVM.setStyleName("");
 		cbNotifyJVM.setStyleName("checkbox-size");
 		cbNotifyJVM.setValue(true);
 		lblNotifyJVM = new Label(MonitorConstant.Notify_JVM);
-		
+
 		lblExclusionTime = new Label(MonitorConstant.EXCLUSION_TIME);
-		
+
 		startTime = new HourMinutePicker(PickerFormat._24_HOUR);
-		
+
 		startTime.setTitle("Start");
-		startTime.setSize("90","280");
 		startTime.setTime("24h", 0, 0);
-		
+
 		endTime = new HourMinutePicker(PickerFormat._24_HOUR);
 		endTime.setTitle("End");
-		endTime.setSize("4em","2em");
 		endTime.setTime("24h", 0, 0);
 		tableExTime.setWidget(0, 0, lblStartTime);
 		tableExTime.setWidget(0, 1, startTime);
 		tableExTime.setWidget(0, 2, lblEndTime);
 		tableExTime.setWidget(0, 3, endTime);
-		
+
 		tableNotify.setWidget(0, 0, lblNotifyCpu);
 		tableNotify.setWidget(0, 1, cbNotifyCpu);
 		tableNotify.setWidget(1, 0, lblNotifyMemory);
@@ -309,7 +309,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 		tableNotify.setWidget(3, 1, cbNotifyServicesConnection);
 		tableNotify.setWidget(4, 0, lblNotifyJVM);
 		tableNotify.setWidget(4, 1, cbNotifyJVM);
-		
+
 		advancedDisclosure = new DisclosurePanel(HTMLControl.NOTIFY_OPTION);
 		advancedDisclosure.setAnimationEnabled(true);
 		advancedDisclosure.setContent(tableNotify);
@@ -329,7 +329,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 		tableForm.getFlexCellFormatter().setWidth(9, 0, "298px");
 		tableForm.getFlexCellFormatter().setWidth(10, 0, "100px");
 		tableForm.getFlexCellFormatter().setWidth(11, 0, "100px");
-		
+
 		labelName = new Label();
 		labelName.setText("Name");
 
@@ -432,7 +432,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 		panelValidateURL = new AbsolutePanel();
 		panelValidateRemoteURL = new AbsolutePanel();
 		panelValidateExcTime = new AbsolutePanel();
-		
+
 		panelValidateName.setVisible(false);
 		panelValidateIP.setVisible(false);
 		panelValidateURL.setVisible(false);
@@ -459,7 +459,8 @@ public class AddnewSystem extends AncestorEntryPoint {
 		tableForm.setWidget(2, 1, txtIP);
 		tableForm.setWidget(2, 2, panelValidateIP);
 		tableForm.setWidget(3, 0, lblExclusionTime);
-		tableForm.setWidget(3, 1, tableExTime);	
+		tableForm.setWidget(3, 1, tableExTime);
+		tableForm.setWidget(3, 2, panelValidateExcTime);
 		tableForm.setWidget(4, 0, labelactive);
 		tableForm.setWidget(4, 1, listActive);
 		tableForm.setWidget(5, 0, labelprotocol);
@@ -471,7 +472,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 		tableForm.setWidget(7, 1, listGroup);
 		tableForm.setWidget(8, 0, labelremoteurl);
 		tableForm.setWidget(8, 1, txtRemote);
-		tableForm.setWidget(8, 2, panelValidateRemoteURL);	
+		tableForm.setWidget(8, 2, panelValidateRemoteURL);
 		tableForm.getFlexCellFormatter().setColSpan(9, 0, 2);
 		tableForm.setWidget(9, 0, advancedDisclosure);
 		tableForm.getFlexCellFormatter().setColSpan(10, 0, 2);
@@ -492,9 +493,9 @@ public class AddnewSystem extends AncestorEntryPoint {
 							for (SystemGroup g : groups) {
 								list.add(g);
 							}
-							//sort group;
+							// sort group;
 							list = sortBynameSystemGroup(list);
-							for(SystemGroup s : list){
+							for (SystemGroup s : list) {
 								listGroup.addItem(s.getName());
 							}
 							listGroup.setSelectedIndex(0);
@@ -502,7 +503,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 							setVisibleLoadingImage(false);
 							setOnload(false);
 							setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
-						}else{
+						} else {
 							setVisibleLoadingImage(false);
 							setOnload(false);
 							showMessage("No Group Found.",
@@ -510,7 +511,6 @@ public class AddnewSystem extends AncestorEntryPoint {
 									"Goto Group Management. ",
 									HTMLControl.RED_MESSAGE, true);
 						}
-						
 
 					}
 
@@ -542,11 +542,13 @@ public class AddnewSystem extends AncestorEntryPoint {
 				String validateIp = validateIP(txtIP.getText());
 				String validateRemoteURL = validateRemoteURL(txtRemote
 						.getText());
+				String validateExctime = validateExcTime();
 				panelValidateEmail.setVisible(false);
 				panelValidateName.setVisible(false);
 				panelValidateRemoteURL.setVisible(false);
 				panelValidateIP.setVisible(false);
 				panelValidateRemoteURL.setVisible(false);
+				panelValidateExcTime.setVisible(false);
 				if (validateName != "") {
 					panelValidateName.clear();
 					panelValidateName.add(new HTML(
@@ -557,6 +559,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 					panelValidateIP.setVisible(false);
 					panelValidateRemoteURL.setVisible(false);
 					panelValidateEmail.setVisible(false);
+					panelValidateExcTime.setVisible(false);
 					return;
 				} else if (validateURL != "") {
 					panelValidateURL.clear();
@@ -568,6 +571,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 					panelValidateRemoteURL.setVisible(false);
 					panelValidateIP.setVisible(false);
 					panelValidateEmail.setVisible(false);
+					panelValidateExcTime.setVisible(false);
 					return;
 				} else if (validateIp != "") {
 					panelValidateIP.clear();
@@ -575,6 +579,18 @@ public class AddnewSystem extends AncestorEntryPoint {
 							"<div class=\"error-left\"></div><div class=\"error-inner\">"
 									+ validateIp + "</div>"));
 					panelValidateIP.setVisible(true);
+					panelValidateName.setVisible(false);
+					panelValidateRemoteURL.setVisible(false);
+					panelValidateURL.setVisible(false);
+					panelValidateEmail.setVisible(false);
+					panelValidateExcTime.setVisible(false);
+					return;
+				} else if (validateExctime != "") {
+					panelValidateExcTime.clear();
+					panelValidateExcTime.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">"
+							+ validateExctime + "</div>"));
+					panelValidateExcTime.setVisible(true);
+					panelValidateIP.setVisible(false);
 					panelValidateName.setVisible(false);
 					panelValidateRemoteURL.setVisible(false);
 					panelValidateURL.setVisible(false);
@@ -592,6 +608,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 						panelValidateName.setVisible(false);
 						panelValidateURL.setVisible(false);
 						panelValidateEmail.setVisible(false);
+						panelValidateExcTime.setVisible(false);
 						return;
 					}
 				}
@@ -600,6 +617,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 				panelValidateName.setVisible(false);
 				panelValidateURL.setVisible(false);
 				panelValidateEmail.setVisible(false);
+				panelValidateExcTime.setVisible(false);
 				SystemMonitor system = new SystemMonitor();
 				system.setName(txtName.getText().toString());
 				system.setUrl(txtURL.getText().toString());
@@ -612,7 +630,12 @@ public class AddnewSystem extends AncestorEntryPoint {
 				system.setIp(txtIP.getText());
 				system.setRemoteUrl(txtRemote.getText());
 				panelAdding.setVisible(true);
-
+				system.setStartHour(startTime.getHour());
+				system.setEndHour(endTime.getHour());
+				system.setStartMinute(startTime.getMinute());
+				system.setEndMinute(endTime.getMinute());
+				system.setStartMinutes(startTime.getMinutes());
+				system.setEndMinutes(endTime.getMinutes());
 				NotifyMonitor nm = new NotifyMonitor();
 				nm.setNotifyCpu(cbNotifyCpu.getValue());
 				nm.setNotifyMemory(cbNotifyMemory.getValue());
@@ -631,11 +654,13 @@ public class AddnewSystem extends AncestorEntryPoint {
 				String validateURL = validateURL(txtURL.getText());
 				String validateIp = validateIP(txtIP.getText());
 				String validateEmail = validateEmail(txtEmail.getText());
+				String validateExctime = validateExcTime();
 				panelValidateEmail.setVisible(false);
 				panelValidateName.setVisible(false);
 				panelValidateRemoteURL.setVisible(false);
 				panelValidateIP.setVisible(false);
 				panelValidateRemoteURL.setVisible(false);
+				panelValidateExcTime.setVisible(false);
 				if (validateName != "") {
 					panelValidateName.clear();
 					panelValidateName.add(new HTML(
@@ -646,6 +671,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 					panelValidateIP.setVisible(false);
 					panelValidateRemoteURL.setVisible(false);
 					panelValidateEmail.setVisible(false);
+					panelValidateExcTime.setVisible(false);
 					return;
 				} else if (validateURL != "") {
 					panelValidateURL.clear();
@@ -657,6 +683,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 					panelValidateRemoteURL.setVisible(false);
 					panelValidateIP.setVisible(false);
 					panelValidateEmail.setVisible(false);
+					panelValidateExcTime.setVisible(false);
 					return;
 				} else if (validateIp != "") {
 					panelValidateIP.clear();
@@ -664,6 +691,18 @@ public class AddnewSystem extends AncestorEntryPoint {
 							"<div class=\"error-left\"></div><div class=\"error-inner\">"
 									+ validateIp + "</div>"));
 					panelValidateIP.setVisible(true);
+					panelValidateName.setVisible(false);
+					panelValidateRemoteURL.setVisible(false);
+					panelValidateURL.setVisible(false);
+					panelValidateEmail.setVisible(false);
+					panelValidateExcTime.setVisible(false);
+					return;
+				} else if (validateExctime != "") {
+					panelValidateExcTime.clear();
+					panelValidateExcTime.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">"
+							+ validateExctime + "</div>"));
+					panelValidateExcTime.setVisible(true);
+					panelValidateIP.setVisible(false);
 					panelValidateName.setVisible(false);
 					panelValidateRemoteURL.setVisible(false);
 					panelValidateURL.setVisible(false);
@@ -679,6 +718,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 					panelValidateName.setVisible(false);
 					panelValidateRemoteURL.setVisible(false);
 					panelValidateURL.setVisible(false);
+					panelValidateExcTime.setVisible(false);
 					return;
 				}
 				panelValidateRemoteURL.setVisible(false);
@@ -686,6 +726,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 				panelValidateName.setVisible(false);
 				panelValidateURL.setVisible(false);
 				panelValidateEmail.setVisible(false);
+				panelValidateExcTime.setVisible(false);
 
 				SystemMonitor system = new SystemMonitor();
 				system.setName(txtName.getText().toString());
@@ -698,6 +739,12 @@ public class AddnewSystem extends AncestorEntryPoint {
 						.getSelectedIndex()));
 				system.setIp(txtIP.getText());
 				system.setEmailRevice(txtEmail.getText());
+				system.setStartHour(startTime.getHour());
+				system.setEndHour(endTime.getHour());
+				system.setStartMinute(startTime.getMinute());
+				system.setEndMinute(endTime.getMinute());
+				system.setStartMinutes(startTime.getMinutes());
+				system.setEndMinutes(endTime.getMinutes());
 				NotifyMonitor nm = new NotifyMonitor();
 				nm.setNotifyCpu(cbNotifyCpu.getValue());
 				nm.setNotifyMemory(cbNotifyMemory.getValue());
@@ -711,7 +758,6 @@ public class AddnewSystem extends AncestorEntryPoint {
 			}
 		}
 
-		
 		/**
 		 * @param system
 		 * @param url
@@ -817,10 +863,11 @@ public class AddnewSystem extends AncestorEntryPoint {
 
 	/**
 	 * (non-Javadoc)
-	 * @see cmg.org.monitor.module.client.AncestorEntryPoint#initDialog() 
+	 * 
+	 * @see cmg.org.monitor.module.client.AncestorEntryPoint#initDialog()
 	 */
 	@Override
 	protected void initDialog() {
-		
+
 	}
 }

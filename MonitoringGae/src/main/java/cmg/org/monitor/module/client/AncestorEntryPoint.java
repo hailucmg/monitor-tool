@@ -59,6 +59,8 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 	protected static DialogBox dialogBox;
 
 	private static DialogBox dialogFix;
+	
+	protected static DialogBox dialogConfirm;
 
 	@Override
 	public void onModuleLoad() {
@@ -278,7 +280,7 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 								setVisibleMessage(false, HTMLControl.YELLOW_MESSAGE);
 								setVisibleMessage(false, HTMLControl.RED_MESSAGE);
 								role = result.getRole();
-								changeMenu(currentPage, role);
+								changeMenu(currentPage, role);								
 								init();
 							} else {
 								setVisibleWidget(HTMLControl.ID_BODY_CONTENT, false);
@@ -293,6 +295,10 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 							isLogin = true;
 							role = result.getRole();
 							changeMenu(currentPage, role);
+							if (currentUser.getFullname().trim().length() == 0 &&
+									!currentUser.isAdmin()) {
+								dialogConfirm.center();
+							}
 							init();
 						}
 					} else {

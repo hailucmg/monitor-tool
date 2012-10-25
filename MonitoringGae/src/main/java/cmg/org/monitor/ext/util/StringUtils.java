@@ -5,12 +5,15 @@ package cmg.org.monitor.ext.util;
 
 
 import cmg.org.monitor.util.shared.Constant;
+import cmg.org.monitor.util.shared.MonitorConstant;
 
 import java.io.UnsupportedEncodingException;
 
 import java.net.URLEncoder;
 
 import java.util.Collection;
+
+import org.apache.commons.lang3.StringEscapeUtils;
 
 /**
  * Please enter a short description for this class.
@@ -172,4 +175,17 @@ public class StringUtils {
             return null;
         }
     }
+    
+    public static String getQRImageLink(String url) {
+    	StringBuffer bf = new StringBuffer();
+    	bf.append(MonitorConstant.QR_CODE_LINK_START);
+    	try {
+			bf.append(URLEncoder.encode(url, "ISO-8859-1"));
+		} catch (UnsupportedEncodingException e) {
+			//
+			bf.append(url);
+		}
+    	bf.append(MonitorConstant.QR_CODE_LINK_END);
+		return bf.toString();
+	}
 }

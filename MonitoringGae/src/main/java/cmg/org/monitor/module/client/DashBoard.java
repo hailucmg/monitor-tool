@@ -47,7 +47,7 @@ public class DashBoard extends AncestorEntryPoint {
 	static TextBox txtLname;
 	static TextArea txtDesciption;
 
-	static DialogBox dialogConfirm;
+	
 	static TextBox txtFname_confirm;
 	static TextBox txtLname_confirm;
 	
@@ -99,6 +99,7 @@ public class DashBoard extends AncestorEntryPoint {
 									HTMLControl.HTML_ABOUT_NAME,
 									"Contact us. ", HTMLControl.RED_MESSAGE,
 									true);
+							dialogRequest.hide();
 						}
 
 						public void onSuccess(Boolean result) {
@@ -188,9 +189,31 @@ public class DashBoard extends AncestorEntryPoint {
 				txtLname_confirm.setFocus(true);
 				return;
 			}
-			
-			//do function call server
-			
+			monitorGwtSv.updateFullName(fname, lname, new AsyncCallback<Boolean>() {
+
+				public void onFailure(Throwable caught) {
+					showMessage("Server error! ",
+							HTMLControl.HTML_ABOUT_NAME,
+							"Contact us. ", HTMLControl.RED_MESSAGE,
+							true);
+					dialogConfirm.hide();
+				}
+
+				public void onSuccess(Boolean result) {
+					if (result) {
+						showMessage("Update sucessfully. ", "",
+								"", HTMLControl.BLUE_MESSAGE, true);
+						dialogConfirm.hide();
+					} else {
+						showMessage(
+								"Cannot update your information.",
+								HTMLControl.HTML_ABOUT_NAME,
+								"Contact us. ",
+								HTMLControl.RED_MESSAGE, true);
+						dialogConfirm.hide();
+					}
+				}
+			});
 		}
 		
 	}
@@ -198,6 +221,7 @@ public class DashBoard extends AncestorEntryPoint {
 	protected void initDialog() {
 		dialogConfirm = new DialogBox();
 		dialogConfirm.setAnimationEnabled(true);
+		dialogConfirm.setText("Update your information");
 		Button closeConfirm = new Button();
 		closeConfirm.setStyleName("");
 		closeConfirm.getElement().setId("closeButton");
@@ -207,6 +231,7 @@ public class DashBoard extends AncestorEntryPoint {
 				dialogConfirm.hide();
 			}
 		});
+		Label inform = new Label("The first time you connect to the system. You must enter your full name.");
 		FlexTable tableContainerConfirm = new FlexTable();
 		tableContainerConfirm.setCellPadding(3);
 		tableContainerConfirm.setCellSpacing(3);
@@ -242,6 +267,7 @@ public class DashBoard extends AncestorEntryPoint {
 				VerticalPanel.ALIGN_RIGHT);
 		VerticalPanel dialogVPanelConfirm = new VerticalPanel();
 		dialogVPanelConfirm.add(closeConfirm);
+		dialogVPanelConfirm.add(inform);
 		dialogVPanelConfirm.add(tableContainerConfirm);
 		dialogVPanelConfirm.add(flexButtonConfirm);
 		dialogVPanelConfirm.setCellHorizontalAlignment(closeConfirm,

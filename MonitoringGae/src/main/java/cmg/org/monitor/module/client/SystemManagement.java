@@ -1,6 +1,7 @@
 package cmg.org.monitor.module.client;
 
 import cmg.org.monitor.entity.shared.SystemMonitor;
+import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.util.shared.HTMLControl;
 
 import com.google.gwt.user.client.ui.Label;
@@ -12,6 +13,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.visualization.client.AbstractDataTable;
@@ -27,6 +29,7 @@ public class SystemManagement extends AncestorEntryPoint {
 	static private Table tableListSystem;
 	static private FlexTable rootLinkDefault;
 	static private FlexTable tableLinkDefault;
+	static private FlexTable tableTimeZone;
 	static DialogBox dialogBox;
 	private static HTML popupContent;
 	private static FlexTable flexHTML;
@@ -35,18 +38,31 @@ public class SystemManagement extends AncestorEntryPoint {
 	static Label linkLb;
 	static Label redirectLb;
 
+	static ListBox listTimeZone;
+
+	static Label lblTimeZone;
+
+	static Button btnTimeZone;
+
 	protected void init() {
 		SystemManagement.exportStaticMethod();
 		if (currentPage == HTMLControl.PAGE_SYSTEM_MANAGEMENT) {
 			tableListSystem = new Table();
 			tableListSystem.setWidth("1185px");
 			tableLinkDefault = new FlexTable();
+			tableTimeZone = new FlexTable();
+			lblTimeZone = new Label("Choose timezone: ");
+			btnTimeZone = new Button("Update");
+			listTimeZone = new ListBox();
+			listTimeZone.setTitle("List timezone");
+
 			linkTxt = new TextBox();
 			updateBtn = new Button("Update");
 			linkLb = new Label();
 			linkLb.setText("Proxy link ");
 			redirectLb = new Label();
-			redirectLb.setText("This will be used to get data from remote system when the monitor tool can't get data directly because unsigned certificate failure");
+			redirectLb
+					.setText("This will be used to get data from remote system when the monitor tool can't get data directly because unsigned certificate failure");
 			tableLinkDefault = new FlexTable();
 			rootLinkDefault = new FlexTable();
 			tableLinkDefault.getCellFormatter().setVerticalAlignment(0, 0,
@@ -56,13 +72,34 @@ public class SystemManagement extends AncestorEntryPoint {
 			tableLinkDefault.getCellFormatter().setVerticalAlignment(0, 2,
 					HasVerticalAlignment.ALIGN_MIDDLE);
 			tableLinkDefault.getCellFormatter().setVerticalAlignment(0, 3,
-				HasVerticalAlignment.ALIGN_MIDDLE);
+					HasVerticalAlignment.ALIGN_MIDDLE);
 			tableLinkDefault.setWidget(0, 0, linkLb);
 			tableLinkDefault.setWidget(0, 1, linkTxt);
 			tableLinkDefault.setWidget(0, 2, updateBtn);
 			tableLinkDefault.setWidget(0, 3, redirectLb);
-			rootLinkDefault.setWidget(0, 0, tableLinkDefault);
-			rootLinkDefault.setWidget(1, 0, tableListSystem);
+
+			tableTimeZone.getCellFormatter().setVerticalAlignment(0, 0,
+					HasVerticalAlignment.ALIGN_MIDDLE);
+			tableTimeZone.getCellFormatter().setVerticalAlignment(0, 1,
+					HasVerticalAlignment.ALIGN_MIDDLE);
+			tableTimeZone.getCellFormatter().setVerticalAlignment(0, 2,
+					HasVerticalAlignment.ALIGN_MIDDLE);
+
+			tableTimeZone.setWidget(0, 0, lblTimeZone);
+			tableTimeZone.setWidget(0, 1, listTimeZone);
+			tableTimeZone.setWidget(0, 2, btnTimeZone);
+
+			rootLinkDefault.setWidget(0, 0, tableTimeZone);
+			rootLinkDefault.setWidget(1, 0, tableLinkDefault);
+			rootLinkDefault.setWidget(2, 0, tableListSystem);
+
+			btnTimeZone.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					updateTimeZone(listTimeZone.getValue(listTimeZone
+							.getSelectedIndex()));
+				}
+			});
+
 			updateBtn.addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
@@ -83,9 +120,9 @@ public class SystemManagement extends AncestorEntryPoint {
 		dialogBox = new DialogBox();
 		dialogBox.setAnimationEnabled(true);
 		String name = "";
-		if(systems!=null){
-			for(SystemMonitor s : systems){
-				if(s.getId().toString().equals(id)){
+		if (systems != null) {
+			for (SystemMonitor s : systems) {
+				if (s.getId().toString().equals(id)) {
 					name = s.getName();
 				}
 			}
@@ -108,7 +145,8 @@ public class SystemManagement extends AncestorEntryPoint {
 		});
 		VerticalPanel dialogVPanel = new VerticalPanel();
 		popupContent = new HTML();
-		popupContent.setHTML("<h4>Do you want to delete System "+ name+ "?</h4>");
+		popupContent.setHTML("<h4>Do you want to delete System " + name
+				+ "?</h4>");
 		flexHTML = new FlexTable();
 		flexHTML.setWidget(0, 0, popupContent);
 		flexHTML.setStyleName("table-popup");
@@ -118,14 +156,19 @@ public class SystemManagement extends AncestorEntryPoint {
 		table.setCellSpacing(5);
 		table.setWidget(0, 0, okButton);
 		table.setWidget(0, 1, closeButton);
-		table.getCellFormatter().setHorizontalAlignment(0, 0, VerticalPanel.ALIGN_RIGHT);
-		table.getCellFormatter().setHorizontalAlignment(0, 1, VerticalPanel.ALIGN_RIGHT);
+		table.getCellFormatter().setHorizontalAlignment(0, 0,
+				VerticalPanel.ALIGN_RIGHT);
+		table.getCellFormatter().setHorizontalAlignment(0, 1,
+				VerticalPanel.ALIGN_RIGHT);
 		dialogVPanel.add(exitButton);
 		dialogVPanel.add(flexHTML);
 		dialogVPanel.add(table);
-		dialogVPanel.setCellHorizontalAlignment(exitButton, VerticalPanel.ALIGN_RIGHT);
-		dialogVPanel.setCellHorizontalAlignment(flexHTML, VerticalPanel.ALIGN_LEFT);
-		dialogVPanel.setCellHorizontalAlignment(table, VerticalPanel.ALIGN_RIGHT);
+		dialogVPanel.setCellHorizontalAlignment(exitButton,
+				VerticalPanel.ALIGN_RIGHT);
+		dialogVPanel.setCellHorizontalAlignment(flexHTML,
+				VerticalPanel.ALIGN_LEFT);
+		dialogVPanel.setCellHorizontalAlignment(table,
+				VerticalPanel.ALIGN_RIGHT);
 		okButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
@@ -177,18 +220,48 @@ public class SystemManagement extends AncestorEntryPoint {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
 				showMessage("Can not load default link.", "", "",
 						HTMLControl.RED_MESSAGE, true);
 			}
 
 			@Override
 			public void onSuccess(String result) {
-				// TODO Auto-generated method stub
 				createLinkDefaultTable(result);
 			}
 
 		});
+		monitorGwtSv.listTimeZone(new AsyncCallback<MonitorContainer>() {
+
+			public void onFailure(Throwable caught) {
+				showMessage("Can not load list timezone.", "", "",
+						HTMLControl.YELLOW_MESSAGE, true);
+
+			}
+
+			public void onSuccess(MonitorContainer result) {
+				createListTimeZone(result);
+			}
+		});
+	}
+
+	static void createListTimeZone(MonitorContainer result) {
+		if (result != null && result.getCurrentTimeZone() != null
+				&& result.getCurrentTimeZone().length() != 0
+				&& result.getListTimeZone() != null
+				&& result.getListTimeZone().length > 0) {
+			String[] listZone = result.getListTimeZone();
+			int index = -1;
+			for (int i = 0; i < listZone.length; i++) {
+				listTimeZone.addItem(listZone[i]);
+				if (listZone[i].equalsIgnoreCase(result.getCurrentTimeZone())) {
+					index = i;
+				}
+			}
+			if (index != -1) {
+				listTimeZone.setSelectedIndex(index);
+			}
+		}
+
 	}
 
 	public static void deleteSystem(String sysID) {
@@ -297,18 +370,32 @@ public class SystemManagement extends AncestorEntryPoint {
 		linkTxt.setText(link);
 	}
 
+	public static void updateTimeZone(String timeZone) {
+		monitorGwtSv.updateTimeZone(timeZone, new AsyncCallback<Boolean>() {
+
+			public void onFailure(Throwable caught) {
+				showMessage("Updated Failed.", "", "", HTMLControl.RED_MESSAGE,
+						true);
+			}
+
+			public void onSuccess(Boolean result) {
+				showMessage("Updated sucessfully.", "", "",
+						HTMLControl.BLUE_MESSAGE, true);
+			}
+		});
+	}
+
 	public static void updateLink(String link) {
 		monitorGwtSv.editLink(link, new AsyncCallback<Void>() {
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
+
 				showMessage("Updated Failed.", "", "", HTMLControl.RED_MESSAGE,
 						true);
 			}
 
 			@Override
 			public void onSuccess(Void result) {
-				// TODO Auto-generated method stub
 				showMessage("Updated sucessfully.", "", "",
 						HTMLControl.BLUE_MESSAGE, true);
 			}
@@ -317,11 +404,12 @@ public class SystemManagement extends AncestorEntryPoint {
 
 	/**
 	 * (non-Javadoc)
-	 * @see cmg.org.monitor.module.client.AncestorEntryPoint#initDialog() 
+	 * 
+	 * @see cmg.org.monitor.module.client.AncestorEntryPoint#initDialog()
 	 */
 	@Override
 	protected void initDialog() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
