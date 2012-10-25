@@ -542,13 +542,13 @@ public class SystemDetail extends AncestorEntryPoint {
 	AbstractDataTable createDataTableListService(ServiceMonitor[] list) {
 		DataTable data = DataTable.create();
 		data.addColumn(ColumnType.STRING, "Name");
-		data.addColumn(ColumnType.DATETIME, "System date");
+		data.addColumn(ColumnType.STRING, "System date");
 		data.addColumn(ColumnType.NUMBER, "Ping time (ms)");
 		data.addColumn(ColumnType.STRING, "Status");
 		data.addRows(list.length);
 		for (int i = 0; i < list.length; i++) {
 			data.setValue(i, 0, list[i].getName());
-			data.setValue(i, 1, list[i].getSystemDate());
+			data.setValue(i, 1, list[i].getStrSystemDate());
 			data.setValue(i, 2, list[i].getPing());
 			data.setValue(i, 3,
 					HTMLControl.getHTMLStatusImage(list[i].getStatus()));

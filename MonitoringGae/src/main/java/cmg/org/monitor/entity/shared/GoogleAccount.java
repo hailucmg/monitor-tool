@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
@@ -48,6 +49,10 @@ public class GoogleAccount implements IsSerializable {
 	private
 	Date lastSync;
 
+	@NotPersistent
+	private
+	String strLastSync;
+	
 	public void swap(GoogleAccount in) {
 		this.domain = in.domain;
 		this.username = in.username;
@@ -147,5 +152,18 @@ public class GoogleAccount implements IsSerializable {
 	
 	public int compareByName(GoogleAccount c) {
 		return username.trim().compareTo(c.getUsername().trim());
+	}
+	/** 
+	 * @return the strLastSync 
+	 */
+	public String getStrLastSync() {
+		return strLastSync;
+	}
+	/** 
+	 * @param strLastSync the strLastSync to set 
+	 */
+	
+	public void setStrLastSync(String strLastSync) {
+		this.strLastSync = strLastSync;
 	}
 }

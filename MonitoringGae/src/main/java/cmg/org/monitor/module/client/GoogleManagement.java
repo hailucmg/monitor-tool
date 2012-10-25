@@ -482,7 +482,7 @@ public class GoogleManagement extends AncestorEntryPoint {
 		DataTable data = DataTable.create();
 		data.addColumn(ColumnType.STRING, "Domain name");
 		data.addColumn(ColumnType.STRING, "Username");
-		data.addColumn(ColumnType.DATETIME, "Last Synchronized");
+		data.addColumn(ColumnType.STRING, "Last Synchronized");
 		data.addColumn(ColumnType.STRING, "");
 		if (listUser != null) {
 			data.addRows(listUser.length);
@@ -492,7 +492,7 @@ public class GoogleManagement extends AncestorEntryPoint {
 				if (sortUser[j].getId() != null) {
 					data.setValue(j, 0, sortUser[j].getDomain());
 					data.setValue(j, 1, sortUser[j].getUsername());
-					data.setValue(j, 2, sortUser[j].getLastSync());
+					data.setValue(j, 2, sortUser[j].getStrLastSync());
 					data.setValue(
 							j,
 							3,
