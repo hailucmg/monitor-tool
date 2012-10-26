@@ -40,21 +40,21 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 	
 	protected static UserLoginDto currentUser = null;
 
-	protected String hash;
+	protected static String hash;
 
-	protected boolean isLogin = false;
+	protected static boolean isLogin = false;
 
-	protected int currentPage = HTMLControl.PAGE_DASHBOARD;
+	protected static int currentPage = HTMLControl.PAGE_DASHBOARD;
 	protected static final MonitorGwtServiceAsync monitorGwtSv = GWT
 			.create(MonitorGwtService.class);
 
 	protected static String currentUrl;
 
-	protected int role = MonitorConstant.ROLE_GUEST;
+	protected static int role = MonitorConstant.ROLE_GUEST;
 
-	protected boolean isOnload = true;
+	protected static boolean isOnload = true;
 
-	static boolean isReadyDelete = true;
+	protected static boolean isReadyDelete = true;
 
 	protected static DialogBox dialogBox;
 
