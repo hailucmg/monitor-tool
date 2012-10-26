@@ -40,7 +40,7 @@ import com.google.gson.reflect.TypeToken;
  * @Last changed: $LastChangedDate$
  */
 
-public class InviteUserDaoImpl implements InviteUserDAO {	
+public class InviteUserDaoImpl implements InviteUserDAO {
 
 	private static final Logger logger = Logger
 			.getLogger(InviteUserDaoImpl.class.getCanonicalName());
@@ -145,7 +145,7 @@ public class InviteUserDaoImpl implements InviteUserDAO {
 	 * 
 	 * @see cmg.org.monitor.dao.InvitedUserDAO#delete3rdUser(java.lang.String)
 	 */
-	public boolean delete3rdUser(String id) throws Exception {
+	public boolean delete3rdUser(String id, boolean allowDeleteSystemUser) throws Exception {
 		List<InvitedUser> list = list3rdUserFromMemcache();
 		boolean check = false;
 		initPersistence();
@@ -167,15 +167,20 @@ public class InviteUserDaoImpl implements InviteUserDAO {
 			pm.close();
 		}
 
-		if (check) {
+		if (check && allowDeleteSystemUser) {
 			SystemAccountDAO accountDao = new SystemAccountDaoImpl();
-			SystemUser user = accountDao.getSystemUserByEmail(temp.getEmail());
-			if (user != null) {
-				check = accountDao.deleteSystemUser(user);
+			try {
+				SystemUser user = accountDao.getSystemUserByEmail(temp
+						.getEmail());
+				if (user != null) {
+					check = accountDao.deleteSystemUser(user);
+				}
+			} catch (Exception ex) {
+				//
 			}
 		}
 
-		if (check && list != null && list.size() > 0) {
+		if (check && list != null && list.size() > 0) {			
 			int index = -1;
 			for (int i = 0; i < list.size(); i++) {
 				if (list.get(i).getEmail().equalsIgnoreCase(id)) {
@@ -196,7 +201,7 @@ public class InviteUserDaoImpl implements InviteUserDAO {
 	 * @see cmg.org.monitor.dao.InvitedUserDAO#delete3rdUser(cmg.org.monitor.module.client.InvitedUser)
 	 */
 	public boolean delete3rdUser(InvitedUser user) throws Exception {
-		return delete3rdUser(user.getEmail());
+		return delete3rdUser(user.getEmail(), true);
 	}
 
 	/**
@@ -355,7 +360,8 @@ public class InviteUserDaoImpl implements InviteUserDAO {
 
 	/**
 	 * (non-Javadoc)
-	 * @see cmg.org.monitor.dao.InviteUserDAO#updateFullname(cmg.org.monitor.entity.shared.InvitedUser) 
+	 * 
+	 * @see cmg.org.monitor.dao.InviteUserDAO#updateFullname(cmg.org.monitor.entity.shared.InvitedUser)
 	 */
 	public boolean updateFullname(InvitedUser user) throws Exception {
 		boolean check = false;
@@ -392,16 +398,17 @@ public class InviteUserDaoImpl implements InviteUserDAO {
 			}
 			storeList3rdUserToMemcache(list);
 		}
-		
+
 		if (check) {
 			SystemAccountDAO accountDao = new SystemAccountDaoImpl();
 			try {
-				accountDao.updateFullname(user.getEmail(), user.getFirstName(), user.getLastName());
+				accountDao.updateFullname(user.getEmail(), user.getFirstName(),
+						user.getLastName());
 			} catch (Exception ex) {
 				//
 			}
 		}
-		
+
 		return check;
 	}
 

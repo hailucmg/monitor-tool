@@ -25,10 +25,12 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 
 import cmg.org.monitor.dao.AccountSyncLogDAO;
+import cmg.org.monitor.dao.InviteUserDAO;
 import cmg.org.monitor.dao.SystemAccountDAO;
 import cmg.org.monitor.dao.SystemGroupDAO;
 import cmg.org.monitor.dao.UtilityDAO;
 import cmg.org.monitor.dao.impl.AccountSyncLogDaoImpl;
+import cmg.org.monitor.dao.impl.InviteUserDaoImpl;
 import cmg.org.monitor.dao.impl.SystemAccountDaoImpl;
 import cmg.org.monitor.dao.impl.SystemGroupDaoImpl;
 import cmg.org.monitor.dao.impl.UtilityDaoImpl;
@@ -300,7 +302,7 @@ public class GoogleAccountService {
 				for (SystemUser sysUser : users) {
 					boolean check = false;
 					for (SystemUser activeUser : activeUsers) {
-						if (activeUser.getUsername().equalsIgnoreCase(sysUser.getUsername())) {							
+						if (activeUser.getEmail().equalsIgnoreCase(sysUser.getEmail())) {							
 							check = true;
 							break;
 						}
@@ -311,9 +313,15 @@ public class GoogleAccountService {
 				}		
 				
 			}
+			InviteUserDAO userDao = new InviteUserDaoImpl();
 			// Start create new user
 			if (!createdList.isEmpty()) {
 				for (SystemUser sysUser : createdList) {
+					try {
+						userDao.delete3rdUser(sysUser.getEmail(), false);
+					} catch (Exception ex) {
+						
+					}
 					createdCount++;
 					try {						
 						sysUser.addUserRole(SystemRole.ROLE_USER);
@@ -338,6 +346,11 @@ public class GoogleAccountService {
 			// Start update user
 			if (!updatedList.isEmpty()) {
 				for (SystemUser sysUser : updatedList) {
+					try {
+						userDao.delete3rdUser(sysUser.getEmail(), false);
+					} catch (Exception ex) {
+						
+					}
 					updatedCount++;
 					try {
 						boolean b = accountDao.updateSystemUser(sysUser, false);
@@ -360,6 +373,11 @@ public class GoogleAccountService {
 			// Start remove user
 			if (!removedList.isEmpty()) {
 				for (SystemUser user : removedList) {
+					try {
+						userDao.delete3rdUser(user.getEmail(), false);
+					} catch (Exception ex) {
+						
+					}
 					removedCount++;
 					try {
 						boolean b = accountDao.deleteSystemUser(user);

@@ -425,7 +425,7 @@ public abstract class AncestorEntryPoint implements EntryPoint {
 						+ user
 						+ ". You might not have permission to use Health Monitoring System. "			
 				
-								+ "  <a href=\"" + logoutURL + "\">Login with another account</a>" + "&nbsp;<span style=\"font-weight: normal;\">or</span>&nbsp;<a onclick=\"javascript:showRequestForm();return false;\">send request permission</a>");
+								+ "  <a href=\"" + logoutURL + "\">Login with another account</a>" + "&nbsp;<span style=\"font-weight: normal;\">or</span>&nbsp;<a href=\"#\" onclick=\"javascript:showRequestForm();return false;\">send request permission</a>");
 		
 		setVisibleMessage(true, HTMLControl.YELLOW_MESSAGE);		
 		setOnload(false);
