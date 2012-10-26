@@ -30,7 +30,7 @@ public interface InviteUserDAO {
 	
 	public boolean update3rdUser(InvitedUser user) throws Exception;
 	
-	public boolean delete3rdUser(String id) throws Exception;
+	public boolean delete3rdUser(String id, boolean allowDeleteSystemUser) throws Exception;
 	
 	public boolean delete3rdUser(InvitedUser user) throws Exception;
 	

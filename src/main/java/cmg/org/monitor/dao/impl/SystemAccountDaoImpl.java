@@ -692,14 +692,20 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 				SystemUser temp = null;
 				for (Object user : users) {
 					if (user instanceof SystemUser) {
-						temp = new SystemUser();
+						Query query = pm.newQuery(SystemUser.class);
+						query.setFilter("email == emailPara");
+						query.declareParameters("String emailPara");
+						List<SystemUser> tempList = (List<SystemUser>) query.execute(((SystemUser) user).getEmail());						
+						if (tempList != null && !tempList.isEmpty()) {
+							temp = tempList.get(0);
+						} else {
+							temp = new SystemUser();
+						}						
 						temp.swap((SystemUser) user);
 						if (isAddRole) {
 							temp.setRoleIDs(((SystemUser) user).getRoleIDs());
 						}
-						pm.currentTransaction().begin();
 						pm.makePersistent(temp);
-						pm.currentTransaction().commit();
 					}
 				}
 				check = true;
@@ -708,7 +714,6 @@ public class SystemAccountDaoImpl implements SystemAccountDAO {
 						Level.SEVERE,
 						" ERROR when create System User. Message: "
 								+ ex.getMessage());
-				pm.currentTransaction().rollback();
 				throw ex;
 			} finally {
 				pm.close();

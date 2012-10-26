@@ -2,7 +2,9 @@ package cmg.org.monitor.module.server;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,10 +52,14 @@ import cmg.org.monitor.entity.shared.ServiceMonitor;
 import cmg.org.monitor.entity.shared.SystemGroup;
 import cmg.org.monitor.entity.shared.SystemMonitor;
 import cmg.org.monitor.entity.shared.SystemUser;
+import cmg.org.monitor.ext.model.MailContent;
 import cmg.org.monitor.ext.model.shared.MonitorContainer;
 import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.ext.model.shared.UserMonitor;
 import cmg.org.monitor.ext.util.DateTimeUtils;
+import cmg.org.monitor.ext.util.IOUtil;
+import cmg.org.monitor.ext.util.MailAsync;
+import cmg.org.monitor.ext.util.StringUtils;
 import cmg.org.monitor.module.client.MonitorGwtService;
 import cmg.org.monitor.services.GoogleAccountService;
 import cmg.org.monitor.services.MonitorLoginService;
@@ -949,6 +955,26 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		} else if (actionType.equalsIgnoreCase("active")) {
 			try {
 				check = userDao.active3rdUser(u);
+				if (check) {
+					try {
+						MailContent mail = IOUtil
+								.getMailTemplate(MailContent.INVITE_USER);
+						Map<String, String> map = new HashMap<String, String>();
+						map.put("PROJECT_NAME", MonitorConstant.PROJECT_NAME);
+						map.put("PROJECT_HOST_NAME",
+								MonitorConstant.PROJECT_HOST_NAME);
+						map.put("QRCODE_LINK",
+								StringUtils.getQRImageLink("http://"
+										+ MonitorConstant.PROJECT_HOST_NAME));
+						mail.setMap(map);
+						mail.init();
+						MailAsync mailUtil = new MailAsync(new String[]{u.getEmail()}, mail);
+						mailUtil.run();
+					} catch (Exception e) {
+						logger.log(Level.SEVERE, "Cannot invite user. Message: "
+								+ e.getMessage());
+					}
+				}
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, "Cannot active 3rd User. Message: "
 						+ e.getMessage());
