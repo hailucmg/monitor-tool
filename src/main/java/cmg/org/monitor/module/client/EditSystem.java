@@ -418,6 +418,7 @@ public class EditSystem extends AncestorEntryPoint {
 								tableForm.setWidget(6, 2, panelValidateEmail);
 								tableForm.setWidget(7, 0, labelmailgroup);
 								tableForm.setWidget(7, 1, listGroup);
+								tableForm.setWidget(7, 2, panelValidateGroups);
 								tableForm.setWidget(8, 0, labelremoteurl);
 								tableForm.setWidget(8, 1, txtRemote);
 								tableForm.setWidget(8, 2, panelValidateRemoteURL);	
