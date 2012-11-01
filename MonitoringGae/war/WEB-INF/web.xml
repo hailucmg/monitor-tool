@@ -56,6 +56,18 @@
     <url-pattern>/download/log</url-pattern>
   </servlet-mapping>
   
+  
+  
+  <servlet>
+    <servlet-name>demoData</servlet-name>
+    <servlet-class>cmg.org.monitor.module.servlet.DemoDataHandlerServlet</servlet-class>
+  </servlet>
+  
+   <servlet-mapping>
+    <servlet-name>demoData</servlet-name>
+    <url-pattern>/demoData</url-pattern>
+  </servlet-mapping>
+
   <servlet>
     <servlet-name>LoginServlet</servlet-name>
     <servlet-class>cmg.org.monitor.module.server.LoginServlet</servlet-class>
