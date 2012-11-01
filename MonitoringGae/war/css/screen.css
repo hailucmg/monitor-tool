@@ -981,7 +981,7 @@ font-family: Tahoma;
 #nav-right	{
 	float: right;
 	position: relative;
-	width: 400px;
+	width: auto;
 	z-index: 0;
 	}
 #nav-right a	{
@@ -1067,8 +1067,7 @@ Copyright (c) 2005-2007 Stu Nicholls. All rights reserved. This stylesheet and t
 	font-size: 13px;
 	height: 38px;
 	position: relative;
-	width: 600px;
-	min-width: 600px;
+	width: auto;	
 	z-index: 500;
 	}
 .nav-divider	{
@@ -1162,15 +1161,14 @@ Copyright (c) 2005-2007 Stu Nicholls. All rights reserved. This stylesheet and t
 	}
 .nav .select :hover .select_sub, 
 .nav .current .show	{
-	background: url(../images/shared/nav/back_0.gif);
-	 
+	background: url(../images/shared/nav/back_0.gif);	 
 	display: block;
 	left: 0;
 	padding: 0;
 	position: absolute;
 	text-align: left;
 	top: 37px;
-	width: 750px;
+	width: auto;
 	z-index: 100;
 	}
 .nav .current .show	{

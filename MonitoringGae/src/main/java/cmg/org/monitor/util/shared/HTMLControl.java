@@ -224,7 +224,7 @@ public class HTMLControl {
 		temp.append((page == PAGE_DASHBOARD || page == PAGE_SYSTEM_DETAIL || page == PAGE_SYSTEM_STATISTIC) ? " show"
 				: "");
 		temp.append("'><ul class='sub'>");
-		temp.append("<li><a href=''></a></li></ul></div></li></ul>");
+		temp.append("<li></li></ul></div></li></ul>");
 
 		// Administration Menu
 		if (role == MonitorConstant.ROLE_ADMIN) {
