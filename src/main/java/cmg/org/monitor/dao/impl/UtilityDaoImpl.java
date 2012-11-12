@@ -1,5 +1,6 @@
 package cmg.org.monitor.dao.impl;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,7 +11,7 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import org.mortbay.log.Log;
+
 
 import com.google.gdata.client.GoogleAuthTokenFactory.UserToken;
 import com.google.gdata.client.appsforyourdomain.AppsGroupsService;
@@ -20,22 +21,23 @@ import com.google.gdata.util.AuthenticationException;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import cmg.org.monitor.app.schedule.MailServiceScheduler;
+
 import cmg.org.monitor.dao.SystemAccountDAO;
 import cmg.org.monitor.dao.UtilityDAO;
 import cmg.org.monitor.entity.shared.LinkDefaultMonitor;
-import cmg.org.monitor.entity.shared.SystemMonitor;
+
 import cmg.org.monitor.entity.shared.SystemTimeZone;
 import cmg.org.monitor.entity.shared.SystemUser;
 import cmg.org.monitor.ext.model.shared.GroupMonitor;
 import cmg.org.monitor.ext.model.shared.UserMonitor;
+import cmg.org.monitor.ext.util.IOUtil;
 import cmg.org.monitor.memcache.Key;
 import cmg.org.monitor.memcache.MonitorMemcache;
 import cmg.org.monitor.services.Appforyourdomain;
 import cmg.org.monitor.services.GoogleAccountService;
 import cmg.org.monitor.services.LinkService;
 import cmg.org.monitor.services.PMF;
-import cmg.org.monitor.services.SitesHelper;
+
 import cmg.org.monitor.util.shared.Constant;
 import cmg.org.monitor.util.shared.MonitorConstant;
 
@@ -58,7 +60,7 @@ public class UtilityDaoImpl implements UtilityDAO {
 			logger.log(Level.WARNING, "Error:" + ex.getMessage());
 		}
 	}
-
+	
 	@Override
 	public String getRevisionContent() {
 		String temp = "";
@@ -67,13 +69,17 @@ public class UtilityDaoImpl implements UtilityDAO {
 			temp = (String) obj;
 		}
 		if (temp == null || temp.equals("")) {
-			temp = SitesHelper
-					.getSiteEntryContent(MonitorConstant.SITES_REVISIONS_CONTENT_ID);
+			try {
+				temp = IOUtil.readResource(IOUtil.REVISION_TEMPLATE_PATH);
+			} catch (IOException e) {
+				temp = "";
+			}
 			putRevisionContent(temp);
 		}
 		return temp;
 	}
-
+	
+	
 	@Override
 	public void putHelpContent(String content) {
 		try {
@@ -91,8 +97,11 @@ public class UtilityDaoImpl implements UtilityDAO {
 			temp = (String) obj;
 		}
 		if (temp == null || temp.equals("")) {
-			temp = SitesHelper
-					.getSiteEntryContent(MonitorConstant.SITES_HELP_CONTENT_ID);
+			try {
+				temp = IOUtil.readResource(IOUtil.HELP_TEMPLATE_PATH);
+			} catch (IOException e) {
+				temp = "";
+			}
 			putHelpContent(temp);
 		}
 		return temp;
@@ -115,8 +124,11 @@ public class UtilityDaoImpl implements UtilityDAO {
 			temp = (String) obj;
 		}
 		if (temp == null || temp.equals("")) {
-			temp = SitesHelper
-					.getSiteEntryContent(MonitorConstant.SITES_ABOUT_CONTENT_ID);
+			try {
+				temp = IOUtil.readResource(IOUtil.ABOUT_US_TEMPLATE_PATH);
+			} catch (IOException e) {
+				temp = "";
+			}
 			putAboutContent(temp);
 		}
 		return temp;

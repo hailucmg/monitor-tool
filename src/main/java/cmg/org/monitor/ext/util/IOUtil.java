@@ -38,6 +38,10 @@ public class IOUtil {
 	/** The Constant TEMPLATE_PATH. */
 	public static final String TEMPLATE_PATH = "/cmg/org/monitor/mail/template/";
 	
+	public static final String ABOUT_US_TEMPLATE_PATH = "/cmg/org/monitor/content/template/cmg-about.html";
+	public static final String REVISION_TEMPLATE_PATH = "/cmg/org/monitor/content/template/cmg-revision.html";
+	public static final String HELP_TEMPLATE_PATH = "/cmg/org/monitor/content/template/cmg-help.html";
+	
 	/**
 	 * Read resource.
 	 *
