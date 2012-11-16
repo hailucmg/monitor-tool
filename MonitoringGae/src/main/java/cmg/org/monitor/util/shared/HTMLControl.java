@@ -360,7 +360,7 @@ public class HTMLControl {
 		} else if (healthStatus.equals("bored")) {
 			mes = "A problem may occur to the system.\nClick the Icon to see more information!";
 		} else if (healthStatus.equals("smile")) {
-			mes = "All is working correctly.\nClick the Icon to see more information!";
+			mes = "The system is working normally.\nClick the Icon to see more information!";
 		} else {
 			mes = "Click the Icon to see more information!";
 		}

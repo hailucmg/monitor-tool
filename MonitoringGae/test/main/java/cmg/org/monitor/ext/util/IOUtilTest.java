@@ -57,7 +57,6 @@ public class IOUtilTest {
 	 */
 	@Test
 	public void testReadResource() {
-		new Date(System.currentTimeMillis());
 		/*
 		 * String a; try { a =
 		 * IOUtil.readResource(IOUtil.CMG_SIGNATURE_TEMPLATE_PATH);
@@ -75,6 +74,7 @@ public class IOUtilTest {
 		 * mailUtil.run(); } catch (IOException e) { // TODO Auto-generated
 		 * catch block e.printStackTrace(); }
 		 */
+		/*
 		UtilityDAO u = new UtilityDaoImpl();
 		String y = u.getCurrentTimeZone();
 		System.out.println(y);
@@ -86,6 +86,13 @@ public class IOUtilTest {
 		}
 		y = u.getCurrentTimeZone();
 		System.out.println(y);
-	}
+		*/
+		String test = "acascasc\\ascascas";
+		if (test.contains("\\")) {
+			
+		test = test.substring(test.lastIndexOf("\\") + 1, test.length());
+		}
+		System.out.println(test);
+	}	
 
 }
