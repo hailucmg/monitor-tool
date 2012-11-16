@@ -37,6 +37,7 @@ import cmg.org.monitor.services.Appforyourdomain;
 import cmg.org.monitor.services.GoogleAccountService;
 import cmg.org.monitor.services.LinkService;
 import cmg.org.monitor.services.PMF;
+import cmg.org.monitor.services.SitesHelper;
 
 import cmg.org.monitor.util.shared.Constant;
 import cmg.org.monitor.util.shared.MonitorConstant;
@@ -76,7 +77,7 @@ public class UtilityDaoImpl implements UtilityDAO {
 			}
 			putRevisionContent(temp);
 		}
-		return temp;
+		return temp.trim();
 	}
 	
 	
@@ -104,7 +105,7 @@ public class UtilityDaoImpl implements UtilityDAO {
 			}
 			putHelpContent(temp);
 		}
-		return temp;
+		return temp.trim();
 	}
 
 	@Override
@@ -126,12 +127,14 @@ public class UtilityDaoImpl implements UtilityDAO {
 		if (temp == null || temp.equals("")) {
 			try {
 				temp = IOUtil.readResource(IOUtil.ABOUT_US_TEMPLATE_PATH);
-			} catch (IOException e) {
+				/*temp = SitesHelper.getSiteEntryContent(MonitorConstant.SITES_ABOUT_CONTENT_ID);*/
+				System.out.println(temp);
+			} catch (Exception e) {
 				temp = "";
 			}
 			putAboutContent(temp);
 		}
-		return temp;
+		return temp.trim();
 	}
 
 	@Override
