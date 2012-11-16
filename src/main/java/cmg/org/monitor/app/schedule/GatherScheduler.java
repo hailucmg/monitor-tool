@@ -148,16 +148,6 @@ public class GatherScheduler extends HttpServlet {
 					}
 				}
 			}
-			UtilityDAO utilDAO = new UtilityDaoImpl();
-
-			utilDAO.putAboutContent(SitesHelper
-					.getSiteEntryContent(MonitorConstant.SITES_ABOUT_CONTENT_ID));
-
-			utilDAO.putHelpContent(SitesHelper
-					.getSiteEntryContent(MonitorConstant.SITES_HELP_CONTENT_ID));
-
-			utilDAO.putRevisionContent(SitesHelper
-					.getSiteEntryContent(MonitorConstant.SITES_REVISIONS_CONTENT_ID));
 
 			// utilDAO.putGroups();
 

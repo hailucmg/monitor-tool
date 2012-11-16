@@ -28,13 +28,13 @@ public final class MonitorConstant {
 	public static final int CPU_MEMORY_REFRESH_RATE = 1000;
 	
 	// Alert mail sender service
-	public static final String IMAGES_FOR_EMAIL ="monitor.c-mg.com\\images\\logo\\c-mg_logo.png" ;
+	public static final String IMAGES_FOR_EMAIL ="mo.c-mg.com.vn\\images\\logo\\c-mg_logo.png" ;
 	
 	public static final String ALERTSTORE_DEFAULT_NAME = "Issue Warning";
 	
-	public static final String PROJECT_HOST_NAME = "monitor.c-mg.com";
+	public static final String PROJECT_HOST_NAME = "mo.c-mg.com.vn";
 	
-	public static final String ALERT_MAIL_SENDER_NAME = "admin@future-monitor.appspotmail.com";
+	public static final String ALERT_MAIL_SENDER_NAME = "admin@cmgmonitor.appspotmail.com";
 
 	public static final int STATISTIC_HISTORY_LENGTH = 999;
 
@@ -46,7 +46,7 @@ public final class MonitorConstant {
 
 	public static final String PROJECT_NAME = "CMG Health Monitor System";
 
-	public static final String VERSION = "3.5";
+	public static final String VERSION = "3.6";
 
 	public static final String RELEASED_ON = "01/11/2011";
 

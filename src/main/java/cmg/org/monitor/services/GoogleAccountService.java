@@ -56,8 +56,8 @@ import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
 /**
- * DOCME
- * 
+ * DOCME.
+ *
  * @Creator Hai Lu
  * @author $Author$
  * @version $Revision$
@@ -65,40 +65,70 @@ import com.google.gdata.util.ServiceException;
  */
 
 public class GoogleAccountService {
+	
+	/** The Constant APPS_FEEDS_URL_BASE. */
 	private static final String APPS_FEEDS_URL_BASE = "https://apps-apis.google.com/a/feeds/";
 
+	/** The Constant SERVICE_VERSION. */
 	protected static final String SERVICE_VERSION = "2.0";
 
+	/** The Constant APPLICATION_NAME. */
 	public static final String APPLICATION_NAME = "cmg-monitor-tools";
 
+	/** The Constant logger. */
 	private static final Logger logger = Logger
 			.getLogger(GoogleAccountService.class.getCanonicalName());
 
+	/** The group service. */
 	private AppsGroupsService groupService;
 
+	/** The user service. */
 	private UserService userService;
 
+	/** The sdf timestamp. */
 	private SimpleDateFormat sdfTimestamp = new SimpleDateFormat(
 			"dd/MM/yyyy hh:mm:ss.SSS");
 
+	/** The users. */
 	private List<SystemUser> users;
 
+	/** The Constant LOG_INFO_LEVEL. */
 	private static final int LOG_INFO_LEVEL = 0x001;
+	
+	/** The Constant LOG_WARNING_LEVEL. */
 	private static final int LOG_WARNING_LEVEL = 0x002;
+	
+	/** The Constant LOG_ERROR_LEVEL. */
 	private static final int LOG_ERROR_LEVEL = 0x003;
 	
+	/** The account dao. */
 	SystemAccountDAO accountDao = new SystemAccountDaoImpl();
 	
+	/** The sync log dao. */
 	AccountSyncLogDAO syncLogDao = new AccountSyncLogDaoImpl();
 
+	/** The buffer log. */
 	StringBuffer bufferLog;
+	
+	/** The admin acc. */
 	GoogleAccount adminAcc;
+	
+	/** The current zone. */
 	String currentZone;
 
+	/**
+	 * Instantiates a new google account service.
+	 */
 	protected GoogleAccountService() {
 		//
 	}
 
+	/**
+	 * Instantiates a new google account service.
+	 *
+	 * @param admin the admin
+	 * @throws AuthenticationException the authentication exception
+	 */
 	public GoogleAccountService(GoogleAccount admin)
 			throws AuthenticationException {
 		try {
@@ -143,16 +173,32 @@ public class GoogleAccountService {
 		}
 	}
 	
+	/**
+	 * Gets the timestamp string.
+	 *
+	 * @return the timestamp string
+	 */
 	private String getTimestampString() {
 		DateTime t = new DateTime(new Date(System.currentTimeMillis()));
 		t = t.withZone(DateTimeZone.forID(currentZone));	
 		return t.toString(DateTimeFormat.forPattern("dd/MM/yyyy hh:mm:ss.SSS"));
 	}
 
+	/**
+	 * Log.
+	 *
+	 * @param input the input
+	 */
 	private void log(String input) {
 		log(input, LOG_INFO_LEVEL);
 	}
 
+	/**
+	 * Log.
+	 *
+	 * @param input the input
+	 * @param level the level
+	 */
 	private void log(String input, int level) {
 		if (bufferLog == null) {
 			bufferLog = new StringBuffer();
@@ -175,6 +221,9 @@ public class GoogleAccountService {
 		bufferLog.append(input);
 	}
 
+	/**
+	 * Sync.
+	 */
 	@SuppressWarnings("unchecked")
 	public void sync() {		
 		int problem = 0;
@@ -430,10 +479,21 @@ public class GoogleAccountService {
 		}
 	}
 
+	/**
+	 * Gets the log.
+	 *
+	 * @return the log
+	 */
 	public String getLog() {
 		return bufferLog.toString();
 	}
 
+	/**
+	 * List all account.
+	 *
+	 * @return the list
+	 * @throws Exception the exception
+	 */
 	@Deprecated
 	public List<SystemUser> listAllAccount() throws Exception {
 		List<SystemUser> list = null;
@@ -476,6 +536,12 @@ public class GoogleAccountService {
 		return list;
 	}
 
+	/**
+	 * List groups.
+	 *
+	 * @return the list
+	 * @throws Exception the exception
+	 */
 	@Deprecated
 	protected List<String> listGroups() throws Exception {
 		List<String> list = null;
@@ -500,6 +566,13 @@ public class GoogleAccountService {
 		return list;
 	}
 
+	/**
+	 * List user in group.
+	 *
+	 * @param group the group
+	 * @return the list
+	 * @throws Exception the exception
+	 */
 	public List<String> listUserInGroup(String group) throws Exception {
 		ArrayList<String> list = new ArrayList<String>();
 		try {
@@ -517,6 +590,8 @@ public class GoogleAccountService {
 	}
 
 	/**
+	 * Gets the users.
+	 *
 	 * @return the users
 	 */
 	public List<SystemUser> getUsers() {
