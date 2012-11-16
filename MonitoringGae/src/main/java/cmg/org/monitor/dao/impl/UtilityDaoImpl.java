@@ -72,6 +72,7 @@ public class UtilityDaoImpl implements UtilityDAO {
 		if (temp == null || temp.equals("")) {
 			try {
 				temp = IOUtil.readResource(IOUtil.REVISION_TEMPLATE_PATH);
+				temp =temp.substring(temp.indexOf("<"), temp.length());
 			} catch (IOException e) {
 				temp = "";
 			}
@@ -100,6 +101,7 @@ public class UtilityDaoImpl implements UtilityDAO {
 		if (temp == null || temp.equals("")) {
 			try {
 				temp = IOUtil.readResource(IOUtil.HELP_TEMPLATE_PATH);
+				temp =temp.substring(temp.indexOf("<"), temp.length());
 			} catch (IOException e) {
 				temp = "";
 			}
@@ -127,6 +129,7 @@ public class UtilityDaoImpl implements UtilityDAO {
 		if (temp == null || temp.equals("")) {
 			try {
 				temp = IOUtil.readResource(IOUtil.ABOUT_US_TEMPLATE_PATH);
+				temp =temp.substring(temp.indexOf("<"), temp.length());
 				/*temp = SitesHelper.getSiteEntryContent(MonitorConstant.SITES_ABOUT_CONTENT_ID);*/
 				System.out.println(temp);
 			} catch (Exception e) {
