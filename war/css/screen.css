@@ -1883,3 +1883,8 @@ cursor: default;
 border-top: none;
 border-bottom : none;
 }
+
+.fix-site-content, .fix-site-content a, .fix-site-content a:hover
+, .fix-site-content a:active,.fix-site-content a:visited {
+	color:#333 !important;
+}
