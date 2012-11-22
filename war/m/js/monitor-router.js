@@ -1,3 +1,22 @@
+/**
+ * Copyright (c) CMG Ltd All rights reserved.
+ *
+ * This software is the confidential and proprietary information of CMG
+ * ("Confidential Information"). You shall not disclose such Confidential
+ * Information and shall use it only in accordance with the terms of the
+ * license agreement you entered into with CMG.
+ */
+
+/**
+ * Application router
+ * Define the way to move around application by URI hash
+ * 
+ * @Creator Hai Lu
+ * @author $Author$
+ * @version $Revision$
+ * @Last changed: $LastChangedDate$
+ */
+
 var AppRouter = Backbone.Router.extend({
 	currentPage : PAGE_DASHBOARD,
 	routes : {
@@ -75,12 +94,13 @@ var AppRouter = Backbone.Router.extend({
 	},
 
 	systemDetail : function(id) {
+		log(id);
 		this.currentPage = window.PAGE_SYSTEM_DETAIL;
 		this.changePage(new SystemDetailView());
 	},
 
 	changePage : function(page, options) {
-		console.log(this.currentPage);
+		log(this.currentPage);
 		$(page.el).attr('data-role', 'page');
 		page.render();
 		$('body').append($(page.el));
