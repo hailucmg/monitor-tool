@@ -18,9 +18,10 @@
  */
 
 var AppRouter = Backbone.Router.extend({
-	currentPage : PAGE_DASHBOARD,
+	currentPage : PAGE_SPLASH,
 	routes : {
-		"" : "dashboard",
+		"":"splash",
+		"dashboard" : "dashboard",
 		"about" : "about",
 		"help" : "help",
 		"logout" : "logout",
@@ -37,6 +38,8 @@ var AppRouter = Backbone.Router.extend({
 		});
 
 		this.firstPage = true;
+		
+		setTimeout(self.hideSplash,5000);
 	},
 
 	dashboard : function() {
@@ -63,6 +66,13 @@ var AppRouter = Backbone.Router.extend({
 		}
 		this.currentPage = window.PAGE_DASHBOARD;
 		this.changePage(new DashBoardView(), options);
+	},
+	
+	splash : function() {
+		this.currentPage = window.PAGE_SPLASH;
+		this.changePage(new SplashView(), {
+			transition : "slidedown"
+		});
 	},
 
 	help : function() {
@@ -98,7 +108,13 @@ var AppRouter = Backbone.Router.extend({
 		this.currentPage = window.PAGE_SYSTEM_DETAIL;
 		this.changePage(new SystemDetailView());
 	},
-
+	
+	hideSplash: function() {
+		app.changePage(new DashBoardView(), {
+			transition : "slideup"
+		});
+	},
+	
 	changePage : function(page, options) {
 		log(this.currentPage);
 		$(page.el).attr('data-role', 'page');
@@ -117,5 +133,4 @@ var AppRouter = Backbone.Router.extend({
 		}
 		$.mobile.changePage($(page.el), options);
 	}
-
 });
