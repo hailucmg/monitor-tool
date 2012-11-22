@@ -9,6 +9,17 @@
     <url-pattern>/index/MonitorGwtService</url-pattern>
   </servlet-mapping>
 
+<!-- Mobile Data Handler Servlet   -->
+<servlet>
+    <servlet-name>dashboardDataHander</servlet-name>
+    <servlet-class>cmg.org.monitor.module.server.mobile.handler.DashboardDataHandler</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>dashboardDataHander</servlet-name>
+    <url-pattern>/mobile/handler/dashboard</url-pattern>
+  </servlet-mapping>
+<!--  -->  
+  
 <!-- Application Servlets -->
   <servlet>
     <servlet-name>schedule</servlet-name>
