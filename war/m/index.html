@@ -12,8 +12,8 @@
 <script type="text/template" id="page-dashboard">
 	<div data-role="header" data-theme="c" class="type-interior" >						 
             <h1>Dashboard</h1>
-			<a href="#about" data-icon="info-sign" data-theme="b" data-iconpos="notext"></a>
-			<a href="#help" data-icon="question-sign" data-theme="b" data-iconpos="notext"></a>
+			<a href="#about" data-icon="info-sign" data-theme="b" data-iconpos="about"></a>
+			<a href="#help" data-icon="question-sign" data-theme="b" data-iconpos="help"></a>
         </div>
         <div data-role="content">            
             <ul data-role="listview" data-inset="true" data-theme="c" data-filter="true" 
@@ -98,14 +98,17 @@
             <a href="#" data-icon="chevron-up" data-theme="e">Hide</a>
             <h1>About us</h1>
         </div>
-
         <div data-role="content">
-            <p>This is Page 1. It was created dynamically using an underscore.js template.</p>
-            <p>Navigate to:</p>
+            <p>Claybourne McGregor combining the best of both technology and business.</p>
+			<p>Minimising risk through prototyping and test driven development for financial and security applications and modellers on both mobile/tablet and web</p>
+            </br>
+			<p>Navigate to:</p>
             <ul data-role="listview" data-inset="true">
-                <li><a href="#">Home</a></li>
-                <li><a href="#page2">Page 2</a></li>
-            </ul>
+                <li><a href="#">Dashboard</a></li>
+                <li><a href="#">Help</a></li>
+  				<li><a href="htttp://www.c-mg.com">Claybourne McGregor</a></li>
+           </ul>
+		<img alt="CMG Health Monitor System" src="https://chart.googleapis.com/chart?chs=150x150&amp;cht=qr&amp;chl=http%3A%2F%2Fmonitor.c-mg.com&amp;chld=L%7C1&amp;choe=UTF-8" />
         </div>
 		<div data-role="footer" data-theme="c" data-position="fixed">
 			<img src="images/logo/monitor-cmg.png" width="100%"/>			
@@ -118,11 +121,31 @@
             <h1>Help content</h1>
         </div>
         <div data-role="content">
-            <p>This is Page 2. It was created dynamically using an underscore.js template.</p>
-            <p>Navigate to:</p>
+            <p>The monitor performs regular check on the health of any systems it has been setup to monitor</p>
+			<table data-role="table" data-mode="reflow">
+				<tr>
+					<td><img src="images/icon/smile_status_icon.png"/></td>
+					<td>&nbsp;Everything is working normally</td>
+				</tr>
+				<tr>
+					<td><img src="images/icon/bored_status_icon.png" /></td>
+					<td>Some parts of the system are straining</td>
+				</tr>
+				<tr>
+					<td><img src="images/icon/dead_status_icon.png" /></td>
+					<td>Some or all parts of the system are failing to respond</td>
+				</tr>
+				<tr>
+					<td><img src="images/icon/dead_status_icon.png" /></td>
+					<td>Search or filter on a system by typing all or part of the name on the dashboard</td>
+				</tr>
+			</table> 
+            </br>
+			<p>&nbsp;&nbsp;Navigate to:</p>
             <ul data-role="listview" data-inset="true">
-                <li><a href="#">Home</a></li>
-                <li><a href="#page1">Page 1</a></li>
+                <li><a href="#dashboard">DashBoard</a></li>
+                <li><a href="#about">About us</a></li>
+				<li><a rel="external" href="http://www.c-mg.com">Claybourne McGregor</a></li>
             </ul>
         </div>
 		<div data-role="footer" data-theme="c" data-position="fixed">
