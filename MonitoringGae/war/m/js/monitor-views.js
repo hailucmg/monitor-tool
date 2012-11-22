@@ -28,7 +28,7 @@ window.DashBoardView = Backbone.View.extend({
 
 window.SplashView = Backbone.View.extend({
 
-	template : _.template($('#page-splash').html()),
+	template : _.template(render("splash", {})),
 
 	render : function(eventName) {
 		$(this.el).html(this.template());

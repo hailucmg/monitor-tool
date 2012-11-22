@@ -6,6 +6,7 @@
  * Information and shall use it only in accordance with the terms of the
  * license agreement you entered into with CMG.
  */
+
 $(document).bind("mobileinit", function () {
     $.mobile.ajaxEnabled = false;
     $.mobile.linkBindingEnabled = false;
