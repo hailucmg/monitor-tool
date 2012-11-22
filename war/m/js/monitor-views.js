@@ -18,7 +18,7 @@
 
 window.DashBoardView = Backbone.View.extend({
 
-	template : _.template($('#page-dashboard').html()),
+	template : _.template(render("dashboard", {})),
 
 	render : function(eventName) {
 		$(this.el).html(this.template());
@@ -38,7 +38,7 @@ window.SplashView = Backbone.View.extend({
 
 window.AboutView = Backbone.View.extend({
 
-	template : _.template($('#page-about').html()),
+	template : _.template(render("about-us", {})),
 
 	render : function(eventName) {
 		$(this.el).html(this.template());
@@ -48,7 +48,7 @@ window.AboutView = Backbone.View.extend({
 
 window.HelpView = Backbone.View.extend({
 
-	template : _.template($('#page-help').html()),
+	template : _.template(render("help-content", {})),
 
 	render : function(eventName) {
 		$(this.el).html(this.template());
@@ -58,7 +58,7 @@ window.HelpView = Backbone.View.extend({
 
 window.LogoutView = Backbone.View.extend({
 
-	template : _.template($('#page-logout').html()),
+	template : _.template(render("confirm-logout", {})),
 	render : function(eventName) {
 		$(this.el).html(this.template());
 		return this;
@@ -67,7 +67,7 @@ window.LogoutView = Backbone.View.extend({
 
 window.AdministrationView = Backbone.View.extend({
 
-	template : _.template($('#page-administration').html()),
+	template : _.template(render("administration", {})),
 
 	render : function(eventName) {
 		$(this.el).html(this.template());
@@ -77,7 +77,7 @@ window.AdministrationView = Backbone.View.extend({
 
 window.SystemDetailView = Backbone.View.extend({
 
-	template : _.template($('#page-system-detail').html()),
+	template : _.template(render("system-detail", {})),
 
 	render : function(eventName) {
 		$(this.el).html(this.template());

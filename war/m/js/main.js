@@ -16,7 +16,7 @@
  * @Last changed: $LastChangedDate$
  */
 $(document).ready(function () {
-    console.log('document ready');
+    jLog.log('document ready');
     app = new AppRouter();
-    Backbone.history.start();    
+    Backbone.history.start();
 });
