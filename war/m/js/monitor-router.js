@@ -8,8 +8,7 @@
  */
 
 /**
- * Application router
- * Define the way to move around application by URI hash
+ * Application router Define the way to move around application by URI hash
  * 
  * @Creator Hai Lu
  * @author $Author$
@@ -18,9 +17,15 @@
  */
 
 var AppRouter = Backbone.Router.extend({
+	destinationSplash : {
+		page : new DashBoardView(),
+		options : {
+			transition : "flip"
+		}
+	},
 	currentPage : PAGE_SPLASH,
 	routes : {
-		"":"splash",
+		"" : "splash",
 		"dashboard" : "dashboard",
 		"about" : "about",
 		"help" : "help",
@@ -31,15 +36,7 @@ var AppRouter = Backbone.Router.extend({
 
 	initialize : function() {
 		var self = this;
-		$(document).on('click', '.back', function(e) {
-			e.preventDefault();
-			self.back = true;
-			window.history.back();
-		});
-
 		this.firstPage = true;
-		
-		setTimeout(self.hideSplash,5000);
 	},
 
 	dashboard : function() {
@@ -67,12 +64,18 @@ var AppRouter = Backbone.Router.extend({
 		this.currentPage = window.PAGE_DASHBOARD;
 		this.changePage(new DashBoardView(), options);
 	},
-	
+
 	splash : function() {
-		this.currentPage = window.PAGE_SPLASH;
-		this.changePage(new SplashView(), {
-			transition : "slidedown"
-		});
+		self = this;
+		if (IS_FINISH_LOAD) {
+			this.dashboard();
+		} else {
+			this.currentPage = window.PAGE_SPLASH;
+			this.changePage(new SplashView(), {
+				transition : "slidedown"
+			});
+			setTimeout(self.hideSplash, 3000);
+		}
 	},
 
 	help : function() {
@@ -108,14 +111,18 @@ var AppRouter = Backbone.Router.extend({
 		this.currentPage = window.PAGE_SYSTEM_DETAIL;
 		this.changePage(new SystemDetailView());
 	},
-	
-	hideSplash: function() {
-		app.changePage(new DashBoardView(), {
-			transition : "slideup"
-		});
+
+	hideSplash : function() {
+		IS_FINISH_LOAD = true;
+		app.changePage(app.destinationSplash.page, app.destinationSplash.options);
 	},
-	
+
 	changePage : function(page, options) {
+		if (!IS_FINISH_LOAD && this.currentPage != window.PAGE_SPLASH) {
+			this.destinationSplash.page = page;		
+			this.splash();
+			return;
+		}
 		jLog.log(this.currentPage);
 		$(page.el).attr('data-role', 'page');
 		page.render();
