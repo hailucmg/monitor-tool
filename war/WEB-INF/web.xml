@@ -56,6 +56,17 @@
     <url-pattern>/download/log</url-pattern>
   </servlet-mapping>
   
+   
+    <servlet>
+    <servlet-name>downloadProxylink</servlet-name>
+    <servlet-class>cmg.org.monitor.module.servlet.DownloadHandler</servlet-class>
+  </servlet>
+  
+   <servlet-mapping>
+    <servlet-name>downloadProxylink</servlet-name>
+    <url-pattern>/download/proxylink</url-pattern>
+  </servlet-mapping>
+  
   
   
   <servlet>
