@@ -9,8 +9,15 @@
 <link rel="stylesheet" href="css/jqm-icon-pack.css" />
 
 <!-- The Templates -->
+<script type="text/template" id="page-splash">
+        <div data-role="content">           
+          <div>
+        	<img src="images/Splash_welcome_v4.png" alt="splash" style="margin-left:450px;"/>
+    	   </div>
+        </div>
+</script>
 <script type="text/template" id="page-dashboard">
-	<div data-role="header" data-theme="c" class="type-interior" >						 
+	<div data-role="header" data-theme="c" class="type-interior" id="dashboard">						 
             <h1>Dashboard</h1>
 			<a href="#about" data-icon="info-sign" data-theme="b" data-iconpos="notext"></a>
 			<a href="#help" data-icon="question-sign" data-theme="b" data-iconpos="notext"></a>
@@ -221,6 +228,15 @@
 <script src="js/monitor-views.js"></script>
 <script src="js/monitor-router.js"></script>
 <script src="js/main.js"></script>
+<script>
+$(function() {
+	  setTimeout(hideSplash, 2000);
+	});
+
+	function hideSplash() {
+	  $.mobile.changePage("#dashboard", "fade");
+	}
+</script>
 </head>
 <body>
 </body>

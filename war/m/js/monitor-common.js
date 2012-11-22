@@ -18,6 +18,7 @@
 
 window.IS_DEBUG = true;
 
+window.PAGE_SPLASH = 'splash';
 window.PAGE_DASHBOARD = 'dashboard';
 window.PAGE_ABOUT = 'about';
 window.PAGE_HELP = 'help';

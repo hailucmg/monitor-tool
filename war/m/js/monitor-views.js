@@ -26,6 +26,16 @@ window.DashBoardView = Backbone.View.extend({
 	}
 });
 
+window.SplashView = Backbone.View.extend({
+
+	template : _.template($('#page-splash').html()),
+
+	render : function(eventName) {
+		$(this.el).html(this.template());
+		return this;
+	}
+});
+
 window.AboutView = Backbone.View.extend({
 
 	template : _.template($('#page-about').html()),
