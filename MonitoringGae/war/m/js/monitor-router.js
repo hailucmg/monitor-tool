@@ -104,7 +104,7 @@ var AppRouter = Backbone.Router.extend({
 	},
 
 	systemDetail : function(id) {
-		log(id);
+		jLog.log(id);
 		this.currentPage = window.PAGE_SYSTEM_DETAIL;
 		this.changePage(new SystemDetailView());
 	},
@@ -116,7 +116,7 @@ var AppRouter = Backbone.Router.extend({
 	},
 	
 	changePage : function(page, options) {
-		log(this.currentPage);
+		jLog.log(this.currentPage);
 		$(page.el).attr('data-role', 'page');
 		page.render();
 		$('body').append($(page.el));
@@ -133,4 +133,5 @@ var AppRouter = Backbone.Router.extend({
 		}
 		$.mobile.changePage($(page.el), options);
 	}
+
 });

@@ -8,7 +8,7 @@
  */
 
 /**
- * Constant value & Common function * 
+ * Constant value & Common function *
  * 
  * @Creator Hai Lu
  * @author $Author$
@@ -18,6 +18,7 @@
 
 window.IS_DEBUG = true;
 
+window.TEMP_DIR = '/m/templates';
 window.PAGE_SPLASH = 'splash';
 window.PAGE_DASHBOARD = 'dashboard';
 window.PAGE_ABOUT = 'about';
@@ -28,21 +29,34 @@ window.PAGE_SYSTEM_DETAIL = "system-detail";
 
 /**
  * Write out the log on Browser console
- * @param l the log content
  */
-function log(l) {
-	if (IS_DEBUG) {
-		if (typeof console!= 'undefined') {
-			console.log(l);
-		} else {
-			alert(l);
-		}		
-	}
-}
+window.jLog = {
+		ERROR : "error",
+		WARNING : "warning",
+		INFO : "info",
+		log : function(data, level) {
+			if (data && IS_DEBUG && typeof console!= 'undefined') {
+				var val = '';
+				if (!level) {
+					val += "|    INFO: ";
+				} else if (level == this.ERROR) {
+					val += "|   ERROR: ";
+				} else if (level == this.WARNING) {
+					val += "| WARNING: ";
+				}
+				val += data;
+				console.log(val);
+			}
+		}
+};
+
 /**
  * Render the HTML string with special name
- * @param tmpl_name the path and name of template
- * @param tmpl_data the data object to render
+ * 
+ * @param tmpl_name
+ *            the path and name of template
+ * @param tmpl_data
+ *            the data object to render
  * @returns
  */
 function render(tmpl_name, tmpl_data) {
@@ -50,9 +64,8 @@ function render(tmpl_name, tmpl_data) {
         render.tmpl_cache = {};
     }
 
-    if ( ! render.tmpl_cache[tmpl_name] ) {
-        var tmpl_dir = '/static/templates';
-        var tmpl_url = tmpl_dir + '/' + tmpl_name + '.html';
+    if ( ! render.tmpl_cache[tmpl_name] ) {     
+        var tmpl_url = TEMP_DIR + '/' + tmpl_name + '.html';
 
         var tmpl_string;
         $.ajax({
