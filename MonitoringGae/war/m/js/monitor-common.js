@@ -17,6 +17,7 @@
  */
 
 window.IS_DEBUG = true;
+window.IS_FINISH_LOAD = false;
 
 window.TEMP_DIR = '/m/templates';
 window.PAGE_SPLASH = 'splash';
