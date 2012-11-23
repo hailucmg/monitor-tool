@@ -15,8 +15,7 @@
  * @version $Revision$
  * @Last changed: $LastChangedDate$
  */
+
 $(document).ready(function () {
-    jLog.log('document ready');
-    app = new AppRouter();
-    Backbone.history.start();
+	App.start();    
 });
