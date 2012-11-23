@@ -32,7 +32,7 @@ import cmg.org.monitor.module.server.MonitorGwtServiceImpl;
  * @Last changed: $LastChangedDate$
  */
 
-public class DashboardDataHandler extends HttpServlet {
+public class DataServiceHandler extends HttpServlet {
 
 	/**
 	 * 
