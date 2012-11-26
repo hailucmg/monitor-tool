@@ -11,12 +11,12 @@
 
 <!-- Mobile Data Handler Servlet   -->
 <servlet>
-    <servlet-name>dashboardDataHander</servlet-name>
-    <servlet-class>cmg.org.monitor.module.server.mobile.handler.DashboardDataHandler</servlet-class>
+    <servlet-name>dataHander</servlet-name>
+    <servlet-class>cmg.org.monitor.module.server.mobile.handler.DataServiceHandler</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>dashboardDataHander</servlet-name>
-    <url-pattern>/mobile/handler/dashboard</url-pattern>
+    <servlet-name>dataHander</servlet-name>
+    <url-pattern>/mobile/handler</url-pattern>
   </servlet-mapping>
 <!--  -->  
   
