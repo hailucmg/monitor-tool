@@ -16,7 +16,7 @@
  * @Last changed: $LastChangedDate$
  */
 google.load("visualization", "1", {
-	packages : [ "corechart" ]
+	packages : [ "piechart" ]
 });
 google.setOnLoadCallback(App.start);
 /*
