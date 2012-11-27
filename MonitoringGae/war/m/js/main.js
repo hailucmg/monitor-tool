@@ -15,7 +15,12 @@
  * @version $Revision$
  * @Last changed: $LastChangedDate$
  */
-
-$(document).ready(function () {
-	App.start();    
+google.load("visualization", "1", {
+	packages : [ "corechart" ]
 });
+google.setOnLoadCallback(App.start);
+/*
+$(document).ready(function() {
+	App.start();
+});
+*/
