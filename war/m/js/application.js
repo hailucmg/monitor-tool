@@ -148,6 +148,18 @@
 
 		// Name of page
 		this.page = {
+			transitions : {
+				FADE : 'fade',
+				POP : 'pop',
+				FLIP : 'flip',
+				TURN : 'turn',
+				FLOW : 'flow',
+				SLIDE_FADE : 'slidefade',
+				SLIDE : 'slide',
+				SLIDE_UP : 'slideup',
+				SLIDE_DOWN : 'slidedown',
+				NONE : 'none'
+			},
 			PAGE_SPLASH : 'splash',
 			PAGE_DASHBOARD : 'dashboard',
 			PAGE_ABOUT : 'about',
@@ -204,7 +216,7 @@
 		this.SystemMonitor = Backbone.Model.extend({
 			template : App._common.templates.items.DASHBOARD_SYSTEM,
 			methodUrl : function(method) {
-				return App._common.method.generateURL(App_common.method.types.SYSTEM_MONITOR, method, id);
+				return App._common.method.generateURL(App._common.method.types.SYSTEM_MONITOR, method, this.id);
 			}
 		});
 	};
@@ -330,7 +342,7 @@
 			currentPage : App._common.page.PAGE_DASHBOARD,
 			page : new App._views.DashBoardView(),
 			options : {
-				transition : "flip"
+				transition : App._common.page.transitions.FLIP
 			}
 		};
 		this.currentPage = App._common.page.PAGE_SPLASH;
@@ -354,19 +366,19 @@
 				var options = {};
 				if (App._router.currentPage == App._common.page.PAGE_LOGOUT || App._router.currentPage == App._common.page.PAGE_ADMINISTRATION) {
 					options = {
-						transition : 'slideup',
+						transition : App._common.page.transitions.SLIDE_UP,
 						reverse : true
 					};
 				}
 				if (App._router.currentPage == App._common.page.PAGE_ABOUT || this.currentPage == App._common.page.PAGE_HELP) {
 					options = {
-						transition : 'slidedown',
+						transition : App._common.page.transitions.SLIDE_DOWN,
 						reverse : true
 					};
 				}
 				if (App._router.currentPage == App._common.page.PAGE_SYSTEM_DETAIL) {
 					options = {
-						transition : 'slide',
+						transition : App._common.page.transitions.SLIDE,
 						reverse : true
 					};
 				}
@@ -381,7 +393,7 @@
 				} else {
 					App._router.currentPage = App._common.page.PAGE_SPLASH;
 					this.changePage(new App._views.SplashView(), {
-						transition : "slidedown"
+						transition : App._common.page.transitions.SLIDE_DOWN
 					});
 					setTimeout(App._router._instance.hideSplash, App._common.SPLASH_TIMEOUT);
 				}
@@ -390,28 +402,28 @@
 			help : function() {
 				App._router.currentPage = App._common.page.PAGE_HELP;
 				this.changePage(new App._views.HelpView(), {
-					transition : "slidedown"
+					transition : App._common.page.transitions.SLIDE_DOWN
 				});
 			},
 
 			about : function() {
 				App._router.currentPage = App._common.page.PAGE_ABOUT;
 				this.changePage(new App._views.AboutView(), {
-					transition : "slidedown"
+					transition : App._common.page.transitions.SLIDE_DOWN
 				});
 			},
 
 			logout : function() {
 				App._router.currentPage = App._common.page.PAGE_LOGOUT;
 				this.changePage(new App._views.LogoutView(), {
-					transition : "slideup"
+					transition : App._common.page.transitions.SLIDE_UP
 				});
 			},
 
 			administration : function() {
 				App._router.currentPage = App._common.page.PAGE_ADMINISTRATION;
 				this.changePage(new App._views.AdministrationView(), {
-					transition : "slideup"
+					transition : App._common.page.transitions.SLIDE_UP
 				});
 			},
 
@@ -439,13 +451,13 @@
 				$('body').append($(page.el));
 				if (!options) {
 					options = {
-						transition : "slide"
+						transition : App._common.page.transitions.SLIDE
 					};
 				}
 				options.changeHash = false;
 				// $.mobile.defaultPageTransition;
 				if (this.firstPage) {
-					options.transition = 'none';
+					options.transition = App._common.page.transitions.NONE;
 					this.firstPage = false;
 				}
 				_log.log('Go to page ' + App._router.currentPage + ' with transaction ' + options.transition);
