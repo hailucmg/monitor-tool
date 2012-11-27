@@ -330,6 +330,20 @@
 			render : function(eventName) {
 				$(this.el).html(App._common.render(App._common.templates.SYSTEM_DETAIL, {}));
 				return this;
+			},
+			drawChart : function() {
+				var chartDiv = document.getElementById('chart_div');
+				if (chartDiv) {
+					var data = google.visualization.arrayToDataTable([ [ 'Task', 'Hours per Day' ], [ 'Work', 11 ], [ 'Eat', 2 ], [ 'Commute', 2 ], [ 'Watch TV', 2 ], [ 'Sleep', 7 ] ]);
+
+					var options = {
+						title : 'My Daily Activities'
+					};
+					var chart = new google.visualization.PieChart(chartDiv);
+					chart.draw(data, options);
+				} else {
+					_log.log("cannot find id chart_div", _log.ERROR);
+				}
 			}
 		});
 	};
@@ -464,18 +478,7 @@
 				if (typeof $.mobile != 'undefined') {
 					$.mobile.changePage($(page.el), options);
 					if (App._router.currentPage == App._common.page.PAGE_SYSTEM_DETAIL) {
-						var chartDiv = document.getElementById('chart_div');
-						if (chartDiv) {
-							var data = google.visualization.arrayToDataTable([ [ 'Task', 'Hours per Day' ], [ 'Work', 11 ], [ 'Eat', 2 ], [ 'Commute', 2 ], [ 'Watch TV', 2 ], [ 'Sleep', 7 ] ]);
-
-							var options = {
-								title : 'My Daily Activities'
-							};
-							var chart = new google.visualization.PieChart(chartDiv);
-							chart.draw(data, options);
-						} else {
-							_log.log("cannot find id chart_div", _log.ERROR);
-						}
+						page.drawChart();
 					}
 				}
 			}
