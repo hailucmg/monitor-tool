@@ -16,7 +16,7 @@
  * @Last changed: $LastChangedDate$
  */
 google.load("visualization", "1", {
-	packages : [ "piechart" ]
+	packages : ['corechart','gauge']
 });
 google.setOnLoadCallback(App.start);
 /*
