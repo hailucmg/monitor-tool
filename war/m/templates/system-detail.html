@@ -1,11 +1,49 @@
-<div data-role="header" data-theme="c">
+<div data-role="header" data-theme="c" class="header">
 	<a href="#" data-icon="undo" data-theme="e" data-direction="reverse">Back</a>
 	<h1>S001</h1>
 </div>
-<div data-role="content">
-	<div id="chart_div">
+<div data-role="content" class="content">
+	<div data-role="collapsible" data-collapsed="false">
+		<h3>Service Information</h3>
+		
+		<div id="chart_div_Service">
+					
+		</div>
+			
+	</div>
+	
+	<div data-role="collapsible"  data-collapsed="true">
+		<h3>File System Information</h3>
+		
+		<div id="chart_div_File_System">
+					
+		</div>
+			
+	</div>
+
+
+	<div data-role="collapsible"  data-collapsed="false">
+	<h3>CPU &amp; Memory Information</h3>
+		<table data-role="table" >
+			<tr>
+				<td>
+					<div id="chart_div_Gauge_CPU"></div>
+				</td>
+				<td>
+					<div id="chart_div_Arena_CPU"></div>
+				</td>
+			</tr>
+			<tr>
+				<td id="chart_div_Gauge_MEMORY">
+					<div id="chart_div_Gauge_MEMORY"></div>
+				</td>
+				<td id="chart_div_Arena_MEMORY">
+					<div id="chart_div_Arena_MEMORY"></div>
+				</td>
+			</tr>
+		</table>
 	</div>
 </div>
-<div data-role="footer" data-theme="c" data-position="fixed">
+<div data-role="footer" data-theme="c" data-position="fixed" class="footer">
 	<img src="images/logo/monitor-cmg.png" width="100%" />
 </div>
