@@ -1,120 +1,33 @@
-
 <li>
-	<div
-		style="visibility: hidden; white-space: nowrap; width: 0; height: 0;">
-		smile online work</div> <a href="#dashboard/system/detail/s001"> <img
-		src="images/icon/smile_status_icon.png" alt="France"
-		class="ui-li-icon">
-		<h1>S001</h1>
+	<div style="visibility: hidden; white-space: nowrap; width: 0; height: 0;"><%=strSearch%></div> <a
+	href="#dashboard/system/detail/<%=encodedKey%>"> <img src="images/icon/<%=healthStatus%>_status_icon.png" alt="France" class="ui-li-icon" />
+		<h1><%=code%></h1>
 		<p>
-			<b>PensionLine PROD</b>
+			<b><%=name%></b>
 		</p>
-		<div>
-			<img style="padding: 0" src="images/bar/bar_s.png" height="12"
-				width="1"><img style="padding: 0" src="images/bar/bar_b.png"
-				height="12" width="14%"><img style="padding: 0"
-				src="images/bar/bar_w.png" height="12" width="86%"><img
-				style="padding: 0" src="images/bar/bar_s.png" height="12" width="1">
-		</div>
-		<div>
-			<img style="padding: 0" src="images/bar/bar_s.png" height="12"
-				width="1"><img style="padding: 0" src="images/bar/bar_b.png"
-				height="12" width="44%"><img style="padding: 0"
-				src="images/bar/bar_w.png" height="12" width="56%"><img
-				style="padding: 0" src="images/bar/bar_s.png" height="12" width="1">
-		</div>
-		<p class="ui-li-aside">
-			<img src="images/icon/p_online.gif">
-		</p>
+		<table class="db-bar-table"<%=(viewBar ? "" : "style='display:none'")%>">
+			<tbody>
+				<tr>
+					<td class="db-bar-title">CPU</td>
+					<td class="db-bar"><img style="padding: 0" src="images/bar/bar_s.png" height="12" width="1"><img
+						style="padding: 0" src="images/bar/bar_<%=(lastestCpuUsage >= 90 ? "r" : "b")%>.png" height="12" width="<%=lastestCpuUsage%>%"><img style="padding: 0"
+						src="images/bar/bar_w.png" height="12" width="<%=(100 - lastestCpuUsage)%>%"><img style="padding: 0" src="images/bar/bar_s.png"
+						height="12" width="1"></td>
+					<td class="db-bar-value"><%=lastestCpuUsage%>%</td>
+				</tr>
+				<tr>
+					<td class="db-bar-title">Mem</td>
+					<td class="db-bar"><img style="padding: 0" src="images/bar/bar_s.png" height="12" width="1"><img
+						style="padding: 0" src="images/bar/bar_<%=(lastestMemoryUsage >= 90 ? "r" : "b")%>.png" height="12" width="<%=lastestMemoryUsage%>%"><img style="padding: 0"
+						src="images/bar/bar_w.png" height="12" width="<%=(100-lastestMemoryUsage)%>%"><img style="padding: 0" src="images/bar/bar_s.png"
+						height="12" width="1"></td>
+					<td class="db-bar-value"><%=lastestMemoryUsage%>%</td>
+				</tr>
+			</tbody>
+		</table>
 
-</a>
-</li>
-<li>
-	<div
-		style="visibility: hidden; white-space: nowrap; width: 0; height: 0;">
-		bored online work not good</div> <a href="#dashboard/system/detail/s002">
-		<img src="images/icon/bored_status_icon.png" alt="France"
-		class="ui-li-icon">
-		<h1>S002</h1>
-		<p>
-			<b>PensionLine SAT</b>
-		</p>
-		<div>
-			<img style="padding: 0" src="images/bar/bar_s.png" height="12"
-				width="1"><img style="padding: 0" src="images/bar/bar_r.png"
-				height="12" width="85%"><img style="padding: 0"
-				src="images/bar/bar_w.png" height="12" width="15%"><img
-				style="padding: 0" src="images/bar/bar_s.png" height="12" width="1">
-		</div>
-		<div>
-			<img style="padding: 0" src="images/bar/bar_s.png" height="12"
-				width="1"><img style="padding: 0" src="images/bar/bar_b.png"
-				height="12" width="68%"><img style="padding: 0"
-				src="images/bar/bar_w.png" height="12" width="32%"><img
-				style="padding: 0" src="images/bar/bar_s.png" height="12" width="1">
-		</div>
 		<p class="ui-li-aside">
-			<img src="images/icon/p_online.gif">
-		</p>
-
-</a>
-</li>
-<li>
-	<div
-		style="visibility: hidden; white-space: nowrap; width: 0; height: 0;">
-		smile online work</div> <a href="#dashboard/system/detail/s003"> <img
-		src="images/icon/smile_status_icon.png" alt="" class="ui-li-icon">
-		<h1>S003</h1>
-		<p>
-			<b>Pablo PROD</b>
-		</p>
-		<div>
-			<img style="padding: 0" src="images/bar/bar_s.png" height="12"
-				width="1"><img style="padding: 0" src="images/bar/bar_b.png"
-				height="12" width="45%"><img style="padding: 0"
-				src="images/bar/bar_w.png" height="12" width="55%"><img
-				style="padding: 0" src="images/bar/bar_s.png" height="12" width="1">
-		</div>
-		<div>
-			<img style="padding: 0" src="images/bar/bar_s.png" height="12"
-				width="1"><img style="padding: 0" src="images/bar/bar_b.png"
-				height="12" width="34%"><img style="padding: 0"
-				src="images/bar/bar_w.png" height="12" width="66%"><img
-				style="padding: 0" src="images/bar/bar_s.png" height="12" width="1">
-		</div>
-		<p class="ui-li-aside">
-			<img src="images/icon/p_online.gif">
-		</p>
-
-</a>
-</li>
-<li>
-	<div
-		style="visibility: hidden; white-space: nowrap; width: 0; height: 0;">
-		dead offline</div> <a href="#dashboard/system/detail/s004"> <img
-		src="images/icon/dead_status_icon.png"
-		alt="System is not working.\nClick the Icon to see more information!"
-		class="ui-li-icon">
-		<h1>S004</h1>
-		<p>
-			<b>Pablo SAT</b>
-		</p>
-		<div>
-			<img style="padding: 0" src="images/bar/bar_s.png" height="12"
-				width="1"><img style="padding: 0" src="images/bar/bar_b.png"
-				height="12" width="0%"><img style="padding: 0"
-				src="images/bar/bar_w.png" height="12" width="100%"><img
-				style="padding: 0" src="images/bar/bar_s.png" height="12" width="1">
-		</div>
-		<div>
-			<img style="padding: 0" src="images/bar/bar_s.png" height="12"
-				width="1"><img style="padding: 0" src="images/bar/bar_b.png"
-				height="12" width="0%"><img style="padding: 0"
-				src="images/bar/bar_w.png" height="12" width="100%"><img
-				style="padding: 0" src="images/bar/bar_s.png" height="12" width="1">
-		</div>
-		<p class="ui-li-aside">
-			<img src="images/icon/p_offline.gif">
+			<img src="images/icon/p_<%=(isActive ? "online" : "offline")%>.gif" />
 		</p>
 </a>
 </li>
