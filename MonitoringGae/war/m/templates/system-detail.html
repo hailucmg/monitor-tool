@@ -1,30 +1,26 @@
 <div data-role="header" data-theme="c" class="header">
-	<a href="#" data-icon="undo" data-theme="e" data-direction="reverse">Back</a>
+	<a href="#" data-icon="arrow-l" data-theme="b" data-direction="reverse">Back</a>
 	<h1>S001</h1>
 </div>
 <div data-role="content" class="content">
 	<div data-role="collapsible" data-collapsed="false">
 		<h3>Service Information</h3>
-		
-		<div id="chart_div_Service">
-					
-		</div>
-			
+
+		<div id="chart_div_Service"></div>
+
 	</div>
-	
-	<div data-role="collapsible"  data-collapsed="true">
+
+	<div data-role="collapsible" data-collapsed="true">
 		<h3>File System Information</h3>
-		
-		<div id="chart_div_File_System">
-					
-		</div>
-			
+
+		<div id="chart_div_File_System"></div>
+
 	</div>
 
 
-	<div data-role="collapsible"  data-collapsed="false">
-	<h3>CPU &amp; Memory Information</h3>
-		<table data-role="table" >
+	<div data-role="collapsible" data-collapsed="false">
+		<h3>CPU &amp; Memory Information</h3>
+		<table data-role="table">
 			<tr>
 				<td>
 					<div id="chart_div_Gauge_CPU"></div>
@@ -44,6 +40,16 @@
 		</table>
 	</div>
 </div>
-<div data-role="footer" data-theme="c" data-position="fixed" class="footer">
-	<img src="images/logo/monitor-cmg.png" width="100%" />
+<div data-role="footer" data-position="fixed" class="ui-body-d">
+
+		<div data-role="navbar">
+			<ul>
+				<li><a <%=(item == "service" ? "class=\"ui-btn-active\"" : "")%> href="#dashboard/system/detail/<%=id%>">Service</a></li>
+				<li><a <%=(item == "cpu" ? "class=\"ui-btn-active\"" : "")%> href="#dashboard/system/detail/<%=id%>/cpu">CPU</a></li>
+				<li><a <%=(item == "mem" ? "class=\"ui-btn-active\"" : "")%> href="#dashboard/system/detail/<%=id%>/mem">Memory</a></li>
+				<li><a <%=(item == "file-system" ? "class=\"ui-btn-active\"" : "")%> href="#dashboard/system/detail/<%=id%>/file-system">File system</a></li>
+			</ul>
+		</div>
+		<!-- /navbar -->
 </div>
+<!-- /footer -->

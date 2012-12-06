@@ -1,16 +1,28 @@
 <div data-role="header" data-theme="c">
-	<a href="#" data-icon="chevron-down" data-theme="e">Hide</a>
-	<h1>Confirm logout</h1>
+	<a href="#dashboard" data-icon="home" data-theme="b" data-iconpos="notext"></a>
+	<h1>Confirm</h1>
+	<a href="#help" data-icon="question" data-theme="b" data-iconpos="notext"></a>
 </div>
-<div data-role="content">
-	<p>This is Page 2. It was created dynamically using an
-		underscore.js template.</p>
-	<p>Navigate to:</p>
-	<ul data-role="listview" data-inset="true">
-		<li><a href="#">Home</a></li>
-		<li><a href="#page1">Page 1</a></li>
+<div data-role="content">	
+	<fieldset class="ui-grid-a">
+		<div class="ui-block-a">
+			<a href="#" data-role="button" data-icon="back" data-iconpos="left" data-theme="d">Cancel</a>
+		</div>
+		<div class="ui-block-b">
+			<a href="#" data-role="button" data-icon="off" data-iconpos="left" data-theme="f">Logout</a>
+		</div>
+	</fieldset>
+	<ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d">
+		<li data-role="list-divider">Other versions</li>
+		<li><a>Web for PC</a><a href="#"  data-theme="d" data-icon="direction">Go to Web version for PC</a></li>
+		<li><a>App Store (iOS)</a><a href="#"  data-theme="d" data-icon="apple">Get iOS version in App store</a></li>
+		<li><a>Google Play (Android)</a><a href="#"  data-theme="d" data-icon="android">Get Android version in Google Play</a></li>
 	</ul>
+
+
 </div>
 <div data-role="footer" data-theme="c" data-position="fixed">
-	<img src="images/logo/monitor-cmg.png" width="100%" />
+	<div class="bottom-logo">
+		<img src="images/logo/c-mg.png"/>
+	</div>
 </div>
