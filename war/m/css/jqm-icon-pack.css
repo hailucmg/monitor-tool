@@ -79,14 +79,14 @@
 .ui-icon-gear { background-position: -287px 1px !important; }
 .ui-icon-refresh { background-position: -323px 1px !important; }
 .ui-icon-forward { background-position: -359px 1px !important; }
-.ui-icon-back { background-position: -396px -0 !important; }
+.ui-icon-back { background-position: -395px 1px !important; }
 .ui-icon-grid { background-position: -431px 1px !important; }
 .ui-icon-star { background-position: -467px 1px !important; }
 .ui-icon-alert { background-position: -503px 1px !important; }
-.ui-icon-info { background-position: -539px 1px !important; }
-.ui-icon-home { background-position: -575px 1px !important; }
+.ui-icon-info { background-position: -537px 1px !important; }
+.ui-icon-home { background-position: -574px 1px !important; }
 .ui-icon-search,.ui-icon-searchfield:after { background-position: -611px 0px !important; }
-.ui-icon-checkbox-off { background-position: -681px 1px !important; }
+.ui-icon-checkbox-off { background-position: -680px 1px !important; }
 .ui-icon-checkbox-on { background-position: -647px 1px !important; }
 .ui-icon-radio-off { background-position: -752px 1px !important; }
 .ui-icon-radio-on { background-position: -717px 1px !important; }
@@ -100,7 +100,7 @@
 .ui-icon-dollar { background-position: -215px -17px !important; }
 .ui-icon-euro { background-position: -251px -17px !important; }
 .ui-icon-pound { background-position: -287px -17px !important; }
-.ui-icon-apple { background-position: -323px -17px !important; }
+.ui-icon-apple { background-position: -322px -17px !important; }
 .ui-icon-chat { background-position: -359px -17px !important; }
 .ui-icon-trash { background-position: -395px -17px !important; }
 .ui-icon-mappin { background-position: -467px -17px !important; }
@@ -118,7 +118,7 @@
 .ui-icon-phone { background-position: -72px -36px !important; }
 .ui-icon-power { background-position: -107px -35px !important; }
 .ui-icon-lightning { background-position: -251px -35px !important; }
-.ui-icon-android { background-position: -323px -35px !important; }
+.ui-icon-android { background-position: -322px -35px !important; }
 
 
 

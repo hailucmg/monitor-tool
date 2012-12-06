@@ -41,6 +41,7 @@
 	};
 	App.init = function() {
 		this._common = new App.Common();
+		this._common.doLogin();
 		_log = new App.Log();
 		_log.welcome();
 		this._models = new App.Models();
@@ -104,13 +105,13 @@
 		};
 		this.IS_DEBUG = true;
 		this.NONE_TRANSACTION = false;
-		
+
 		this.IS_FINISH_LOAD = false;
 		this.SPLASH_TIMEOUT = 1000;
 		// System information
 		this.DATA_HANDLER_URL = '/mobile/handler';
 		this.TEMP_DIR = '/m/templates';
-		var self = this;		
+		var self = this;
 		self = this || self;
 		this.templates = {
 			DASHBOARD : 'dashboard',
@@ -125,8 +126,23 @@
 				DASHBOARD_SYSTEM : 'items/dashboard-system'
 			}
 		};
-		
 
+		this.doLogin = function() {
+			if (self.IS_DEBUG) {
+				// $.ajax({
+				// type : "GET",
+				// url : '/_ah',
+				// async : false,
+				// data : {
+				// 'email' : App.creator.email,
+				// 'isAdmin' : true,
+				// 'action' : 'Log in',
+				// 'continue' : ''
+				// },
+				// });
+			}
+			;
+		};
 		// Object sync method
 		this.method = {
 			/**
@@ -138,11 +154,19 @@
 			 *            the method _CREATE, _DELETE, _READ, _UPDATE
 			 * @param id
 			 */
-			generateURL : function(objType, method, id) {
-				return App._common._instance().DATA_HANDLER_URL + "?" + "type=" + objType + "&method=" + method + (method == this._CREATE ? "" : ("&id=" + id));
+			generateURL : function(objType, method, id, item) {
+				return App._common._instance().DATA_HANDLER_URL + "?" + "type=" + objType + "&method=" + method + (method == this._CREATE ? "" : ("&id=" + id))
+						+ (typeof item != 'undefined' ? ("&item=" + item) : "");
 			},
 			types : {
 				SYSTEM_MONITOR : 'system-monitor'
+			},
+			items : {
+				JVM : 'jvm',
+				CPU : 'cpu',
+				MEM : 'mem',
+				SERVICE : 'service',
+				FILE_SYSTEM : 'file-system'
 			},
 			_READ : 'read',
 			_CREATE : 'create',
@@ -155,7 +179,7 @@
 		this.page = {
 			transitions : {
 				FADE : self.NONE_TRANSACTION ? 'none' : 'fade',
-				POP :self.NONE_TRANSACTION ? 'none' : 'pop',
+				POP : self.NONE_TRANSACTION ? 'none' : 'pop',
 				FLIP : self.NONE_TRANSACTION ? 'none' : 'flip',
 				TURN : self.NONE_TRANSACTION ? 'none' : 'turn',
 				FLOW : self.NONE_TRANSACTION ? 'none' : 'flow',
@@ -219,7 +243,7 @@
 			}
 		};
 		this.SystemMonitor = Backbone.Model.extend({
-			init : function() {				
+			init : function() {
 				this.set({
 					strSearch : this.get('healthStatus') + ' ' + (this.get('isActive') ? 'online' : 'offline'),
 					viewBar : this.get('lastestCpuUsage') != -1 && this.get('lastestMemoryUsage') != -1
@@ -227,8 +251,11 @@
 			},
 			template : App._common.templates.items.DASHBOARD_SYSTEM,
 			methodUrl : function(method) {
-				return App._common.method.generateURL(App._common.method.types.SYSTEM_MONITOR, method, this.id);
+				return App._common.method.generateURL(App._common.method.types.SYSTEM_MONITOR, method, this.get('id'));
 			}
+		});
+		this.ServiceMonitor = Backbone.Model.extend({
+
 		});
 	};
 
@@ -247,9 +274,36 @@
 			render : function() {
 				if (this.length > 0) {
 					var temp = '';
-					this.each(function(sys) {
-						sys.init();
-						temp += App._common.render(sys.template, sys.toJSON());
+					this.each(function(model) {
+						model.init();
+						temp += App._common.render(model.template, model.toJSON());
+					});
+					return temp;
+				}
+				return '';
+			},			
+			getSys : function(id) {
+				if (this.length > 0) {
+					var sys = null;
+					this.each(function(model) {	
+						_log.log(model.get('encodedKey') + ' | ' + id);
+						if (model.get('encodedKey') == id) {
+							sys = model;
+						}
+					});
+					return sys;
+				}
+				return null;
+			}
+		});
+		this.ServiceMonitors = Backbone.Collection.extend({
+			model : App._models.ServiceMonitor,
+			url : App._common.method.generateURL(App._common.method.types.SYSTEM_MONITOR, App._common.method._READ, this.sid, this.item),
+			render : function() {
+				if (this.length > 0) {
+					var temp = '';
+					this.each(function(model) {
+						//
 					});
 					return temp;
 				}
@@ -274,9 +328,9 @@
 			ulRoot : '#dashboard-system-list',
 			render : function(eventName) {
 				$(this.el).html(App._common.render(App._common.templates.DASHBOARD, {}));
-				var list = new App._collections.SystemMonitors();
+				App._collections._systems = new App._collections.SystemMonitors();
 				var message = '';
-				list.fetch({
+				App._collections._systems.fetch({
 					async : false,
 					success : function(data) {
 						if (data.length > 0) {
@@ -293,8 +347,8 @@
 						message = textStatus.statusText;
 					}
 				}, {});
-				if (list.length > 0 && message.length == 0) {
-					$(this.el).find(this.ulRoot).html(list.render());
+				if (App._collections._systems.length > 0 && message.length == 0) {
+					$(this.el).find(this.ulRoot).html(App._collections._systems.render());
 				} else {
 					$(this.el).find(this.ulRoot).html(App._common.render(App._common.templates.items.MESSAGE, {
 						message : message
@@ -340,7 +394,18 @@
 
 		this.SystemDetailView = Backbone.View.extend({
 			render : function(eventName) {
-				$(this.el).html(App._common.render(App._common.templates.SYSTEM_DETAIL, {}));
+				_log.log(this.id);
+				var item = this.options ? this.options.fItem : App._common.method.items.SERVICE;
+				if (typeof item != 'undefined') {
+					_log.log(item);
+				} else {
+					item = App._common.method.items.SERVICE;
+					_log.log('No item found', _log.WARNING);
+				}
+				$(this.el).html(App._common.render(App._common.templates.SYSTEM_DETAIL, {
+					id : this.id,
+					item : item
+				}));
 				return this;
 			},
 
@@ -480,7 +545,8 @@
 				"help" : "help",
 				"logout" : "logout",
 				"administration" : "administration",
-				"dashboard/system/detail/:id" : "systemDetail"
+				"dashboard/system/detail/:id" : "systemDetail",
+				"dashboard/system/detail/:id/:item" : "systemDetail"
 			},
 
 			initialize : function() {
@@ -526,16 +592,18 @@
 			},
 
 			help : function() {
+				var tran = (App._router.currentPage == App._common.page.PAGE_ABOUT ? App._common.page.transitions.FLIP : App._common.page.transitions.SLIDE_DOWN);
 				App._router.currentPage = App._common.page.PAGE_HELP;
 				this.changePage(new App._views.HelpView(), {
-					transition : App._common.page.transitions.SLIDE_DOWN
+					transition : tran
 				});
 			},
 
 			about : function() {
+				var tran = (App._router.currentPage == App._common.page.PAGE_HELP ? App._common.page.transitions.FLIP : App._common.page.transitions.SLIDE_DOWN);
 				App._router.currentPage = App._common.page.PAGE_ABOUT;
 				this.changePage(new App._views.AboutView(), {
-					transition : App._common.page.transitions.SLIDE_DOWN
+					transition : tran
 				});
 			},
 
@@ -553,10 +621,15 @@
 				});
 			},
 
-			systemDetail : function(id) {
-				_log.log(id);
+			systemDetail : function(id, item) {
+				var tran = (App._router.currentPage == App._common.page.PAGE_SYSTEM_DETAIL ? App._common.page.transitions.NONE : App._common.page.transitions.SLIDE);
 				App._router.currentPage = App._common.page.PAGE_SYSTEM_DETAIL;
-				this.changePage(new App._views.SystemDetailView());
+				this.changePage(new App._views.SystemDetailView({
+					id : id,
+					fItem : item
+				}), {
+					transition : tran
+				});
 			},
 
 			hideSplash : function() {
@@ -599,3 +672,8 @@
 		this._instance = new this.router();
 	};
 }).call(this);
+
+google.load("visualization", "1", {
+	packages : [ 'corechart', 'gauge' ]
+});
+google.setOnLoadCallback(App.start);
