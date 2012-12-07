@@ -21,11 +21,10 @@
 	max-height: 24px;
 	margin-top: 4px;
 }
-
-.ui-title {
-	font-size: 1.3em !important;
-	margin: .4em 30% 0.2em !important;
+.cmg-logo {
+	text-align: center;
 }
 .bottom-logo {
+	background-color: #f1f1f1;
 	text-align: center;
 }
