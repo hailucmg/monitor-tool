@@ -24,6 +24,11 @@ public class JvmMonitor implements IsSerializable {
 	private double usedMemory;
 
 	private Date timeStamp;
+	
+	private String strFreeMemory;
+	private String strUsedMemory;
+	private String strTotalMemory;
+	private String strMaxMemory;
 
 	/**
 	 * Default constructor.<br>
@@ -90,6 +95,66 @@ public class JvmMonitor implements IsSerializable {
 
 	public void setTimeStamp(Date timeStamp) {
 		this.timeStamp = timeStamp;
+	}
+
+	/** 
+	 * @return the strTotalMemory 
+	 */
+	public String getStrTotalMemory() {
+		return strTotalMemory;
+	}
+
+	/** 
+	 * @param strTotalMemory the strTotalMemory to set 
+	 */
+	
+	public void setStrTotalMemory(String strTotalMemory) {
+		this.strTotalMemory = strTotalMemory;
+	}
+
+	/** 
+	 * @return the strMaxMemory 
+	 */
+	public String getStrMaxMemory() {
+		return strMaxMemory;
+	}
+
+	/** 
+	 * @param strMaxMemory the strMaxMemory to set 
+	 */
+	
+	public void setStrMaxMemory(String strMaxMemory) {
+		this.strMaxMemory = strMaxMemory;
+	}
+
+	/** 
+	 * @return the strFreeMemory 
+	 */
+	public String getStrFreeMemory() {
+		return strFreeMemory;
+	}
+
+	/** 
+	 * @param strFreeMemory the strFreeMemory to set 
+	 */
+	
+	public void setStrFreeMemory(String strFreeMemory) {
+		this.strFreeMemory = strFreeMemory;
+	}
+
+	/** 
+	 * @return the strUsedMemory 
+	 */
+	public String getStrUsedMemory() {
+		return strUsedMemory;
+	}
+
+	/** 
+	 * @param strUsedMemory the strUsedMemory to set 
+	 */
+	
+	public void setStrUsedMemory(String strUsedMemory) {
+		this.strUsedMemory = strUsedMemory;
 	}
 
 }

@@ -1,55 +1,61 @@
 <div data-role="header" data-theme="c" class="header">
 	<a href="#" data-icon="arrow-l" data-theme="b" data-direction="reverse">Back</a>
-	<h1>S001</h1>
+	<h1><%=sys.getTitle()%></h1>
 </div>
 <div data-role="content" class="content">
+	<ul data-role="listview" data-inset="true" id="ul-sys-info">
+		<li><%if (!sys.get("isDeleted")) { %> <img src="images/icon/<%=sys.get("healthStatus")%>_status_icon.png"
+			alt="France" class="ui-li-icon" />
+			<h1><%=sys.get("code")%></h1>
+			<p>
+				<b><%=sys.get("name")%></b>
+			</p>
+			<p class="ui-li-aside">
+				<img src="images/icon/p_<%=(sys.get("isActive") ? "online" : "offline")%>.gif" />
+			</p> <% } else {%> No system found. <%}%>
+		</li>
+	</ul>
+	<%if (!sys.get("isDeleted")) { %> <%if (item == "service") {%>
 	<div data-role="collapsible" data-collapsed="false">
 		<h3>Service Information</h3>
-
-		<div id="chart_div_Service"></div>
-
+		<div id="table-services"></div>
 	</div>
-
-	<div data-role="collapsible" data-collapsed="true">
-		<h3>File System Information</h3>
-
-		<div id="chart_div_File_System"></div>
-
-	</div>
-
-
 	<div data-role="collapsible" data-collapsed="false">
-		<h3>CPU &amp; Memory Information</h3>
-		<table data-role="table">
-			<tr>
-				<td>
-					<div id="chart_div_Gauge_CPU"></div>
-				</td>
-				<td>
-					<div id="chart_div_Arena_CPU"></div>
-				</td>
-			</tr>
-			<tr>
-				<td id="chart_div_Gauge_MEMORY">
-					<div id="chart_div_Gauge_MEMORY"></div>
-				</td>
-				<td id="chart_div_Arena_MEMORY">
-					<div id="chart_div_Arena_MEMORY"></div>
-				</td>
-			</tr>
-		</table>
+		<h3>Java Virtual Machine</h3>
+		<div id="pie-jvm"></div>
 	</div>
-</div>
-<div data-role="footer" data-position="fixed" class="ui-body-d">
-
-		<div data-role="navbar">
-			<ul>
-				<li><a <%=(item == "service" ? "class=\"ui-btn-active\"" : "")%> href="#dashboard/system/detail/<%=id%>">Service</a></li>
-				<li><a <%=(item == "cpu" ? "class=\"ui-btn-active\"" : "")%> href="#dashboard/system/detail/<%=id%>/cpu">CPU</a></li>
-				<li><a <%=(item == "mem" ? "class=\"ui-btn-active\"" : "")%> href="#dashboard/system/detail/<%=id%>/mem">Memory</a></li>
-				<li><a <%=(item == "file-system" ? "class=\"ui-btn-active\"" : "")%> href="#dashboard/system/detail/<%=id%>/file-system">File system</a></li>
-			</ul>
+	<%}%> <%if (item == "properties") {%>
+	<div data-role="collapsible" data-collapsed="false">
+		<h3>CPU &amp; Memory</h3>
+		<div id="cpu-mem-zone">
 		</div>
-		<!-- /navbar -->
+	</div>
+	<div data-role="collapsible" data-collapsed="false">
+		<h3>Local Disk</h3>
+		<div id="local-disk-zone"></div>
+	</div>
+	<%}%> <%if (item == "issues") {%>
+	<ul data-role="listview" data-inset="true" data-theme="c" id="dashboard-system-list" data-filter="true"
+		data-filter-theme="d" data-filter-placeholder="Search issue ...">
+		<li>No issue found.</li>
+	</ul>
+	<%}%> <%}%>
+</div>
+<div data-role="footer" data-position="fixed" class="ui-body-d" data-role="listview" data-inset="true"
+	data-fullscreen="true">
+	<%if (!sys.get("isDeleted")) { %>
+	<div data-role="navbar">
+		<ul>
+			<li><a <%=(item == "service" ? "class=\"ui-btn-active\"" : "")%> href="#dashboard/system/detail/<%=id%>">Services</a></li>
+			<li><a <%=(item == "properties" ? "class=\"ui-btn-active\"" : "")%> href="#dashboard/system/detail/<%=id%>/properties">Properties</a></li>
+			<li><a <%=(item == "issues" ? "class=\"ui-btn-active\"" : "")%> href="#dashboard/system/detail/<%=id%>/issues">Issues</a></li>
+		</ul>
+	</div>
+	<%} else {%>
+	<!-- /navbar -->
+	<div class="bottom-logo">
+		<img src="images/logo/c-mg.png" />
+	</div>
+	<%}%>
 </div>
 <!-- /footer -->

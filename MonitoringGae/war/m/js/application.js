@@ -39,6 +39,17 @@
 		email : 'hai.lu@c-mg.com',
 		skypeID : 'lh.hai'
 	};
+	App.charts = {
+		option : {},
+		data : {},
+		format : {},
+		columnType : {
+			STRING : 'string',
+			NUMBER : 'number',
+			DATE : 'date',
+			BOOLEAN : 'boolean'
+		}
+	};
 	App.init = function() {
 		this._common = new App.Common();
 		this._common.doLogin();
@@ -48,6 +59,7 @@
 		this._collections = new App.Collections();
 		this._views = new App.Views();
 		this._router = new App.Routers();
+		setInterval(App.intervalFunc, App._common.REFRESH_TIME);
 	};
 
 	/**
@@ -56,6 +68,26 @@
 	App.start = function() {
 		App.init();
 		Backbone.history.start();
+	};
+	App.intervalFunc = function() {
+		if (typeof App._router.page != 'undefined' && typeof App._router.page != 'undefined' && App._router.currentPage != 'undefined'
+				&& App._router.currentPage == App._common.page.PAGE_SYSTEM_DETAIL) {
+			App._router.page.drawGaugeCPU();
+			App._router.page.drawGaugeMem();
+		}
+	};
+	App.onOrientationChange = function(orient, screen) {
+		if (typeof _log != 'undefined') {
+			App.orient = orient;
+			_log.log('Device change Orientation: ' + orient + " | Screen width: " + screen.width + " | Screen height: " + screen.height);
+			if (typeof App._router.page != 'undefined' && typeof App._router.page != 'undefined' && App._router.currentPage != 'undefined'
+					&& App._router.currentPage == App._common.page.PAGE_SYSTEM_DETAIL) {
+				App.refreshCPU = false;
+				App.refreshMem = false;
+				_log.log('start redraw chart');
+				App._router.page.drawChart();
+			}
+		}
 	};
 	/**
 	 * Write out the log on Browser console
@@ -86,7 +118,6 @@
 					+ (ms > 99 ? ms.toString() : (ms > 9 ? '0' + ms : '00' + ms));
 		};
 		this.welcome = function() {
-
 			this.log("\n# Welcome to " + App.name + "\n# Vesion: " + App.VERSION + "\n# Creator: " + App.creator.name + "\n# License: \n" + App.license);
 		};
 	};
@@ -104,10 +135,12 @@
 			}
 		};
 		this.IS_DEBUG = true;
-		this.NONE_TRANSACTION = false;
+		this.NONE_TRANSACTION = true;
 
 		this.IS_FINISH_LOAD = false;
 		this.SPLASH_TIMEOUT = 1000;
+		this.REFRESH_TIME = 2000;
+		this.RANDOM_RANGE = 10;
 		// System information
 		this.DATA_HANDLER_URL = '/mobile/handler';
 		this.TEMP_DIR = '/m/templates';
@@ -166,7 +199,9 @@
 				CPU : 'cpu',
 				MEM : 'mem',
 				SERVICE : 'service',
-				FILE_SYSTEM : 'file-system'
+				FILE_SYSTEM : 'file-system',
+				PROPERTIES : 'properties',
+				ISSUES : 'issues'
 			},
 			_READ : 'read',
 			_CREATE : 'create',
@@ -244,6 +279,7 @@
 		};
 		this.SystemMonitor = Backbone.Model.extend({
 			init : function() {
+				this.id = this.get('encodedKey');
 				this.set({
 					strSearch : this.get('healthStatus') + ' ' + (this.get('isActive') ? 'online' : 'offline'),
 					viewBar : this.get('lastestCpuUsage') != -1 && this.get('lastestMemoryUsage') != -1
@@ -252,10 +288,15 @@
 			template : App._common.templates.items.DASHBOARD_SYSTEM,
 			methodUrl : function(method) {
 				return App._common.method.generateURL(App._common.method.types.SYSTEM_MONITOR, method, this.get('id'));
+			},
+			getTitle : function() {
+				return (typeof this.get('isDeleted') != 'undefined' && this.get('isDeleted') == true) ? 'Unknown' : (this.get('code') + ' - ' + this.get('name'));
 			}
 		});
-		this.ServiceMonitor = Backbone.Model.extend({
-
+		this.SystemDetail = Backbone.Model.extend({
+			methodUrl : function(method) {
+				return App._common.method.generateURL(App._common.method.types.SYSTEM_MONITOR, method, this.get('id'), this.get('item'));
+			},
 		});
 	};
 
@@ -281,11 +322,11 @@
 					return temp;
 				}
 				return '';
-			},			
+			},
 			getSys : function(id) {
 				if (this.length > 0) {
 					var sys = null;
-					this.each(function(model) {	
+					this.each(function(model) {
 						_log.log(model.get('encodedKey') + ' | ' + id);
 						if (model.get('encodedKey') == id) {
 							sys = model;
@@ -296,19 +337,9 @@
 				return null;
 			}
 		});
-		this.ServiceMonitors = Backbone.Collection.extend({
-			model : App._models.ServiceMonitor,
-			url : App._common.method.generateURL(App._common.method.types.SYSTEM_MONITOR, App._common.method._READ, this.sid, this.item),
-			render : function() {
-				if (this.length > 0) {
-					var temp = '';
-					this.each(function(model) {
-						//
-					});
-					return temp;
-				}
-				return '';
-			}
+		this.SystemDetails = Backbone.Collection.extend({
+			model : App._models.SystemDetail,
+			url : App._common.method.generateURL(App._common.method.types.SYSTEM_MONITOR, App._common.method._READ, this.sid, this.item)
 		});
 	};
 
@@ -402,125 +433,285 @@
 					item = App._common.method.items.SERVICE;
 					_log.log('No item found', _log.WARNING);
 				}
+				if (typeof App._collections._systems == 'undefined' || App._collections._systems.length == 0) {
+					if (typeof App._models._sys == 'undefined') {
+						App._models._sys = new App._models.SystemMonitor();
+						App._models._sys.set({
+							id : this.id
+						});
+						App._models._sys.fetch({
+							async : false
+						}, {});
+					}
+				} else {
+					App._models._sys = App._collections._systems.getSys(this.id);
+				}
+				App._models._sys.init();
+				if (typeof App._models._sys.get('isDeleted') != 'undefined' && !App._models._sys.get('isDeleted')) {
+					if (item == App._common.method.items.SERVICE) {
+						App._collections._services = new App._collections.SystemDetails();
+						App._collections._services.fetch({
+							data : {
+								item : App._common.method.items.SERVICE,
+								sid : App._models._sys.get('encodedKey')
+							},
+							async : false
+						}, {});
+						App._models._jvm = new App._models.SystemDetail();
+						App._models._jvm.fetch({
+							data : {
+								item : App._common.method.items.JVM,
+								sid : App._models._sys.get('encodedKey')
+							},
+							async : false
+						}, {});
+					} else if (item == App._common.method.items.PROPERTIES) {
+						App._collections._cpus = new App._collections.SystemDetails();
+						App._collections._cpus.fetch({
+							data : {
+								item : App._common.method.items.CPU,
+								sid : App._models._sys.get('encodedKey')
+							},
+							async : false
+						}, {});
+						App._collections._mems = new App._collections.SystemDetails();
+						App._collections._mems.fetch({
+							data : {
+								item : App._common.method.items.MEM,
+								sid : App._models._sys.get('encodedKey')
+							},
+							async : false
+						}, {});
+						App._collections._filesystems = new App._collections.SystemDetails();
+						App._collections._filesystems.fetch({
+							data : {
+								item : App._common.method.items.FILE_SYSTEM,
+								sid : App._models._sys.get('encodedKey')
+							},
+							async : false
+						}, {});
+					} else if (item == App._common.method.items.ISSUES) {
+
+					}
+				}
+
 				$(this.el).html(App._common.render(App._common.templates.SYSTEM_DETAIL, {
 					id : this.id,
-					item : item
+					item : item,
+					sys : App._models._sys
 				}));
 				return this;
 			},
+			initChart : function(width) {
+				if (typeof App.charts.option.table == 'undefined') {
+					App.charts.option.table = {
+						allowHtml : true,
+						showRowNumber : true
+					};
+				}
+				App.charts.option.table.width = 0.92 * width;
+				if (typeof App.charts.option.pie == 'undefined') {
+					App.charts.option.pie = {
+						backgroundColor : 'transparent',
+						is3D : true,
+						legend : {
+							position : 'bottom'
+						},
+						chartArea : {
+							top : 20
+						},
+						titleTextStyle : {
+							fontSize : 13
+						}
+					};
+				}
+				App.charts.option.pie.width = width;
+				App.charts.option.pie.height = width;
+				App.charts.option.pie.chartArea.width = 0.8 * width;
+				App.charts.option.pie.chartArea.height = 0.8 * width;
+				App.charts.option.pie.chartArea.left = 0.05 * width;
+				if (typeof App.charts.tableService != 'undefined') {
+					App.charts.tableService.clearChart();
+				}
+				if (typeof App.charts.format.color == 'undefined') {
+					App.charts.format.color = new google.visualization.ColorFormat();
+					App.charts.format.color.addRange(0, 200, "blue", "");
+					App.charts.format.color.addRange(200, 500, "orange", "");
+					App.charts.format.color.addRange(500, 1000000, "red", "");
+				}
+				if (typeof App.charts.option.gauge == 'undefined') {
+					App.charts.option.gauge = {
+						backgroundColor : 'transparent',
+						redFrom : 90,
+						redTo : 100,
+						yellowFrom : 75,
+						yellowTo : 90,
+						minorTicks : 5
+					};
+				}
+				App.charts.option.gauge.width = 0.45 * width;
+				App.charts.option.gauge.height = 0.45 * width;
 
+				$zone = $('#cpu-mem-zone');
+				if (typeof $zone != 'undefined') {
+					$zone.html('<table><tbody><tr><td><div id="gauge-cpu"></div></td><td><div id="gauge-mem"></div></td></tbody></tr></table>');
+				}
+			},
+			drawTableFileSystem : function() {
+
+			},
+			drawGaugeCPU : function() {
+				var div = document.getElementById('gauge-cpu');
+				if (div) {
+					if (typeof App._collections._cpus != 'undefined' && App._collections._cpus.length > 0) {
+						if (App._collections._cpus.length == 1 || typeof App._collections._cpus.last().get('cpuUsage') == 'undefined' || App._collections._cpus.last().get('cpuUsage') == -1) {
+							// mare sure table will not draw when have no data
+							return;
+						}
+						var usage = App._collections._cpus.last().get('cpuUsage');
+
+						usage += (Math.round(Math.random() * App._common.RANDOM_RANGE - App._common.RANDOM_RANGE/2));
+						usage = usage < 0 ? 0 : usage;
+						usage = usage > 100 ? 100 : usage;
+
+						var data = google.visualization.arrayToDataTable([ [ 'Label', 'Value' ], [ 'CPU', usage ] ]);
+						if (typeof App.charts.gaugeCPU == 'undefined' || !App.refreshCPU) {
+							App.charts.gaugeCPU = new google.visualization.Gauge(div);
+							App.refreshCPU = true;
+						}
+						App.charts.gaugeCPU.draw(data, App.charts.option.gauge);
+					}
+				} else {
+					App.refreshCPU = false;
+				}
+			},
+			drawGaugeMem : function() {
+				var div = document.getElementById('gauge-mem');
+				if (div) {
+					if (typeof App._collections._mems != 'undefined' && App._collections._mems.length > 0) {
+						if (App._collections._mems.length == 1 || typeof App._collections._mems.last().get('usedMemory') == 'undefined' || App._collections._mems.last().get('usedMemory') == -1) {
+							// mare sure table will not draw when have no data
+							return;
+						}
+						var usage = Math.round((App._collections._mems.last().get('usedMemory') / App._collections._mems.last().get('totalMemory')) * 100);
+
+						usage += (Math.round(Math.random() * App._common.RANDOM_RANGE - App._common.RANDOM_RANGE / 2));
+						usage = usage < 0 ? 0 : usage;
+						usage = usage > 100 ? 100 : usage;
+
+						var data = google.visualization.arrayToDataTable([ [ 'Label', 'Value' ], [ 'Memory', usage ] ]);
+						if (typeof App.charts.gaugeMem == 'undefined' || !App.refreshMem) {
+							App.charts.gaugeMem = new google.visualization.Gauge(div);	
+							App.refreshMem = true;
+						}
+						App.charts.gaugeMem.draw(data, App.charts.option.gauge);
+					}
+				} else {
+					App.refreshMem = false;
+				}
+			},
+			drawAreaCPU : function() {
+				var div = document.getElementById('area-cpu');
+				if (div) {
+					var data = google.visualization.arrayToDataTable([ [ '', 'Usage' ], [ '', 660 ], [ '', 1030 ] ]);
+					var options = {
+						backgroundColor : '#F1F1F1',
+						width : 300,
+						isStacked : false
+					};
+					App.charts.areaCPU = new google.visualization.AreaChart(div);
+					App.charts.areaCPU.draw(data, options);
+				}
+			},
+			drawAreaMem : function() {
+				var div = document.getElementById('area-mem');
+				if (div) {
+					var data = google.visualization.arrayToDataTable([ [ '', 'Usage' ], [ '', 660 ], [ '', 1030 ] ]);
+					var options = {
+						backgroundColor : '#F1F1F1',
+						width : 300,
+						isStacked : false
+					};
+					App.charts.areaCPU = new google.visualization.AreaChart(div);
+					App.charts.areaCPU.draw(data, options);
+				}
+			},
+			drawPieJVM : function() {
+				var div = document.getElementById('pie-jvm');
+				if (div) {
+					if (typeof App._models._jvm != 'undefined' && typeof App._models._jvm.get('message') == 'undefined') {
+						var data = new google.visualization.DataTable();
+						data.addColumn(App.charts.columnType.STRING, "Task");
+						data.addColumn(App.charts.columnType.NUMBER, "Memory");
+						data.addRow([ 'Free space', {
+							v : App._models._jvm.get('freeMemory'),
+							f : App._models._jvm.get('strFreeMemory')
+						} ]);
+						data.addRow([ 'Used Space', {
+							v : App._models._jvm.get('usedMemory'),
+							f : App._models._jvm.get('strUsedMemory')
+						} ]);
+						App.charts.option.pie.title = 'Total ' + App._models._jvm.get('strTotalMemory') + " of " + App._models._jvm.get('strMaxMemory') + ' max memory';
+						App.charts.pieJVM = new google.visualization.PieChart(div);
+						App.charts.pieJVM.draw(data, App.charts.option.pie);
+					}
+				}
+			},
+			drawTableService : function() {
+				// draw table for Service Information
+				var div = document.getElementById('table-services');
+				if (div) {
+					if (typeof App._collections._services != 'undefined' && App._collections._services.length > 0) {
+						if (App._collections._services.length == 1 && typeof App._collections._services.at(0).get('name') == 'undefined'
+								&& typeof App._collections._services.at(0).get('ping') == 'undefined' && typeof App._collections._services.at(0).get('status') == 'undefined'
+								&& typeof App._collections._services.at(0).get('strSystemDate') == 'undefined') {
+							// mare sure table will not draw when have no data
+							return;
+						}
+						_log.log("Service length: " + App._collections._services.length);
+						var data = new google.visualization.DataTable();
+						data.addColumn(App.charts.columnType.STRING, "Name");
+						data.addColumn(App.charts.columnType.STRING, "System date");
+						data.addColumn(App.charts.columnType.NUMBER, "Ping");
+						data.addColumn(App.charts.columnType.STRING, "Status");
+						App._collections._services.each(function(model) {
+							data.addRow([
+									(model.get('name') && model.get('name').length > 0) ? model.get('name') : 'N/A',
+									model.get('strSystemDate'),
+									{
+										v : model.get('ping'),
+										f : (model.get('ping') + ' ms')
+									},
+									'<img src="images/icon/' + (model.get('status') ? 'true' : 'false')
+											+ '_icon.png" width="24" height="24" style="display: block; margin-left: auto; margin-right: auto"/>' ]);
+						});
+						App.charts.format.color.format(data, 2);
+						App.charts.tableService = new google.visualization.Table(div);
+						App.charts.tableService.draw(data, App.charts.option.table);
+					}
+				}
+			},
 			drawChart : function() {
-				// draw piechart for Service Information
-				var chartDivService = document.getElementById('chart_div_Service');
-				if (chartDivService) {
-					var data = google.visualization.arrayToDataTable([ [ 'Task', 'Local Disk' ], [ 'Free Space', 9 ], [ 'Used Space', 11 ] ]);
-
-					var options = {
-						backgroundColor : '#F6F6F6',
-						title : 'Java Virtual Machine (506.5 MB of 1012.6 MB)',
-						width : 400,
-						height : 240,
-						is3D : true
-
-					};
-					var chartService = new google.visualization.PieChart(chartDivService);
-					chartService.draw(data, options);
-				} else {
-					_log.log("cannot find id chart_div_Service", _log.ERROR);
+				var currentPage = App._router.page;
+				var width = $(window).width();
+				var height = $(window).height();
+				switch (App.orient) {
+				case 90:
+				case -90:
+					width = (width <= height) ? height : width;
+					break;
+				case 0:
+				default:
+					break;
 				}
-
-				// draw piechart for File System Information
-				var chartDivFileSystem = document.getElementById('chart_div_File_System');
-				if (chartDivFileSystem) {
-					var data = google.visualization.arrayToDataTable([ [ 'Task', 'Local Disk' ], [ 'Free Space', 9 ], [ 'Used Space', 11 ] ]);
-
-					var options = {
-						backgroundColor : '#F6F6F6',
-						title : 'Local Disk C:\ (NTFS/local)',
-						width : 400,
-						height : 240,
-						is3D : true
-
-					};
-					var chartService = new google.visualization.PieChart(chartDivFileSystem);
-					chartService.draw(data, options);
-				} else {
-					_log.log("cannot find id chart_div_File_System", _log.ERROR);
-				}
-				// draw gauge chart for CPU
-				var chartDivCPU = document.getElementById('chart_div_Gauge_CPU');
-				if (chartDivCPU) {
-					var data = google.visualization.arrayToDataTable([ [ 'Label', 'Value' ], [ 'CPU', 80 ] ]);
-					var options = {
-						backgroundColor : '#F1F1F1',
-						width : 400,
-						height : 120,
-						redFrom : 90,
-						redTo : 100,
-						yellowFrom : 75,
-						yellowTo : 90,
-						minorTicks : 5
-
-					};
-					var chartService = new google.visualization.Gauge(chartDivCPU);
-					chartService.draw(data, options);
-				} else {
-					_log.log("cannot find id chart_div_Gauge_CPU", _log.ERROR);
-				}
-
-				// draw gauge for MEMORY
-				var chartDivMemory = document.getElementById('chart_div_Gauge_MEMORY');
-				if (chartDivMemory) {
-					var data = google.visualization.arrayToDataTable([ [ 'Label', 'Value' ], [ 'MEMORY', 50 ] ]);
-					var options = {
-						backgroundColor : '#F1F1F1',
-						width : 400,
-						height : 120,
-						redFrom : 90,
-						redTo : 100,
-						yellowFrom : 75,
-						yellowTo : 90,
-						minorTicks : 5
-
-					};
-					var chartService = new google.visualization.Gauge(chartDivMemory);
-					chartService.draw(data, options);
-				} else {
-					_log.log("cannot find id chart_div_Gauge_MEMORY", _log.ERROR);
-				}
-
-				// draw arena chart for CPU usage
-				var chartArenaDivCPU = document.getElementById('chart_div_Arena_CPU');
-				if (chartArenaDivCPU) {
-					var data = google.visualization.arrayToDataTable([ [ '', 'Usage' ], [ '', 660 ], [ '', 1030 ] ]);
-					var options = {
-						backgroundColor : '#F1F1F1',
-						width : 300,
-						isStacked : false
-					};
-
-					var chartService = new google.visualization.AreaChart(chartArenaDivCPU);
-					chartService.draw(data, options);
-				} else {
-					_log.log("cannot find id chart_div_Arena_CPU", _log.ERROR);
-				}
-
-				// draw arena chart for MEMORY
-				var chartArenaDivMEMORY = document.getElementById('chart_div_Arena_MEMORY');
-				if (chartArenaDivMEMORY) {
-					var data = google.visualization.arrayToDataTable([ [ '', 'Usage' ], [ '', 660 ], [ '', 1030 ] ]);
-					var options = {
-						backgroundColor : '#F1F1F1',
-						width : 300,
-						isStacked : false
-					};
-
-					var chartService = new google.visualization.AreaChart(chartArenaDivMEMORY);
-					chartService.draw(data, options);
-				} else {
-					_log.log("cannot find id chart_div_Arena_MEMORY", _log.ERROR);
-				}
-
+				_log.log("Screen width: " + width + " | height: " + height);
+				currentPage.initChart(width);
+				currentPage.drawTableService();
+				currentPage.drawPieJVM();
+				currentPage.drawGaugeCPU();
+				currentPage.drawGaugeMem();
+				currentPage.drawAreaCPU();
+				currentPage.drawAreaMem();
 			}
 		});
 	};
@@ -624,10 +815,11 @@
 			systemDetail : function(id, item) {
 				var tran = (App._router.currentPage == App._common.page.PAGE_SYSTEM_DETAIL ? App._common.page.transitions.NONE : App._common.page.transitions.SLIDE);
 				App._router.currentPage = App._common.page.PAGE_SYSTEM_DETAIL;
-				this.changePage(new App._views.SystemDetailView({
+				App._router.page = new App._views.SystemDetailView({
 					id : id,
 					fItem : item
-				}), {
+				});
+				this.changePage(App._router.page, {
 					transition : tran
 				});
 			},
@@ -663,17 +855,24 @@
 				if (typeof $.mobile != 'undefined') {
 					$.mobile.changePage($(page.el), options);
 					if (App._router.currentPage == App._common.page.PAGE_SYSTEM_DETAIL) {
-						page.drawChart();
+						setTimeout(App._router.page.drawChart, 300);
 					}
 				}
 			}
-
 		});
 		this._instance = new this.router();
 	};
 }).call(this);
 
 google.load("visualization", "1", {
-	packages : [ 'corechart', 'gauge' ]
+	packages : [ 'corechart', 'gauge', 'table' ]
 });
 google.setOnLoadCallback(App.start);
+
+var supportsOrientationChange = "onorientationchange" in window, orientationEvent = supportsOrientationChange ? "orientationchange" : "resize";
+
+window.addEventListener(orientationEvent, function() {
+	if (typeof App != 'undefined' && typeof App.onOrientationChange != 'undefined') {
+		App.onOrientationChange(window.orientation, screen);
+	}
+}, false);
