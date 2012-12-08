@@ -39,7 +39,9 @@
 		email : 'hai.lu@c-mg.com',
 		skypeID : 'lh.hai'
 	};
-	App.charts = {
+	App.handler = {
+
+	}, App.charts = {
 		option : {},
 		data : {},
 		format : {},
@@ -50,6 +52,7 @@
 			BOOLEAN : 'boolean'
 		}
 	};
+
 	App.init = function() {
 		this._common = new App.Common();
 		this._common.doLogin();
@@ -59,7 +62,6 @@
 		this._collections = new App.Collections();
 		this._views = new App.Views();
 		this._router = new App.Routers();
-		setInterval(App.intervalFunc, App._common.REFRESH_TIME);
 	};
 
 	/**
@@ -70,21 +72,36 @@
 		Backbone.history.start();
 	};
 	App.intervalFunc = function() {
+		_log.log("I'm in interval !!!");
 		if (typeof App._router.page != 'undefined' && typeof App._router.page != 'undefined' && App._router.currentPage != 'undefined'
 				&& App._router.currentPage == App._common.page.PAGE_SYSTEM_DETAIL) {
-			App._router.page.drawGaugeCPU();
-			App._router.page.drawGaugeMem();
+			if (App._router.page.getItem() == App._common.method.items.PROPERTIES) {
+				if (typeof App._collections._cpus != 'undefined' && App._collections._cpus.length > 1) {
+					App._collections._cpus.addRandomValue(20);
+					if (App._collections._cpus.isValid()) {
+						App._router.page.drawGaugeCPU();
+						App._router.page.drawAreaCPU();
+					}
+				}
+				if (typeof App._collections._mems != 'undefined' && App._collections._mems.length > 1) {
+					App._collections._mems.addRandomValue(10);
+					if (App._collections._mems.isValid()) {
+						App._router.page.drawGaugeMem();
+						App._router.page.drawAreaMem();
+					}
+				}
+			}
 		}
 	};
 	App.onOrientationChange = function(orient, screen) {
 		if (typeof _log != 'undefined') {
 			App.orient = orient;
-			_log.log('Device change Orientation: ' + orient + " | Screen width: " + screen.width + " | Screen height: " + screen.height);
 			if (typeof App._router.page != 'undefined' && typeof App._router.page != 'undefined' && App._router.currentPage != 'undefined'
 					&& App._router.currentPage == App._common.page.PAGE_SYSTEM_DETAIL) {
 				App.refreshCPU = false;
 				App.refreshMem = false;
 				_log.log('start redraw chart');
+				App._router.clearChart();
 				App._router.page.drawChart();
 			}
 		}
@@ -134,13 +151,13 @@
 				return App._common;
 			}
 		};
-		this.IS_DEBUG = true;
+		this.IS_DEBUG = false;
 		this.NONE_TRANSACTION = true;
 
 		this.IS_FINISH_LOAD = false;
 		this.SPLASH_TIMEOUT = 1000;
-		this.REFRESH_TIME = 2000;
-		this.RANDOM_RANGE = 10;
+		this.REFRESH_TIME = 3000;
+		this.RANDOM_RANGE = 15;
 		// System information
 		this.DATA_HANDLER_URL = '/mobile/handler';
 		this.TEMP_DIR = '/m/templates';
@@ -156,8 +173,18 @@
 			SYSTEM_DETAIL : 'system-detail',
 			items : {
 				MESSAGE : 'items/message',
-				DASHBOARD_SYSTEM : 'items/dashboard-system'
+				DASHBOARD_SYSTEM : 'items/dashboard-system',
+				CPU_MEM_ZONE : 'items/cpu-mem-zone'
 			}
+		};
+
+		this.S4 = function() {
+			return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+		};
+
+		// Generate a pseudo-GUID by concatenating random hexadecimal.
+		this.guid = function() {
+			return (self.S4() + self.S4() + "-" + self.S4() + "-" + self.S4() + "-" + self.S4() + "-" + self.S4() + self.S4() + self.S4());
 		};
 
 		this.doLogin = function() {
@@ -339,7 +366,61 @@
 		});
 		this.SystemDetails = Backbone.Collection.extend({
 			model : App._models.SystemDetail,
-			url : App._common.method.generateURL(App._common.method.types.SYSTEM_MONITOR, App._common.method._READ, this.sid, this.item)
+			valid : false,
+			url : App._common.method.generateURL(App._common.method.types.SYSTEM_MONITOR, App._common.method._READ, this.sid, this.item),
+			initUsageValue : function() {
+				var self = this;
+				self = this || self;
+				if (this.length > 1) {
+					this.each(function(model) {
+						var usage = -1;
+						if (typeof model.get('cpuUsage') != 'undefined') {
+							usage = model.get('cpuUsage');
+							if (usage > 0) {
+								self.valid = true;
+							} else {
+								usage = 0;
+							}
+						}
+						if (typeof model.get('usedMemory') != 'undefined') {
+							usage = model.get('usedMemory');
+							if (typeof model.get('totalMemory') != 'undefined') {
+								usage = Math.round((model.get('usedMemory') / model.get('totalMemory')) * 100);
+							}
+							if (usage > 0) {
+								self.valid = true;
+							} else {
+								usage = 0;
+							}
+						}
+						model.set({
+							'usage' : (usage == -1 ? 0 : usage)
+						});
+					});
+				}
+			},
+			isValid : function() {
+				return this.valid;
+			},
+			addRandomValue : function(randomRange) {
+				if (this.length > 1) {
+					if (typeof this.lastUsage == 'undefined') {
+						this.lastUsage = this.last().get('usage');
+					}
+					var usage = this.lastUsage;
+					if (typeof randomRange == 'undefined') {
+						randomRange = App._common.RANDOM_RANGE;
+					}
+					usage += (Math.round(Math.random() * randomRange - randomRange / 2));
+					usage = usage < 0 ? 0 : usage;
+					usage = usage > 100 ? 100 : usage;
+					this.remove(this.at(0));
+					this.add({
+						id : App._common.guid(),
+						usage : usage
+					});
+				}
+			}
 		});
 	};
 
@@ -424,6 +505,9 @@
 		}),
 
 		this.SystemDetailView = Backbone.View.extend({
+			getItem : function() {
+				return this.options ? (typeof this.options.fItem != 'undefined' ? this.options.fItem : App._common.method.items.SERVICE) : App._common.method.items.SERVICE;
+			},
 			render : function(eventName) {
 				_log.log(this.id);
 				var item = this.options ? this.options.fItem : App._common.method.items.SERVICE;
@@ -474,6 +558,7 @@
 							},
 							async : false
 						}, {});
+						App._collections._cpus.initUsageValue();
 						App._collections._mems = new App._collections.SystemDetails();
 						App._collections._mems.fetch({
 							data : {
@@ -482,6 +567,7 @@
 							},
 							async : false
 						}, {});
+						App._collections._mems.initUsageValue();
 						App._collections._filesystems = new App._collections.SystemDetails();
 						App._collections._filesystems.fetch({
 							data : {
@@ -502,61 +588,95 @@
 				}));
 				return this;
 			},
-			initChart : function(width) {
-				if (typeof App.charts.option.table == 'undefined') {
-					App.charts.option.table = {
-						allowHtml : true,
-						showRowNumber : true
-					};
+			initChart : function(width, height) {
+				var item = App._router.page.getItem();
+				var _s = (App.orient == 90 || App.orient == -90);
+				var _w = (width >= height ? height : width);
+				var _h = (width >= height ? width : height);
+				if (item == App._common.method.items.SERVICE || item == App._common.method.items.PROPERTIES) {
+					if (typeof App.charts.option.table == 'undefined') {
+						App.charts.option.table = {
+							allowHtml : true,
+							showRowNumber : true
+						};
+					}
+					App.charts.option.table.width = 0.92 * width;
+					if (typeof App.charts.option.pie == 'undefined') {
+						App.charts.option.pie = {
+							backgroundColor : 'transparent',
+							is3D : true,
+							legend : {
+								alignment : 'center'
+							},
+							chartArea : {
+								top : 20
+							},
+							titleTextStyle : {
+								fontSize : 13
+							}
+						};
+					}
+					App.charts.option.pie.legend.position = _s ? 'right' : 'bottom';
+					var pieSize = (_s ? 0.9 : 1) * width;
+					App.charts.option.pie.width = pieSize;
+					App.charts.option.pie.height = (_s ? 0.6 : 1) * pieSize;
+					App.charts.option.pie.chartArea.width = (_s ? 0.9 : 0.75) * pieSize;
+					App.charts.option.pie.chartArea.height = (_s ? 0.5 : 0.75) * pieSize;
+					App.charts.option.pie.chartArea.left = 0.08 * pieSize;
 				}
-				App.charts.option.table.width = 0.92 * width;
-				if (typeof App.charts.option.pie == 'undefined') {
-					App.charts.option.pie = {
-						backgroundColor : 'transparent',
-						is3D : true,
-						legend : {
-							position : 'bottom'
-						},
-						chartArea : {
-							top : 20
-						},
-						titleTextStyle : {
-							fontSize : 13
-						}
-					};
+				if (item == App._common.method.items.SERVICE) {
+					if (typeof App.charts.format.color == 'undefined') {
+						App.charts.format.color = new google.visualization.ColorFormat();
+						App.charts.format.color.addRange(0, 200, "blue", "");
+						App.charts.format.color.addRange(200, 500, "orange", "");
+						App.charts.format.color.addRange(500, 1000000, "red", "");
+					}
 				}
-				App.charts.option.pie.width = width;
-				App.charts.option.pie.height = width;
-				App.charts.option.pie.chartArea.width = 0.8 * width;
-				App.charts.option.pie.chartArea.height = 0.8 * width;
-				App.charts.option.pie.chartArea.left = 0.05 * width;
-				if (typeof App.charts.tableService != 'undefined') {
-					App.charts.tableService.clearChart();
-				}
-				if (typeof App.charts.format.color == 'undefined') {
-					App.charts.format.color = new google.visualization.ColorFormat();
-					App.charts.format.color.addRange(0, 200, "blue", "");
-					App.charts.format.color.addRange(200, 500, "orange", "");
-					App.charts.format.color.addRange(500, 1000000, "red", "");
-				}
-				if (typeof App.charts.option.gauge == 'undefined') {
-					App.charts.option.gauge = {
-						backgroundColor : 'transparent',
-						redFrom : 90,
-						redTo : 100,
-						yellowFrom : 75,
-						yellowTo : 90,
-						minorTicks : 5
-					};
-				}
-				App.charts.option.gauge.width = 0.45 * width;
-				App.charts.option.gauge.height = 0.45 * width;
-
-				$zone = $('#cpu-mem-zone');
-				if (typeof $zone != 'undefined') {
-					$zone.html('<table><tbody><tr><td><div id="gauge-cpu"></div></td><td><div id="gauge-mem"></div></td></tbody></tr></table>');
+				if (item == App._common.method.items.PROPERTIES) {
+					if (typeof App.charts.option.gauge == 'undefined') {
+						App.charts.option.gauge = {
+							backgroundColor : 'transparent',
+							redFrom : 90,
+							redTo : 100,
+							yellowFrom : 75,
+							yellowTo : 90,
+							minorTicks : 5
+						};
+					}
+					App.charts.option.gauge.width = (_s ? 0.5 : 0.45) * _w;
+					App.charts.option.gauge.height = (_s ? 0.5 : 0.45) * _w;
+					$zone = $('#cpu-mem-zone');
+					if (typeof $zone != 'undefined' && $zone) {
+						$zone.html(App._common.render(App._common.templates.items.CPU_MEM_ZONE, {
+							orient : App.orient
+						}));
+					}
+					if (typeof App.charts.option.area == 'undefined') {
+						App.charts.option.area = {
+							backgroundColor : 'transparent',
+							areaOpacity : 0.2,
+							titlePosition : 'in',
+							legend : {
+								position : 'none'
+							},
+							lineWidth : 1,
+							vAxis : {
+								maxValue : 100,
+								minValue : 0
+							},
+							chartArea : {
+								top : 20,
+								left : 30
+							}
+						};
+					}
+					App.charts.option.area.width = _s ? (_h - 0.5 * _w) : _w;
+					App.charts.option.area.height = (_s ? 0.45 : 0.4) * _w;
+					App.charts.option.area.chartArea.height = (_s ? 0.35 : 0.3) * _w;
+					App.charts.option.area.chartArea.width = 0.8 * (_s ? (_h - 0.5 * _w) : _w);
 				}
 			},
+
 			drawTableFileSystem : function() {
 
 			},
@@ -564,18 +684,13 @@
 				var div = document.getElementById('gauge-cpu');
 				if (div) {
 					if (typeof App._collections._cpus != 'undefined' && App._collections._cpus.length > 0) {
-						if (App._collections._cpus.length == 1 || typeof App._collections._cpus.last().get('cpuUsage') == 'undefined' || App._collections._cpus.last().get('cpuUsage') == -1) {
+						if (!App._collections._cpus.isValid()) {
 							// mare sure table will not draw when have no data
 							return;
 						}
-						var usage = App._collections._cpus.last().get('cpuUsage');
-
-						usage += (Math.round(Math.random() * App._common.RANDOM_RANGE - App._common.RANDOM_RANGE/2));
-						usage = usage < 0 ? 0 : usage;
-						usage = usage > 100 ? 100 : usage;
-
-						var data = google.visualization.arrayToDataTable([ [ 'Label', 'Value' ], [ 'CPU', usage ] ]);
-						if (typeof App.charts.gaugeCPU == 'undefined' || !App.refreshCPU) {
+						var data = google.visualization.arrayToDataTable([ [ 'Label', 'Value' ], [ 'CPU', App._collections._cpus.last().get('usage') ] ]);
+						if (!App.charts.gaugeCPU || !App.refreshCPU) {
+							_log.log("Init gauge CPU");
 							App.charts.gaugeCPU = new google.visualization.Gauge(div);
 							App.refreshCPU = true;
 						}
@@ -589,19 +704,14 @@
 				var div = document.getElementById('gauge-mem');
 				if (div) {
 					if (typeof App._collections._mems != 'undefined' && App._collections._mems.length > 0) {
-						if (App._collections._mems.length == 1 || typeof App._collections._mems.last().get('usedMemory') == 'undefined' || App._collections._mems.last().get('usedMemory') == -1) {
+						if (!App._collections._mems.isValid()) {
 							// mare sure table will not draw when have no data
 							return;
 						}
-						var usage = Math.round((App._collections._mems.last().get('usedMemory') / App._collections._mems.last().get('totalMemory')) * 100);
-
-						usage += (Math.round(Math.random() * App._common.RANDOM_RANGE - App._common.RANDOM_RANGE / 2));
-						usage = usage < 0 ? 0 : usage;
-						usage = usage > 100 ? 100 : usage;
-
-						var data = google.visualization.arrayToDataTable([ [ 'Label', 'Value' ], [ 'Memory', usage ] ]);
-						if (typeof App.charts.gaugeMem == 'undefined' || !App.refreshMem) {
-							App.charts.gaugeMem = new google.visualization.Gauge(div);	
+						var data = google.visualization.arrayToDataTable([ [ 'Label', 'Value' ], [ 'Memory', App._collections._mems.last().get('usage') ] ]);
+						if (!App.charts.gaugeMem || !App.refreshMem) {
+							_log.log("Init gauge Mem");
+							App.charts.gaugeMem = new google.visualization.Gauge(div);
 							App.refreshMem = true;
 						}
 						App.charts.gaugeMem.draw(data, App.charts.option.gauge);
@@ -613,27 +723,37 @@
 			drawAreaCPU : function() {
 				var div = document.getElementById('area-cpu');
 				if (div) {
-					var data = google.visualization.arrayToDataTable([ [ '', 'Usage' ], [ '', 660 ], [ '', 1030 ] ]);
-					var options = {
-						backgroundColor : '#F1F1F1',
-						width : 300,
-						isStacked : false
-					};
+					if (!App._collections._cpus.isValid()) {
+						// mare sure table will not draw when have no data
+						return;
+					}
+					var data = new google.visualization.DataTable();
+					data.addColumn(App.charts.columnType.STRING, "Title");
+					data.addColumn(App.charts.columnType.NUMBER, "Usage");
+					App._collections._cpus.each(function(model) {
+						data.addRow([ '', model.get('usage') ]);
+					});
 					App.charts.areaCPU = new google.visualization.AreaChart(div);
-					App.charts.areaCPU.draw(data, options);
+					App.charts.option.area.title = 'CPU usage';
+					App.charts.areaCPU.draw(data, App.charts.option.area);
 				}
 			},
 			drawAreaMem : function() {
 				var div = document.getElementById('area-mem');
 				if (div) {
-					var data = google.visualization.arrayToDataTable([ [ '', 'Usage' ], [ '', 660 ], [ '', 1030 ] ]);
-					var options = {
-						backgroundColor : '#F1F1F1',
-						width : 300,
-						isStacked : false
-					};
-					App.charts.areaCPU = new google.visualization.AreaChart(div);
-					App.charts.areaCPU.draw(data, options);
+					if (!App._collections._mems.isValid()) {
+						// mare sure table will not draw when have no data
+						return;
+					}
+					var data = new google.visualization.DataTable();
+					data.addColumn(App.charts.columnType.STRING, "Title");
+					data.addColumn(App.charts.columnType.NUMBER, "Usage");
+					App._collections._mems.each(function(model) {
+						data.addRow([ '', model.get('usage') ]);
+					});
+					App.charts.areaMem = new google.visualization.AreaChart(div);
+					App.charts.option.area.title = 'Memory usage (RAM)';
+					App.charts.areaMem.draw(data, App.charts.option.area);
 				}
 			},
 			drawPieJVM : function() {
@@ -651,7 +771,7 @@
 							v : App._models._jvm.get('usedMemory'),
 							f : App._models._jvm.get('strUsedMemory')
 						} ]);
-						App.charts.option.pie.title = 'Total ' + App._models._jvm.get('strTotalMemory') + " of " + App._models._jvm.get('strMaxMemory') + ' max memory';
+						App.charts.option.pie.title = 'Total ' + App._models._jvm.get('strTotalMemory') + " of " + App._models._jvm.get('strMaxMemory') + ' maximum';
 						App.charts.pieJVM = new google.visualization.PieChart(div);
 						App.charts.pieJVM.draw(data, App.charts.option.pie);
 					}
@@ -692,26 +812,44 @@
 				}
 			},
 			drawChart : function() {
+				var item = App._router.page.getItem();
 				var currentPage = App._router.page;
-				var width = $(window).width();
-				var height = $(window).height();
+				var _w = $(window).width();
+				var _h = $(window).height();
+				var width = _w;
+				var height = _h;
+				if (typeof App.orient == 'undefined') {
+					App.orient = _w > _h ? 90 : 0;
+				}
 				switch (App.orient) {
 				case 90:
 				case -90:
-					width = (width <= height) ? height : width;
+					width = (_w <= _h) ? _h : _w;
+					height = (_w <= _h) ? _w : _h;
 					break;
 				case 0:
 				default:
 					break;
 				}
 				_log.log("Screen width: " + width + " | height: " + height);
-				currentPage.initChart(width);
-				currentPage.drawTableService();
-				currentPage.drawPieJVM();
-				currentPage.drawGaugeCPU();
-				currentPage.drawGaugeMem();
-				currentPage.drawAreaCPU();
-				currentPage.drawAreaMem();
+				currentPage.initChart(width, height);
+				if (item == App._common.method.items.SERVICE) {
+					currentPage.drawTableService();
+					currentPage.drawPieJVM();
+				}
+				if (item == App._common.method.items.PROPERTIES) {
+					App.refreshMem = false;
+					App.refreshCPU = false;
+					currentPage.drawGaugeCPU();
+					currentPage.drawGaugeMem();
+					currentPage.drawAreaCPU();
+					currentPage.drawAreaMem();
+					if (typeof App.handler.ref != 'undefined' || App.handler.ref != 0) {
+						clearInterval(App.handler.ref);
+						App.handler.ref = 0;
+					}
+					App.handler.ref = setInterval(App.intervalFunc, App._common.REFRESH_TIME);
+				}
 			}
 		});
 	};
@@ -728,6 +866,32 @@
 			}
 		};
 		this.currentPage = App._common.page.PAGE_SPLASH;
+		this.clearChart = function() {
+			if (App.charts.gaugeCPU) {
+				App.charts.gaugeCPU.clearChart();
+				App.charts.gaugeCPU = null;
+			}
+			if (App.charts.gaugeMem) {
+				App.charts.gaugeMem.clearChart();
+				App.charts.gaugeMem = null;
+			}
+			if (App.charts.tableService) {
+				App.charts.tableService.clearChart();
+				App.charts.tableService = null;
+			}
+			if (App.charts.areaCPU) {
+				App.charts.areaCPU.clearChart();
+				App.charts.areaCPU = null;
+			}
+			if (App.charts.pieJVM) {
+				App.charts.pieJVM.clearChart();
+				App.charts.pieJVM = null;
+			}
+			if (App.charts.areaMem) {
+				App.charts.areaMem.clearChart();
+				App.charts.areaMem = null;
+			}
+		};
 		this.router = Backbone.Router.extend({
 			routes : {
 				"" : "splash",
@@ -837,6 +1001,11 @@
 					this.splash();
 					return;
 				}
+				if (typeof App.handler.ref != 'undefined' || App.handler.ref != 0) {
+					clearInterval(App.handler.ref);
+					App.handler.ref = 0;
+				}
+				App._router.clearChart();
 				$(page.el).attr('data-role', 'page');
 				page.render();
 				$('body').append($(page.el));
@@ -855,10 +1024,11 @@
 				if (typeof $.mobile != 'undefined') {
 					$.mobile.changePage($(page.el), options);
 					if (App._router.currentPage == App._common.page.PAGE_SYSTEM_DETAIL) {
-						setTimeout(App._router.page.drawChart, 300);
+						setTimeout(App._router.page.drawChart, 0);
 					}
 				}
 			}
+
 		});
 		this._instance = new this.router();
 	};
