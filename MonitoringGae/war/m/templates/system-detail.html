@@ -1,9 +1,12 @@
-<div data-role="header" data-theme="c" class="header">
+<div  data-id="my-persistent-header" data-position="fixed" data-role="header" data-tap-toggle="false" data-theme="c" class="header">
 	<a href="#" data-icon="arrow-l" data-theme="b" data-direction="reverse">Back</a>
 	<h1><%=sys.getTitle()%></h1>
 	<a href="#help" data-icon="question" data-theme="b" data-iconpos="notext"></a>
 </div>
-<div data-role="content" class="content">
+<div data-role="content" class="content" data-iscroll="">
+<div class="iscroll-pulldown">
+          <span class="iscroll-pull-icon"></span><span class="iscroll-pull-label"></span>
+        </div>
 	<ul data-role="listview" data-inset="true" id="ul-sys-info">
 		<li><%if (!sys.get("isDeleted")) { %> <img src="images/icon/<%=sys.get("healthStatus")%>_status_icon.png"
 			alt="France" class="ui-li-icon" />
@@ -17,21 +20,20 @@
 		</li>
 	</ul>
 	<%if (!sys.get("isDeleted")) { %> <%if (item == "service") {%>
-	<div data-role="collapsible" data-collapsed="false">
+	<div data-role="collapsible" data-collapsed="true" class="expandable-content">
 		<h3>Service Information</h3>
 		<div id="table-services"></div>
 	</div>
-	<div data-role="collapsible" data-collapsed="false">
+	<div data-role="collapsible" data-collapsed="true" class="expandable-content">
 		<h3>Java Virtual Machine</h3>
 		<div id="pie-jvm"></div>
 	</div>
-	<%}%> <%if (item == "properties") {%>
-	<div data-role="collapsible" data-collapsed="false">
+		<div data-role="collapsible" data-collapsed="true" class="expandable-content">
 		<h3>CPU &amp; Memory</h3>
 		<div id="cpu-mem-zone">
 		</div>
 	</div>
-	<div data-role="collapsible" data-collapsed="false">
+	<div data-role="collapsible" data-collapsed="true" class="expandable-content">
 		<h3>Local Disk</h3>
 		<div id="local-disk-zone"></div>
 	</div>
@@ -41,22 +43,8 @@
 		<li>No issue found.</li>
 	</ul>
 	<%}%> <%}%>
-</div>
-<div data-role="footer" data-position="fixed" class="ui-body-d" data-role="listview" data-inset="true"
-	data-fullscreen="true">
-	<%if (!sys.get("isDeleted")) { %>
-	<div data-role="navbar">
-		<ul>
-			<li><a <%=(item == "service" ? "class=\"ui-btn-active\"" : "")%> href="#dashboard/system/detail/<%=id%>">Services</a></li>
-			<li><a <%=(item == "properties" ? "class=\"ui-btn-active\"" : "")%> href="#dashboard/system/detail/<%=id%>/properties">Properties</a></li>
-			<li><a <%=(item == "issues" ? "class=\"ui-btn-active\"" : "")%> href="#dashboard/system/detail/<%=id%>/issues">Issues</a></li>
-		</ul>
+	<div class="iscroll-pullup">
+		<span class="iscroll-pull-icon"></span><span class="iscroll-pull-label"
+			data-iscroll-loading-text="Loading ..." data-iscroll-pulled-text="Release to refresh ...">Pull up to refresh ...</span>
 	</div>
-	<%} else {%>
-	<!-- /navbar -->
-	<div class="bottom-logo">
-		<img src="images/logo/c-mg.png" />
-	</div>
-	<%}%>
 </div>
-<!-- /footer -->

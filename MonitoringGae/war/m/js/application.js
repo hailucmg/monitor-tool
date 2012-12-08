@@ -17,11 +17,6 @@
  */
 
 (function() {
-	// Initial Setup
-	// -------------
-
-	// Save a reference to the global object (`window` in the browser, `global`
-	// on the server).
 	var root = this;
 	var App;
 	if (typeof exports !== 'undefined') {
@@ -39,6 +34,105 @@
 		email : 'hai.lu@c-mg.com',
 		skypeID : 'lh.hai'
 	};
+	App.isNumber = function(n) {
+		return !isNaN(parseFloat(n)) && isFinite(n);
+	};
+	App.getAvatar = function(service, userid, size) {
+		var url = '';
+		switch (service) {
+		case "google":
+			url = "http://profiles.google.com/s2/photos/profile/" + userid + "?sz=" + size;
+			break;
+
+		case "facebook":
+			var sizeparam = '';
+			if (App.isNumber(size)) {
+				if (size >= 200) {
+					sizeparam = 'large';
+				}
+				;
+				if (size >= 100 && size < 200) {
+					sizeparam = 'normal';
+				}
+				;
+				if (size >= 50 && size < 100) {
+					sizeparam = 'small';
+				}
+				;
+				if (size < 50) {
+					sizeparam = 'square';
+				}
+				;
+			} else {
+				sizeparam = size;
+			}
+			url = "https://graph.facebook.com/" + userid + "/picture?type=" + sizeparam;
+			break;
+
+		case "gravatar":
+			url = "http://www.gravatar.com/avatar/" + userid + "?s=" + size;
+			break;
+
+		case "twitter":
+			var sizeparam = '';
+			if (App.isNumber(size)) {
+				if (size >= 73) {
+					sizeparam = 'bigger';
+				}
+				;
+				if (size >= 48 && size < 73) {
+					sizeparam = 'normal';
+				}
+				;
+				if (size < 48) {
+					sizeparam = 'mini';
+				}
+				;
+			} else {
+				sizeparam = size;
+			}
+
+			url = "http://api.twitter.com/1/users/profile_image?screen_name=" + userid + "&size=" + sizeparam;
+			break;
+
+		case "tumblr":
+			var sizeparam = '';
+			if (size >= 512) {
+				sizeparam = 512;
+			}
+			if (size >= 128 && size < 512) {
+				sizeparam = 128;
+			}
+			if (size >= 96 && size < 128) {
+				sizeparam = 96;
+			}
+			if (size >= 64 && size < 96) {
+				sizeparam = 64;
+			}
+			if (size >= 48 && size < 64) {
+				sizeparam = 48;
+			}
+			if (size >= 40 && size < 48) {
+				sizeparam = 40;
+			}
+			if (size >= 30 && size < 40) {
+				sizeparam = 30;
+			}
+			if (size >= 24 && size < 30) {
+				sizeparam = 24;
+			}
+			if (size < 24) {
+				sizeparam = 16;
+			}
+			url = "http://api.tumblr.com/v2/blog/" + userid + "/avatar/" + sizeparam;
+			break;
+
+		default:
+			url = "http://i.imgur.com/RLiDK.png";
+		}
+		return url;
+	};
+
 	App.handler = {
 
 	}, App.charts = {
@@ -52,7 +146,6 @@
 			BOOLEAN : 'boolean'
 		}
 	};
-
 	App.init = function() {
 		this._common = new App.Common();
 		this._common.doLogin();
@@ -63,19 +156,68 @@
 		this._views = new App.Views();
 		this._router = new App.Routers();
 	};
+	App.makeApiCall = function() {
+		gapi.client.load('plus', 'v1', function() {
+			var request = gapi.client.plus.people.get({
+				'userId' : 'me'
+			});
+			request.execute(function(resp) {
+				_log.log("Image url: " + resp.image.url);
+				_log.log("Display name: " + resp.displayName);
+			});
+		});
+	};
+	App.countAuth = 0;
+	App.handleAuthResult = function(authResult) {
+		App.countAuth++;
+		if (authResult && !authResult.error) {
+			_log.log("Auth done!!!");
+			App.makeApiCall();
+		} else {
+			if (App.countAuth > 1) {
+				return;
+			}
+			gapi.auth.authorize({
+				client_id : App._common.CLIENT_ID,
+				scope : App._common.SCOPE,
+				immediate : false
+			}, App.handleAuthResult);
+			_log.log("Auth fail!!", _log.ERROR);
+		}
+	};
+	App.checkAuth = function() {
+		gapi.auth.authorize({
+			client_id : App._common.CLIENT_ID,
+			scope : App._common.SCOPE,
+			immediate : true
+		}, App.handleAuthResult);
+	};
+	App.handleClientLoad = function() {
+		gapi.client.setApiKey(App._common.API_KEY);
+		window.setTimeout(App.checkAuth, 1);
+	};
 
+	App.handleAuthClick = function(event) {
+		gapi.auth.authorize({
+			client_id : App._common.CLIENT_ID,
+			scope : App._common.SCOPE,
+			immediate : false
+		}, App.handleAuthResult);
+		return false;
+	};
 	/**
 	 * Start application
 	 */
 	App.start = function() {
 		App.init();
+		App.handleClientLoad();
 		Backbone.history.start();
 	};
 	App.intervalFunc = function() {
 		_log.log("I'm in interval !!!");
 		if (typeof App._router.page != 'undefined' && typeof App._router.page != 'undefined' && App._router.currentPage != 'undefined'
 				&& App._router.currentPage == App._common.page.PAGE_SYSTEM_DETAIL) {
-			if (App._router.page.getItem() == App._common.method.items.PROPERTIES) {
+			if (App._router.page.getItem() == App._common.method.items.SERVICE) {
 				if (typeof App._collections._cpus != 'undefined' && App._collections._cpus.length > 1) {
 					App._collections._cpus.addRandomValue(20);
 					if (App._collections._cpus.isValid()) {
@@ -151,6 +293,9 @@
 				return App._common;
 			}
 		};
+		this.SCOPE = 'https://www.googleapis.com/auth/plus.me';
+		this.CLIENT_ID = '371638778910-mjpkecge6b7bq4v6j17aags33rp8fk5p.apps.googleusercontent.com';
+		this.API_KEY = 'AIzaSyBAVK0V8M7yW_lZrwfwShePRJb8MEcAFXQ';
 		this.IS_DEBUG = false;
 		this.NONE_TRANSACTION = true;
 
@@ -174,7 +319,8 @@
 			items : {
 				MESSAGE : 'items/message',
 				DASHBOARD_SYSTEM : 'items/dashboard-system',
-				CPU_MEM_ZONE : 'items/cpu-mem-zone'
+				CPU_MEM_ZONE : 'items/cpu-mem-zone',
+				LOCAL_DISK_ZONE : 'items/local-disk-zone'
 			}
 		};
 
@@ -549,7 +695,7 @@
 							},
 							async : false
 						}, {});
-					} else if (item == App._common.method.items.PROPERTIES) {
+				
 						App._collections._cpus = new App._collections.SystemDetails();
 						App._collections._cpus.fetch({
 							data : {
@@ -617,10 +763,10 @@
 						};
 					}
 					App.charts.option.pie.legend.position = _s ? 'right' : 'bottom';
-					var pieSize = (_s ? 0.9 : 1) * width;
+					var pieSize = (_s ? 0.8 : 0.9) * width;
 					App.charts.option.pie.width = pieSize;
 					App.charts.option.pie.height = (_s ? 0.6 : 1) * pieSize;
-					App.charts.option.pie.chartArea.width = (_s ? 0.9 : 0.75) * pieSize;
+					App.charts.option.pie.chartArea.width = (_s ? 0.8 : 0.75) * pieSize;
 					App.charts.option.pie.chartArea.height = (_s ? 0.5 : 0.75) * pieSize;
 					App.charts.option.pie.chartArea.left = 0.08 * pieSize;
 				}
@@ -631,8 +777,7 @@
 						App.charts.format.color.addRange(200, 500, "orange", "");
 						App.charts.format.color.addRange(500, 1000000, "red", "");
 					}
-				}
-				if (item == App._common.method.items.PROPERTIES) {
+			
 					if (typeof App.charts.option.gauge == 'undefined') {
 						App.charts.option.gauge = {
 							backgroundColor : 'transparent',
@@ -643,11 +788,17 @@
 							minorTicks : 5
 						};
 					}
-					App.charts.option.gauge.width = (_s ? 0.5 : 0.45) * _w;
-					App.charts.option.gauge.height = (_s ? 0.5 : 0.45) * _w;
-					$zone = $('#cpu-mem-zone');
-					if (typeof $zone != 'undefined' && $zone) {
-						$zone.html(App._common.render(App._common.templates.items.CPU_MEM_ZONE, {
+					App.charts.option.gauge.width = (_s ? 0.45 : 0.4) * _w;
+					App.charts.option.gauge.height = (_s ? 0.45 : 0.4) * _w;
+					$cm_zone = $('#cpu-mem-zone');
+					if (typeof $cm_zone != 'undefined' && $cm_zone) {
+						$cm_zone.html(App._common.render(App._common.templates.items.CPU_MEM_ZONE, {
+							orient : App.orient
+						}));
+					}
+					$ld_zone = $('#local-disk-zone');
+					if (typeof $ld_zone != 'undefined' && $ld_zone) {
+						$ld_zone.html(App._common.render(App._common.templates.items.LOCAL_DISK_ZONE, {
 							orient : App.orient
 						}));
 					}
@@ -670,10 +821,10 @@
 							}
 						};
 					}
-					App.charts.option.area.width = _s ? (_h - 0.5 * _w) : _w;
-					App.charts.option.area.height = (_s ? 0.45 : 0.4) * _w;
-					App.charts.option.area.chartArea.height = (_s ? 0.35 : 0.3) * _w;
-					App.charts.option.area.chartArea.width = 0.8 * (_s ? (_h - 0.5 * _w) : _w);
+					App.charts.option.area.width = _s ? (_h - 0.55 * _w) : (0.9*_w);
+					App.charts.option.area.height = (_s ? 0.45 : 0.4) *  (0.9*_w);
+					App.charts.option.area.chartArea.height = (_s ? 0.35 : 0.3) *  (0.9*_w);
+					App.charts.option.area.chartArea.width = 0.8 * (_s ? (_h - 0.55 * _w) :  (0.9*_w));
 				}
 			},
 
@@ -771,7 +922,7 @@
 							v : App._models._jvm.get('usedMemory'),
 							f : App._models._jvm.get('strUsedMemory')
 						} ]);
-						App.charts.option.pie.title = 'Total ' + App._models._jvm.get('strTotalMemory') + " of " + App._models._jvm.get('strMaxMemory') + ' maximum';
+						App.charts.option.pie.title = 'Total ' + App._models._jvm.get('strTotalMemory') + " of " + App._models._jvm.get('strMaxMemory');
 						App.charts.pieJVM = new google.visualization.PieChart(div);
 						App.charts.pieJVM.draw(data, App.charts.option.pie);
 					}
@@ -836,8 +987,7 @@
 				if (item == App._common.method.items.SERVICE) {
 					currentPage.drawTableService();
 					currentPage.drawPieJVM();
-				}
-				if (item == App._common.method.items.PROPERTIES) {
+			
 					App.refreshMem = false;
 					App.refreshCPU = false;
 					currentPage.drawGaugeCPU();
@@ -850,6 +1000,7 @@
 					}
 					App.handler.ref = setInterval(App.intervalFunc, App._common.REFRESH_TIME);
 				}
+				
 			}
 		});
 	};
@@ -892,6 +1043,33 @@
 				App.charts.areaMem = null;
 			}
 		};
+
+		this.gotPullDownData = function(event, data) {	
+			_log.log("Handle pull down");
+			data.iscrollview.refresh();
+		};
+
+		this.gotPullUpData = function(event, data) {	
+			_log.log("Handle pull up");
+			var lastItemSelector = 'div.pull-page ul.ui-listview > li:last-child';
+			var iscrollview = data.iscrollview;
+			iscrollview.refresh(null, null, $.proxy(function afterRefreshCallback(iscrollview) {
+				this.scrollToElement(lastItemSelector, 400);
+			}, iscrollview));
+		};
+
+		this.onPullDown = function(event, data) {
+			setTimeout(function fakeRetrieveDataTimeout() {				
+				App._router.gotPullDownData(event, data);
+			}, 1500);
+		};
+
+		this.onPullUp = function(event, data) {
+			setTimeout(function fakeRetrieveDataTimeout() {				
+				App._router.gotPullUpData(event, data);
+			}, 1500);
+		};
+
 		this.router = Backbone.Router.extend({
 			routes : {
 				"" : "splash",
@@ -1007,6 +1185,7 @@
 				}
 				App._router.clearChart();
 				$(page.el).attr('data-role', 'page');
+				$(page.el).addClass('pull-page');
 				page.render();
 				$('body').append($(page.el));
 				if (!options) {
@@ -1023,8 +1202,15 @@
 				_log.log('Go to page ' + App._router.currentPage + ' with transaction ' + options.transition);
 				if (typeof $.mobile != 'undefined') {
 					$.mobile.changePage($(page.el), options);
+					$(document).delegate("div.pull-page", "pageinit", function bindPullPagePullCallbacks(event) {
+						$(".iscroll-wrapper", this).bind({
+							iscroll_onpulldown : App._router.onPullDown,
+							iscroll_onpullup : App._router.onPullUp
+						});
+					});
+					$('.expandable-content').trigger('expand');
 					if (App._router.currentPage == App._common.page.PAGE_SYSTEM_DETAIL) {
-						setTimeout(App._router.page.drawChart, 0);
+						App._router.page.drawChart();
 					}
 				}
 			}
