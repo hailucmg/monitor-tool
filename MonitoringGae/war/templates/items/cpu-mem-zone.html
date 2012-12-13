@@ -1,0 +1,30 @@
+<table>
+	<tbody>
+		<%if (orient == 90 || orient == -90) {%>
+		<tr>
+			<td><div id="gauge-cpu"></div></td>
+			<td><div id="area-cpu"></div></td>
+		</tr>
+		<tr>
+			<td><div id="gauge-mem"></div></td>
+			<td><div id="area-mem"></div></td>
+		</tr>		
+		<%} else {%>
+		<tr>
+			<td><div id="gauge-cpu"></div></td>
+			<td><div id="gauge-mem"></div></td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<div id="area-cpu"></div>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<div id="area-mem"></div>
+			</td>
+		</tr>
+		<%}%>
+	</tbody>
+</table>
+
