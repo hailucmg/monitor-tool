@@ -312,11 +312,11 @@ public class MailService {
 				return null;
 			}
 			sb.append("<li><h4><a style=\"color: #686868;\" href=\"http://"
-					+ MonitorConstant.PROJECT_HOST_NAME + "/Index.html"
+					+ MonitorConstant.PROJECT_HOST_NAME + "/"
 					+ HTMLControl.HTML_SYSTEM_STATISTIC_NAME + "/"
 					+ sys.getId() + "\" >" + sys + "</a></h4>");
 			sb.append("<p><a href=\"http://"
-					+ MonitorConstant.PROJECT_HOST_NAME + "/Index.html"
+					+ MonitorConstant.PROJECT_HOST_NAME + "/"
 					+ HTMLControl.HTML_SYSTEM_DETAIL_NAME + "/" + sys.getId()
 					+ "\" title=\"View details.\">");
 
@@ -325,7 +325,7 @@ public class MailService {
 					+ "/images/icon/details.png\" title=\"View details.\" alt=\"View details.\"/></a>");
 			sb.append("&nbsp;&nbsp;");
 			sb.append("<a href=\"http://" + MonitorConstant.PROJECT_HOST_NAME
-					+ "/Index.html" + HTMLControl.HTML_SYSTEM_STATISTIC_NAME
+					+ "/" + HTMLControl.HTML_SYSTEM_STATISTIC_NAME
 					+ "/" + sys.getId() + "\" title=\"View statistic.\">");
 			sb.append("<img src=\"http://"
 					+ MonitorConstant.PROJECT_HOST_NAME
@@ -502,12 +502,12 @@ public class MailService {
 				map.put("LASTNAME", lastName);
 				map.put("DESCRIPTION", description);
 				map.put("ACTIVE_USER_LINK", "http://"
-						+ MonitorConstant.PROJECT_HOST_NAME + "/Index.html"
+						+ MonitorConstant.PROJECT_HOST_NAME + "/"
 						+ HTMLControl.HTML_USER_INVITE);
 				map.put("QRCODE_LINK",
 						StringUtils.getQRImageLink("http://"
 								+ MonitorConstant.PROJECT_HOST_NAME
-								+ "/Index.html" + HTMLControl.HTML_USER_INVITE));
+								+ "/" + HTMLControl.HTML_USER_INVITE));
 				mailContent.setMap(map);
 				mailContent.init();
 

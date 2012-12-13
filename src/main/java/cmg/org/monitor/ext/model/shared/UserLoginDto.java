@@ -20,6 +20,7 @@ public class UserLoginDto implements Serializable {
 	private boolean isLogin;
 	private String logoutUrl;
 	private String loginUrl;
+	private String description;
 	
 	private String firstName;
 	
@@ -27,15 +28,21 @@ public class UserLoginDto implements Serializable {
 
 	private boolean isAdmin;
 	private List<String> groupIds;
+	private String authURL;
 	
 	private boolean needAddAccount = false;
 
+	private String displayName;
+	private boolean isAuth;
+	private String imageURL;
 	public UserLoginDto() {
+		this.isAuth = false;
 		this.isAdmin = false;
 		this.isLogin = false;
 	}
 
 	public UserLoginDto(boolean isLogin) {
+		this.isAuth = false;
 		this.isLogin = isLogin;
 		this.isAdmin = false;
 	}
@@ -206,5 +213,80 @@ public class UserLoginDto implements Serializable {
 			return "";
 		}		
 		return firstName + " " + lastName;
+	}
+
+	/** 
+	 * @return the authURL 
+	 */
+	public String getAuthURL() {
+		return authURL;
+	}
+
+	/** 
+	 * @param authURL the authURL to set 
+	 */
+	
+	public void setAuthURL(String authURL) {
+		this.authURL = authURL;
+	}
+
+	/** 
+	 * @return the displayName 
+	 */
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	/** 
+	 * @param displayName the displayName to set 
+	 */
+	
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	/** 
+	 * @return the isAuth 
+	 */
+	public boolean isAuth() {
+		return isAuth;
+	}
+
+	/** 
+	 * @param isAuth the isAuth to set 
+	 */
+	
+	public void setAuth(boolean isAuth) {
+		this.isAuth = isAuth;
+	}
+
+	/** 
+	 * @return the imageURL 
+	 */
+	public String getImageURL() {
+		return imageURL;
+	}
+
+	/** 
+	 * @param imageURL the imageURL to set 
+	 */
+	
+	public void setImageURL(String imageURL) {
+		this.imageURL = imageURL;
+	}
+
+	/** 
+	 * @return the description 
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	/** 
+	 * @param description the description to set 
+	 */
+	
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

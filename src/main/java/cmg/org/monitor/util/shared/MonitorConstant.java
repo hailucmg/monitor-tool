@@ -28,15 +28,15 @@ public final class MonitorConstant {
 	public static final int CPU_MEMORY_REFRESH_RATE = 1000;
 	
 	// Alert mail sender service
-	public static final String IMAGES_FOR_EMAIL ="mo.c-mg.com.vn\\images\\logo\\c-mg_logo.png" ;
+	public static final String IMAGES_FOR_EMAIL ="monitor.c-mg.vn\\images\\logo\\c-mg_logo.png" ;
 	
 	public static final String ALERTSTORE_DEFAULT_NAME = "Issue Warning";
 	
-	public static final String PROJECT_HOST_NAME = "mo.c-mg.com.vn";
+	public static final String PROJECT_HOST_NAME = "monitor.c-mg.vn";
 	
-	public static final String ALERT_MAIL_SENDER_NAME = "admin@cmgmonitor.appspotmail.com";
+	public static final String ALERT_MAIL_SENDER_NAME = "admin@cmg-app-eng.appspotmail.com";
 
-	public static final int STATISTIC_HISTORY_LENGTH = 999;
+	public static final int STATISTIC_HISTORY_LENGTH = 200;
 
 	public static final int CPU_MEMORY_HISTORY_LENGTH = 100;
 	
@@ -46,7 +46,7 @@ public final class MonitorConstant {
 
 	public static final String PROJECT_NAME = "CMG Health Monitor System";
 
-	public static final String VERSION = "3.6";
+	public static final String VERSION = "4.0";
 
 	public static final String RELEASED_ON = "01/11/2011";
 
@@ -83,5 +83,7 @@ public final class MonitorConstant {
 	public static final String SITES_ABOUT_CONTENT_ID = "1702220121101760304";
 	
 	public static final String SITES_REVISIONS_CONTENT_ID = "1353586090532557552";
+	
+	public static final String OAUTH_CLIENT_ID = "371638778910-mjpkecge6b7bq4v6j17aags33rp8fk5p.apps.googleusercontent.com";
 
 }
