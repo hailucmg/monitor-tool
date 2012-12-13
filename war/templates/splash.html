@@ -1,0 +1,26 @@
+<div data-role="content" style="padding: 0px; background-color: #FFF;">
+	<table style="margin: 0px;" id="splash-screen">
+		<tbody>
+			<tr>
+				<td style="vertical-align: middle; text-align: center;">
+					<img src="images/logo/cmg-monitoring-system.png"
+					style="width: 90%;" alt="splash"></td>
+			</tr>
+			<tr>
+				<td style="vertical-align: middle; text-align: center;height:32px;">
+				<img src="images/loading/loading9.gif">
+				</td>
+			</tr>
+			<tr>
+			  <% if (isAuth) { %>
+				<td style="vertical-align: middle; text-align: center;">
+				<img src="<%=imageURL%>"/>
+				<h3>
+				<%=displayName%>
+				</h3>
+				<td>
+				<%}%>
+			</tr>
+		</tbody>
+	</table>
+</div>
