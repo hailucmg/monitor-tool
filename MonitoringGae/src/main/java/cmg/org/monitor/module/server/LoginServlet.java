@@ -65,16 +65,16 @@ public class LoginServlet extends HttpServlet {
 						//
 					}
 					if (list != null && list.size() > 0) {
-						resp.sendRedirect(resp.encodeRedirectURL(HTMLControl.HTML_INDEX_NAME));
+						resp.sendRedirect(resp.encodeRedirectURL(MonitorConstant.PROJECT_HOST_NAME));
 					} else {
-						resp.sendRedirect(resp.encodeRedirectURL(HTMLControl.HTML_INDEX_NAME + HTMLControl.HTML_GOOGLE_MANAGEMENT_NAME));
+						resp.sendRedirect(resp.encodeRedirectURL(MonitorConstant.PROJECT_HOST_NAME + HTMLControl.HTML_GOOGLE_MANAGEMENT_NAME));
 					}
 				} else {
-					resp.sendRedirect(resp.encodeRedirectURL(HTMLControl.HTML_INDEX_NAME));
+					resp.sendRedirect(resp.encodeRedirectURL(MonitorConstant.PROJECT_HOST_NAME));
 				}
 			} else {
 			    resp.sendRedirect(resp.encodeRedirectURL(
-			    		userService.createLoginURL(HTMLControl.HTML_INDEX_NAME, MonitorConstant.DOMAIN)));
+			    		userService.createLoginURL(MonitorConstant.PROJECT_HOST_NAME, MonitorConstant.DOMAIN)));
 			}
 		} catch (IOException ex) {
 			logger.log(Level.SEVERE, "Error: " + ex.getMessage());

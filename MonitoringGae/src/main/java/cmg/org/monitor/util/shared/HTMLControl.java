@@ -12,7 +12,7 @@ public class HTMLControl {
 
 	public static final String LOGIN_SERVLET_NAME = "login";
 
-	public static final String HTML_INDEX_NAME = "Index.html";
+	public static final String HTML_INDEX_NAME = "";
 
 	public static final String HTML_DASHBOARD_NAME = "#dashboard";
 	public static final String HTML_SYSTEM_DETAIL_NAME = "#dashboard/system/detail";
@@ -71,23 +71,18 @@ public class HTMLControl {
 	public static final int PAGE_EDIT_GROUP = 0x016;
 	public static final int PAGE_REVISION = 0x017;
 	public static final int PAGE_INVITE = 0x018;
-	
-	
+
 	public static final int ERROR_NORMAL = 0x000;
 	public static final int ERROR_SYSTEM_ID = 0x001;
 
-	public static final String HTML_ACTIVE_IMAGE = "<img src=\"images/icon/active.gif\" width=\"42\" height=\"20\" "
-			+ " style=\"display: block; margin-left: auto; margin-right: auto\"/>";
+	public static final String HTML_ACTIVE_IMAGE = "<img src=\"images/icon/active.gif\" width=\"42\" height=\"20\" " + " style=\"display: block; margin-left: auto; margin-right: auto\"/>";
 
 	public static final String HTML_ARROW_IMAGE = "<img src=\"images/icon/right_arrow.png\" />";
 
 	public static String getButtonHtml(String sid, boolean type) {
 		StringBuffer tmp = new StringBuffer();
-		tmp.append("<a href=\""
-				+ (type ? HTML_SYSTEM_DETAIL_NAME : HTML_SYSTEM_STATISTIC_NAME)
-				+ "/" + sid + "\">");
-		tmp.append("<input type=\"button\" class=\""
-				+ (type ? "form-details" : "form-statistic") + "\">");
+		tmp.append("<a href=\"" + (type ? HTML_SYSTEM_DETAIL_NAME : HTML_SYSTEM_STATISTIC_NAME) + "/" + sid + "\">");
+		tmp.append("<input type=\"button\" class=\"" + (type ? "form-details" : "form-statistic") + "\">");
 		tmp.append("</a>");
 		return tmp.toString();
 	}
@@ -95,8 +90,7 @@ public class HTMLControl {
 	public static String getAboutContent() {
 		StringBuffer tmp = new StringBuffer();
 		// tmp.append("<img src=\"images/logo/c-mg_logo.png\" width=\"210\" height=\"80\" style='margin:10px'>");
-		tmp.append("<h3 style='font-size:24px'>" + MonitorConstant.PROJECT_NAME
-				+ "</h3>");
+		tmp.append("<h3 style='font-size:24px'>" + MonitorConstant.PROJECT_NAME + "</h3>");
 		tmp.append("<h3>Version " + MonitorConstant.VERSION + "</h3>");
 		tmp.append("<h3>Released on: " + MonitorConstant.RELEASED_ON + "</h3>");
 		tmp.append("<h3>Support contact: ");
@@ -161,24 +155,16 @@ public class HTMLControl {
 
 	public static boolean validIndex(String hash) {
 		hash = "#" + hash.toLowerCase();
-		return (hash.equalsIgnoreCase(HTML_DASHBOARD_NAME)
-				|| hash.equalsIgnoreCase(HTML_ABOUT_NAME)
-				|| hash.equalsIgnoreCase(HTML_HELP_NAME)
-				|| hash.equalsIgnoreCase(HTML_SYSTEM_MANAGEMENT_NAME)
-				|| hash.equalsIgnoreCase(HTML_USER_MANAGEMENT_NAME)
-				|| hash.startsWith(HTML_SYSTEM_DETAIL_NAME)
-				|| hash.startsWith(HTML_SYSTEM_STATISTIC_NAME)
-				|| hash.startsWith(HTML_DELETE_SYSTEM_NAME)
-				|| hash.equalsIgnoreCase(HTML_ADD_NEW_SYSTEM_NAME) || hash
-					.startsWith(HTML_EDIT_NAME))
+		return (hash.equalsIgnoreCase(HTML_DASHBOARD_NAME) || hash.equalsIgnoreCase(HTML_ABOUT_NAME) || hash.equalsIgnoreCase(HTML_HELP_NAME) || hash.equalsIgnoreCase(HTML_SYSTEM_MANAGEMENT_NAME)
+				|| hash.equalsIgnoreCase(HTML_USER_MANAGEMENT_NAME) || hash.startsWith(HTML_SYSTEM_DETAIL_NAME) || hash.startsWith(HTML_SYSTEM_STATISTIC_NAME)
+				|| hash.startsWith(HTML_DELETE_SYSTEM_NAME) || hash.equalsIgnoreCase(HTML_ADD_NEW_SYSTEM_NAME) || hash.startsWith(HTML_EDIT_NAME))
 				|| hash.equalsIgnoreCase(HTML_SYSTEM_CHANGELOG)
 				|| hash.equalsIgnoreCase(HTML_USER_ROLE_NAME)
 				|| hash.equalsIgnoreCase(HTML_GOOGLE_MANAGEMENT_NAME)
 				|| hash.equalsIgnoreCase(HTML_GROUP_MANAGEMENT_NAME)
 				|| hash.equalsIgnoreCase(HTML_ADD_NEW_GROUP_NAME)
 				|| hash.startsWith(HTML_EDIT_GROUP_NAME)
-				|| hash.equalsIgnoreCase(HTML_REVISION_NAME)
-				|| hash.equalsIgnoreCase(HTML_USER_INVITE);
+				|| hash.equalsIgnoreCase(HTML_REVISION_NAME) || hash.equalsIgnoreCase(HTML_USER_INVITE);
 	}
 
 	public static HTML getSystemInfo(SystemMonitor sys) {
@@ -198,8 +184,7 @@ public class HTMLControl {
 		temp.append("<a href='");
 		temp.append(url);
 		temp.append("' id='logout'><img src='images/shared/nav/nav_logout.gif' width='64' height='14' /></a>");
-		temp.append("<div class='showhide-account'><span>" + username
-				+ "</span>");
+		temp.append("<div class='showhide-account'><span>" + username + "</span>");
 		temp.append("</div>");
 		return new HTML(temp.toString());
 	}
@@ -216,13 +201,11 @@ public class HTMLControl {
 		StringBuffer temp = new StringBuffer();
 		// Dashboard Menu
 		temp.append("<ul class='");
-		temp.append((page == PAGE_DASHBOARD || page == PAGE_SYSTEM_DETAIL || page == PAGE_SYSTEM_STATISTIC) ? "current"
-				: "select");
+		temp.append((page == PAGE_DASHBOARD || page == PAGE_SYSTEM_DETAIL || page == PAGE_SYSTEM_STATISTIC) ? "current" : "select");
 		temp.append("'><li><a href='" + HTML_DASHBOARD_NAME + "'><b>");
 		temp.append("Dashboard");
 		temp.append("</b></a><div class='select_sub");
-		temp.append((page == PAGE_DASHBOARD || page == PAGE_SYSTEM_DETAIL || page == PAGE_SYSTEM_STATISTIC) ? " show"
-				: "");
+		temp.append((page == PAGE_DASHBOARD || page == PAGE_SYSTEM_DETAIL || page == PAGE_SYSTEM_STATISTIC) ? " show" : "");
 		temp.append("'><ul class='sub'>");
 		temp.append("<li></li></ul></div></li></ul>");
 
@@ -230,62 +213,29 @@ public class HTMLControl {
 		if (role == MonitorConstant.ROLE_ADMIN) {
 			temp.append("<div class='nav-divider'>&nbsp;</div>");
 			temp.append("<ul class='");
-			temp.append((page == PAGE_USER_MANAGEMENT
-					|| page == PAGE_SYSTEM_CHANGE_LOG
-					|| page == PAGE_SYSTEM_MANAGEMENT
-					|| page == PAGE_ADD_SYSTEM 
-					|| page == PAGE_EDIT_SYSTEM
-					|| page == PAGE_USER_ROLE
-					|| page == PAGE_GOOGLE_MANAGEMENT
-					|| page == PAGE_GROUP_MANAGEMENT
-					|| page == PAGE_ADD_GROUP 
-					|| page == PAGE_EDIT_GROUP
-					|| page == PAGE_INVITE) ? "current"
+			temp.append((page == PAGE_USER_MANAGEMENT || page == PAGE_SYSTEM_CHANGE_LOG || page == PAGE_SYSTEM_MANAGEMENT || page == PAGE_ADD_SYSTEM || page == PAGE_EDIT_SYSTEM
+					|| page == PAGE_USER_ROLE || page == PAGE_GOOGLE_MANAGEMENT || page == PAGE_GROUP_MANAGEMENT || page == PAGE_ADD_GROUP || page == PAGE_EDIT_GROUP || page == PAGE_INVITE) ? "current"
 					: "select");
-			temp.append("'><li><a href='" + HTML_SYSTEM_MANAGEMENT_NAME
-					+ "'><b>");
+			temp.append("'><li><a href='" + HTML_SYSTEM_MANAGEMENT_NAME + "'><b>");
 			temp.append("Administration");
 			temp.append("</b></a><div class='select_sub");
-			temp.append((page == PAGE_SYSTEM_MANAGEMENT
-					|| page == PAGE_SYSTEM_CHANGE_LOG
-					|| page == PAGE_USER_MANAGEMENT 
-					|| page == PAGE_ADD_SYSTEM
-					|| page == PAGE_EDIT_SYSTEM
-					|| page == PAGE_GOOGLE_MANAGEMENT
-					|| page == PAGE_GROUP_MANAGEMENT 
-					|| page == PAGE_ADD_GROUP
-					|| page == PAGE_EDIT_GROUP 
-					|| page == PAGE_USER_ROLE
-					|| page == PAGE_INVITE) ? " show"
+			temp.append((page == PAGE_SYSTEM_MANAGEMENT || page == PAGE_SYSTEM_CHANGE_LOG || page == PAGE_USER_MANAGEMENT || page == PAGE_ADD_SYSTEM || page == PAGE_EDIT_SYSTEM
+					|| page == PAGE_GOOGLE_MANAGEMENT || page == PAGE_GROUP_MANAGEMENT || page == PAGE_ADD_GROUP || page == PAGE_EDIT_GROUP || page == PAGE_USER_ROLE || page == PAGE_INVITE) ? " show"
 					: "");
 			temp.append("'><ul class='sub'>");
 			temp.append("<li");
-			temp.append((page == PAGE_SYSTEM_MANAGEMENT
-					|| page == PAGE_ADD_SYSTEM || page == PAGE_EDIT_SYSTEM) ? " class='sub_show'"
-					: "");
-			temp.append("><a href='" + HTML_SYSTEM_MANAGEMENT_NAME
-					+ "'>System Management</a></li>");
+			temp.append((page == PAGE_SYSTEM_MANAGEMENT || page == PAGE_ADD_SYSTEM || page == PAGE_EDIT_SYSTEM) ? " class='sub_show'" : "");
+			temp.append("><a href='" + HTML_SYSTEM_MANAGEMENT_NAME + "'>System Management</a></li>");
 			temp.append("<li");
-			temp.append((page == PAGE_SYSTEM_CHANGE_LOG) ? " class='sub_show'"
-					: "");
-			temp.append("><a href='" + HTML_SYSTEM_CHANGELOG
-					+ "'>System Change Log</a></li>");
+			temp.append((page == PAGE_SYSTEM_CHANGE_LOG) ? " class='sub_show'" : "");
+			temp.append("><a href='" + HTML_SYSTEM_CHANGELOG + "'>System Change Log</a></li>");
 			temp.append("<li");
-			temp.append((page == PAGE_GROUP_MANAGEMENT
-					|| page == PAGE_ADD_GROUP || page == PAGE_EDIT_GROUP) ? " class='sub_show'"
-					: "");
-			temp.append("><a href='" + HTML_GROUP_MANAGEMENT_NAME
-					+ "'>Group Management</a></li>");
+			temp.append((page == PAGE_GROUP_MANAGEMENT || page == PAGE_ADD_GROUP || page == PAGE_EDIT_GROUP) ? " class='sub_show'" : "");
+			temp.append("><a href='" + HTML_GROUP_MANAGEMENT_NAME + "'>Group Management</a></li>");
 
 			temp.append("<li");
-			temp.append((page == PAGE_USER_MANAGEMENT
-					|| page == PAGE_GOOGLE_MANAGEMENT 
-					|| page == PAGE_USER_ROLE
-					|| page == PAGE_INVITE) 
-					? " class='sub_show'"
-					: "");
-			temp.append("><a href='" + HTML_USER_MANAGEMENT_NAME
-					+ "'>User Management</a></li></ul></div></li></ul>");
+			temp.append((page == PAGE_USER_MANAGEMENT || page == PAGE_GOOGLE_MANAGEMENT || page == PAGE_USER_ROLE || page == PAGE_INVITE) ? " class='sub_show'" : "");
+			temp.append("><a href='" + HTML_USER_MANAGEMENT_NAME + "'>User Management</a></li></ul></div></li></ul>");
 
 		}
 		// About Menu
@@ -319,6 +269,12 @@ public class HTMLControl {
 		temp.append((page == PAGE_REVISION) ? " show" : "");
 		temp.append("'><ul class='sub'>");
 		temp.append("<li><a href=''></a></li></ul></div></li></ul>");
+		// Mobile version menu
+		temp.append("<div class='nav-divider'>&nbsp;</div>");
+		temp.append("<ul class='select'><li><a href='?state=mobile'><b>");
+		temp.append("Mobile");
+		temp.append("</b></a><div class='select_sub'><ul class='sub'>");
+		temp.append("<li></li></ul></div></li></ul>");
 		return new HTML(temp.toString());
 	}
 
@@ -343,14 +299,8 @@ public class HTMLControl {
 	}
 
 	public static HTML getColorTitle(String title, boolean isOpen) {
-		return new HTML(
-				"<div id='message-blue'>"
-						+ "<table border='0' width='100%' cellpadding='0' cellspacing='0'>"
-						+ "<tr><td class='blue-left'>" + title + "</td>"
-						+ "<td class='blue-right'>" + "<a class='close-blue'>"
-						+ "<img src='images/icon/icon_"
-						+ (isOpen ? "close" : "open")
-						+ "_blue.gif' /></a></td></tr></table></div>");
+		return new HTML("<div id='message-blue'>" + "<table border='0' width='100%' cellpadding='0' cellspacing='0'>" + "<tr><td class='blue-left'>" + title + "</td>" + "<td class='blue-right'>"
+				+ "<a class='close-blue'>" + "<img src='images/icon/icon_" + (isOpen ? "close" : "open") + "_blue.gif' /></a></td></tr></table></div>");
 	}
 
 	public static String getHTMLStatusImage(String sid, String healthStatus) {
@@ -364,40 +314,26 @@ public class HTMLControl {
 		} else {
 			mes = "Click the Icon to see more information!";
 		}
-		return "<img src=\"images/icon/"
-				+ healthStatus
-				+ "_status_icon.png\" width=\"24\" height=\"24\" "
-				+ "style=\"display: block; margin-left: auto; margin-right: auto\""
-				+ " onClick=\"javascript:showStatusDialogBox('" + sid + "','"
-				+ healthStatus + "');\"" + " title='" + mes + "'" + " alt='"
-				+ mes + "'/>";
+		return "<img src=\"images/icon/" + healthStatus + "_status_icon.png\" width=\"24\" height=\"24\" " + "style=\"display: block; margin-left: auto; margin-right: auto\""
+				+ " onClick=\"javascript:showStatusDialogBox('" + sid + "','" + healthStatus + "');\"" + " title='" + mes + "'" + " alt='" + mes + "'/>";
 	}
 
 	public static String getHTMLStatusImage(boolean b) {
-		return "<img src=\"images/icon/"
-				+ Boolean.toString(b)
-				+ "_icon.png\" width=\"24\" height=\"24\" "
-				+ "style=\"display: block; margin-left: auto; margin-right: autso\" />";
+		return "<img src=\"images/icon/" + Boolean.toString(b) + "_icon.png\" width=\"24\" height=\"24\" " + "style=\"display: block; margin-left: auto; margin-right: autso\" />";
 
 	}
 
 	public static String getHTMLActiveImage(boolean b) {
-		return "<img src=\"images/icon/p_"
-				+ (b ? "online" : "offline")
-				+ ".gif\" "
-				+ " style=\"display: block; margin-left: auto; margin-right: auto\"/>";
+		return "<img src=\"images/icon/p_" + (b ? "online" : "offline") + ".gif\" " + " style=\"display: block; margin-left: auto; margin-right: auto\"/>";
 	}
 
 	public static String getLinkSystemDetail(String id, String code) {
-		return "<a href=\"" + HTML_SYSTEM_DETAIL_NAME + "/" + id
-				+ "\"  class='system-id' ><span>" + code + "</span></a>";
+		return "<a href=\"" + HTML_SYSTEM_DETAIL_NAME + "/" + id + "\"  class='system-id' ><span>" + code + "</span></a>";
 
 	}
 
 	public static String getLinkSystemStatistic(SystemMonitor sys) {
-		return "<a href=\"" + MonitorConstant.PROJECT_HOST_NAME + "/Index.html"
-				+ HTML_SYSTEM_STATISTIC_NAME + "/" + sys.getId() + "\" ><span>"
-				+ sys + "</span></a>";
+		return "<a href=\"" + MonitorConstant.PROJECT_HOST_NAME + "/" + HTML_SYSTEM_STATISTIC_NAME + "/" + sys.getId() + "\" ><span>" + sys + "</span></a>";
 
 	}
 
@@ -407,25 +343,21 @@ public class HTMLControl {
 	}
 
 	public static String getLinkEditGroup(String id) {
-		String a = "<a href=\"" + HTML_EDIT_GROUP_NAME + "/" + id
-				+ "\" title=\"Update Group\" >";
+		String a = "<a href=\"" + HTML_EDIT_GROUP_NAME + "/" + id + "\" title=\"Update Group\" >";
 		return a;
 	}
 
 	public static String getStringTime(int secsIn) {
 		int hours = secsIn / 3600, remainder = secsIn % 3600, minutes = remainder / 60, seconds = remainder % 60;
 
-		String time = ((hours < 10 ? "0" : "") + hours + ":"
-				+ (minutes < 10 ? "0" : "") + minutes + ":"
-				+ (seconds < 10 ? "0" : "") + seconds);
+		String time = ((hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds);
 		return time;
 	}
 
 	public static HTML getPageHeading(SystemMonitor sys) {
 		StringBuffer temp = new StringBuffer();
 		temp.append("<h1>");
-		temp.append("<a href=\"" + HTML_DASHBOARD_NAME
-				+ "\">Dashboard</a>&nbsp");
+		temp.append("<a href=\"" + HTML_DASHBOARD_NAME + "\">Dashboard</a>&nbsp");
 		temp.append(HTML_ARROW_IMAGE);
 		temp.append("&nbsp<a>" + sys.getCode() + " - " + sys.getName() + "</a>");
 		return new HTML(temp.toString());
@@ -435,10 +367,8 @@ public class HTMLControl {
 		StringBuffer temp = new StringBuffer();
 		temp.append("<h1>");
 
-		if (page == PAGE_DASHBOARD || page == PAGE_SYSTEM_STATISTIC
-				|| page == PAGE_SYSTEM_DETAIL) {
-			temp.append("<a href=\"" + HTML_DASHBOARD_NAME
-					+ "\">Dashboard</a>&nbsp");
+		if (page == PAGE_DASHBOARD || page == PAGE_SYSTEM_STATISTIC || page == PAGE_SYSTEM_DETAIL) {
+			temp.append("<a href=\"" + HTML_DASHBOARD_NAME + "\">Dashboard</a>&nbsp");
 		}
 		if (page == PAGE_SYSTEM_STATISTIC || page == PAGE_SYSTEM_DETAIL) {
 			temp.append(HTML_ARROW_IMAGE);
@@ -447,10 +377,8 @@ public class HTMLControl {
 			temp.append(page == PAGE_SYSTEM_DETAIL ? "System Information" : "");
 			temp.append("</a>");
 		}
-		if (page == PAGE_SYSTEM_MANAGEMENT || page == PAGE_ADD_SYSTEM
-				|| page == PAGE_EDIT_SYSTEM) {
-			temp.append("<a href=\"" + HTML_SYSTEM_MANAGEMENT_NAME
-					+ "\">System Management</a>&nbsp");
+		if (page == PAGE_SYSTEM_MANAGEMENT || page == PAGE_ADD_SYSTEM || page == PAGE_EDIT_SYSTEM) {
+			temp.append("<a href=\"" + HTML_SYSTEM_MANAGEMENT_NAME + "\">System Management</a>&nbsp");
 		}
 		if (page == PAGE_ADD_SYSTEM || page == PAGE_EDIT_SYSTEM) {
 			temp.append(HTML_ARROW_IMAGE);
@@ -460,14 +388,11 @@ public class HTMLControl {
 			temp.append("</a>");
 		}
 		if (page == PAGE_SYSTEM_CHANGE_LOG) {
-			temp.append("<a href=\"" + HTML_SYSTEM_CHANGELOG
-					+ "\">Change Log</a>&nbsp");
+			temp.append("<a href=\"" + HTML_SYSTEM_CHANGELOG + "\">Change Log</a>&nbsp");
 		}
 
-		if (page == PAGE_GROUP_MANAGEMENT || page == PAGE_ADD_GROUP
-				|| page == PAGE_EDIT_GROUP) {
-			temp.append("<a href=\"" + HTML_GROUP_MANAGEMENT_NAME
-					+ "\">Group Management</a>&nbsp");
+		if (page == PAGE_GROUP_MANAGEMENT || page == PAGE_ADD_GROUP || page == PAGE_EDIT_GROUP) {
+			temp.append("<a href=\"" + HTML_GROUP_MANAGEMENT_NAME + "\">Group Management</a>&nbsp");
 		}
 		if (page == PAGE_ADD_GROUP || page == PAGE_EDIT_GROUP) {
 			temp.append(HTML_ARROW_IMAGE);
@@ -477,24 +402,16 @@ public class HTMLControl {
 			temp.append("</a>");
 		}
 
-		if (page == PAGE_USER_MANAGEMENT
-				|| page == PAGE_USER_ROLE
-				|| page == PAGE_GOOGLE_MANAGEMENT
-				|| page == PAGE_INVITE) {
-			temp.append("<a href=\"" + HTML_USER_MANAGEMENT_NAME
-					+ "\">User Management</a>&nbsp");
+		if (page == PAGE_USER_MANAGEMENT || page == PAGE_USER_ROLE || page == PAGE_GOOGLE_MANAGEMENT || page == PAGE_INVITE) {
+			temp.append("<a href=\"" + HTML_USER_MANAGEMENT_NAME + "\">User Management</a>&nbsp");
 		}
 
-		if (page == PAGE_USER_ROLE 
-				|| page == PAGE_GOOGLE_MANAGEMENT
-				|| page == PAGE_INVITE) {
+		if (page == PAGE_USER_ROLE || page == PAGE_GOOGLE_MANAGEMENT || page == PAGE_INVITE) {
 			temp.append(HTML_ARROW_IMAGE);
 			temp.append("&nbsp<a>");
 			temp.append(page == PAGE_USER_ROLE ? "User Role" : "");
-			temp.append(page == PAGE_GOOGLE_MANAGEMENT ? "Google Management"
-					: "");
-			temp.append(page == PAGE_INVITE ? "Invite User"
-					: "");
+			temp.append(page == PAGE_GOOGLE_MANAGEMENT ? "Google Management" : "");
+			temp.append(page == PAGE_INVITE ? "Invite User" : "");
 			temp.append("</a>");
 		}
 
@@ -517,181 +434,112 @@ public class HTMLControl {
 		sb.append("<span style=\"padding: 0; float: left; white-space: nowrap;\">");
 		sb.append(startImg + "bar_s.png\" height=\"12\" width=\"1\">");
 		if (percent > 0) {
-			sb.append(startImg + "bar_"
-					+ (percent >= redRangeValue ? "r" : "b")
-					+ ".png\" height=\"12\" width=\"" + 2 * percent + "\">");
+			sb.append(startImg + "bar_" + (percent >= redRangeValue ? "r" : "b") + ".png\" height=\"12\" width=\"" + 2 * percent + "\">");
 		}
-		sb.append(startImg
-				+ "bar_w.png\" "
-				+ (percent == -1 ? "title=\"Has no data from the system\" alt=\"Has no data from the system\""
-						: "") + " height=\"12\" width=\"" + 2 * (100 - percent)
+		sb.append(startImg + "bar_w.png\" " + (percent == -1 ? "title=\"Has no data from the system\" alt=\"Has no data from the system\"" : "") + " height=\"12\" width=\"" + 2 * (100 - percent)
 				+ "\">");
-		sb.append(startImg + "bar_s.png\" height=\"12\" width=\"1\">"
-				+ (percent == -1 ? "" : ("&nbsp;" + percent + "%")) + "</span>");
+		sb.append(startImg + "bar_s.png\" height=\"12\" width=\"1\">" + (percent == -1 ? "" : ("&nbsp;" + percent + "%")) + "</span>");
 		return sb.toString();
 	}
 
 	public static HTML getStepHolder(int page, String sid) {
 		StringBuffer temp = new StringBuffer();
 		if (page == PAGE_SYSTEM_DETAIL || page == PAGE_SYSTEM_STATISTIC) {
-			temp.append("<div class=\"step-no"
-					+ ((page == PAGE_SYSTEM_DETAIL) ? "" : "-off")
-					+ "\">1</div>");
-			temp.append("<div class=\"step-"
-					+ ((page == PAGE_SYSTEM_DETAIL) ? "dark" : "light")
-					+ "-left\">");
-			temp.append("<a href=\"" + HTML_SYSTEM_DETAIL_NAME + "/" + sid
-					+ "\">System Infomation</a>");
+			temp.append("<div class=\"step-no" + ((page == PAGE_SYSTEM_DETAIL) ? "" : "-off") + "\">1</div>");
+			temp.append("<div class=\"step-" + ((page == PAGE_SYSTEM_DETAIL) ? "dark" : "light") + "-left\">");
+			temp.append("<a href=\"" + HTML_SYSTEM_DETAIL_NAME + "/" + sid + "\">System Infomation</a>");
 			temp.append("</div>");
-			temp.append("<div class=\"step-"
-					+ ((page == PAGE_SYSTEM_DETAIL) ? "dark" : "light")
-					+ "-right\">&nbsp;</div>");
-			temp.append("<div class=\"step-no"
-					+ ((page == PAGE_SYSTEM_STATISTIC) ? "" : "-off")
-					+ "\">2</div>");
-			temp.append("<div class=\"step-"
-					+ ((page == PAGE_SYSTEM_STATISTIC) ? "dark" : "light")
-					+ "-left\">");
-			temp.append("<a href=\"" + HTML_SYSTEM_STATISTIC_NAME + "/" + sid
-					+ "\">System Statistic</a>");
+			temp.append("<div class=\"step-" + ((page == PAGE_SYSTEM_DETAIL) ? "dark" : "light") + "-right\">&nbsp;</div>");
+			temp.append("<div class=\"step-no" + ((page == PAGE_SYSTEM_STATISTIC) ? "" : "-off") + "\">2</div>");
+			temp.append("<div class=\"step-" + ((page == PAGE_SYSTEM_STATISTIC) ? "dark" : "light") + "-left\">");
+			temp.append("<a href=\"" + HTML_SYSTEM_STATISTIC_NAME + "/" + sid + "\">System Statistic</a>");
 			temp.append("</div>");
-			temp.append("<div class=\"step-"
-					+ ((page == PAGE_SYSTEM_STATISTIC) ? "dark" : "light")
-					+ "-round\">&nbsp;</div>");
+			temp.append("<div class=\"step-" + ((page == PAGE_SYSTEM_STATISTIC) ? "dark" : "light") + "-round\">&nbsp;</div>");
 			temp.append("<div class=\"clear\"></div>");
 		} else if (page == PAGE_SYSTEM_MANAGEMENT || page == PAGE_ADD_SYSTEM) {
-			temp.append("<div class=\"step-no"
-					+ ((page == PAGE_SYSTEM_MANAGEMENT) ? "" : "-off")
-					+ "\">1</div>");
-			temp.append("<div class=\"step-"
-					+ ((page == PAGE_SYSTEM_MANAGEMENT) ? "dark" : "light")
-					+ "-left\">");
-			temp.append("<a href=\"" + HTML_SYSTEM_MANAGEMENT_NAME
-					+ "\">System List</a>");
+			temp.append("<div class=\"step-no" + ((page == PAGE_SYSTEM_MANAGEMENT) ? "" : "-off") + "\">1</div>");
+			temp.append("<div class=\"step-" + ((page == PAGE_SYSTEM_MANAGEMENT) ? "dark" : "light") + "-left\">");
+			temp.append("<a href=\"" + HTML_SYSTEM_MANAGEMENT_NAME + "\">System List</a>");
 			temp.append("</div>");
-			temp.append("<div class=\"step-"
-					+ ((page == PAGE_SYSTEM_MANAGEMENT) ? "dark" : "light")
-					+ "-right\">&nbsp;</div>");
-			temp.append("<div class=\"step-no"
-					+ ((page == PAGE_ADD_SYSTEM) ? "" : "-off") + "\">2</div>");
-			temp.append("<div class=\"step-"
-					+ ((page == PAGE_ADD_SYSTEM) ? "dark" : "light")
-					+ "-left\">");
-			temp.append("<a href=\"" + HTML_ADD_NEW_SYSTEM_NAME
-					+ "\">Add New System</a>");
+			temp.append("<div class=\"step-" + ((page == PAGE_SYSTEM_MANAGEMENT) ? "dark" : "light") + "-right\">&nbsp;</div>");
+			temp.append("<div class=\"step-no" + ((page == PAGE_ADD_SYSTEM) ? "" : "-off") + "\">2</div>");
+			temp.append("<div class=\"step-" + ((page == PAGE_ADD_SYSTEM) ? "dark" : "light") + "-left\">");
+			temp.append("<a href=\"" + HTML_ADD_NEW_SYSTEM_NAME + "\">Add New System</a>");
 			temp.append("</div>");
-			temp.append("<div class=\"step-"
-					+ ((page == PAGE_ADD_SYSTEM) ? "dark" : "light")
-					+ "-round\">&nbsp;</div>");
+			temp.append("<div class=\"step-" + ((page == PAGE_ADD_SYSTEM) ? "dark" : "light") + "-round\">&nbsp;</div>");
 			temp.append("<div class=\"clear\"></div>");
 		} else if (page == PAGE_GROUP_MANAGEMENT || page == PAGE_ADD_GROUP) {
-			temp.append("<div class=\"step-no"
-					+ ((page == PAGE_GROUP_MANAGEMENT) ? "" : "-off")
-					+ "\">1</div>");
-			temp.append("<div class=\"step-"
-					+ ((page == PAGE_GROUP_MANAGEMENT) ? "dark" : "light")
-					+ "-left\">");
-			temp.append("<a href=\"" + HTML_GROUP_MANAGEMENT_NAME
-					+ "\">Group List</a>");
+			temp.append("<div class=\"step-no" + ((page == PAGE_GROUP_MANAGEMENT) ? "" : "-off") + "\">1</div>");
+			temp.append("<div class=\"step-" + ((page == PAGE_GROUP_MANAGEMENT) ? "dark" : "light") + "-left\">");
+			temp.append("<a href=\"" + HTML_GROUP_MANAGEMENT_NAME + "\">Group List</a>");
 			temp.append("</div>");
-			temp.append("<div class=\"step-"
-					+ ((page == PAGE_GROUP_MANAGEMENT) ? "dark" : "light")
-					+ "-right\">&nbsp;</div>");
-			temp.append("<div class=\"step-no"
-					+ ((page == PAGE_ADD_GROUP) ? "" : "-off") + "\">2</div>");
-			temp.append("<div class=\"step-"
-					+ ((page == PAGE_ADD_GROUP) ? "dark" : "light")
-					+ "-left\">");
-			temp.append("<a href=\"" + HTML_ADD_NEW_GROUP_NAME
-					+ "\">Add New Group</a>");
+			temp.append("<div class=\"step-" + ((page == PAGE_GROUP_MANAGEMENT) ? "dark" : "light") + "-right\">&nbsp;</div>");
+			temp.append("<div class=\"step-no" + ((page == PAGE_ADD_GROUP) ? "" : "-off") + "\">2</div>");
+			temp.append("<div class=\"step-" + ((page == PAGE_ADD_GROUP) ? "dark" : "light") + "-left\">");
+			temp.append("<a href=\"" + HTML_ADD_NEW_GROUP_NAME + "\">Add New Group</a>");
 			temp.append("</div>");
-			temp.append("<div class=\"step-"
-					+ ((page == PAGE_ADD_GROUP) ? "dark" : "light")
-					+ "-round\">&nbsp;</div>");
+			temp.append("<div class=\"step-" + ((page == PAGE_ADD_GROUP) ? "dark" : "light") + "-round\">&nbsp;</div>");
 			temp.append("<div class=\"clear\"></div>");
-		} else if (page == PAGE_USER_MANAGEMENT 
-				|| page == PAGE_USER_ROLE
-				|| page == PAGE_GOOGLE_MANAGEMENT
-				|| page == PAGE_INVITE) {
-			temp.append("<div class=\"step-no"
-					+ ((page == PAGE_USER_MANAGEMENT) ? "" : "-off")
-					+ "\">1</div>");
-			temp.append("<div class=\"step-"
-					+ ((page == PAGE_USER_MANAGEMENT) ? "dark" : "light")
-					+ "-left\">");
-			temp.append("<a href=\"" + HTML_USER_MANAGEMENT_NAME
-					+ "\">User Mapping</a>");
+		} else if (page == PAGE_USER_MANAGEMENT || page == PAGE_USER_ROLE || page == PAGE_GOOGLE_MANAGEMENT || page == PAGE_INVITE) {
+			temp.append("<div class=\"step-no" + ((page == PAGE_USER_MANAGEMENT) ? "" : "-off") + "\">1</div>");
+			temp.append("<div class=\"step-" + ((page == PAGE_USER_MANAGEMENT) ? "dark" : "light") + "-left\">");
+			temp.append("<a href=\"" + HTML_USER_MANAGEMENT_NAME + "\">User Mapping</a>");
 			temp.append("</div>");
-			temp.append("<div class=\"step-"
-					+ ((page == PAGE_USER_MANAGEMENT) ? "dark" : "light")
-					+ "-right\">&nbsp;</div>");
-			
-			temp.append("<div class=\"step-no"
-					+ ((page == PAGE_USER_ROLE) ? "" : "-off") + "\">2</div>");
-			temp.append("<div class=\"step-"
-					+ ((page == PAGE_USER_ROLE) ? "dark" : "light")
-					+ "-left\">");
+			temp.append("<div class=\"step-" + ((page == PAGE_USER_MANAGEMENT) ? "dark" : "light") + "-right\">&nbsp;</div>");
+
+			temp.append("<div class=\"step-no" + ((page == PAGE_USER_ROLE) ? "" : "-off") + "\">2</div>");
+			temp.append("<div class=\"step-" + ((page == PAGE_USER_ROLE) ? "dark" : "light") + "-left\">");
 			temp.append("<a href=\"" + HTML_USER_ROLE_NAME + "\">User Role</a>");
 			temp.append("</div>");
-			temp.append("<div class=\"step-"
-					+ ((page == PAGE_USER_ROLE) ? "dark" : "light")
-					+ "-right\">&nbsp;</div>");
-			
-			temp.append("<div class=\"step-no"
-					+ ((page == PAGE_INVITE) ? "" : "-off") + "\">3</div>");
-			temp.append("<div class=\"step-"
-					+ ((page ==  PAGE_INVITE) ? "dark" : "light")
-					+ "-left\">");
+			temp.append("<div class=\"step-" + ((page == PAGE_USER_ROLE) ? "dark" : "light") + "-right\">&nbsp;</div>");
+
+			temp.append("<div class=\"step-no" + ((page == PAGE_INVITE) ? "" : "-off") + "\">3</div>");
+			temp.append("<div class=\"step-" + ((page == PAGE_INVITE) ? "dark" : "light") + "-left\">");
 			temp.append("<a href=\"" + HTML_USER_INVITE + "\">Invite User</a>");
 			temp.append("</div>");
-			temp.append("<div class=\"step-"
-					+ ((page ==  PAGE_INVITE) ? "dark" : "light")
-					+ "-right\">&nbsp;</div>");
-			
-			temp.append("<div class=\"step-no"
-					+ ((page == PAGE_GOOGLE_MANAGEMENT) ? "" : "-off")
-					+ "\">4</div>");
-			temp.append("<div class=\"step-"
-					+ ((page == PAGE_GOOGLE_MANAGEMENT) ? "dark" : "light")
-					+ "-left\">");
-			temp.append("<a href=\"" + HTML_GOOGLE_MANAGEMENT_NAME
-					+ "\">Google Management</a>");
+			temp.append("<div class=\"step-" + ((page == PAGE_INVITE) ? "dark" : "light") + "-right\">&nbsp;</div>");
+
+			temp.append("<div class=\"step-no" + ((page == PAGE_GOOGLE_MANAGEMENT) ? "" : "-off") + "\">4</div>");
+			temp.append("<div class=\"step-" + ((page == PAGE_GOOGLE_MANAGEMENT) ? "dark" : "light") + "-left\">");
+			temp.append("<a href=\"" + HTML_GOOGLE_MANAGEMENT_NAME + "\">Google Management</a>");
 			temp.append("</div>");
-			temp.append("<div class=\"step-"
-					+ ((page == PAGE_GOOGLE_MANAGEMENT) ? "dark" : "light")
-					+ "-round\">&nbsp;</div>");
+			temp.append("<div class=\"step-" + ((page == PAGE_GOOGLE_MANAGEMENT) ? "dark" : "light") + "-round\">&nbsp;</div>");
 			temp.append("<div class=\"clear\"></div>");
 		}
 
 		return new HTML(temp.toString());
 	}
 
-	public static String getButtonForActiveUser(InvitedUser u){
+	public static String getButtonForActiveUser(InvitedUser u) {
 		String id = u.getEmail();
 		String typeDelete = "delete";
 		String temp;
-		String buttonDelete = "<a style=\"margin-left:auto;margin-right:auto;\"  class=\"btnDeleteUser\" title=\"delete\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeDelete +"','"+ u.getStatus() +"');\" />";
-		//String buttonInactive = "<a class=\"btnInActive\" title=\"inactive\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeInactive +"','" + u.getStatus() + "');\" />";
-		temp = buttonDelete /*+ buttonInactive*/;
-		
+		String buttonDelete = "<a style=\"margin-left:auto;margin-right:auto;\"  class=\"btnDeleteUser\" title=\"delete\" onClick=\"javascript:showDialogBox('" + id + "','" + typeDelete + "','"
+				+ u.getStatus() + "');\" />";
+		// String buttonInactive =
+		// "<a class=\"btnInActive\" title=\"inactive\" onClick=\"javascript:showDialogBox('"+
+		// id + "','" + typeInactive +"','" + u.getStatus() + "');\" />";
+		temp = buttonDelete /* + buttonInactive */;
+
 		return temp;
 	}
-	
-	public static String getButtonForRequestingUser(InvitedUser u){
+
+	public static String getButtonForRequestingUser(InvitedUser u) {
 		String id = u.getEmail();
 		String typeInactive = "active";
-		String buttonactive = "<a style=\"margin-left:auto;margin-right:auto;\" class=\"btnActive\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeInactive +"','" + u.getStatus() + "');\" title=\"Active\" />";
+		String buttonactive = "<a style=\"margin-left:auto;margin-right:auto;\" class=\"btnActive\" onClick=\"javascript:showDialogBox('" + id + "','" + typeInactive + "','" + u.getStatus()
+				+ "');\" title=\"Active\" />";
 		return buttonactive;
 	}
-	
-	public static String getButtonForPendingUser(InvitedUser u){
+
+	public static String getButtonForPendingUser(InvitedUser u) {
 		String id = u.getEmail();
 		String typeDelete = "delete";
-		String buttonDelete = "<a style=\"margin-left:auto;margin-right:auto;\" class=\"btnDeleteUser\" title=\"delete\" onClick=\"javascript:showDialogBox('"+ id + "','" + typeDelete +"','"+ u.getStatus() +"');\"  / >";
+		String buttonDelete = "<a style=\"margin-left:auto;margin-right:auto;\" class=\"btnDeleteUser\" title=\"delete\" onClick=\"javascript:showDialogBox('" + id + "','" + typeDelete + "','"
+				+ u.getStatus() + "');\"  / >";
 		return buttonDelete;
 	}
-	
-	
+
 	public static String trimHashPart(String url) {
 		String temp = url;
 		if (url.contains("#")) {
@@ -714,8 +562,7 @@ public class HTMLControl {
 		value = value / 1024;
 		String temp = null;
 		if (value >= 1024 * 1024) {
-			temp = NumberFormat.getFormat("#.0").format(value / (1024 * 1024))
-					+ " GB";
+			temp = NumberFormat.getFormat("#.0").format(value / (1024 * 1024)) + " GB";
 		} else if (value >= 1024) {
 			temp = NumberFormat.getFormat("#.0").format(value / 1024) + " MB";
 		} else {
@@ -755,12 +602,5 @@ public class HTMLControl {
 		tmp.append("<h3>Page is in progress</h3>");
 		return tmp.toString();
 	}
-	
-	public static String humanReadableByteCount(long bytes, boolean si) {
-	    int unit = si ? 1000 : 1024;
-	    if (bytes < unit) return bytes + " B";
-	    int exp = (int) (Math.log(bytes) / Math.log(unit));
-	    String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
-	    return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
-	}
+
 }

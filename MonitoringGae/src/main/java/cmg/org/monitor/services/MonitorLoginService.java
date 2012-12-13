@@ -18,8 +18,9 @@ import cmg.org.monitor.ext.model.shared.UserLoginDto;
 import cmg.org.monitor.ext.model.shared.UserMonitor;
 import cmg.org.monitor.memcache.Key;
 import cmg.org.monitor.memcache.MonitorMemcache;
-import cmg.org.monitor.util.shared.HTMLControl;
+
 import cmg.org.monitor.util.shared.MonitorConstant;
+
 
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
@@ -27,21 +28,22 @@ import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 
 public class MonitorLoginService {
-	private static final Logger logger = Logger
-			.getLogger(MonitorLoginService.class.getCanonicalName());
+	private static final Logger logger = Logger.getLogger(MonitorLoginService.class.getCanonicalName());
 	private UserService userService = UserServiceFactory.getUserService();
 
 	public static List<InvitedUser> temp3rdUsers;
+	private String sessionID;
 
 	public UserLoginDto getUserLogin() {
 		UserLoginDto userLogin = new UserLoginDto();
-		userLogin.setLogoutUrl(userService.createLogoutURL(
-				HTMLControl.LOGIN_SERVLET_NAME, MonitorConstant.DOMAIN));
-		userLogin.setLoginUrl(userService.createLoginURL(
-				HTMLControl.HTML_INDEX_NAME, MonitorConstant.DOMAIN));
+		userLogin.setLogoutUrl(userService.createLogoutURL("http://" + MonitorConstant.PROJECT_HOST_NAME, MonitorConstant.DOMAIN));
+		userLogin.setLoginUrl(userService.createLoginURL("http://" + MonitorConstant.PROJECT_HOST_NAME, MonitorConstant.DOMAIN));
 		try {
 			User user = userService.getCurrentUser();
-			if (user != null) {
+			if (user != null) {			
+
+				userLogin.setAuthURL("https://accounts.google.com/o/oauth2/auth?response_type=token&redirect_uri=http%3A%2F%2F" + MonitorConstant.PROJECT_HOST_NAME + "&client_id="
+						+ MonitorConstant.OAUTH_CLIENT_ID + "&approval_prompt=force&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fplus.me");
 				userLogin.setAuthDomain(user.getAuthDomain());
 				userLogin.setEmail(user.getEmail());
 				userLogin.setNickName(user.getNickname());
@@ -83,15 +85,13 @@ public class MonitorLoginService {
 						}
 					} else {
 						InviteUserDAO invUserDAO = new InviteUserDaoImpl();
-						List<InvitedUser> list3rdUser = invUserDAO
-								.list3rdUser();
+						List<InvitedUser> list3rdUser = invUserDAO.list3rdUser();
 						boolean check = false;
 						if (getTemp3rdUsers() == null) {
 							setTemp3rdUsers(new ArrayList<InvitedUser>());
 						}
 						for (InvitedUser tempU : getTemp3rdUsers()) {
-							if (tempU.getEmail().equalsIgnoreCase(
-									user.getEmail())) {
+							if (tempU.getEmail().equalsIgnoreCase(user.getEmail())) {
 								userLogin.setGroupIds(tempU.getGroupIDs());
 								check = true;
 								break;
@@ -102,20 +102,14 @@ public class MonitorLoginService {
 						} else {
 							if (list3rdUser != null && list3rdUser.size() > 0) {
 								for (InvitedUser u : list3rdUser) {
-									if (u.getEmail().equalsIgnoreCase(
-											user.getEmail())
-											&& u.getStatus().equalsIgnoreCase(
-													InvitedUser.STATUS_PENDING)) {
-										userLogin
-												.setRole(MonitorConstant.ROLE_NORMAL_USER);
+									if (u.getEmail().equalsIgnoreCase(user.getEmail()) && u.getStatus().equalsIgnoreCase(InvitedUser.STATUS_PENDING)) {
+										userLogin.setRole(MonitorConstant.ROLE_NORMAL_USER);
 										userLogin.setGroupIds(u.getGroupIDs());
 										userLogin.setFirstName(u.getFirstName());
 										userLogin.setLastName(u.getLastName());
 										getTemp3rdUsers().add(u);
 										Gson gson = new Gson();
-										MonitorMemcache
-												.put(Key.create(Key.TEMP_INVITED_USERS),
-														gson.toJson(getTemp3rdUsers()));
+										MonitorMemcache.put(Key.create(Key.TEMP_INVITED_USERS), gson.toJson(getTemp3rdUsers()));
 										break;
 									}
 								}
@@ -128,8 +122,7 @@ public class MonitorLoginService {
 			}
 
 		} catch (Exception ex) {
-			logger.log(Level.SEVERE,
-					"ERROR when login. Message: " + ex.getMessage());
+			logger.log(Level.SEVERE, "ERROR when login. Message: " + ex.getMessage());
 		}
 		return userLogin;
 	}
@@ -149,18 +142,35 @@ public class MonitorLoginService {
 		return role;
 	}
 
-	/** 
-	 * @return the temp3rdUsers 
+	/**
+	 * @return the temp3rdUsers
 	 */
 	public static List<InvitedUser> getTemp3rdUsers() {
 		return temp3rdUsers;
 	}
 
-	/** 
-	 * @param temp3rdUsers the temp3rdUsers to set 
+	/**
+	 * @param temp3rdUsers
+	 *            the temp3rdUsers to set
 	 */
-	
+
 	public static void setTemp3rdUsers(List<InvitedUser> temp3rdUsers) {
 		MonitorLoginService.temp3rdUsers = temp3rdUsers;
+	}
+
+	/**
+	 * @return the sessionID
+	 */
+	public String getSessionID() {
+		return sessionID;
+	}
+
+	/**
+	 * @param sessionID
+	 *            the sessionID to set
+	 */
+
+	public void setSessionID(String sessionID) {
+		this.sessionID = sessionID;
 	}
 }
