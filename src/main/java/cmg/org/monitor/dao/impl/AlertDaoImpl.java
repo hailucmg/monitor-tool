@@ -85,14 +85,16 @@ public class AlertDaoImpl implements AlertDao {
 				logger.log(Level.WARNING, " -> ERROR: " + ex.getMessage());
 			}
 		}
-
+		boolean isJDO = false;
 		// read store from JDO if memcahe is null
 		if (list == null) {
+			
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			try {
 				Query query = pm.newQuery(AlertStoreMonitor.class);
 				query.setFilter("sysId == systemId");
 				query.declareParameters("String systemId");
+				query.setOrdering("timeStamp desc");
 				query.setRange(0, MonitorConstant.STATISTIC_HISTORY_LENGTH);
 				List<AlertStoreMonitor> listData = null;
 				listData = (List<AlertStoreMonitor>) query.execute(sysId);
@@ -102,25 +104,28 @@ public class AlertDaoImpl implements AlertDao {
 						list.add(alertStore);
 					}// for
 				}// if
-
+				isJDO = true;
 			} catch (Exception ex) {
 				logger.log(Level.WARNING, " -> ERROR: " + ex.getMessage());
 			} finally {
 				pm.close();
 			}
-			PersistenceManager pm2 = PMF.get().getPersistenceManager();
+			
+		}// if
+		if (isJDO) {			
 			if (list != null && list.size() > 0) {
 				List<AlertMonitor> listAlerts = null;
 				ArrayList<AlertMonitor> alerts = null;
 				for (AlertStoreMonitor as : list) {
 					if (as.getId() != null) {
-						
+						PersistenceManager pm = PMF.get().getPersistenceManager();
 						try {
-							AlertStoreMonitor s = pm2.getObjectById(AlertStoreMonitor.class, as.getId());
+							AlertStoreMonitor s = pm.getObjectById(AlertStoreMonitor.class, as.getId());
 							if (s != null) {
 								Query q = pm.newQuery(AlertMonitor.class);
 								q.setFilter("alertStore == store");
 								q.declareParameters("AlertStoreMonitor store");
+								
 								listAlerts = (List<AlertMonitor>) q.execute(s);
 								alerts = new ArrayList<AlertMonitor>();
 								if (!listAlerts.isEmpty()) {
@@ -133,7 +138,7 @@ public class AlertDaoImpl implements AlertDao {
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						} finally {
-							pm2.close();
+							pm.close();
 						}
 					}
 				}
@@ -141,8 +146,7 @@ public class AlertDaoImpl implements AlertDao {
 			}
 			Gson gson = new Gson();
 			MonitorMemcache.put(Key.create(Key.ALERT_STORE, sysId), gson.toJson(list));
-		}// if
-		
+		}
 		// END LOG
 		long end = System.currentTimeMillis();
 

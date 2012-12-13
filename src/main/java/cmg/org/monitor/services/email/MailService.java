@@ -46,8 +46,6 @@ import cmg.org.monitor.ext.util.IOUtil;
 import cmg.org.monitor.ext.util.MailAsync;
 import cmg.org.monitor.ext.util.MonitorUtil;
 import cmg.org.monitor.ext.util.StringUtils;
-import cmg.org.monitor.memcache.Key;
-import cmg.org.monitor.memcache.MonitorMemcache;
 import cmg.org.monitor.services.GoogleAccountService;
 import cmg.org.monitor.util.shared.Constant;
 import cmg.org.monitor.util.shared.HTMLControl;
