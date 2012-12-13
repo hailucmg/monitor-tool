@@ -12,7 +12,7 @@ body	{
 	height: 90px;
 	}
 #page-top	{
-	margin: -20px auto;
+	margin:auto;
 	max-width: 1260px;
 	min-width: 850px;
 	position: relative;
