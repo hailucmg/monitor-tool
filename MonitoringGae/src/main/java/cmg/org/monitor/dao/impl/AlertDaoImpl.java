@@ -87,8 +87,7 @@ public class AlertDaoImpl implements AlertDao {
 		}
 		boolean isJDO = false;
 		// read store from JDO if memcahe is null
-		if (list == null) {
-			
+		if (list == null) {			
 			PersistenceManager pm = PMF.get().getPersistenceManager();
 			try {
 				Query query = pm.newQuery(AlertStoreMonitor.class);
@@ -106,7 +105,7 @@ public class AlertDaoImpl implements AlertDao {
 				}// if
 				isJDO = true;
 			} catch (Exception ex) {
-				logger.log(Level.WARNING, " -> ERROR: " + ex.getMessage());
+				logger.log(Level.SEVERE, " -> ERROR: " + ex.getMessage());
 			} finally {
 				pm.close();
 			}
@@ -136,7 +135,7 @@ public class AlertDaoImpl implements AlertDao {
 								as.setAlerts(alerts.size() > 0 ? alerts : null);
 							}
 						} catch (Exception ex) {
-							ex.printStackTrace();
+							logger.log(Level.SEVERE, " -> ERROR: " + ex.getMessage());
 						} finally {
 							pm.close();
 						}
