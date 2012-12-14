@@ -36,7 +36,7 @@ public final class MonitorConstant {
 	
 	public static final String ALERT_MAIL_SENDER_NAME = "admin@cmg-app-eng.appspotmail.com";
 
-	public static final int STATISTIC_HISTORY_LENGTH = 200;
+	public static final int STATISTIC_HISTORY_LENGTH = 999;
 
 	public static final int CPU_MEMORY_HISTORY_LENGTH = 100;
 	

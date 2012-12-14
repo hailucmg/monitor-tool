@@ -182,11 +182,36 @@ public class DataServiceHandler extends HttpServlet {
 							mes = new MonitorMessage("No issue found");
 							out.print(gson.toJson(mes));
 						} else {
-							List<AlertStoreMonitor> temp = new ArrayList<AlertStoreMonitor>();
-							for (int i = stores.size() - 1; i >= 0; i--) {
-								temp.add(stores.get(i));
+							List<AlertStoreMonitor> temp;
+							boolean check = false;
+							if (stores.size() > 1) {
+								Date t1 = stores.get(0).getTimeStamp();
+								Date t2 = stores.get(1).getTimeStamp();
+								if (t1 != null && t2 != null) {
+									System.out.println(t1.getTime() + " | " + t2.getTime());
+									if (t1.getTime() > t2.getTime()) {
+										check = true;
+									}
+								}
+
 							}
-							out.print(gson.toJson(temp));
+							if (check) {
+								if (stores.size() > 100) {
+									out.print(gson.toJson(stores.subList(0, 100)));
+								} else {
+									out.print(gson.toJson(stores));
+								}
+							} else {
+								temp = new ArrayList<AlertStoreMonitor>();
+								for (int i = stores.size() - 1; i >= 0; i--) {
+									temp.add(stores.get(i));
+								}
+								if (temp.size() > 100) {
+									out.print(gson.toJson(temp.subList(0, 100)));
+								} else {
+									out.print(gson.toJson(temp));
+								}
+							}
 						}
 
 					} else {

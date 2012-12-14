@@ -27,9 +27,11 @@
 	App.isTouchDevice = !!('ontouchstart' in window) || !!('onmsgesturechange' in window);
 	App.name = "CMG Monitor";
 	App.VERSION = '4.0.0';
-	App.license = 'Copyright (c) CMG Ltd All rights reserved. ' + '\nThis software is the confidential and proprietary information of CMG '
-			+ '\n("Confidential Information"). You shall not disclose such Confidential ' + '\nInformation and shall use it only in accordance with the terms of the '
-			+ '\nlicense agreement you entered into with CMG.';
+	App.license = 'Copyright (c) CMG Ltd All rights reserved. ';
+	App.license += '\nThis software is the confidential and proprietary information of CMG ';
+	App.license += '\n("Confidential Information"). You shall not disclose such Confidential ';
+	App.license += '\nInformation and shall use it only in accordance with the terms of the ';
+	App.license += '\nlicense agreement you entered into with CMG.';
 	App.creator = {
 		name : 'Hai Lu',
 		email : 'hai.lu@c-mg.com',
