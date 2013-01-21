@@ -12,6 +12,7 @@ public class Key implements IsSerializable {
 	public static final int JVM_STORE = 0x105;
 	public static final int SERVICE_STORE = 0x106;
 	public static final int SYSTEM_MONITOR_STORE = 0x107;
+	public static final int CONNECTION_POOL_STORE = 0x402;
 	
 	public static final int ALERT_TEMP_STORE = 0x108;
 	public static final int MAIL_STORE = 0x109;
@@ -19,7 +20,7 @@ public class Key implements IsSerializable {
 	
 	public static final int ABOUT_CONTENT = 0x111;
 	public static final int HELP_CONTENT = 0x112;
-	public static final int REVISION_CONTENT = 0x401;
+	public static final int REVISION_CONTENT = 0x403;
 	
 	public static final int LIST_GROUP = 0x113;
 	public static final int LIST_ALL_USERS = 0x114;
@@ -41,6 +42,8 @@ public class Key implements IsSerializable {
 	
 	public static final int CURRENT_ZONE = 0x350;
 	public static final int LIST_AVAILABLE_TIME_ZONE = 0x351;
+	
+	public static final int PROJECT_HOST_NAME = 0x401;
 	
 	private int type;
 

@@ -152,6 +152,17 @@ public class SystemDaoImpl implements SystemDAO {
 			addChangeLog(clm);
 		}
 		setNotifyOption(sys.getCode(), sys.getNotify());
+		if (reloadMemcache) {
+			ArrayList<SystemMonitor> list = listSystemsFromMemcache(false);
+			if (list != null && list.size() > 0) {
+				for (SystemMonitor s : list ) {
+					if (s.getId().equalsIgnoreCase(sys.getId())) {
+						s.swapValue(sys);
+					}
+				}
+			}
+			storeSysList(list);
+		}
 		return check;
 	}
 
@@ -390,6 +401,7 @@ public class SystemDaoImpl implements SystemDAO {
 				nm.setNotifyServices(notify.isNotifyServices());
 				nm.setNotifyServicesConnection(notify
 						.isNotifyServicesConnection());
+				nm.setNotifyConnectionPool(notify.isNotifyConnectionPool());
 				pm.makePersistent(nm);
 				pm.currentTransaction().commit();
 				check = true;

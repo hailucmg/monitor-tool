@@ -54,11 +54,13 @@ public class AddnewSystem extends AncestorEntryPoint {
 	Label lblNotifyServices;
 	Label lblNotifyServicesConnection;
 	Label lblNotifyJVM;
+	Label lblNotifyConnectionPool;
 	CheckBox cbNotifyCpu;
 	CheckBox cbNotifyMemory;
 	CheckBox cbNotifyServices;
 	CheckBox cbNotifyServicesConnection;
 	CheckBox cbNotifyJVM;
+	CheckBox cbNotifyConnectionPool;
 	AbsolutePanel panelAdding;
 	AbsolutePanel panelValidateName;
 	AbsolutePanel panelValidateURL;
@@ -250,7 +252,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 		lblEndTime = new Label("End");
 		tableExTime = new Grid(1, 4);
 		tableExTime.setCellPadding(2);
-		tableNotify = new Grid(5, 2);
+		tableNotify = new Grid(6, 2);
 		tableNotify.setCellSpacing(3);
 
 		cbNotifyCpu = new CheckBox();
@@ -283,7 +285,13 @@ public class AddnewSystem extends AncestorEntryPoint {
 		cbNotifyJVM.setStyleName("checkbox-size");
 		cbNotifyJVM.setValue(true);
 		lblNotifyJVM = new Label(MonitorConstant.Notify_JVM);
-
+		
+		cbNotifyConnectionPool = new CheckBox();
+		cbNotifyConnectionPool.setStyleName("");
+		cbNotifyConnectionPool.setStyleName("checkbox-size");
+		cbNotifyConnectionPool.setValue(true);
+		lblNotifyConnectionPool = new Label(MonitorConstant.Notify_Connection_Pool);
+		
 		lblExclusionTime = new Label(MonitorConstant.EXCLUSION_TIME);
 
 		startTime = new HourMinutePicker(PickerFormat._24_HOUR);
@@ -309,6 +317,8 @@ public class AddnewSystem extends AncestorEntryPoint {
 		tableNotify.setWidget(3, 1, cbNotifyServicesConnection);
 		tableNotify.setWidget(4, 0, lblNotifyJVM);
 		tableNotify.setWidget(4, 1, cbNotifyJVM);
+		tableNotify.setWidget(5, 0, lblNotifyConnectionPool);
+		tableNotify.setWidget(5, 1, cbNotifyConnectionPool);
 
 		advancedDisclosure = new DisclosurePanel(HTMLControl.NOTIFY_OPTION);
 		advancedDisclosure.setAnimationEnabled(true);
@@ -643,6 +653,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 				nm.setNotifyServicesConnection(cbNotifyServicesConnection
 						.getValue());
 				nm.setJVM(cbNotifyJVM.getValue());
+				nm.setNotifyConnectionPool(cbNotifyConnectionPool.getValue());
 				system.setNotify(nm);
 
 				sendData(system);
@@ -752,6 +763,7 @@ public class AddnewSystem extends AncestorEntryPoint {
 				nm.setNotifyServicesConnection(cbNotifyServicesConnection
 						.getValue());
 				nm.setJVM(cbNotifyJVM.getValue());
+				nm.setNotifyConnectionPool(cbNotifyConnectionPool.getValue());
 				system.setNotify(nm);
 				panelAdding.setVisible(true);
 				sendData(system);

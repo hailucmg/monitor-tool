@@ -3,6 +3,7 @@ package cmg.org.monitor.module.client;
 import java.util.List;
 
 import cmg.org.monitor.entity.shared.AlertStoreMonitor;
+import cmg.org.monitor.entity.shared.ConnectionPool;
 import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
 import cmg.org.monitor.entity.shared.GoogleAccount;
@@ -51,6 +52,8 @@ public interface MonitorGwtService extends RemoteService {
 	JvmMonitor[] listJvms(SystemMonitor sys);
 	
 	ServiceMonitor[] listServices(SystemMonitor sys);
+	
+	ConnectionPool[] listPools(SystemMonitor sys);
 	
 	FileSystemMonitor[] listFileSystems(SystemMonitor sys);
 	

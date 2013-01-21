@@ -1,4 +1,3 @@
-
 package cmg.org.monitor.entity.shared;
 
 import java.util.ArrayList;
@@ -13,14 +12,14 @@ import javax.jdo.annotations.PrimaryKey;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-/** 
-	* DOCME
-	* 
-	* @Creator Hai Lu
-	* @author $Author$
-	* @version $Revision$
-	* @Last changed: $LastChangedDate$
-*/
+/**
+ * DOCME
+ * 
+ * @Creator Hai Lu
+ * @author $Author$
+ * @version $Revision$
+ * @Last changed: $LastChangedDate$
+ */
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "false")
 public class AlertStoreMonitor implements IsSerializable {
 
@@ -63,23 +62,12 @@ public class AlertStoreMonitor implements IsSerializable {
 		if (alerts != null && alerts.size() > 0) {
 			ArrayList<AlertMonitor> temp = new ArrayList<AlertMonitor>();
 			for (int i = 0; i < alerts.size(); i++) {
-				boolean check = false;
-				if (!notify.isJVM() && alerts.get(i).getType() == AlertMonitor.HIGH_USAGE_LEVEL_JVM) {
-					check = true;
-				} 
-				if (!notify.isNotifyCpu() && alerts.get(i).getType() == AlertMonitor.HIGH_USAGE_LEVEL_CPU) {
-					check = true;
-				} 
-				if (!notify.isNotifyMemory() && alerts.get(i).getType() == AlertMonitor.HIGH_USAGE_LEVEL_MEMORY) {
-					check = true;
-				} 
-				if (!notify.isNotifyServices() && alerts.get(i).getType() == AlertMonitor.SERVICE_ERROR_STATUS) {
-					check = true;
-				} 
-				if (!notify.isNotifyServicesConnection() && alerts.get(i).getType() == AlertMonitor.SERVICE_HIGH_LEVEL_PING_TIME) {
-					check = true;
-				} 					
-				if (check) {
+				if ((!notify.isJVM() && alerts.get(i).getType() == AlertMonitor.HIGH_USAGE_LEVEL_JVM)
+						|| (!notify.isNotifyCpu() && alerts.get(i).getType() == AlertMonitor.HIGH_USAGE_LEVEL_CPU)
+						|| (!notify.isNotifyMemory() && alerts.get(i).getType() == AlertMonitor.HIGH_USAGE_LEVEL_MEMORY)
+						|| (!notify.isNotifyServices() && alerts.get(i).getType() == AlertMonitor.SERVICE_ERROR_STATUS)
+						|| (!notify.isNotifyServicesConnection() && alerts.get(i).getType() == AlertMonitor.SERVICE_HIGH_LEVEL_PING_TIME)
+						|| (!notify.isNotifyConnectionPool() && alerts.get(i).getType() == AlertMonitor.CONNECTION_POOL_IS_EXHAUSTED)) {
 					temp.add(alerts.get(i));
 				}
 			}
@@ -95,7 +83,7 @@ public class AlertStoreMonitor implements IsSerializable {
 		if (alerts == null) {
 			alerts = new ArrayList<AlertMonitor>();
 		}
-		//alert.setAlertStore(this);
+		// alert.setAlertStore(this);
 
 		alerts.add(alert);
 		return true;
@@ -106,11 +94,9 @@ public class AlertStoreMonitor implements IsSerializable {
 		if (alerts != null && alerts.size() > 0) {
 			sb.append("<ol>");
 			for (int i = 0; i < alerts.size(); i++) {
-				sb.append("<li><h5>Alert #" + i + " : "
-						+ alerts.get(i).getTimeStamp() + "</h5><ul>");
+				sb.append("<li><h5>Alert #" + i + " : " + alerts.get(i).getTimeStamp() + "</h5><ul>");
 				sb.append("<li>Error: " + alerts.get(i).getError() + "</li>");
-				sb.append("<li>Desciption: " + alerts.get(i).getDescription()
-						+ "</li></ul></li>");
+				sb.append("<li>Desciption: " + alerts.get(i).getDescription() + "</li></ul></li>");
 			}
 			sb.append("</ol>");
 		}

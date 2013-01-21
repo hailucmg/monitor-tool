@@ -21,8 +21,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import cmg.org.monitor.dao.InviteUserDAO;
 import cmg.org.monitor.dao.SystemAccountDAO;
+import cmg.org.monitor.dao.UtilityDAO;
 import cmg.org.monitor.dao.impl.InviteUserDaoImpl;
 import cmg.org.monitor.dao.impl.SystemAccountDaoImpl;
+import cmg.org.monitor.dao.impl.UtilityDaoImpl;
 import cmg.org.monitor.entity.shared.InvitedUser;
 import cmg.org.monitor.entity.shared.SystemRole;
 import cmg.org.monitor.entity.shared.SystemUser;
@@ -62,8 +64,12 @@ public class GatherScheduler extends HttpServlet {
 			// BEGIN LOG
 			SystemAccountDAO accountDao = new SystemAccountDaoImpl();
 			InviteUserDAO userDao = new InviteUserDaoImpl();
+			UtilityDAO utilDao = new UtilityDaoImpl();
 			logger.log(Level.INFO, MonitorUtil.parseTime(start, true)
 					+ " -> init DAO");
+			utilDao.putAboutContent("");
+			utilDao.putHelpContent("");
+			utilDao.putRevisionContent("");
 			if (MonitorLoginService.temp3rdUsers != null) {
 				synchronized (MonitorLoginService.temp3rdUsers) {
 					logger.log(Level.INFO, MonitorUtil.parseTime(start, true)
@@ -144,7 +150,7 @@ public class GatherScheduler extends HttpServlet {
 					}
 				}
 			}
-
+			
 			// utilDAO.putGroups();
 
 			// utilDAO.putAllUsers();

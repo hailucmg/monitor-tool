@@ -31,19 +31,22 @@ public class NotifyMonitor implements IsSerializable {
 	private String sid;
 
 	@Persistent
-	private boolean isNotifyCpu;
+	private Boolean isNotifyCpu = false;
 
 	@Persistent
-	private boolean isNotifyMemory;
+	private Boolean isNotifyMemory = false;
 
 	@Persistent
-	private boolean isJVM;
+	private Boolean isJVM = false;
 
 	@Persistent
-	private boolean isNotifyServices;
+	private Boolean isNotifyServices = false;
 
 	@Persistent
-	private boolean isNotifyServicesConnection;
+	private Boolean isNotifyServicesConnection = false;
+	
+	@Persistent
+	private Boolean isNotifyConnectionPool = false;
 
 	public NotifyMonitor() {
 		this.isNotifyCpu = false;
@@ -51,18 +54,20 @@ public class NotifyMonitor implements IsSerializable {
 		this.isNotifyServices = false;
 		this.isNotifyServicesConnection = false;
 		this.isJVM = false;
+		this.isNotifyConnectionPool = false;
 	}
 
 	
 	public NotifyMonitor(String sid, boolean isNotifyCpu,
 			boolean isNotifyMemory,
-			boolean isNotifyServices, boolean isNotifyServicesConnection, boolean isJVM) {
+			boolean isNotifyServices, boolean isNotifyServicesConnection, boolean isJVM, boolean isNotifyConnectionPool) {
 		this.sid = sid;
 		this.isNotifyCpu = isNotifyCpu;
 		this.isNotifyMemory = isNotifyMemory;
 		this.isNotifyServices = isNotifyServices;
 		this.isNotifyServicesConnection = isNotifyServicesConnection;
 		this.isJVM = isJVM;
+		this.isNotifyConnectionPool = isNotifyConnectionPool;
 	}
 
 	public String getSid() {
@@ -74,7 +79,10 @@ public class NotifyMonitor implements IsSerializable {
 	}
 
 	public boolean isNotifyCpu() {
-		return isNotifyCpu;
+		if (isNotifyCpu == null) {
+			return false;
+		}
+		return isNotifyCpu.booleanValue();
 	}
 
 	public void setNotifyCpu(boolean isNotifyCpu) {
@@ -82,7 +90,10 @@ public class NotifyMonitor implements IsSerializable {
 	}
 
 	public boolean isNotifyMemory() {
-		return isNotifyMemory;
+		if (isNotifyMemory == null){
+			return false;
+		}
+		return isNotifyMemory.booleanValue();
 	}
 
 	public void setNotifyMemory(boolean isNotifyMemory) {
@@ -90,7 +101,10 @@ public class NotifyMonitor implements IsSerializable {
 	}
 
 	public boolean isNotifyServices() {
-		return isNotifyServices;
+		if (isNotifyServices == null) {
+			return false;
+		}
+		return isNotifyServices.booleanValue();
 	}
 
 	public void setNotifyServices(boolean isNotifyServices) {
@@ -98,7 +112,10 @@ public class NotifyMonitor implements IsSerializable {
 	}
 
 	public boolean isNotifyServicesConnection() {
-		return isNotifyServicesConnection;
+		if (isNotifyServicesConnection == null) {
+			return false;
+		}
+		return isNotifyServicesConnection.booleanValue();
 	}
 
 	public void setNotifyServicesConnection(boolean isNotifyServicesConnection) {
@@ -109,7 +126,10 @@ public class NotifyMonitor implements IsSerializable {
 		return id;
 	}
 	public boolean isJVM() {
-		return isJVM;
+		if (isJVM == null) {
+			return false;
+		}
+		return isJVM.booleanValue();
 	}
 
 	public void setJVM(boolean isJVM) {
@@ -121,7 +141,28 @@ public class NotifyMonitor implements IsSerializable {
 		this.isNotifyMemory = nf.isNotifyMemory;
 		this.isNotifyServices = nf.isNotifyServices;
 		this.isNotifyServicesConnection = nf.isNotifyServicesConnection;
+		this.isNotifyConnectionPool = nf.isNotifyConnectionPool;
 		this.sid = nf.getSid();
 		this.id = nf.getId();
+	}
+
+
+	/** 
+	 * @return the isNotifyConnectionPool 
+	 */
+	public boolean isNotifyConnectionPool() {
+		if (isNotifyConnectionPool == null) {
+			return false;
+		}
+		return isNotifyConnectionPool.booleanValue();
+	}
+
+
+	/** 
+	 * @param isNotifyConnectionPool the isNotifyConnectionPool to set 
+	 */
+	
+	public void setNotifyConnectionPool(boolean isNotifyConnectionPool) {
+		this.isNotifyConnectionPool = isNotifyConnectionPool;
 	}
 }

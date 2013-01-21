@@ -77,7 +77,20 @@ public class OAuth2CallbackServlet extends AbstractAuthorizationCodeCallbackServ
 
 	@Override
 	protected String getRedirectUri(HttpServletRequest request) throws ServletException, IOException {
-	    return ConfigHelper.REDIRECT_URI;
+		String redirectURL = request.getRequestURL().toString();
+		if (redirectURL.contains("/index.jsp")) {
+			redirectURL = redirectURL.substring(0,redirectURL.lastIndexOf("/"));
+		}
+		if (redirectURL.contains("/connect")) {
+			redirectURL = redirectURL.substring(0,redirectURL.lastIndexOf("/"));
+		}
+		if (redirectURL.contains("/oauth2callback")) {
+			redirectURL = redirectURL.substring(0,redirectURL.lastIndexOf("/"));
+		}
+	    //return ConfigHelper.REDIRECT_URI;
+		redirectURL += "/oauth2callback";
+		System.out.println("redirect URL: " + redirectURL);
+		return redirectURL;
 	}
 
 	@Override

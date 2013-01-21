@@ -25,6 +25,8 @@ public final class MonitorConstant {
 	
 	public static final String Notify_ServiceConnection = "When any service connections are too slow :";
 	
+	public static final String Notify_Connection_Pool = "When number of active connection equal max connection in pool: ";
+	
 	public static final int CPU_MEMORY_REFRESH_RATE = 1000;
 	
 	// Alert mail sender service
