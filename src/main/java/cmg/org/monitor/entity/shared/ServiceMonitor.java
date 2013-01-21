@@ -14,7 +14,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 	* @Last changed: $LastChangedDate$
 */
 public class ServiceMonitor implements IsSerializable {
-
 	private String name;
 
 	private Date systemDate;

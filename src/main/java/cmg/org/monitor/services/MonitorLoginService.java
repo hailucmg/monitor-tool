@@ -36,8 +36,15 @@ public class MonitorLoginService {
 
 	public UserLoginDto getUserLogin() {
 		UserLoginDto userLogin = new UserLoginDto();
-		userLogin.setLogoutUrl(userService.createLogoutURL("http://" + MonitorConstant.PROJECT_HOST_NAME, MonitorConstant.DOMAIN));
-		userLogin.setLoginUrl(userService.createLoginURL("http://" + MonitorConstant.PROJECT_HOST_NAME, MonitorConstant.DOMAIN));
+		Object obj = MonitorMemcache.get(Key.create(Key.PROJECT_HOST_NAME));
+		String projectHostName = "";
+		if (obj != null) {
+			projectHostName = String.valueOf(obj);
+		} else {
+			projectHostName = "http://" + MonitorConstant.PROJECT_HOST_NAME;
+		}
+		userLogin.setLogoutUrl(userService.createLogoutURL(projectHostName, MonitorConstant.DOMAIN));
+		userLogin.setLoginUrl(userService.createLoginURL(projectHostName, MonitorConstant.DOMAIN));
 		try {
 			User user = userService.getCurrentUser();
 			if (user != null) {			

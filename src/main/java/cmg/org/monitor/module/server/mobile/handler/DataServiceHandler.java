@@ -19,7 +19,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cmg.org.monitor.entity.shared.AlertMonitor;
 import cmg.org.monitor.entity.shared.AlertStoreMonitor;
+import cmg.org.monitor.entity.shared.ConnectionPool;
 import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
 import cmg.org.monitor.entity.shared.JvmMonitor;
@@ -90,6 +92,14 @@ public class DataServiceHandler extends HttpServlet {
 						out.print(gson.toJson(list));
 					} else {
 						mes = new MonitorMessage("No service found");
+						out.print(gson.toJson(mes));
+					}
+				} else if (_item.equalsIgnoreCase("pools")) {
+					ConnectionPool[] list = service.listPools(sys);
+					if (list != null && list.length > 0) {
+						out.print(gson.toJson(list));
+					} else {
+						mes = new MonitorMessage("No pool found");
 						out.print(gson.toJson(mes));
 					}
 				} else if (_item.equalsIgnoreCase("jvm")) {
@@ -185,6 +195,23 @@ public class DataServiceHandler extends HttpServlet {
 							List<AlertStoreMonitor> temp;
 							boolean check = false;
 							if (stores.size() > 1) {
+								for (AlertStoreMonitor s : stores) {
+									if (s.getAlerts() != null && s.getAlerts().size() > 1) {
+										Date t1 = s.getAlerts().get(0).getTimeStamp();
+										Date t2 = s.getAlerts().get(1).getTimeStamp();
+										boolean b = false;
+										if (t1 != null && t2 != null && t1.getTime() > t2.getTime()) {
+											b = true;
+										}
+										if (!b) {
+											ArrayList<AlertMonitor> tl = new ArrayList<AlertMonitor>();
+											for (int i = s.getAlerts().size(); i > 0; i--) {
+												tl.add(s.getAlerts().get(i - 1));
+											}
+											s.setAlerts(tl);
+										}
+									}
+								}
 								Date t1 = stores.get(0).getTimeStamp();
 								Date t2 = stores.get(1).getTimeStamp();
 								if (t1 != null && t2 != null) {

@@ -3,6 +3,7 @@ package cmg.org.monitor.module.client;
 import java.util.List;
 
 import cmg.org.monitor.entity.shared.AlertStoreMonitor;
+import cmg.org.monitor.entity.shared.ConnectionPool;
 import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
 import cmg.org.monitor.entity.shared.GoogleAccount;
@@ -124,4 +125,6 @@ public interface MonitorGwtServiceAsync {
 	void listTimeZone(AsyncCallback<MonitorContainer> callback);
 
 	void updateTimeZone(String timeZone, AsyncCallback<Boolean> callback);
+
+	void listPools(SystemMonitor sys, AsyncCallback<ConnectionPool[]> callback);
 }

@@ -32,18 +32,21 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import cmg.org.monitor.dao.AlertDao;
+import cmg.org.monitor.dao.ConnectionPoolDAO;
 import cmg.org.monitor.dao.CpuDAO;
 import cmg.org.monitor.dao.FileSystemDAO;
 import cmg.org.monitor.dao.JvmDAO;
 import cmg.org.monitor.dao.MemoryDAO;
 import cmg.org.monitor.dao.ServiceDAO;
 import cmg.org.monitor.dao.impl.AlertDaoImpl;
+import cmg.org.monitor.dao.impl.ConnectionPoolDaoImpl;
 import cmg.org.monitor.dao.impl.CpuDaoImpl;
 import cmg.org.monitor.dao.impl.FileSystemDaoImpl;
 import cmg.org.monitor.dao.impl.JvmDaoImpl;
 import cmg.org.monitor.dao.impl.MemoryDaoImpl;
 import cmg.org.monitor.dao.impl.ServiceDaoImpl;
 import cmg.org.monitor.entity.shared.AlertMonitor;
+import cmg.org.monitor.entity.shared.ConnectionPool;
 import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
 import cmg.org.monitor.entity.shared.JvmMonitor;
@@ -90,6 +93,8 @@ public class MonitorParser {
 
 	/** The element component . */
 	public static String DATABASE_ITEM = "database";
+	
+	public static String CONNECTION_POOL = "service";
 
 	/** The element component . */
 	public static String JVM_ITEM = "JVM";
@@ -99,6 +104,31 @@ public class MonitorParser {
 
 	/** The element component . */
 	public static String WILDCARD = "?";
+	
+	/**
+	 *  the current number of objects that are active
+	 */
+	public static String CURRENT_ACTIVE = "current_active";
+	/**
+	 * the maximum number of objects that can be borrowed from the pool
+	 */
+	public static String MAX_ACTIVE = "max_active";
+	
+	public static String MIN_ACTIVE = "min_active";
+	/**
+	 * the minimum number of objects that will kept connected
+	 */
+	public static String MIN_IDLE = "min_idle";
+	/**
+	 *  the maximum number of objects that can sit idled in the pool
+	 */
+	public static String MAX_IDLE = "max_idle";
+	/**
+	 *  the current number of objects that are idle
+	 */
+	public static String CURRENT_IDLE = "current_idle";
+	
+	public static String POOL_NAME = "poolname";
 
 	/** The array of component . */
 	public static String[] COMPONENT_ITEMS = { LDAP_ITEM, DATABASE_ITEM };
@@ -140,6 +170,7 @@ public class MonitorParser {
 		ArrayList<MemoryMonitor> memList = null;
 		ArrayList<FileSystemMonitor> fileSysList = null;
 		ArrayList<ServiceMonitor> serviceList = null;
+		ArrayList<ConnectionPool> connectionPools = null;
 
 		if (checkContentType(content)) {
 			logger.log(Level.INFO, "Content type: XML");
@@ -158,6 +189,7 @@ public class MonitorParser {
 				memList = getMemories(doc);
 				fileSysList = getFileSystem(doc);
 				serviceList = getServiceComponent(doc);
+				connectionPools = getConnectionPools(doc);
 			} catch (ParserConfigurationException e) {
 				logger.log(
 						Level.SEVERE,
@@ -187,6 +219,7 @@ public class MonitorParser {
 		JvmDAO jvmDAO = new JvmDaoImpl();
 		MemoryDAO memDAO = new MemoryDaoImpl();
 		ServiceDAO serviceDAO = new ServiceDaoImpl();
+		ConnectionPoolDAO poolDAO = new ConnectionPoolDaoImpl();
 
 		AlertMonitor alert = null;
 
@@ -195,6 +228,8 @@ public class MonitorParser {
 		boolean checkJvm = true;
 		boolean checkFileSys = true;
 		boolean checkMem = true;
+		boolean checkPools = true;
+		
 		boolean isDone = false;
 		int lastestMemUsage = -1;
 		int lastestCpuUsage = -1;
@@ -334,14 +369,41 @@ public class MonitorParser {
 			}// for
 			serviceDAO.storeServices(sys, serviceList);
 		}// if
+		
+		
+		if (connectionPools != null) {
+			for (ConnectionPool pool : connectionPools) {
+				if (pool.getCurrentActive() >= pool.getMaxActive()) {
+					alert = new AlertMonitor(
+							AlertMonitor.CONNECTION_POOL_IS_EXHAUSTED,
+							"Connection pool is exhausted",
+							(pool.getName() == null ? "N/A"
+									: pool.getName())
+									+ " is exhausted. Active connection: " + pool.getCurrentActive() + "/" + pool.getMaxActive(), timeStamp);
+					// store alert
+					alertDAO.storeAlert(sys, alert);
+					checkPools = false;
+				}
+				
+			}
+			try {
+				poolDAO.storePools(sys, connectionPools);
+			} catch (Exception e) {
+				
+			}
+		}
+		
 		sys.setStatus(isDone);
 		sys.setLastestMemoryUsage(lastestMemUsage);
 		sys.setLastestCpuUsage(lastestCpuUsage);
-		sys.setHealthStatus(sys.getStatus() && sys.isActive() ? (checkMem
+		sys.setHealthStatus(sys.getStatus() && sys.isActive() ? (checkPools && checkMem
 				&& checkFileSys && checkService && checkCpu && checkJvm ? SystemMonitor.STATUS_SMILE
 				: SystemMonitor.STATUS_BORED)
 				: SystemMonitor.STATUS_DEAD);
 
+		
+		
+		
 		/* END CHECK & STORE INFORMATION */
 
 		// END LOG
@@ -352,6 +414,117 @@ public class MonitorParser {
 						+ (end - start) + " ms.");
 		// END LOG
 		return sys;
+	}
+	
+	
+	private static ArrayList<ConnectionPool> getConnectionPools(Document doc) {
+		logger.log(Level.INFO, "START Connection Pool");
+		ArrayList<ConnectionPool> list = null;
+		NodeList elementList = doc.getElementsByTagName(CONNECTION_POOL);
+		int totalElements = elementList.getLength();
+		ConnectionPool pool= null;
+		Element element = null;
+		if (totalElements > 0) {
+			if (list == null) {
+				list = new ArrayList<ConnectionPool>();
+			}
+			for (int i = 0; i < totalElements; i++) {
+				pool = new ConnectionPool();
+				element = (Element) elementList.item(i);
+				NodeList temp = element.getElementsByTagName(MAX_ACTIVE);
+				if (temp != null && temp.getLength() > 0) {
+					String data = getCharacterDataFromElement((Element) temp
+							.item(0));
+					logger.log(Level.INFO, " max active: " + data);						
+					try {
+						pool.setMaxActive(Integer.parseInt(MonitorUtil
+								.extractDigit(data)));
+					} catch (Exception ex) {
+
+					}						
+				}// if
+				
+				temp = element.getElementsByTagName(MIN_ACTIVE);
+				if (temp != null && temp.getLength() > 0) {
+					String data = getCharacterDataFromElement((Element) temp
+							.item(0));
+					logger.log(Level.INFO, " min active: " + data);						
+					try {
+						pool.setMinActive(Integer.parseInt(MonitorUtil
+								.extractDigit(data)));
+					} catch (Exception ex) {
+
+					}						
+				}// if
+				
+				temp = element.getElementsByTagName(CURRENT_ACTIVE);
+				if (temp != null && temp.getLength() > 0) {
+					String data = getCharacterDataFromElement((Element) temp
+							.item(0));
+					logger.log(Level.INFO, " current active: " + data);						
+					try {
+						pool.setCurrentActive(Integer.parseInt(MonitorUtil
+								.extractDigit(data)));
+					} catch (Exception ex) {
+
+					}						
+				}// if
+				
+				temp = element.getElementsByTagName(MAX_IDLE);
+				if (temp != null && temp.getLength() > 0) {
+					String data = getCharacterDataFromElement((Element) temp
+							.item(0));
+					logger.log(Level.INFO, " max idle: " + data);						
+					try {
+						pool.setMaxIdle(Integer.parseInt(MonitorUtil
+								.extractDigit(data)));
+					} catch (Exception ex) {
+
+					}						
+				}// if
+				
+				temp = element.getElementsByTagName(MIN_IDLE);
+				if (temp != null && temp.getLength() > 0) {
+					String data = getCharacterDataFromElement((Element) temp
+							.item(0));
+					logger.log(Level.INFO, " min idle: " + data);						
+					try {
+						pool.setMinIdle(Integer.parseInt(MonitorUtil
+								.extractDigit(data)));
+					} catch (Exception ex) {
+
+					}						
+				}// if
+				
+				temp = element.getElementsByTagName(CURRENT_IDLE);
+				if (temp != null && temp.getLength() > 0) {
+					String data = getCharacterDataFromElement((Element) temp
+							.item(0));
+					logger.log(Level.INFO, " current idle: " + data);						
+					try {
+						pool.setCurrentIdle(Integer.parseInt(MonitorUtil
+								.extractDigit(data)));
+					} catch (Exception ex) {
+
+					}						
+				}// if
+				
+				
+				temp = element.getElementsByTagName(POOL_NAME);
+				if (temp != null && temp.getLength() > 0) {
+					String data = getCharacterDataFromElement((Element) temp
+							.item(0));
+					logger.log(Level.INFO, " pool name: " + data);						
+					try {
+						pool.setName(data);
+					} catch (Exception ex) {
+
+					}						
+				}// if
+				list.add(pool);
+			}
+		}
+		return list;
 	}
 
 	/**
@@ -414,6 +587,7 @@ public class MonitorParser {
 						}
 						service.setPing(pingTime);
 					}// if
+					
 					service.setSystemDate(MonitorUtil.parseDate(service
 							.getStrSystemDate()));
 					list.add(service);

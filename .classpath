@@ -4,59 +4,101 @@
 	<classpathentry kind="src" path="test/main/resource"/>
 	<classpathentry kind="src" path="test/main/java"/>
 	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry exported="true" kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
-	<classpathentry exported="true" kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/activation.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/gdata-analytics-2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/gdata-analytics-meta-2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/gdata-appsforyourdomain-1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/gdata-appsforyourdomain-meta-1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/gdata-client-1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/gdata-client-meta-1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/gdata-core-1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/gdata-maps-2.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/gdata-maps-meta-2.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/gdata-media-1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/gdata-projecthosting-2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/gdata-projecthosting-meta-2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/gdata-sites-2.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/gdata-sites-meta-2.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/gdata-spreadsheet-3.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/gdata-spreadsheet-meta-3.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/google-collect-1.0-rc1.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/google-collect-1.0-rc2.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/gwt-servlet.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/gwt-visualization.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/mail.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/servlet-api.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/geronimo-jpa_3.0_spec-1.1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/geronimo-jta_1.1_spec-1.1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/jdo2-api-2.3-eb.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/jsr107cache-1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/appengine-api-1.0-sdk-1.5.5.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/appengine-api-1.0-sdk-1.7.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/appengine-api-labs-1.5.5.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/appengine-api-labs.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/appengine-endpoints.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/appengine-jsr107cache-1.5.5.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/appengine-jsr107cache-1.7.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/appengine-utils-client-1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/appengine-utils-server-1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/gson-2.2.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="D:/Tools/eclipse/plugins/com.google.appengine.eclipse.sdkbundle_1.7.1/appengine-java-sdk-1.7.1/lib/impl/appengine-api.jar"/>
-	<classpathentry exported="true" kind="lib" path="D:/Tools/eclipse/plugins/com.google.appengine.eclipse.sdkbundle_1.7.1/appengine-java-sdk-1.7.1/lib/impl/appengine-api-labs.jar"/>
-	<classpathentry exported="true" kind="lib" path="D:/Tools/eclipse/plugins/com.google.appengine.eclipse.sdkbundle_1.7.1/appengine-java-sdk-1.7.1/lib/impl/appengine-api-stubs.jar"/>
-	<classpathentry exported="true" kind="lib" path="D:/Tools/eclipse/plugins/com.google.appengine.eclipse.sdkbundle_1.7.1/appengine-java-sdk-1.7.1/lib/testing/appengine-testing.jar"/>
+	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/activation.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-api-1.0-sdk-1.7.3.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-api-labs-1.7.2.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-api-labs.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-endpoints.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-jsr107cache-1.7.3.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-utils-client-1.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-utils-server-1.0.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-codec-1.7.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-lang3-3.1.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-timepicker-0.21.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-io-2.4.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-lang3-3.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-analytics-2.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-analytics-meta-2.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-appsforyourdomain-1.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-appsforyourdomain-meta-1.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-client-1.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-client-meta-1.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-core-1.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-maps-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-maps-meta-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-media-1.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-projecthosting-2.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-projecthosting-meta-2.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-sites-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-sites-meta-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-spreadsheet-3.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-spreadsheet-meta-3.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/geronimo-jpa_3.0_spec-1.1.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/geronimo-jta_1.1_spec-1.1.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-api-client-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-api-client-android-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-api-client-appengine-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-api-client-java6-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-api-services-plus-v1-rev43-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-http-client-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-http-client-android-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-http-client-appengine-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-http-client-gson-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-http-client-jackson-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-http-client-jackson2-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-oauth-client-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-oauth-client-appengine-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-oauth-client-java6-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-oauth-client-jetty-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/google-oauth-client-servlet-1.12.0-beta.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gson-2.2.2.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-servlet.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-timepicker-0.21.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-visualization.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/httpclient-4.0.3.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/httpcore-4.0.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-core-2.0.5.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-core-asl-1.9.9.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jdo2-api-2.3-eb.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jetty-6.1.26.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jetty-util-6.1.26.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/joda-time-2.1.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6">
-		<attributes>
-			<attribute name="owner.project.facets" value="java"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jsr107cache-1.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jsr305-1.3.9.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/mail.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/transaction-api-1.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/xpp3-1.1.4c.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-base-1.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-blogger-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-blogger-meta-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-books-1.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-books-meta-1.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-calendar-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-calendar-meta-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-codesearch-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-codesearch-meta-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-contacts-3.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-contacts-meta-3.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-docs-3.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-docs-meta-3.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-finance-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-finance-meta-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-gtt-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-gtt-meta-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-health-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-health-meta-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-photos-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-photos-meta-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-sidewiki-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-sidewiki-meta-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-webmastertools-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-webmastertools-meta-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-youtube-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-youtube-meta-2.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jsr305.jar"/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

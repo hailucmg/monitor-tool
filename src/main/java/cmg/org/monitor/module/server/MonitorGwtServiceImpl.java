@@ -16,6 +16,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 import cmg.org.monitor.dao.AccountSyncLogDAO;
 import cmg.org.monitor.dao.AlertDao;
+import cmg.org.monitor.dao.ConnectionPoolDAO;
 import cmg.org.monitor.dao.CpuDAO;
 import cmg.org.monitor.dao.FileSystemDAO;
 import cmg.org.monitor.dao.InviteUserDAO;
@@ -28,6 +29,7 @@ import cmg.org.monitor.dao.SystemGroupDAO;
 import cmg.org.monitor.dao.UtilityDAO;
 import cmg.org.monitor.dao.impl.AccountSyncLogDaoImpl;
 import cmg.org.monitor.dao.impl.AlertDaoImpl;
+import cmg.org.monitor.dao.impl.ConnectionPoolDaoImpl;
 import cmg.org.monitor.dao.impl.CpuDaoImpl;
 import cmg.org.monitor.dao.impl.FileSystemDaoImpl;
 import cmg.org.monitor.dao.impl.InviteUserDaoImpl;
@@ -41,6 +43,7 @@ import cmg.org.monitor.dao.impl.UtilityDaoImpl;
 import cmg.org.monitor.entity.shared.AccountSyncLog;
 import cmg.org.monitor.entity.shared.AlertStoreMonitor;
 import cmg.org.monitor.entity.shared.ChangeLogMonitor;
+import cmg.org.monitor.entity.shared.ConnectionPool;
 import cmg.org.monitor.entity.shared.CpuMonitor;
 import cmg.org.monitor.entity.shared.FileSystemMonitor;
 import cmg.org.monitor.entity.shared.GoogleAccount;
@@ -320,6 +323,12 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		ArrayList<JvmMonitor> list = jvmDAO.listJvm(sys);
 		JvmMonitor[] jvms = null;
 		if (list != null && list.size() > 0) {
+			for (JvmMonitor jvm : list) {
+				jvm.setStrMaxMemory(StringUtils.humanReadableByteCount((long) jvm.getMaxMemory(), true));
+				jvm.setStrTotalMemory(StringUtils.humanReadableByteCount((long) jvm.getTotalMemory(), true));
+				jvm.setStrFreeMemory(StringUtils.humanReadableByteCount((long) jvm.getFreeMemory(), true));
+				jvm.setStrUsedMemory(StringUtils.humanReadableByteCount((long) jvm.getUsedMemory(), true));
+			}
 			jvms = new JvmMonitor[list.size()];
 			list.toArray(jvms);
 		}
@@ -348,12 +357,40 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		return services;
 	}
 
+	/**
+	 * (non-Javadoc)
+	 * @see cmg.org.monitor.module.client.MonitorGwtService#listPools(cmg.org.monitor.entity.shared.SystemMonitor) 
+	 */
+	@Override
+	public ConnectionPool[] listPools(SystemMonitor sys) {
+		ConnectionPoolDAO poolDAO = new ConnectionPoolDaoImpl();
+		ConnectionPool[] pools = null;
+		try {
+			ArrayList<ConnectionPool> list = poolDAO.getPools(sys);
+			if (list != null && list.size() > 0) {
+				pools = new ConnectionPool[list.size()];
+				list.toArray(pools);
+				return pools;
+			}
+		} catch (Exception e) {
+			//
+		}
+		
+		return null;
+	}
+	
 	@Override
 	public FileSystemMonitor[] listFileSystems(SystemMonitor sys) {
 		FileSystemDAO fileSystemDAO = new FileSystemDaoImpl();
 		ArrayList<FileSystemMonitor> list = fileSystemDAO.listFileSystems(sys);
 		FileSystemMonitor[] fileSystems = null;
 		if (list != null && list.size() > 0) {
+			for (FileSystemMonitor f : list) {
+				f.setStrSize(StringUtils.humanReadableByteCount(f.getSize(), true));
+				f.setStrUsed(StringUtils.humanReadableByteCount(f.getUsed(), true));
+				f.setFree(f.getSize() - f.getUsed());
+				f.setStrFree(StringUtils.humanReadableByteCount(f.getFree(), true));
+			}
 			fileSystems = new FileSystemMonitor[list.size()];
 			list.toArray(fileSystems);
 		}
@@ -1054,5 +1091,7 @@ public class MonitorGwtServiceImpl extends RemoteServiceServlet implements
 		}
 
 	}
+
+	
 
 }

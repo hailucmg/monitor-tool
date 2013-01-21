@@ -57,11 +57,13 @@ public class EditSystem extends AncestorEntryPoint {
 	Label lblNotifyServices;
 	Label lblNotifyServicesConnection;
 	Label lblNotifyJVM;
+	Label lblNotifyConnectionPool;
 	CheckBox cbNotifyJVM;
 	CheckBox cbNotifyCpu;
 	CheckBox cbNotifyMemory;
 	CheckBox cbNotifyServices;
 	CheckBox cbNotifyServicesConnection;
+	CheckBox cbNotifyConnectionPool;
 	AbsolutePanel panelAdding;
 	AbsolutePanel panelValidateName;
 	AbsolutePanel panelValidateURL;
@@ -72,14 +74,14 @@ public class EditSystem extends AncestorEntryPoint {
 	AbsolutePanel panelButton;
 	AbsolutePanel panelValidateEmail;
 	AbsolutePanel panelValidateGroups;
-	AbsolutePanel panelValidateExcTime;	
-	
+	AbsolutePanel panelValidateExcTime;
+
 	private static FlexTable tableForm;
 	private static Grid tableNotify;
 	private DisclosurePanel advancedDisclosure;
 	private NotifyMonitor notify;
 	StringBuffer description;
-	
+
 	HourMinutePicker startTime;
 	HourMinutePicker endTime;
 	Label lblExclusionTime;
@@ -91,369 +93,339 @@ public class EditSystem extends AncestorEntryPoint {
 		if (currentPage == HTMLControl.PAGE_EDIT_SYSTEM) {
 			final String sysID = HTMLControl.getSystemId(History.getToken());
 			try {
-				monitorGwtSv.validSystemId(sysID,
-						new AsyncCallback<SystemMonitor>() {
-							@Override
-							public void onSuccess(SystemMonitor result) {
-								if (result != null) {
-									tableForm = new FlexTable();
-									addWidget(HTMLControl.ID_BODY_CONTENT,
-											tableForm);
-									initFlexTable(sysID);
-								} else {
-									showMessage(
-											"Invalid System ID.",
-											HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
-											"Goto System Management. ",
-											HTMLControl.RED_MESSAGE, true);
-								}
-							}
-
-							@Override
-							public void onFailure(Throwable caught) {
-								showMessage(
-										"Oops! Error.",
-										HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
-										"Goto System Management. ",
-										HTMLControl.RED_MESSAGE, true);
-							}
-						});
-			} catch (Exception e) {
-				showMessage("Oops! Error.",
-						HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
-						"Goto System Management. ", HTMLControl.RED_MESSAGE,
-						true);
-			}
-		}
-	}
-
-	void initFlexTable(String sysID) {
-		monitorGwtSv.getSystemMonitorContainer(sysID,
-				new AsyncCallback<MonitorContainer>() {
+				monitorGwtSv.validSystemId(sysID, new AsyncCallback<SystemMonitor>() {
 					@Override
-					public void onSuccess(MonitorContainer result) {
+					public void onSuccess(SystemMonitor result) {
 						if (result != null) {
-							system = result.getSys();
-							notify = result.getNotify();
-							container = result;
-							listGroup = new ListBox();
-							listGroup.setWidth("198px");
-							listGroup.setHeight("28px");
-							SystemGroup[] groups = container.getListSystemGroup();
-							List<SystemGroup> list = new ArrayList<SystemGroup>();
-							boolean checkExistGroup = false;
-							if (groups != null && groups.length > 0) {
-								for (int i = 0; i < groups.length; i++) {
-									System.out.println(groups[i].getName());
-									if (system.getGroupEmail().equalsIgnoreCase(groups[i].getName())) {
-										System.out.println(system.getGroupEmail());
-										checkExistGroup = true;
-									}
-									list.add(groups[i]);
-								}
-								if(checkExistGroup){
-									list = sortBynameSystemGroup(list);
-									for(int i = 0 ; i < list.size();i++){
-										System.out.println(list.get(i).getName());
-										if(list.get(i).getName().equalsIgnoreCase(system.getGroupEmail())){
-											index = i;
-										}
-										listGroup.addItem(list.get(i).getName());
-									}
-									System.out.println(index);
-									listGroup.setSelectedIndex(index);
-								}else{
-									listGroup.addItem("");
-									list = sortBynameSystemGroup(list);
-									for(SystemGroup g : list){
-										listGroup.addItem(g.getName());
-									}
-									listGroup.setSelectedIndex(0);
-								}
-								lblStartTime = new Label("Start");
-								lblEndTime = new Label("End");
-								tableExTime = new Grid(1, 4);
-								tableExTime.setCellPadding(2);							
-								
-								lblExclusionTime = new Label(MonitorConstant.EXCLUSION_TIME);
-								
-								startTime = new HourMinutePicker(PickerFormat._24_HOUR);
-								
-								startTime.setTitle("Start");
-								startTime.setSize("90","280");
-								startTime.setTime("24h", system.getStartHour(), system.getStartMinute());
-								
-								endTime = new HourMinutePicker(PickerFormat._24_HOUR);
-								endTime.setTitle("End");
-								endTime.setSize("4em","2em");
-								endTime.setTime("24h", system.getEndHour(), system.getEndMinute());
-								tableExTime.setWidget(0, 0, lblStartTime);
-								tableExTime.setWidget(0, 1, startTime);
-								tableExTime.setWidget(0, 2, lblEndTime);
-								tableExTime.setWidget(0, 3, endTime);
-								
-								tableNotify = new Grid(5, 2);
-								tableNotify.setCellSpacing(3);
-								cbNotifyCpu = new CheckBox();
-								cbNotifyCpu.setValue(notify.isNotifyCpu());
-								cbNotifyCpu.setStyleName("");
-								cbNotifyCpu.setStyleName("checkbox-size");
-								
-								cbNotifyMemory = new CheckBox();
-								cbNotifyMemory.setValue(notify.isNotifyMemory());
-								cbNotifyMemory.setStyleName("");
-								cbNotifyMemory.setStyleName("checkbox-size");
-								
-								cbNotifyServices = new CheckBox();
-								cbNotifyServices.setValue(notify.isNotifyServices());
-								cbNotifyServices.setStyleName("");
-								cbNotifyServices.setStyleName("checkbox-size");
-								
-								cbNotifyJVM = new CheckBox();
-								cbNotifyJVM.setValue(notify.isJVM());
-								cbNotifyJVM.setStyleName("");
-								cbNotifyJVM.setStyleName("checkbox-size");
-								
-								cbNotifyServicesConnection = new CheckBox();
-								cbNotifyServicesConnection.setValue(notify
-										.isNotifyServicesConnection());
-								cbNotifyServicesConnection.setStyleName("");
-								cbNotifyServicesConnection.setStyleName("checkbox-size");
-								
-								lblNotifyJVM = new Label(MonitorConstant.Notify_JVM);
-								lblNotifyCpu = new Label(MonitorConstant.Notify_Cpu);
-								lblNotifyMemory = new Label(
-										MonitorConstant.Notify_Memory);
-								lblNotifyServices = new Label(
-										MonitorConstant.Notify_Service);
-								lblNotifyServicesConnection = new Label(
-										MonitorConstant.Notify_ServiceConnection);
-								tableNotify.setWidget(0, 0, lblNotifyCpu);
-								tableNotify.setWidget(0, 1, cbNotifyCpu);
-								tableNotify.setWidget(1, 0, lblNotifyMemory);
-								tableNotify.setWidget(1, 1, cbNotifyMemory);
-								tableNotify.setWidget(2, 0, lblNotifyServices);
-								tableNotify.setWidget(2, 1, cbNotifyServices);
-								tableNotify.setWidget(3, 0,
-										lblNotifyServicesConnection);
-								tableNotify.setWidget(3, 1,
-										cbNotifyServicesConnection);
-								tableNotify.setWidget(4, 0, lblNotifyJVM);
-								tableNotify.setWidget(4, 1, cbNotifyJVM);
-								advancedDisclosure = new DisclosurePanel(
-										HTMLControl.NOTIFY_OPTION);
-								advancedDisclosure.setAnimationEnabled(true);
-								advancedDisclosure.setContent(tableNotify);
-								advancedDisclosure.setOpen(true);
-
-								labelEmail = new Label();
-								labelEmail.setText("Email");
-								txtEmail = new TextBox();
-								txtEmail.setWidth("196px");
-								txtEmail.setHeight("30px");
-								tableForm.setCellPadding(3);
-								tableForm.setCellSpacing(3);
-								tableForm.getFlexCellFormatter().setWidth(0, 0,
-										"100px");
-								tableForm.getFlexCellFormatter().setWidth(1, 0,
-										"100px");
-								tableForm.getFlexCellFormatter().setWidth(2, 0,
-										"100px");
-								tableForm.getFlexCellFormatter().setWidth(3, 0,
-										"100px");
-								tableForm.getFlexCellFormatter().setWidth(4, 0,
-										"100px");
-								tableForm.getFlexCellFormatter().setWidth(5, 0,
-										"100px");
-								tableForm.getFlexCellFormatter().setWidth(6, 0,
-										"100px");
-								tableForm.getFlexCellFormatter().setWidth(7, 0,
-										"100px");
-								tableForm.getFlexCellFormatter().setWidth(8, 0,
-										"100px");
-								tableForm.getFlexCellFormatter().setWidth(9, 0,
-										"298px");
-								tableForm.getFlexCellFormatter().setWidth(10, 0,
-										"100px");
-								tableForm.getFlexCellFormatter().setWidth(11, 0,
-										"100px");
-
-								labelName = new Label();
-								labelName.setText("Name");
-
-								labelurl = new Label();
-								labelurl.setText("URL");
-
-								labelip = new Label();
-								labelip.setText("IP");
-
-								labelremoteurl = new Label();
-								labelremoteurl.setText("Remote-URL");
-
-								labelactive = new Label();
-								labelactive.setText("Active");
-
-								labelprotocol = new Label();
-								labelprotocol.setText("Protocol");
-
-								labelmailgroup = new Label();
-								labelmailgroup.setText("Group ");
-
-								txtName = new TextBox();
-								txtName.setWidth("196px");
-								txtName.setHeight("30px");
-								txtName.setText(system.getName());
-
-								txtURL = new TextBox();
-								txtURL.setWidth("196px");
-								txtURL.setHeight("30px");
-								txtURL.setText(system.getUrl());
-
-								txtIP = new TextBox();
-								txtIP.setWidth("196px");
-								txtIP.setHeight("30px");
-								txtIP.setText(system.getIp());
-
-								txtRemote = new TextBox();
-								txtRemote.setWidth("196px");
-								txtRemote.setHeight("30px");
-								txtRemote.setText(system.getRemoteUrl());
-
-								txtEmail.setText(system.getEmailRevice());
-
-								panelLabelEmail = new AbsolutePanel();
-								panelLabelEmail.add(labelEmail);
-								panelLabelEmail.setVisible(false);
-
-								paneltxtEmail = new AbsolutePanel();
-								paneltxtEmail.add(txtEmail);
-
-								listActive = new ListBox();
-								listActive.setWidth("198px");
-								listActive.setHeight("28px");
-								listActive.addItem("Yes");
-								listActive.addItem("No");
-								if (system.isActive()) {
-									listActive.setSelectedIndex(0);
-								} else {
-									listActive.setSelectedIndex(1);
-								}
-
-								listProtocol = new ListBox();
-								listProtocol.setWidth("198px");
-								listProtocol.setHeight("28px");
-								listProtocol.addItem(MonitorConstant.HTTP_PROTOCOL);
-								listProtocol.addItem(MonitorConstant.SMTP_PROTOCOL);
-								if (system.getProtocol().equals("HTTP(s)")) {
-									listProtocol.setSelectedIndex(0);
-									paneltxtEmail.setVisible(false);
-									panelLabelEmail.setVisible(false);
-									txtRemote.setEnabled(true);
-								} else {
-									listProtocol.setSelectedIndex(1);
-									paneltxtEmail.setVisible(true);
-									panelLabelEmail.setVisible(true);
-									txtRemote.setEnabled(false);
-								}
-								
-
-								btnEdit = new Button();
-								btnEdit.setText("Update");
-								btnEdit.setStyleName("margin:6px;");
-								btnEdit.addStyleName("form-button");
-
-								bttReset = new Button();
-								bttReset.setText("Reset");
-								bttReset.setStyleName("margin:6px;");
-								bttReset.addStyleName("form-button");
-
-								bttBack = new Button();
-								bttBack.setText("Back");
-								bttBack.setStyleName("margin:6px;");
-								bttBack.addStyleName("form-button");
-
-								panelButton = new AbsolutePanel();
-								panelButton.add(btnEdit);
-								panelButton.add(bttReset);
-								panelButton.add(bttBack);
-
-								panelAdding = new AbsolutePanel();
-								panelAdding
-										.add(new HTML(
-												"<div id=\"img-adding\"><img src=\"images/icon/loading11.gif\"/></div>"));
-								panelAdding.setVisible(false);
-
-								panelValidateName = new AbsolutePanel();
-
-								panelValidateEmail = new AbsolutePanel();
-
-								panelValidateIP = new AbsolutePanel();
-
-								panelValidateURL = new AbsolutePanel();
-
-								panelValidateRemoteURL = new AbsolutePanel();
-								
-								panelValidateGroups = new AbsolutePanel();
-								
-								panelValidateExcTime = new AbsolutePanel();
-								
-								tableForm.setWidget(0, 0, labelName);
-								tableForm.setWidget(0, 1, txtName);
-								tableForm.setWidget(0, 2, panelValidateName);
-								tableForm.setWidget(1, 0, labelurl);
-								tableForm.setWidget(1, 1, txtURL);
-								tableForm.setWidget(1, 2, panelValidateURL);
-								tableForm.setWidget(2, 0, labelip);
-								tableForm.setWidget(2, 1, txtIP);
-								tableForm.setWidget(2, 2, panelValidateIP);
-								tableForm.setWidget(3, 0, lblExclusionTime);
-								tableForm.setWidget(3, 1, tableExTime);
-								tableForm.setWidget(3, 2, panelValidateExcTime);	
-								tableForm.setWidget(4, 0, labelactive);
-								tableForm.setWidget(4, 1, listActive);
-								tableForm.setWidget(5, 0, labelprotocol);
-								tableForm.setWidget(5, 1, listProtocol);
-								tableForm.setWidget(6, 0, panelLabelEmail);
-								tableForm.setWidget(6, 1, paneltxtEmail);
-								tableForm.setWidget(6, 2, panelValidateEmail);
-								tableForm.setWidget(7, 0, labelmailgroup);
-								tableForm.setWidget(7, 1, listGroup);
-								tableForm.setWidget(7, 2, panelValidateGroups);
-								tableForm.setWidget(8, 0, labelremoteurl);
-								tableForm.setWidget(8, 1, txtRemote);
-								tableForm.setWidget(8, 2, panelValidateRemoteURL);	
-								tableForm.getFlexCellFormatter().setColSpan(9, 0, 2);
-								tableForm.setWidget(9, 0, advancedDisclosure);
-								tableForm.getFlexCellFormatter().setColSpan(10, 0, 2);
-								tableForm.setWidget(10, 0, panelAdding);
-								tableForm.getFlexCellFormatter().setColSpan(11, 0, 3);
-								tableForm.setWidget(11, 0, panelButton);
-								initHandler();
-								setVisibleLoadingImage(false);
-								setOnload(false);
-								setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
-							}else{
-								setVisibleLoadingImage(false);
-								setOnload(false);
-								showMessage("No Group Found.",
-										HTMLControl.HTML_GROUP_MANAGEMENT_NAME,
-										"Goto Group Management. ",
-										HTMLControl.RED_MESSAGE, true);
-							}
-							
-
+							tableForm = new FlexTable();
+							addWidget(HTMLControl.ID_BODY_CONTENT, tableForm);
+							initFlexTable(sysID);
+						} else {
+							showMessage("Invalid System ID.", HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME, "Goto System Management. ", HTMLControl.RED_MESSAGE, true);
 						}
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
-						showMessage("Oops! Error.",
-								HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
-								"Goto System Management. ",
-								HTMLControl.RED_MESSAGE, true);
+						showMessage("Oops! Error.", HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME, "Goto System Management. ", HTMLControl.RED_MESSAGE, true);
+					}
+				});
+			} catch (Exception e) {
+				showMessage("Oops! Error.", HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME, "Goto System Management. ", HTMLControl.RED_MESSAGE, true);
+			}
+		}
+	}
+
+	void initFlexTable(String sysID) {
+		monitorGwtSv.getSystemMonitorContainer(sysID, new AsyncCallback<MonitorContainer>() {
+			@Override
+			public void onSuccess(MonitorContainer result) {
+				if (result != null) {
+					try {
+						system = result.getSys();
+						notify = result.getNotify();
+						container = result;
+						listGroup = new ListBox();
+						listGroup.setWidth("198px");
+						listGroup.setHeight("28px");
+						SystemGroup[] groups = container.getListSystemGroup();
+						List<SystemGroup> list = new ArrayList<SystemGroup>();
+						boolean checkExistGroup = false;
+						if (groups != null && groups.length > 0) {
+							for (int i = 0; i < groups.length; i++) {
+								System.out.println(groups[i].getName());
+								if (system.getGroupEmail().equalsIgnoreCase(groups[i].getName())) {
+									System.out.println(system.getGroupEmail());
+									checkExistGroup = true;
+								}
+								list.add(groups[i]);
+							}
+							if (checkExistGroup) {
+								list = sortBynameSystemGroup(list);
+								for (int i = 0; i < list.size(); i++) {
+									System.out.println(list.get(i).getName());
+									if (list.get(i).getName().equalsIgnoreCase(system.getGroupEmail())) {
+										index = i;
+									}
+									listGroup.addItem(list.get(i).getName());
+								}
+								System.out.println(index);
+								listGroup.setSelectedIndex(index);
+							} else {
+								listGroup.addItem("");
+								list = sortBynameSystemGroup(list);
+								for (SystemGroup g : list) {
+									listGroup.addItem(g.getName());
+								}
+								listGroup.setSelectedIndex(0);
+							}
+							lblStartTime = new Label("Start");
+							lblEndTime = new Label("End");
+							tableExTime = new Grid(1, 4);
+							tableExTime.setCellPadding(2);
+
+							lblExclusionTime = new Label(MonitorConstant.EXCLUSION_TIME);
+
+							startTime = new HourMinutePicker(PickerFormat._24_HOUR);
+
+							startTime.setTitle("Start");
+							startTime.setSize("90", "280");
+							startTime.setTime("24h", system.getStartHour(), system.getStartMinute());
+
+							endTime = new HourMinutePicker(PickerFormat._24_HOUR);
+							endTime.setTitle("End");
+							endTime.setSize("4em", "2em");
+							endTime.setTime("24h", system.getEndHour(), system.getEndMinute());
+							tableExTime.setWidget(0, 0, lblStartTime);
+							tableExTime.setWidget(0, 1, startTime);
+							tableExTime.setWidget(0, 2, lblEndTime);
+							tableExTime.setWidget(0, 3, endTime);
+
+							tableNotify = new Grid(6, 2);
+							tableNotify.setCellSpacing(3);
+							cbNotifyCpu = new CheckBox();
+							cbNotifyCpu.setValue(notify.isNotifyCpu());
+							cbNotifyCpu.setStyleName("");
+							cbNotifyCpu.setStyleName("checkbox-size");
+
+							cbNotifyMemory = new CheckBox();
+							cbNotifyMemory.setValue(notify.isNotifyMemory());
+							cbNotifyMemory.setStyleName("");
+							cbNotifyMemory.setStyleName("checkbox-size");
+
+							cbNotifyServices = new CheckBox();
+							cbNotifyServices.setValue(notify.isNotifyServices());
+							cbNotifyServices.setStyleName("");
+							cbNotifyServices.setStyleName("checkbox-size");
+
+							cbNotifyJVM = new CheckBox();
+							cbNotifyJVM.setValue(notify.isJVM());
+							cbNotifyJVM.setStyleName("");
+							cbNotifyJVM.setStyleName("checkbox-size");
+
+							cbNotifyConnectionPool = new CheckBox();
+							cbNotifyConnectionPool.setValue(notify.isNotifyConnectionPool());
+							cbNotifyConnectionPool.setStyleName("");
+							cbNotifyConnectionPool.setStyleName("checkbox-size");
+
+							cbNotifyServicesConnection = new CheckBox();
+							cbNotifyServicesConnection.setValue(notify.isNotifyServicesConnection());
+							cbNotifyServicesConnection.setStyleName("");
+							cbNotifyServicesConnection.setStyleName("checkbox-size");
+
+							lblNotifyJVM = new Label(MonitorConstant.Notify_JVM);
+							lblNotifyCpu = new Label(MonitorConstant.Notify_Cpu);
+							lblNotifyConnectionPool = new Label(MonitorConstant.Notify_Connection_Pool);
+							lblNotifyMemory = new Label(MonitorConstant.Notify_Memory);
+							lblNotifyServices = new Label(MonitorConstant.Notify_Service);
+							lblNotifyServicesConnection = new Label(MonitorConstant.Notify_ServiceConnection);
+							tableNotify.setWidget(0, 0, lblNotifyCpu);
+							tableNotify.setWidget(0, 1, cbNotifyCpu);
+							tableNotify.setWidget(1, 0, lblNotifyMemory);
+							tableNotify.setWidget(1, 1, cbNotifyMemory);
+							tableNotify.setWidget(2, 0, lblNotifyServices);
+							tableNotify.setWidget(2, 1, cbNotifyServices);
+							tableNotify.setWidget(3, 0, lblNotifyServicesConnection);
+							tableNotify.setWidget(3, 1, cbNotifyServicesConnection);
+							tableNotify.setWidget(4, 0, lblNotifyJVM);
+							tableNotify.setWidget(4, 1, cbNotifyJVM);
+							tableNotify.setWidget(5, 0, lblNotifyConnectionPool);
+							tableNotify.setWidget(5, 1, cbNotifyConnectionPool);
+							advancedDisclosure = new DisclosurePanel(HTMLControl.NOTIFY_OPTION);
+							advancedDisclosure.setAnimationEnabled(true);
+							advancedDisclosure.setContent(tableNotify);
+							advancedDisclosure.setOpen(true);
+
+							labelEmail = new Label();
+							labelEmail.setText("Email");
+							txtEmail = new TextBox();
+							txtEmail.setWidth("196px");
+							txtEmail.setHeight("30px");
+							tableForm.setCellPadding(3);
+							tableForm.setCellSpacing(3);
+							tableForm.getFlexCellFormatter().setWidth(0, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(1, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(2, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(3, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(4, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(5, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(6, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(7, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(8, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(9, 0, "298px");
+							tableForm.getFlexCellFormatter().setWidth(10, 0, "100px");
+							tableForm.getFlexCellFormatter().setWidth(11, 0, "100px");
+
+							labelName = new Label();
+							labelName.setText("Name");
+
+							labelurl = new Label();
+							labelurl.setText("URL");
+
+							labelip = new Label();
+							labelip.setText("IP");
+
+							labelremoteurl = new Label();
+							labelremoteurl.setText("Remote-URL");
+
+							labelactive = new Label();
+							labelactive.setText("Active");
+
+							labelprotocol = new Label();
+							labelprotocol.setText("Protocol");
+
+							labelmailgroup = new Label();
+							labelmailgroup.setText("Group ");
+
+							txtName = new TextBox();
+							txtName.setWidth("196px");
+							txtName.setHeight("30px");
+							txtName.setText(system.getName());
+
+							txtURL = new TextBox();
+							txtURL.setWidth("196px");
+							txtURL.setHeight("30px");
+							txtURL.setText(system.getUrl());
+
+							txtIP = new TextBox();
+							txtIP.setWidth("196px");
+							txtIP.setHeight("30px");
+							txtIP.setText(system.getIp());
+
+							txtRemote = new TextBox();
+							txtRemote.setWidth("196px");
+							txtRemote.setHeight("30px");
+							txtRemote.setText(system.getRemoteUrl());
+
+							txtEmail.setText(system.getEmailRevice());
+
+							panelLabelEmail = new AbsolutePanel();
+							panelLabelEmail.add(labelEmail);
+							panelLabelEmail.setVisible(false);
+
+							paneltxtEmail = new AbsolutePanel();
+							paneltxtEmail.add(txtEmail);
+
+							listActive = new ListBox();
+							listActive.setWidth("198px");
+							listActive.setHeight("28px");
+							listActive.addItem("Yes");
+							listActive.addItem("No");
+							if (system.isActive()) {
+								listActive.setSelectedIndex(0);
+							} else {
+								listActive.setSelectedIndex(1);
+							}
+
+							listProtocol = new ListBox();
+							listProtocol.setWidth("198px");
+							listProtocol.setHeight("28px");
+							listProtocol.addItem(MonitorConstant.HTTP_PROTOCOL);
+							listProtocol.addItem(MonitorConstant.SMTP_PROTOCOL);
+							if (system.getProtocol().equals("HTTP(s)")) {
+								listProtocol.setSelectedIndex(0);
+								paneltxtEmail.setVisible(false);
+								panelLabelEmail.setVisible(false);
+								txtRemote.setEnabled(true);
+							} else {
+								listProtocol.setSelectedIndex(1);
+								paneltxtEmail.setVisible(true);
+								panelLabelEmail.setVisible(true);
+								txtRemote.setEnabled(false);
+							}
+
+							btnEdit = new Button();
+							btnEdit.setText("Update");
+							btnEdit.setStyleName("margin:6px;");
+							btnEdit.addStyleName("form-button");
+
+							bttReset = new Button();
+							bttReset.setText("Reset");
+							bttReset.setStyleName("margin:6px;");
+							bttReset.addStyleName("form-button");
+
+							bttBack = new Button();
+							bttBack.setText("Back");
+							bttBack.setStyleName("margin:6px;");
+							bttBack.addStyleName("form-button");
+
+							panelButton = new AbsolutePanel();
+							panelButton.add(btnEdit);
+							panelButton.add(bttReset);
+							panelButton.add(bttBack);
+
+							panelAdding = new AbsolutePanel();
+							panelAdding.add(new HTML("<div id=\"img-adding\"><img src=\"images/icon/loading11.gif\"/></div>"));
+							panelAdding.setVisible(false);
+
+							panelValidateName = new AbsolutePanel();
+
+							panelValidateEmail = new AbsolutePanel();
+
+							panelValidateIP = new AbsolutePanel();
+
+							panelValidateURL = new AbsolutePanel();
+
+							panelValidateRemoteURL = new AbsolutePanel();
+
+							panelValidateGroups = new AbsolutePanel();
+
+							panelValidateExcTime = new AbsolutePanel();
+
+							tableForm.setWidget(0, 0, labelName);
+							tableForm.setWidget(0, 1, txtName);
+							tableForm.setWidget(0, 2, panelValidateName);
+							tableForm.setWidget(1, 0, labelurl);
+							tableForm.setWidget(1, 1, txtURL);
+							tableForm.setWidget(1, 2, panelValidateURL);
+							tableForm.setWidget(2, 0, labelip);
+							tableForm.setWidget(2, 1, txtIP);
+							tableForm.setWidget(2, 2, panelValidateIP);
+							tableForm.setWidget(3, 0, lblExclusionTime);
+							tableForm.setWidget(3, 1, tableExTime);
+							tableForm.setWidget(3, 2, panelValidateExcTime);
+							tableForm.setWidget(4, 0, labelactive);
+							tableForm.setWidget(4, 1, listActive);
+							tableForm.setWidget(5, 0, labelprotocol);
+							tableForm.setWidget(5, 1, listProtocol);
+							tableForm.setWidget(6, 0, panelLabelEmail);
+							tableForm.setWidget(6, 1, paneltxtEmail);
+							tableForm.setWidget(6, 2, panelValidateEmail);
+							tableForm.setWidget(7, 0, labelmailgroup);
+							tableForm.setWidget(7, 1, listGroup);
+							tableForm.setWidget(7, 2, panelValidateGroups);
+							tableForm.setWidget(8, 0, labelremoteurl);
+							tableForm.setWidget(8, 1, txtRemote);
+							tableForm.setWidget(8, 2, panelValidateRemoteURL);
+							tableForm.getFlexCellFormatter().setColSpan(9, 0, 2);
+							tableForm.setWidget(9, 0, advancedDisclosure);
+							tableForm.getFlexCellFormatter().setColSpan(10, 0, 2);
+							tableForm.setWidget(10, 0, panelAdding);
+							tableForm.getFlexCellFormatter().setColSpan(11, 0, 3);
+							tableForm.setWidget(11, 0, panelButton);
+							initHandler();
+							setVisibleLoadingImage(false);
+							setOnload(false);
+							setVisibleWidget(HTMLControl.ID_BODY_CONTENT, true);
+						} else {
+							setVisibleLoadingImage(false);
+							setOnload(false);
+							showMessage("No Group Found.", HTMLControl.HTML_GROUP_MANAGEMENT_NAME, "Goto Group Management. ", HTMLControl.RED_MESSAGE, true);
+						}
+					} catch (Exception ex) {
+						ex.printStackTrace();
 					}
 
-				});
+				}
+			}
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+				showMessage("Oops! Error.", HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME, "Goto System Management. ", HTMLControl.RED_MESSAGE, true);
+			}
+
+		});
 
 	}
 
@@ -518,33 +490,28 @@ public class EditSystem extends AncestorEntryPoint {
 
 				cbNotifyServices.setValue(notify.isNotifyServices());
 
-				cbNotifyServicesConnection.setValue(notify
-						.isNotifyServicesConnection());
+				cbNotifyServicesConnection.setValue(notify.isNotifyServicesConnection());
 				cbNotifyJVM.setValue(notify.isJVM());
+				cbNotifyConnectionPool.setValue(notify.isNotifyConnectionPool());
 			}
 		});
 		bttBack.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				Window.Location.replace(HTMLControl
-						.trimHashPart(Window.Location.getHref())
-						+ HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME);
+				Window.Location.replace(HTMLControl.trimHashPart(Window.Location.getHref()) + HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME);
 			}
 		});
 		btnEdit.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				if (listProtocol.getItemText(listProtocol.getSelectedIndex())
-						.equals(MonitorConstant.HTTP_PROTOCOL)) {
-					String validateGroup = listGroup.getItemText(listGroup
-							.getSelectedIndex());
+				if (listProtocol.getItemText(listProtocol.getSelectedIndex()).equals(MonitorConstant.HTTP_PROTOCOL)) {
+					String validateGroup = listGroup.getItemText(listGroup.getSelectedIndex());
 					String validateName = validateName(txtName.getText());
 					String validateURL = validateURL(txtURL.getText());
 					String validateIp = validateIP(txtIP.getText());
-					String validateRemoteURL = validateRemoteURL(txtRemote
-							.getText());
+					String validateRemoteURL = validateRemoteURL(txtRemote.getText());
 					String validateExctime = validateExcTime();
-					
+
 					panelValidateEmail.setVisible(false);
 					panelValidateIP.setVisible(false);
 					panelValidateName.setVisible(false);
@@ -554,9 +521,7 @@ public class EditSystem extends AncestorEntryPoint {
 					panelValidateExcTime.setVisible(false);
 					if (validateName != "") {
 						panelValidateName.clear();
-						panelValidateName.add(new HTML(
-								"<div class=\"error-left\"></div><div class=\"error-inner\">"
-										+ validateName + "</div>"));
+						panelValidateName.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">" + validateName + "</div>"));
 						panelValidateName.setVisible(true);
 						panelValidateURL.setVisible(false);
 						panelValidateIP.setVisible(false);
@@ -567,9 +532,7 @@ public class EditSystem extends AncestorEntryPoint {
 						return;
 					} else if (validateURL != "") {
 						panelValidateURL.clear();
-						panelValidateURL.add(new HTML(
-								"<div class=\"error-left\"></div><div class=\"error-inner\">"
-										+ validateURL + "</div>"));
+						panelValidateURL.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">" + validateURL + "</div>"));
 						panelValidateURL.setVisible(true);
 						panelValidateName.setVisible(false);
 						panelValidateRemoteURL.setVisible(false);
@@ -580,9 +543,7 @@ public class EditSystem extends AncestorEntryPoint {
 						return;
 					} else if (validateIp != "") {
 						panelValidateIP.clear();
-						panelValidateIP.add(new HTML(
-								"<div class=\"error-left\"></div><div class=\"error-inner\">"
-										+ validateIp + "</div>"));
+						panelValidateIP.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">" + validateIp + "</div>"));
 						panelValidateIP.setVisible(true);
 						panelValidateName.setVisible(false);
 						panelValidateEmail.setVisible(false);
@@ -591,10 +552,9 @@ public class EditSystem extends AncestorEntryPoint {
 						panelValidateGroups.setVisible(false);
 						panelValidateExcTime.setVisible(false);
 						return;
-					}  else if (validateExctime != "") {
+					} else if (validateExctime != "") {
 						panelValidateExcTime.clear();
-						panelValidateExcTime.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">"
-								+ validateExctime + "</div>"));
+						panelValidateExcTime.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">" + validateExctime + "</div>"));
 						panelValidateExcTime.setVisible(true);
 						panelValidateIP.setVisible(false);
 						panelValidateName.setVisible(false);
@@ -603,13 +563,10 @@ public class EditSystem extends AncestorEntryPoint {
 						panelValidateEmail.setVisible(false);
 						panelValidateGroups.setVisible(false);
 						return;
-					}  else if (validateRemoteURL != "") {
-						if (!listProtocol.getItemText(
-								listProtocol.getSelectedIndex()).equals("SMTP")) {
+					} else if (validateRemoteURL != "") {
+						if (!listProtocol.getItemText(listProtocol.getSelectedIndex()).equals("SMTP")) {
 							panelValidateRemoteURL.clear();
-							panelValidateRemoteURL.add(new HTML(
-									"<div class=\"error-left\"></div><div class=\"error-inner\">"
-											+ validateRemoteURL + "</div>"));
+							panelValidateRemoteURL.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">" + validateRemoteURL + "</div>"));
 							panelValidateRemoteURL.setVisible(true);
 							panelValidateIP.setVisible(false);
 							panelValidateName.setVisible(false);
@@ -619,7 +576,7 @@ public class EditSystem extends AncestorEntryPoint {
 							panelValidateExcTime.setVisible(false);
 							return;
 						}
-					}else if(validateGroup == ""){
+					} else if (validateGroup == "") {
 						panelValidateGroups.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">Please select a Group</div>"));
 						panelValidateGroups.setVisible(true);
 						panelValidateEmail.setVisible(false);
@@ -643,23 +600,19 @@ public class EditSystem extends AncestorEntryPoint {
 					nm.setNotifyCpu(cbNotifyCpu.getValue());
 					nm.setNotifyMemory(cbNotifyMemory.getValue());
 					nm.setNotifyServices(cbNotifyServices.getValue());
-					nm.setNotifyServicesConnection(cbNotifyServicesConnection
-							.getValue());
+					nm.setNotifyServicesConnection(cbNotifyServicesConnection.getValue());
 					nm.setJVM(cbNotifyJVM.getValue());
-					
+					nm.setNotifyConnectionPool(cbNotifyConnectionPool.getValue());
 					SystemMonitor sysNew = new SystemMonitor();
 					sysNew.setId(system.getId());
 					sysNew.setName(txtName.getText());
 					sysNew.setUrl(txtURL.getText());
-					sysNew.setProtocol(listProtocol.getItemText(listProtocol
-							.getSelectedIndex()));
-					sysNew.setGroupEmail(listGroup.getItemText(listGroup
-							.getSelectedIndex()));
+					sysNew.setProtocol(listProtocol.getItemText(listProtocol.getSelectedIndex()));
+					sysNew.setGroupEmail(listGroup.getItemText(listGroup.getSelectedIndex()));
 					sysNew.setIp(txtIP.getText());
 					sysNew.setRemoteUrl(txtRemote.getText());
 					sysNew.setEmailRevice(txtEmail.getText());
-					sysNew.setActive(isActive(listActive.getItemText(listActive
-							.getSelectedIndex())));
+					sysNew.setActive(isActive(listActive.getItemText(listActive.getSelectedIndex())));
 					sysNew.setStartHour(startTime.getHour());
 					sysNew.setEndHour(endTime.getHour());
 					sysNew.setStartMinute(startTime.getMinute());
@@ -668,11 +621,8 @@ public class EditSystem extends AncestorEntryPoint {
 					sysNew.setStartMinutes(startTime.getMinutes());
 					sysNew.setEndMinutes(endTime.getMinutes());
 					editSystem(sysNew);
-				} else if (listProtocol.getItemText(
-						listProtocol.getSelectedIndex()).equals(
-						MonitorConstant.SMTP_PROTOCOL)) {
-					String validateGroup = listGroup.getItemText(listGroup
-							.getSelectedIndex());
+				} else if (listProtocol.getItemText(listProtocol.getSelectedIndex()).equals(MonitorConstant.SMTP_PROTOCOL)) {
+					String validateGroup = listGroup.getItemText(listGroup.getSelectedIndex());
 					String validateName = validateName(txtName.getText());
 					String validateExctime = validateExcTime();
 					String validateURL = validateURL(txtURL.getText());
@@ -687,9 +637,7 @@ public class EditSystem extends AncestorEntryPoint {
 					panelValidateExcTime.setVisible(false);
 					if (validateName != "") {
 						panelValidateName.clear();
-						panelValidateName.add(new HTML(
-								"<div class=\"error-left\"></div><div class=\"error-inner\">"
-										+ validateName + "</div>"));
+						panelValidateName.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">" + validateName + "</div>"));
 						panelValidateName.setVisible(true);
 						panelValidateURL.setVisible(false);
 						panelValidateIP.setVisible(false);
@@ -700,9 +648,7 @@ public class EditSystem extends AncestorEntryPoint {
 						return;
 					} else if (validateURL != "") {
 						panelValidateURL.clear();
-						panelValidateURL.add(new HTML(
-								"<div class=\"error-left\"></div><div class=\"error-inner\">"
-										+ validateURL + "</div>"));
+						panelValidateURL.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">" + validateURL + "</div>"));
 						panelValidateURL.setVisible(true);
 						panelValidateName.setVisible(false);
 						panelValidateRemoteURL.setVisible(false);
@@ -713,9 +659,7 @@ public class EditSystem extends AncestorEntryPoint {
 						return;
 					} else if (validateIp != "") {
 						panelValidateIP.clear();
-						panelValidateIP.add(new HTML(
-								"<div class=\"error-left\"></div><div class=\"error-inner\">"
-										+ validateIp + "</div>"));
+						panelValidateIP.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">" + validateIp + "</div>"));
 						panelValidateIP.setVisible(true);
 						panelValidateName.setVisible(false);
 						panelValidateEmail.setVisible(false);
@@ -726,8 +670,7 @@ public class EditSystem extends AncestorEntryPoint {
 						return;
 					} else if (validateExctime != "") {
 						panelValidateExcTime.clear();
-						panelValidateExcTime.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">"
-								+ validateExctime + "</div>"));
+						panelValidateExcTime.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">" + validateExctime + "</div>"));
 						panelValidateExcTime.setVisible(true);
 						panelValidateIP.setVisible(false);
 						panelValidateName.setVisible(false);
@@ -736,11 +679,9 @@ public class EditSystem extends AncestorEntryPoint {
 						panelValidateEmail.setVisible(false);
 						panelValidateGroups.setVisible(false);
 						return;
-					}  else if (validateEmail != "") {
+					} else if (validateEmail != "") {
 						panelValidateEmail.clear();
-						panelValidateEmail.add(new HTML(
-								"<div class=\"error-left\"></div><div class=\"error-inner\">"
-										+ validateEmail + "</div>"));
+						panelValidateEmail.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">" + validateEmail + "</div>"));
 						panelValidateEmail.setVisible(true);
 						panelValidateIP.setVisible(true);
 						panelValidateName.setVisible(false);
@@ -750,7 +691,7 @@ public class EditSystem extends AncestorEntryPoint {
 						panelValidateExcTime.setVisible(false);
 						return;
 
-					}else if(validateGroup == ""){
+					} else if (validateGroup == "") {
 						panelValidateGroups.add(new HTML("<div class=\"error-left\"></div><div class=\"error-inner\">Please select a Group</div>"));
 						panelValidateGroups.setVisible(true);
 						panelValidateEmail.setVisible(false);
@@ -774,22 +715,19 @@ public class EditSystem extends AncestorEntryPoint {
 					nm.setNotifyCpu(cbNotifyCpu.getValue());
 					nm.setNotifyMemory(cbNotifyMemory.getValue());
 					nm.setNotifyServices(cbNotifyServices.getValue());
-					nm.setNotifyServicesConnection(cbNotifyServicesConnection
-							.getValue());
+					nm.setNotifyServicesConnection(cbNotifyServicesConnection.getValue());
 					nm.setJVM(cbNotifyJVM.getValue());
+					nm.setNotifyConnectionPool(cbNotifyConnectionPool.getValue());
 					SystemMonitor sysNew = new SystemMonitor();
 					sysNew.setId(system.getId());
 					sysNew.setName(txtName.getText());
 					sysNew.setUrl(txtURL.getText());
-					sysNew.setProtocol(listProtocol.getItemText(listProtocol
-							.getSelectedIndex()));
-					sysNew.setGroupEmail(listGroup.getItemText(listGroup
-							.getSelectedIndex()));
+					sysNew.setProtocol(listProtocol.getItemText(listProtocol.getSelectedIndex()));
+					sysNew.setGroupEmail(listGroup.getItemText(listGroup.getSelectedIndex()));
 					sysNew.setIp(txtIP.getText());
 					sysNew.setEmailRevice(txtEmail.getText());
 					sysNew.setRemoteUrl(txtRemote.getText());
-					sysNew.setActive(isActive(listActive.getItemText(listActive
-							.getSelectedIndex())));
+					sysNew.setActive(isActive(listActive.getItemText(listActive.getSelectedIndex())));
 					sysNew.setNotify(nm);
 					sysNew.setStartHour(startTime.getHour());
 					sysNew.setEndHour(endTime.getHour());
@@ -809,31 +747,21 @@ public class EditSystem extends AncestorEntryPoint {
 			@Override
 			public void onSuccess(Boolean result) {
 				if (result) {
-					showMessage("System edited sucessfully. ",
-							HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
-							"View system list. ", HTMLControl.BLUE_MESSAGE,
-							true);
-					
+					showMessage("System edited sucessfully. ", HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME, "View system list. ", HTMLControl.BLUE_MESSAGE, true);
+
 				} else {
-					showMessage("Server error! ",
-							HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
-							"Goto System Management. ",
-							HTMLControl.RED_MESSAGE, true);
+					showMessage("Server error! ", HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME, "Goto System Management. ", HTMLControl.RED_MESSAGE, true);
 				}
 			}
 
 			@Override
 			public void onFailure(Throwable caught) {
-				showMessage("Server error! ",
-						HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME,
-						"Goto System Management. ", HTMLControl.RED_MESSAGE,
-						true);
+				showMessage("Server error! ", HTMLControl.HTML_SYSTEM_MANAGEMENT_NAME, "Goto System Management. ", HTMLControl.RED_MESSAGE, true);
 			}
 		});
 
 	}
 
-	
 	public static List<SystemGroup> sortBynameSystemGroup(List<SystemGroup> groups) {
 		SystemGroup temp = null;
 		for (int i = 1; i < groups.size(); i++) {
@@ -844,32 +772,34 @@ public class EditSystem extends AncestorEntryPoint {
 				if (temp.compareByName(val) <= 0) {
 					break;
 				}
-				groups.set(j+1, temp);
+				groups.set(j + 1, temp);
 			}
-			groups.set(j+1, val);
+			groups.set(j + 1, val);
 		}
 		return groups;
 	}
+
 	private boolean isActive(String active) {
 		boolean isActive = false;
 		if (active.equals("Yes")) {
 			isActive = true;
 		}
-		
+
 		return isActive;
 	}
 
 	private String validateName(String name) {
 		String msg = "";
-		
+
 		if (name == null || name.trim().length() == 0) {
 			msg = "This field is required ";
-			
-		} /*else if (name.contains("$") || name.contains("%")
-				|| name.contains("*")) {
-			msg = "name is not validate";
-			
-		}*/
+
+		} /*
+		 * else if (name.contains("$") || name.contains("%") ||
+		 * name.contains("*")) { msg = "name is not validate";
+		 * 
+		 * }
+		 */
 		return msg;
 
 	}
@@ -882,7 +812,7 @@ public class EditSystem extends AncestorEntryPoint {
 		} else if (url.length() < 3) {
 			msg = "URL is not validate";
 		}
-		
+
 		return msg;
 	}
 
@@ -897,7 +827,7 @@ public class EditSystem extends AncestorEntryPoint {
 		if (matchFound == false) {
 			msg = "ip is not validate";
 		}
-		
+
 		return msg;
 	}
 
@@ -927,7 +857,7 @@ public class EditSystem extends AncestorEntryPoint {
 							}
 						}
 					}
-				
+
 				}
 
 			}
@@ -967,7 +897,7 @@ public class EditSystem extends AncestorEntryPoint {
 							}
 						}
 					}
-					
+
 				}
 			}
 		}
@@ -976,14 +906,14 @@ public class EditSystem extends AncestorEntryPoint {
 
 	/**
 	 * (non-Javadoc)
-	 * @see cmg.org.monitor.module.client.AncestorEntryPoint#initDialog() 
+	 * 
+	 * @see cmg.org.monitor.module.client.AncestorEntryPoint#initDialog()
 	 */
 	@Override
 	protected void initDialog() {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
 
 	private String validateExcTime() {
 		if (startTime.getMinutes() == null) {

@@ -30,6 +30,7 @@ public class AlertMonitor implements IsSerializable {
 	public static final int HIGH_USAGE_LEVEL_FILESYSTEM = 0x005;
 	public static final int SERVICE_HIGH_LEVEL_PING_TIME = 0x006;
 	public static final int SERVICE_ERROR_STATUS = 0x007;
+	public static final int CONNECTION_POOL_IS_EXHAUSTED = 0x008;
 
 
 	@PrimaryKey
