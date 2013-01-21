@@ -178,7 +178,7 @@
 		this.API_KEY = 'AIzaSyBAVK0V8M7yW_lZrwfwShePRJb8MEcAFXQ';
 		this.IS_DEBUG = false;
 		this.NONE_TRANSACTION = false;
-
+		this.IS_CONNECTION_LOST = false;
 		this.IS_FINISH_LOAD = false;
 		this.SPLASH_TIMEOUT = 4000;
 		this.IS_REFRESH = true;
@@ -196,7 +196,9 @@
 			ADMIN : 1,
 			USER : 2,
 			GUEST : 3
-		}, this.templates = {
+		};
+		this.templates = {
+			ERROR : 'error',
 			DASHBOARD : 'dashboard',
 			ABOUT_US : 'about-us',
 			ADMINISTRATION : 'administration',
@@ -224,19 +226,8 @@
 
 		this.doLogin = function() {
 			if (self.IS_DEBUG) {
-				// $.ajax({
-				// type : "GET",
-				// url : '/_ah',
-				// async : false,
-				// data : {
-				// 'email' : App.creator.email,
-				// 'isAdmin' : true,
-				// 'action' : 'Log in',
-				// 'continue' : ''
-				// },
-				// });
+
 			}
-			;
 		};
 		// Object sync method
 		this.method = {
@@ -265,7 +256,8 @@
 				ISSUE : 'issue',
 				DETAIL : 'detail',
 				STATISTIC : 'statistic',
-				FILE_SYSTEM : 'file-system'
+				FILE_SYSTEM : 'file-system',
+				POOLS : 'pools'
 			},
 			_READ : 'read',
 			_CREATE : 'create',
@@ -288,6 +280,7 @@
 				SLIDE_DOWN : self.NONE_TRANSACTION ? 'none' : 'slidedown',
 				NONE : 'none'
 			},
+			PAGE_ERROR : 'error',
 			PAGE_SPLASH : 'splash',
 			PAGE_DASHBOARD : 'dashboard',
 			PAGE_ABOUT : 'about',
@@ -311,6 +304,20 @@
 			if (!self.tmpl_cache) {
 				self.tmpl_cache = {};
 			}
+			if (tmpl_name == App._common.templates.ERROR) {
+				self.tmpl_cache = {};
+				return [ '<div data-role="content">',
+						'Oops! Application cannot connect to server ... <button data-icon="home" data-iconpos="left" data-theme="e" class="reload-dashboard">Reload dashboard</button>',
+						'	<button data-icon="refresh" data-iconpos="left" data-theme="f" class="reload-full-page">Reload full page</button>',
+						'<ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d">', '<li data-role="list-divider">Other versions</li>',
+						'<li><a href="?state=pc">Web for PC</a><a href="?state=pc" data-theme="d" data-icon="direction">Go to Web version for PC</a></li>',
+						'<li><a>App Store (iOS)</a><a data-theme="d" data-icon="apple">Get iOS version in App store</a></li>',
+						'<li><a>Google Play (Android)</a><a data-theme="d" data-icon="android">Get Android version in Google Play</a></li>', '</ul></div>',
+						'<div data-role="footer" data-position="fixed" class="ui-body-d"  data-role="listview" data-inset="true">',
+						'<div class="bottom-logo"><img src="images/logo/c-mg.png"/></div></div>' ].join('');
+
+			}
+
 			if (!self.tmpl_cache[tmpl_name]) {
 				var tmpl_url = App._common.TEMP_DIR + '/' + tmpl_name + '.html';
 				var tmpl_string = '';
@@ -320,11 +327,16 @@
 					async : false,
 					success : function(data) {
 						tmpl_string = data;
+					},
+					error : function(data) {
+						_log.log("Error when get template from server.", _log.ERROR);
+						App._common.IS_CONNECTION_LOST = true;
 					}
 				});
 
 				self.tmpl_cache[tmpl_name] = _.template(tmpl_string);
 			}
+
 			return self.tmpl_cache[tmpl_name](tmpl_data);
 		};
 	};
@@ -420,10 +432,11 @@
 						if (typeof model.get('cpuUsage') != 'undefined') {
 							usage = model.get('cpuUsage');
 							if (usage > 0) {
-								self.valid = true;
+
 							} else {
 								usage = 0;
 							}
+							self.valid = true;
 						}
 						if (typeof model.get('usedMemory') != 'undefined') {
 							usage = model.get('usedMemory');
@@ -431,10 +444,11 @@
 								usage = Math.round((model.get('usedMemory') / model.get('totalMemory')) * 100);
 							}
 							if (usage > 0) {
-								self.valid = true;
+
 							} else {
 								usage = 0;
 							}
+							self.valid = true;
 						}
 						model.set({
 							'usage' : (usage == -1 ? 0 : usage)
@@ -502,7 +516,8 @@
 						_log.log("Fetch list system monitor success. Length: " + data.length, _log.INFO);
 					},
 					error : function(jqXHR, textStatus, errorThrown) {
-						_log.log(textStatus.statusText, _log.ERROR);
+						_log.log("Cannot fetch list system. Error: " + textStatus.statusText, _log.ERROR);
+						App._common.IS_CONNECTION_LOST = true;
 						message = textStatus.statusText;
 					}
 				}, {});
@@ -513,6 +528,12 @@
 						message : message
 					}));
 				}
+				return this;
+			}
+		});
+		this.ErrorView = Backbone.View.extend({
+			render : function(eventName) {
+				$(this.el).html(App._common.render(App._common.templates.ERROR, {}));
 				return this;
 			}
 		});
@@ -583,7 +604,11 @@
 							id : this.id
 						});
 						App._models._sys.fetch({
-							async : false
+							async : false,
+							error : function(jqXHR, textStatus, errorThrown) {
+								_log.log("Cannot fetch system details. Error: " + textStatus.statusText, _log.ERROR);
+								App._common.IS_CONNECTION_LOST = true;
+							}
 						}, {});
 					}
 				} else {
@@ -598,43 +623,80 @@
 								item : App._common.method.items.SERVICE,
 								sid : App._models._sys.get('encodedKey')
 							},
-							async : false
+							async : false,
+							error : function(jqXHR, textStatus, errorThrown) {
+								_log.log("Cannot fetch services information. Error: " + textStatus.statusText, _log.ERROR);
+								App._common.IS_CONNECTION_LOST = true;
+							}
 						}, {});
+
+						App._collections._pools = new App._collections.SystemDetails();
+						App._collections._pools.fetch({
+							data : {
+								item : App._common.method.items.POOLS,
+								sid : App._models._sys.get('encodedKey')
+							},
+							async : false,
+							error : function(jqXHR, textStatus, errorThrown) {
+								_log.log("Cannot fetch pools information. Error: " + textStatus.statusText, _log.ERROR);
+								App._common.IS_CONNECTION_LOST = true;
+							}
+						}, {});
+
 						App._models._jvm = new App._models.SystemDetail();
 						App._models._jvm.fetch({
 							data : {
 								item : App._common.method.items.JVM,
 								sid : App._models._sys.get('encodedKey')
 							},
-							async : false
+							async : false,
+							error : function(jqXHR, textStatus, errorThrown) {
+								_log.log("Cannot fetch JVM information. Error: " + textStatus.statusText, _log.ERROR);
+								App._common.IS_CONNECTION_LOST = true;
+							}
 						}, {});
-
-						App._collections._cpus = new App._collections.SystemDetails();
-						App._collections._cpus.fetch({
-							data : {
-								item : App._common.method.items.CPU,
-								sid : App._models._sys.get('encodedKey')
-							},
-							async : false
-						}, {});
-						App._collections._cpus.initUsageValue();
-						App._collections._mems = new App._collections.SystemDetails();
-						App._collections._mems.fetch({
-							data : {
-								item : App._common.method.items.MEM,
-								sid : App._models._sys.get('encodedKey')
-							},
-							async : false
-						}, {});
-						App._collections._mems.initUsageValue();
 						App._collections._filesystems = new App._collections.SystemDetails();
 						App._collections._filesystems.fetch({
 							data : {
 								item : App._common.method.items.FILE_SYSTEM,
 								sid : App._models._sys.get('encodedKey')
 							},
-							async : false
+							async : false,
+							error : function(jqXHR, textStatus, errorThrown) {
+								_log.log("Cannot fetch file systems information. Error: " + textStatus.statusText, _log.ERROR);
+								App._common.IS_CONNECTION_LOST = true;
+							}
 						}, {});
+						App._collections._cpus = new App._collections.SystemDetails();
+						App._collections._mems = new App._collections.SystemDetails();
+						if (App._models._sys.get("healthStatus") != 'dead' && App._models._sys.get("isActive") && App._models._sys.get("viewBar")) {
+							App._collections._cpus.fetch({
+								data : {
+									item : App._common.method.items.CPU,
+									sid : App._models._sys.get('encodedKey')
+								},
+								async : false,
+								error : function(jqXHR, textStatus, errorThrown) {
+									_log.log("Cannot fetch CPU information. Error: " + textStatus.statusText, _log.ERROR);
+									App._common.IS_CONNECTION_LOST = true;
+								}
+							}, {});
+							App._collections._cpus.initUsageValue();
+
+							App._collections._mems.fetch({
+								data : {
+									item : App._common.method.items.MEM,
+									sid : App._models._sys.get('encodedKey')
+								},
+								async : false,
+								error : function(jqXHR, textStatus, errorThrown) {
+									_log.log("Cannot fetch memory information. Error: " + textStatus.statusText, _log.ERROR);
+									App._common.IS_CONNECTION_LOST = true;
+								}
+							}, {});
+							App._collections._mems.initUsageValue();
+
+						}
 					} else if (item == App._common.method.items.STATISTIC) {
 						App._collections._issues = new App._collections.SystemDetails();
 						App._collections._issues.fetch({
@@ -642,7 +704,11 @@
 								item : App._common.method.items.ISSUE,
 								sid : App._models._sys.get('encodedKey')
 							},
-							async : false
+							async : false,
+							error : function(jqXHR, textStatus, errorThrown) {
+								_log.log("Cannot fetch issue information. Error: " + textStatus.statusText, _log.ERROR);
+								App._common.IS_CONNECTION_LOST = true;
+							}
 						}, {});
 					}
 				}
@@ -665,6 +731,12 @@
 
 					if ($div_s) {
 						$div_s.css("width", (width - 30) + 'px').css('margin-left', "-15px");
+					}
+
+					$div_p = $('#table-pools');
+
+					if ($div_p) {
+						$div_p.css("width", (width - 30) + 'px').css('margin-left', "-15px");
 					}
 					var _ot = App.charts.option.table;
 					if (typeof _ot == 'undefined') {
@@ -779,7 +851,6 @@
 						_oa = {
 							backgroundColor : 'transparent',
 							areaOpacity : 0.2,
-							titlePosition : 'in',
 							legend : {
 								position : 'none'
 							},
@@ -1026,6 +1097,32 @@
 					}
 				}
 			},
+
+			drawTablePools : function() {
+				// draw table for Service Information
+				var div = document.getElementById('table-pools');
+				if (div) {
+					if (typeof App._collections._pools != 'undefined' && App._collections._pools.length > 0) {
+						if (App._collections._pools.length == 1 && typeof App._collections._pools.at(0).get('name') == 'undefined') {
+							// mare sure table will not draw when have no data
+							return;
+						}
+						_log.log("Pools length: " + App._collections._pools.length);
+						var data = new google.visualization.DataTable();
+						data.addColumn(App.charts.columnType.STRING, "Pool Name");
+						data.addColumn(App.charts.columnType.STRING, "Active Connections");
+						data.addColumn(App.charts.columnType.STRING, "Idle Connections");
+						App._collections._pools.each(function(model) {
+							var checkAct = model.get('currentActive') == -1 || model.get('maxActive') == -1;
+							var checkIdle = model.get('currentIdle') == -1 || model.get('maxIdle') == -1;
+							data.addRow([ (model.get('name') && model.get('name').length > 0) ? model.get('name') : 'N/A',
+									(checkAct ? "N/A" : (model.get('currentActive') + "/" + model.get('maxActive'))), (checkIdle ? "N/A" : (model.get('currentIdle') + "/" + model.get('maxIdle'))) ]);
+						});
+						App.charts.tablePools = new google.visualization.Table(div);
+						App.charts.tablePools.draw(data, App.charts.option.table);
+					}
+				}
+			},
 			renderIssue : function() {
 				$ul = $('#system-issues');
 				if (typeof $ul != 'undefined' && $ul) {
@@ -1096,6 +1193,7 @@
 					currentPage.drawAreaCPU();
 					currentPage.drawAreaMem();
 					currentPage.drawTableFileSystem();
+					currentPage.drawTablePools();
 					if (typeof App._common.IS_REFRESH != 'undefined' && App._common.IS_REFRESH == true) {
 						if (typeof App.handler.ref != 'undefined' || App.handler.ref != 0) {
 							clearInterval(App.handler.ref);
@@ -1155,6 +1253,10 @@
 			if (charts.pieFileSystem) {
 				charts.pieFileSystem.clearChart();
 				charts.pieFileSystem = null;
+			}
+			if (charts.tablePools) {
+				charts.tablePools.clearChart();
+				charts.tablePools = null;
 			}
 		};
 
@@ -1296,15 +1398,16 @@
 
 			hideSplash : function() {
 				App._common.IS_FINISH_LOAD = true;
-				App._router.currentPage = App._router.destinationSplash.currentPage;
-				App._router._instance.changePage(App._router.destinationSplash.page, App._router.destinationSplash.options);
+				var role = App.currentUser.get("role");
+				App._router.currentPage = (role == App._common.roles.GUEST) ? App._common.page.PAGE_LOGOUT : App._router.destinationSplash.currentPage;
+				App._router._instance.changePage(((role == App._common.roles.GUEST) ? (new App._views.LogoutView()) : App._router.destinationSplash.page), App._router.destinationSplash.options);
 			},
 
 			changePage : function(page, options) {
+				App._common.IS_CONNECTION_LOST = false;
 				if (!App._common.IS_FINISH_LOAD && App._router.currentPage != App._common.page.PAGE_SPLASH) {
-					var role = App.currentUser.get("role");
-					App._router.destinationSplash.currentPage = (role == App._common.roles.GUEST) ? App._common.page.PAGE_LOGOUT : App._router.currentPage;
-					App._router.destinationSplash.page = (role == App._common.roles.GUEST) ? (new App._views.LogoutView()) : page;
+					App._router.destinationSplash.currentPage = App._router.currentPage;
+					App._router.destinationSplash.page = page;
 					this.splash();
 					return;
 				}
@@ -1313,11 +1416,16 @@
 					App.handler.ref = 0;
 				}
 				App._router.clearChart();
-				$(page.el).attr('data-role', 'page');
+				$(page.el).attr('data-role', App._router.currentPage == App._common.page.PAGE_HELP ? 'page' : 'page');
 				if (App.isTouchDevice) {
 					$(page.el).addClass('pull-page');
 				}
 				page.render();
+				if (App._common.IS_CONNECTION_LOST) {
+					page = new App._views.ErrorView();
+					page.render();
+					App._router.currentPage == App._common.page.PAGE_ERROR;
+				}
 				$('body').append($(page.el));
 				if (!options) {
 					options = {
@@ -1330,16 +1438,39 @@
 					options.transition = App._common.page.transitions.NONE;
 					this.firstPage = false;
 				}
+				if (!options.transition) {
+					options.transition = App._common.page.transitions.SLIDE;
+				}
 				_log.log('Go to page ' + App._router.currentPage + ' with transaction ' + options.transition + ' reverse: ' + (options.reverse ? 'true' : 'false'));
 				if (typeof $.mobile != 'undefined') {
 					$.mobile.changePage($(page.el), options);
 					$('.expandable-content').trigger('expand');
+					$('.expandable-content').bind('expand', function(e, data) {
+						_log.log("expand event!!!");
+						if (App._router.currentPage == App._common.page.PAGE_SYSTEM_DETAIL) {
+							App._router.clearChart();
+							App._router.page.renderForm();
+						}
+					});
 					if (App._router.currentPage == App._common.page.PAGE_SYSTEM_DETAIL) {
 						App._router.page.renderForm();
 					}
 					var $sc = $('#splash-screen');
 					if ($sc) {
 						$sc.css('width', $(window).width()).css('height', $(window).height());
+					}
+					if (App._router.currentPage == App._common.page.PAGE_DASHBOARD) {
+
+						// $("[data-type='search']").focus(function() {
+						// _log.log("On search focus");
+						// $("[data-role='header']").hide();
+						// $("[data-role='footer']").hide();
+						// });
+						// $("[data-type='search']").blur(function() {
+						// _log.log("On search blur");
+						// $("[data-role='header']").show();
+						// $("[data-role='footer']").show();
+						// });
 					}
 					if (App._router.currentPage == App._common.page.PAGE_LOGOUT) {
 						if (App.currentUser.get('role') == App._common.roles.GUEST) {
@@ -1373,6 +1504,7 @@
 								});
 							}
 						}
+
 					}
 				}
 			}
@@ -1405,5 +1537,23 @@
 			App._router.showLoading(false);
 		}
 	});
+	$('div[data-role="page"],div[data-role="dialog"]').live('pagehide', function(event, ui) {
+		$(event.currentTarget).remove();
+	});
+	$(document).click(function(e) {
+		var $t = $(e.target);
+		if ($t.hasClass('reload-dashboard')) {
+			if (_log && App._router) {
+				_log.log("try to reload dashboard");
+				App._router._instance.dashboard();
+			}
+		}
+		if ($t.hasClass('reload-full-page')) {
+			if (_log) {
+				_log.log("try to reload full page");
 
+			}
+			window.location.reload();
+		}
+	});
 }).call(this);
