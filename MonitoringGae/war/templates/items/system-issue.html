@@ -1,4 +1,4 @@
-<li data-role="list-divider"><%=name%><span class="ui-li-count"><%=alerts.length%></span></li>
+<li data-role="list-divider"><%=name.toString().substring(name.indexOf(':') + 1, name.length).trim()%><span class="ui-li-count"><%=alerts.length%></span></li>
 <%for(i = 0; i <alerts.length; i++) {%>
 <li>
 		<p>

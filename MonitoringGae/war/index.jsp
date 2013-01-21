@@ -2,20 +2,36 @@
 <%@ page import="com.google.appengine.api.users.UserServiceFactory" %>
 <%@ page import="com.google.appengine.api.users.UserService" %>
 <%@ page import="cmg.org.monitor.services.google.Util" %>
+<%@ page import="cmg.org.monitor.memcache.*" %>
 <%@ page import="cmg.org.monitor.util.shared.MonitorConstant" %>
 <%@ page import="com.google.api.client.auth.oauth2.Credential"%>
+
 <%@ page import="com.google.api.services.plus.Plus"%>
 <%@ page import="com.google.api.services.plus.model.Person"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%
+
+
 boolean isAuth = false;
 String imageURL = "";
 String displayName = "";
+String redirectURL = request.getRequestURL().toString();
+
+Object obj = MonitorMemcache.get(Key.create(Key.PROJECT_HOST_NAME));
+if (obj == null) {	
+	String projectHostName = redirectURL;
+	if (projectHostName.lastIndexOf("/") > projectHostName.indexOf("//") + 1) {
+		projectHostName = projectHostName.substring(0, projectHostName.lastIndexOf("/"));
+	}
+	System.out.println("projectHostName: " + projectHostName);
+	MonitorMemcache.put(Key.create(Key.PROJECT_HOST_NAME), projectHostName);
+}
+
 if (!MonitorConstant.DEBUG) {
 	UserService userService = UserServiceFactory.getUserService();
 	if (!userService.isUserLoggedIn()) {
-		response.sendRedirect(userService.createLoginURL("http://" + MonitorConstant.PROJECT_HOST_NAME));	
+		response.sendRedirect(userService.createLoginURL(redirectURL));	
 	}
 	if (Util.getFlow().loadCredential(session.getId()) == null) {
 		response.sendRedirect("/connect");
