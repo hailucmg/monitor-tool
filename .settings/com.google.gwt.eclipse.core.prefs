@@ -1,0 +1,3 @@
+eclipse.preferences.version=1
+entryPointModules=cmg.org.monitor.module.MonitorIndex|cmg.org.monitor.ext.model.MonitorDto|cmg.org.monitor.entity.Entity|cmg.org.monitor.util.MonitorUtil
+filesCopiedToWebInfLib=gwt-servlet.jar

@@ -1,0 +1,70 @@
+<div data-role="header" data-theme="c" data-id="my-persistent-header" data-position="fixed">
+	<a href="#dashboard" data-icon="home" data-theme="b" data-iconpos="notext" class="able-loading"></a>
+	<h1><%=email%></h1>
+	<a href="#help" data-icon="question" data-theme="b" data-iconpos="notext" class="able-loading"></a>
+</div>
+<div data-role="content">	
+	<%if (isAuth) {%>
+	<ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d">
+		<li><img src="<%=imageURL%>"/>
+			<h3>
+			<%=displayName%>
+			</h3>
+			<p><%=email%></p>
+			<p class="ui-li-aside">
+			<strong><%=(role== 1 ? "Administrator" : (role == 2 ? "Normal user" : "Guest"))%></strong>
+		</p>
+		</li>
+	</ul>
+	<%if (role == 3 && !reqPer) {%>
+	<p>You might not have permission to use Health Monitoring System. Please try to login with an other account or send an request permission.</p>
+	
+	<ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d" id="form-req-per">
+		<li data-role="fieldcontain">
+	        	<label for="_firstname">First name: </label>
+	        	<input type="text" name="_firstname" id="_firstname" value=""  />
+		</li>
+		<li data-role="fieldcontain">
+	        	<label for="_lastname">Last name: </label>
+	        	<input type="text" name="_lastname" id="_lastname" value=""  />
+		</li>
+		<li data-role="fieldcontain">
+	        	<label for="_description">Description: </label>
+			<textarea cols="40" rows="8" name="_description" id="_description"></textarea>
+			</li>
+		<li class="ui-body ui-body-b">
+		<fieldset class="ui-grid-a">
+						<div class="ui-block-a"><button id="btn-reset"  data-icon="refresh" data-iconpos="left" data-theme="d">Reset</button></div>
+						<div class="ui-block-b"><button id="btn-req-per"  data-icon="check" data-iconpos="left" data-theme="e">Submit</button></div>
+		</fieldset>
+			
+		</li>
+	</ul>
+	<%}%>
+	<%} else {%>
+	CMG Monitor is requesting permission to view basic information about your account.
+	<a href="/confirmRequest" data-role="button" data-icon="alert" data-iconpos="left" data-theme="e">More information</a>
+	<%}%>
+	
+	<fieldset class="ui-grid-a">
+		<div class="ui-block-a">
+			<a href="#" data-role="button" data-icon="back" data-iconpos="left" data-theme="d">Cancel</a>
+		</div>
+		<div class="ui-block-b">
+			<a href="<%=logoutUrl%>" data-role="button" data-icon=<%=isTouchDevice ? "off" : "minus"%> data-iconpos="left" data-theme="f" class="able-loading">Logout</a>
+		</div>
+	</fieldset>
+	<ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="d">
+		<li data-role="list-divider">Other versions</li>
+		<li><a href="?state=pc">Web for PC</a><a href="?state=pc" data-theme="d" data-icon="direction">Go to Web version for PC</a></li>
+		<li><a>App Store (iOS)</a><a data-theme="d" data-icon="apple">Get iOS version in App store</a></li>
+		<li><a>Google Play (Android)</a><a data-theme="d" data-icon="android">Get Android version in Google Play</a></li>
+	</ul>
+
+
+</div>
+<div data-role="footer" data-position="fixed" class="ui-body-d"  data-role="listview" data-inset="true">
+	<div class="bottom-logo">
+		<img src="images/logo/c-mg.png"/>
+	</div>
+</div>
