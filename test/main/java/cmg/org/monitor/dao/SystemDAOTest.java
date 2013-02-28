@@ -95,11 +95,10 @@ public class SystemDAOTest {
 			int countSid = sysDAO.getCounterChangeLog("S001");
 			System.out.println(countSid);
 			//int countChangelog = sysDAO.getCountAllChangeLog();
-			//System.out.println(countChangelog);
+
 			//ArrayList<ChangeLogMonitor> clm = sysDAO.listChangeLog();
 			//System.out.println(clm.get(0).getDescription());
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		
