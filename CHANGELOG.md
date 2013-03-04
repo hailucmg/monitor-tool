@@ -2,6 +2,7 @@ CHANGELOG (notable new features or fixes)
 ---------
 ### 4.0.1
 * Released on: 04/03/2013
+* Fix issue [DMON-27] (https://cmgcode.atlassian.net/browse/DMON-27 "Tabs location is changed in Nokia phone")
 * Fix issue [DMON-28] (https://cmgcode.atlassian.net/browse/DMON-28 "System detail: UI is not good If info is expand after horizontal screen")
 * Fix issue	[DMON-23] (https://cmgcode.atlassian.net/browse/DMON-23 "The display is not good If the error name is long") 
 * Fix issue [DMON-6] (https://cmgcode.atlassian.net/browse/DMON-6 "The issue with About page display")
